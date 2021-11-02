@@ -1,15 +1,12 @@
 
 *
+
 *.txt
-
-!/**/
-
-
-!.gitignore
-
-!*.md
 !*.c
+!.gitignore
+!*.md
+
 !*.h
 !*Makefile
-
+!/**/
 
