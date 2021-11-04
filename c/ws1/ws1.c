@@ -3,6 +3,8 @@
 
 
 /* ***Definition*** */
+
+/* **Exercise** 4 */
 void HelloHexa()
 {
 	char phrase[]={"\"Hello World!\""};
@@ -18,6 +20,7 @@ void HelloHexa()
 	printf("\n");
 }
 
+/* **Exercise** 5 */
 double PowerofTen(int n)
 {
 	double base=10;
@@ -37,6 +40,7 @@ double PowerofTen(int n)
 	return ans;
 }
 
+/* **Exercise** 6 */
 void PrintReverseNum(int number)
 {
    printf("%d shall revese! to: ",number);
@@ -50,6 +54,22 @@ void PrintReverseNum(int number)
    printf("\n");
 }
 
+/* **Ex 6-Vers 2 */
+int ReverseInt(int num)
+{
+   int modul;
+   int ans=0;
+   
+   while(num)
+   {
+	modul=num%10;
+	ans=ans * 10 + modul;
+	num/=10;
+   }
+  return ans;	
+}
+
+/* **Exercise** 7 */
 void Swap(int*a, int*b)
 {
    int holder=*a;

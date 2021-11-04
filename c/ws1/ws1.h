@@ -6,6 +6,7 @@
 void HelloHexa();
 double PowerofTen(int);
 void PrintReverseNum(int);
+int ReverseInt(int);
 void Swap(int*,int*);
 
 
