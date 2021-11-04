@@ -1,10 +1,5 @@
 #include <stdio.h>
-
-/* ***Declaration*** */
-void HelloHexa();
-double PowerofTen(int);
-void PrintReverseNum(int);
-void Swap(int*,int*);
+#include "ws1.h"
 
 
 /* ***Definition*** */
@@ -28,10 +23,6 @@ double PowerofTen(int n)
 	double base=10;
 	double ans=1.0;
 	
-	/*if(n==0)
-	{
-	   return 1.0;
-	 }*/
 	if (n<0)
 	{
 	   n=-n;
@@ -66,23 +57,5 @@ void Swap(int*a, int*b)
    *b=holder;
 }
 
-/* ***Main*** */ 
-int main()
-{
-   	int x=2;
-   	int y=5;
-	
-	HelloHexa();
-	
-	printf("10^-3 is %f\n",PowerofTen(-3));	
-	printf("10^3 is %.f\n",PowerofTen(3)); /* for n>0, no floating point needed */
-	
-	PrintReverseNum(123456);
-	
-	printf("before swap: x=%d, y=%d\n",x,y);
-	Swap(&x,&y);
-	printf("post swap: x=%d, y=%d\n",x,y);
 
-	return 0;
-}
 
