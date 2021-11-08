@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-#include "ilrd_strlen.h"
+#include "ilrd_string.h"
 
 int StrLen (const char *str)
 {

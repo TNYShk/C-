@@ -1,5 +1,5 @@
-#ifndef __ILRD_STRLEN_H__
-#define __ILRD_STRLEN_H__
+#ifndef __ILRD_STRING_H__
+#define __ILRD_STRING_H__
 
 int StrLen (const char *);
 

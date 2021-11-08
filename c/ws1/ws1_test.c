@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "ws1.c"
+#include "ws1.h"
 
 int main()
 {
