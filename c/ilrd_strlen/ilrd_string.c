@@ -3,9 +3,9 @@
 #include <assert.h>
 #include "ilrd_string.h"
 
-int StrLen (const char *str)
+size_t StrLen (const char *str)
 {
-	int size=0;
+	size_t size=0;
 	while(*str && str++ && ++size);
 	
 	/* old version
@@ -24,11 +24,12 @@ int StrLen (const char *str)
 int StrCmp (const char *str1,const char *str2)
 {
 	
-	assert((*str1) && (*str2));
-	while (*str2 && (*str1 == *str2))
+	assert(NULL !=str1); 
+	assert(NULL != str2);
+	while (*str1 && (*str1 == *str2))
 	{
-	  str1++;
-	  str2++;
+	  ++str1;
+	  ++str2;
 	}
    return (*str1 - *str2);
 }

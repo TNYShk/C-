@@ -21,21 +21,21 @@ void HelloHexa()
 }
 
 /* **Exercise** 5 */
-double PowerofTen(int n)
+double PowerofTen(int exponent)
 {
-	double base=10;
+	double base=10.0;
 	double ans=1.0;
 	
-	if (n<0)
+	if (0>exponent)
 	{
-	   n=-n;
-	   base=0.1;
+	   exponent=-exponent;
+	   base=1.0/base;
 	}
 	
-	while(n)
+	while(exponent)
 	{
 	   ans*=base;
-	   n--;
+	   exponent--;
 	}
 	return ans;
 }
@@ -57,16 +57,21 @@ void PrintReverseNum(int number)
 /* **Ex 6-Vers 2 */
 int ReverseInt(int num)
 {
-   int modul;
+   int sign=1;
    int ans=0;
+   if ( 0> num)
+   {
+     num*=-1;
+     sign= -1;
+   }
    
    while(num)
    {
-	modul=num%10;
-	ans=ans * 10 + modul;
+	
+	ans=ans * 10 + (num%10);
 	num/=10;
    }
-  return ans;	
+  return ans*sign;	
 }
 
 /* **Exercise** 7 */

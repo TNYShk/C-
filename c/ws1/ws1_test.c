@@ -15,7 +15,7 @@ int main()
 	PrintReverseNum(123456);
 	
 	printf("Reverse of 1023 is %d\n",ReverseInt(1023));
-	
+	printf("Reverse of -1023 is %d\n",ReverseInt(-1023));
 	printf("before swap: x=%d, y=%d\n",x,y);
 	Swap(&x,&y);
 	printf("post swap: x=%d, y=%d\n",x,y);
