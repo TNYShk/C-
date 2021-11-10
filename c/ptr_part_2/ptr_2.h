@@ -1,4 +1,4 @@
-#ifndef __PTR_2_H__
+#ifndef __PTR_2_H__/* guard files */
 #define __PTR_2_H__
 
 const int aA;
@@ -17,4 +17,4 @@ const int aA;
 	void isPalindrome(char*);
 
 
-#endif
+#endif /* end */

@@ -1,11 +1,11 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <string.h>
+#include <stdio.h>  /*     standard library, because why not  */
+#include <stdlib.h> 
+#include <assert.h> /*     test assertions made  */
+#include <string.h> /* to test str-related funcs & stop crying */
 
 #include "ptr_2.h"
 
-const int aA=32;
+const int aA=32;    /* the difference between upper case and lower case */
 
 char * StrCpy(char* destination, const char* source)
 {
