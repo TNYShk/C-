@@ -1,10 +1,11 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
+#include <stdio.h> /*standared input output library */
+#include <stdlib.h> /* just because */
+#include <assert.h> /* for asserting  */
 #include "ilrd_string.h"
 
 size_t StrLen (const char *str)
 {
+	assert(NULL != str);
 	size_t size=0;
 	while(*str && str++ && ++size);
 	

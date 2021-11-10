@@ -26,9 +26,14 @@ int* CopyArray(int ar_length,int *ptr_array)
 	int *copyA,i;
 	copyA=(int*)malloc(ar_length*sizeof(int));
 	
+	if (NULL == copyA)
+	{
+		return NULL;
+	}
+	
 	for (i=0;i<ar_length;i++)
 	{
-		*(copyA+i)=*(ptr_array+i);
+		*(copyA+i) = *(ptr_array+i);
 		printf("copyA[%d] is %d\n", i,copyA[i]);
 	}
 	
