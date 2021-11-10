@@ -1,21 +1,21 @@
 #include <stdio.h>
 
 void TF(int);
-
 void PrintReverse(int, char *);
+const int aA =32;
 
 
-void PrintReverse(int length, char *string){
-	
+
+
+void PrintReverse(int length, char *string)
+{
 	char *str_end= length + string;
 	
-	
-	
-		while (string <= str_end && str_end--)
+		while (string <= str_end && (str_end--))
 		{
 			if((*str_end<=90) && (*str_end >=65))
 			{
-				printf("%c",*str_end+32);
+				printf("%c",*str_end+aA);
 			}
 			
 			else 
@@ -65,8 +65,8 @@ int main ()
 {
 TF(15);
 printf("\n");
-PrintReverse(11,"HellO WoRlD");
-
+PrintReverse(11,"HeLLO WoRlD");
+printf("\n");
 
 return 0;
 }
