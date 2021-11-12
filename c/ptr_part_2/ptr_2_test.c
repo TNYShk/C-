@@ -21,6 +21,7 @@ const char mlc_ar[]="array_with_malloc";
 char palindrome[]="AbbcbbA";
 char palindrome2[]="1235321";
 
+
 printf("original strspn: %ld\n",strspn(need,tt));
 printf("My StrSpn: %ld\n",StrSpn(need,tt));
 printf("original strspn: %ld\n",strspn(test1,tt1));

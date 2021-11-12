@@ -14,7 +14,6 @@ void SwapPtrSize_t(size_t **a,size_t **b)
 void Swap2Ints(int *num1, int *num2)
 {
 	int placeholder= *num1;
-	
 	*num1= *num2;
 	*num2= placeholder;
 }
@@ -45,7 +44,7 @@ void SwapSizeT(size_t *st1,size_t *st2)
 	long unsigned int holder=*st1;
 	*st1=*st2;
 	*st2=holder;
-  return;
+  	return;
 }
 
 

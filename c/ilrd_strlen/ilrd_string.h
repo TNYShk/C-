@@ -13,4 +13,4 @@ int StrCmp (const char *,const char *);
 
 
 
-#endif
+#endif  /* __ILRD_STRING_H__ */

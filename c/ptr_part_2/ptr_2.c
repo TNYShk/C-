@@ -7,7 +7,7 @@
 
 const int aA=32;    /* the difference between upper case and lower case */
 
-char * StrCpy(char* destination, const char* source)
+char *StrCpy(char *destination, const char *source)
 {
 	
 	size_t length_src= StrLen(source)+1;
@@ -19,7 +19,7 @@ char * StrCpy(char* destination, const char* source)
 	
 }
 
-char * StrnCpy(char *dest, const char *src, size_t n)
+char *StrnCpy(char *dest, const char *src, size_t n)
 {
 	char * ptr_dest= dest+n;
 	char *ptr_s= dest;
@@ -67,7 +67,7 @@ int StrCaseCmp(const char *str1, const char *str2)
 
 }
 
-char * StrChr(const char *str, int ch)
+char *StrChr(const char *str, int ch)
 {
 	assert(NULL != str);
 	while('\0' != *str)
@@ -108,12 +108,16 @@ size_t StrLen(const char *str)
 char* StrDup(const char *s)
 {
 	size_t length= StrLen(s);
-	char* dup=(char*)malloc(length*sizeof(char)+1);
+	char *dup=(char*)malloc(length*sizeof(char)+1);
+	if (NULL == dup)
+	{
+		return NULL;
+	}
 	dup= StrnCpy(dup,s,length);
 	return dup;
 }
 
-char * StrCat(char *dest, const char *src)
+char *StrCat(char *dest, const char *src)
 {
 	
 	size_t length_src = StrLen(src);
@@ -150,28 +154,27 @@ int StrnCmp (const char *str1,const char *str2)
 	  str2++;
 	  --x;
 	}
-	
    return x;
 }
 
-char * StrStr (const char * haystack, const char * needle)
+char *StrStr (const char *haystack, const char *needle)
 {
 	while ('\0' != *haystack)
 	{
-		char * ptr_st= StrChr(haystack,needle[0]);
+		char *ptr_st= StrChr(haystack,needle[0]);
 		int x = StrnCmp(ptr_st,needle);
 		if(0==x)
 			return ptr_st;
 	haystack++;
 	}		
-return NULL;
+	return NULL;
 }
 
 void isPalindrome(char* string)
 {
 	size_t length= strlen(string);
-	char * start= string;
-	char * end= string+length-1;
+	char *start= string;
+	char *end= string+length-1;
 	
 	while ((start<=end) && (*start == *end))
 	{

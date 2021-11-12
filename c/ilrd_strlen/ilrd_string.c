@@ -15,8 +15,7 @@ size_t StrLen (const char *str)
 		str++;
 		size++;
 	}
-	*/ /*old version end */
-	
+	***old version end */
 	
    return size;
 	
