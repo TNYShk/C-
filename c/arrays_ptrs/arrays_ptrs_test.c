@@ -23,6 +23,8 @@ int main(int argc, char *argv[], char * envp[])
 	char ** env_ptr=NULL;
 	int envp_counter=0;
 	
+	
+
 	PrintMatrix(matrix);
 	MatrixSum(matrix,ans);
 	
@@ -30,6 +32,14 @@ int main(int argc, char *argv[], char * envp[])
 	printf("\nJosephus Choice for %d soldiers is: %d\n",41,JosephusChoice(41));
 	printf("\tJosephus Choice for %d soldiers is: %d\n",100,JosephusChoice(100));
 	printf("\t\tJosephus Choice for %d soldiers is: %d\n",128,JosephusChoice(128));
+	
+	/*copied version of Josephus, causes STACK SMASH */
+	/*
+	int death[41]={0};
+	printf("Josepus ver.2 %d\n",Josephus(death,41));
+	printf("Josepus ver.2 %d\n",Josephus(death,100));
+	printf("Josepus ver.2 %d\n",Josephus(death,128));
+	*/
 	
 	/* excercise 3 - print data types */
 	PrintTypes();
@@ -46,5 +56,8 @@ int main(int argc, char *argv[], char * envp[])
 
 	CopyEnvP(buffer,envp);
 	free(buffer);
+
+	(void) argc;
+	(void) argv;
 return 0;
 }

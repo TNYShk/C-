@@ -86,6 +86,30 @@ int JosephusChoice(int soldiers)
 	}
 	return -1;
 }
+/* coppied version */
+int Josephus(int *circle, size_t soldiers)
+{
+	int index = 0;
+	int next2die = 0;
+
+	assert(NULL != circle);
+
+	for(index=0; index<(int)soldiers; index++)
+	{
+		circle[index] = (index +1) % soldiers;
+	}
+
+	index = 0;
+	while ( index != circle[index])
+	{
+		next2die = circle[circle[index]];
+		circle[circle[index]] = 0;
+		circle[index] = next2die;
+		index = next2die;
+
+	}
+return index;
+}
 
 char * StrnCpy2Lower(char *dest, const char *src, size_t n)
 {
