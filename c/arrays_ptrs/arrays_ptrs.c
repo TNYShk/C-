@@ -64,6 +64,7 @@ void PrintTypes()
 	printf("\tThe size of size_t is: %ld-byte\n\n", sizeof(size_t));
 
  }
+ 
 /*this works only if # of soldiers is less than 2^MAXP */
 int JosephusChoice(int soldiers)
 {
@@ -106,13 +107,14 @@ char * StrnCpy2Lower(char *dest, const char *src, size_t n)
 	}
 	return ptr_s;
 }
-/* creates a truncated version array, later prints up to = sign*/
+/* creates a truncated version array, later prints up to = */
 char* StrDup(const char *s)
 {
-	size_t length = MAXLEN;
-
 	/*size_t length = strlen(s)+1;*/
-	char *dup=(char*)malloc(length*sizeof(char)+1);
+	size_t length = 0;
+	char *dup=NULL;
+	length=MAXLEN;
+	dup=(char*)calloc(length,sizeof(char));
 	if (NULL == dup)
 	{
 		return NULL;

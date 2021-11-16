@@ -41,7 +41,7 @@ int main(int argc, char *argv[], char * envp[])
 		envp_counter++;
 	}
 
-	buffer= (char**)malloc(envp_counter*sizeof(*envp));
+	buffer= (char**)calloc(envp_counter,sizeof(*envp));
 	assert (NULL !=buffer);
 
 	CopyEnvP(buffer,envp);
