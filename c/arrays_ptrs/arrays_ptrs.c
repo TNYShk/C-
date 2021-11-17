@@ -117,7 +117,7 @@ char * StrnCpy2Lower(char *dest, const char *src, size_t n)
 	char * ptr_s= dest;
 	while (dest < ptr_dest) 
 	{
-		if ('\0' != *src)
+		if ('=' != *src)
 		{
 			*dest = tolower(*src);
 			++dest;
@@ -138,12 +138,12 @@ char* StrDup(const char *s)
 	size_t length = 0;
 	char *dup=NULL;
 	length=MAXLEN;
-	dup=(char*)calloc(length,sizeof(char));
+	dup=(char*)calloc(length,sizeof(char)+1);
 	if (NULL == dup)
 	{
 		return NULL;
 	}
-	length= *s - *strchr(s,'=');
+	/*length= *s - *strchr(s,'=');*/
 	dup= StrnCpy2Lower(dup,s,length);
 
 	return dup;
