@@ -9,8 +9,8 @@ int JosephusChoice(int);
 char * StrnCpy2Lower(char *, const char *, size_t n);
 char* StrDup(const char *);
 void CopyEnvP(char **buf, char **envp);
-int Josephus(int *,size_t s);
-
+int Josephus(size_t s);
+void InitiateCircle(size_t *, size_t);
 
 
 

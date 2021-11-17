@@ -78,7 +78,7 @@ int JosephusChoice(int soldiers)
 		
 		if(soldiers<win[index])
 		{
-			ans=(((soldiers-win[index-1])*2)+1);
+			ans=(((soldiers-win[index-1])*2));
 			free(win);
 			win= NULL;
 			return ans;
@@ -86,30 +86,47 @@ int JosephusChoice(int soldiers)
 	}
 	return -1;
 }
-/* coppied version */
-int Josephus(int *circle, size_t soldiers)
+
+/* another version */
+void InitiateCircle(size_t * circle, size_t soldier)
 {
-	int index = 0;
-	int next2die = 0;
-
-	assert(NULL != circle);
-
-	for(index=0; index<(int)soldiers; index++)
+	int index=0;
+	for(index=0; index<(int)soldier; index++)
 	{
-		circle[index] = (index +1) % soldiers;
+		circle[index] = (index +1) % soldier;
 	}
 
-	index = 0;
-	while ( index != circle[index])
+}
+
+int Josephus( size_t soldiers)
+{
+	size_t *circle = NULL;
+	int index = 0;
+	int next2die = 0;
+	
+	circle= (size_t*)malloc(soldiers*sizeof(size_t));
+	if (NULL == circle)
+	{
+		printf("allocation failed\n");
+		return -1;
+	}
+	
+	InitiateCircle(circle, soldiers);
+	
+	while ( index !=(int) circle[index])
 	{
 		next2die = circle[circle[index]];
 		circle[circle[index]] = 0;
 		circle[index] = next2die;
 		index = next2die;
-
 	}
+	free(circle);
+	circle=NULL;
 return index;
 }
+
+
+
 
 char * StrnCpy2Lower(char *dest, const char *src, size_t n)
 {
@@ -131,10 +148,10 @@ char * StrnCpy2Lower(char *dest, const char *src, size_t n)
 	}
 	return ptr_s;
 }
+
 /* creates a truncated version array, later prints up to = */
 char* StrDup(const char *s)
 {
-	/*size_t length = strlen(s)+1;*/
 	size_t length = 0;
 	char *dup=NULL;
 	length=MAXLEN;
@@ -143,7 +160,7 @@ char* StrDup(const char *s)
 	{
 		return NULL;
 	}
-	/*length= *s - *strchr(s,'=');*/
+
 	dup= StrnCpy2Lower(dup,s,length);
 
 	return dup;

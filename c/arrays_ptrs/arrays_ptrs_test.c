@@ -29,17 +29,15 @@ int main(int argc, char *argv[], char * envp[])
 	MatrixSum(matrix,ans);
 	
 	/* excercise 2 - Death of me */
-	printf("\nJosephus Choice for %d soldiers is: %d\n",41,JosephusChoice(41));
-	printf("\tJosephus Choice for %d soldiers is: %d\n",100,JosephusChoice(100));
-	printf("\t\tJosephus Choice for %d soldiers is: %d\n",128,JosephusChoice(128));
+	printf("\nJosephus Choice for %d soldiers, index: %d\n",41,JosephusChoice(41));
+	printf("\tJosephus Choice for %d soldiers, index: %d\n",100,JosephusChoice(100));
+	printf("\t\tJosephus Choice for %d soldiers, index: %d\n",128,JosephusChoice(128));
 	
-	/*copied version of Josephus, causes STACK SMASH */
-	/*
-	int death[41]={0};
-	printf("Josepus ver.2 %d\n",Josephus(death,41));
-	printf("Josepus ver.2 %d\n",Josephus(death,100));
-	printf("Josepus ver.2 %d\n",Josephus(death,128));
-	*/
+	
+	printf("Josepus ver.2, index to be: %d\n",Josephus(41));
+	printf("Josepus ver.2, index to be: %d\n",Josephus(100));
+	printf("Josepus ver.2, index to be: %d\n",Josephus(128));
+	
 	
 	/* excercise 3 - print data types */
 	PrintTypes();
