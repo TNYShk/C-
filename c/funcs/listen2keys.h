@@ -7,6 +7,7 @@
  LAB: OL114-115
  VERSION: 1.0
 *******************************************************************************/
+
 /* DESCRIPTION:
  * Prints "A-pressed" or "T-pressed" when one these characters is pressed.
  * The function terminates when ESC is pressed.
@@ -17,11 +18,32 @@
  * RETURN:
  * None
  */
-
 void iAT();
 void ifAT();
 void PrintAT();
+
+/* DESCRIPTION:
+ * Prints "A-pressed" or "T-pressed" when one these characters is pressed.
+ * The function terminates when ESC is pressed.
+ *
+ * PARAMS: 
+ * char to evaluate
+ * 
+ * RETURN:
+ * None
+ */
 void PrintChar(char);
+
+/* DESCRIPTION:
+ * Prints "A-pressed" or "T-pressed" when one these characters is pressed.
+ * The function terminates when ESC is pressed.
+ *
+ * PARAMS: uses PrintChar func
+ * None
+ * 
+ * RETURN:
+ * None
+ */
 void ActionFunc();
 
 
