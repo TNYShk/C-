@@ -1,8 +1,8 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <stdio.h> /*for all I/O funcs */
+#include <stdlib.h> /*size_t */
+#include <string.h> /* strcmp */
 
-#define MAX 4000
+#define MAX (4000)
 
 /* PSEUDOCODE
 get filename as input from user
@@ -40,18 +40,18 @@ enum struname{Exit,Remove,Count,ToBegin,Write,FIVE};
 
 
 int DoExit(char *, char *);
-void InitStruct(Death *);
+static void InitStruct(Death *);
 FILE* GetFile(char *argv[]);
 int DoNothing(const char *str,const char *file);
 int AddtoStart(char*,char*);
-int CompareChar(const char* str, const char* ch);
+static int CompareChar(const char* str, const char* ch);
 int fCopy(FILE * ,FILE *);
 
 
 
 int main(int argc, char *argv[])
 {
-	int i;
+	
 	int isRunning=1;
 	char sentence[MAX];
 	Death array[FIVE];
@@ -68,6 +68,7 @@ int main(int argc, char *argv[])
 	
 	while(isRunning)
 	{ 
+		int i;
 		fgets (sentence,MAX,stdin);
 		
 		for(i=0;i<FIVE;i++)
@@ -143,7 +144,7 @@ int CountLines(char *sent,char* file)
 }
 
 
-int CompareChar(const char * str, const char * ch)
+static int CompareChar(const char * str, const char * ch)
 {
 	if(*str==*ch)
 		return 0;
@@ -164,6 +165,8 @@ int AppendtoStart(char*string,char*file)
 	if(0==fCopy(pFile,cFile)){
 		fclose(pFile);
 		fclose(cFile);
+		remove(file);
+		rename("new_file", file);
 		return 1;
 	}
 	fclose(pFile);
@@ -187,7 +190,7 @@ int fCopy(FILE * fsrc,FILE *fdest)
 }
 	
 
-void InitStruct(Death * array) /*pointer to struct of type death*/
+static void InitStruct(Death * array) /*pointer to struct of type death*/
 {	
 	array[Exit].name="-exit\n";
 	array[Exit].compare= strcmp;
