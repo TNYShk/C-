@@ -1,7 +1,7 @@
 #include <stdio.h> /*for all I/O funcs */
 #include <stdlib.h> /*size_t */
 #include <string.h> /* strcmp */
-
+#include <assert.h> /*assert */
 #define MAX (4000)
 
 /* PSEUDOCODE
@@ -53,8 +53,8 @@ int main(int argc, char *argv[])
 {
 	
 	int isRunning=1;
-	char sentence[MAX];
-	Death array[FIVE];
+	static char sentence[MAX];
+	static Death array[FIVE];
 	
 	char *filename;
 	if(NULL ==argv[1]){
@@ -90,6 +90,7 @@ int main(int argc, char *argv[])
 int doWrite(char *s, char *file)
 {
 	FILE * pFile;
+	assert (NULL != file);
 	pFile = fopen (file,"a");
 	fputs (s,pFile);
 	fclose(pFile);
@@ -133,7 +134,7 @@ int CountLines(char *sent,char* file)
 	{
 		if ('\n' == cc)
 		{
-			count++;
+			++count;
 		}
 	}
 	fclose(pFile);
@@ -157,7 +158,7 @@ int AppendtoStart(char*string,char*file)
 {
 	FILE * pFile;
 	FILE * cFile;
-	
+	assert (NULL != file);
 	pFile = fopen (file,"r+");
 	cFile= fopen("new_file","a+");
 	fputs (++string,cFile);
