@@ -1,9 +1,8 @@
-#include <stdio.h>
+#include <stdio.h>			/*standard things print */
 #include <stdlib.h> 		/* malloc(), realloc() */
-#include <string.h>         /* strcpy,strncat  */
-#include <assert.h>
-#define TYPES_NUM (3)
+#include <string.h>         /* strcpy,strcat  */
 
+#define TYPES_NUM (3)
 #define MUM2CHAR (11)
 
 typedef int (*add_t)(int num, void *element);
@@ -120,7 +119,8 @@ static void  Initialize(gen_element_t*darth)
 	
 	int x=9;
 	float pi=3.14;
-	char * string= "Helplease";
+
+	char * string= "Darth Voider";
 	void * vp_i= (*(void**)&(x));
 	void * vp_f=(*(void**)&(pi));
 	
@@ -141,6 +141,8 @@ static void  Initialize(gen_element_t*darth)
 	darth[2].element= vp_s;
 	darth[2].func_operations= &function_bank[2];
 
+	
+	
 }
 
 
