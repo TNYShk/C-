@@ -1,9 +1,14 @@
 #include <stdio.h>			/*standard things print */
-#include <stdlib.h> 		/* malloc(), realloc() */
+#include <stdlib.h> 		/* malloc(), calloc() */
 #include <string.h>         /* strcpy,strcat  */
 
 #define TYPES_NUM (3)
 #define MUM2CHAR (11)
+
+/**** exercise 8,9,10  *****/
+#define MAX2(a,b) ((a)>(b)?(a):(b))
+#define MAX3(a,b,c) ((MAX2(a,b))>(c)?(MAX2((a),(b))):(c))
+#define ZISE(a) ((char*)(&(a)+1)-(char*)&(a))
 
 typedef int (*add_t)(int num, void *element);
 typedef int (*print_t)(void *element);
@@ -98,7 +103,8 @@ static int Nothing(void *element)
 	printf("cleanup! doing nothing is nice\n");
 	return SUCCESS;
 }
-static int CleanUpArray(void *element)
+
+static int CleanUpAfter(void *element)
 {
 	free(*(char **)element);
 	element=NULL;
@@ -106,20 +112,20 @@ static int CleanUpArray(void *element)
 	
 }
 
-static operations_t function_bank[TYPES_NUM] =						/* optional */
+static operations_t function_bank[TYPES_NUM] =						
 		{
 			{&AddInt, 		&PrintInt,		&Nothing},			/* int */
 			{&AddFloat, 	&PrintFloat, 	&Nothing},			/* float */	
-			{&AddString,	&PrintString, 	&CleanUpArray}		/* string */
+			{&AddString,	&PrintString, 	&CleanUpAfter}		/* string */
 		};
 
 
-static void  Initialize(gen_element_t*darth)
+static void  Initialize(gen_element_t *darth)
 {
 	
 	int x=9;
 	float pi=3.14;
-
+	
 	char * string= "Darth Voider";
 	void * vp_i= (*(void**)&(x));
 	void * vp_f=(*(void**)&(pi));
@@ -142,15 +148,41 @@ static void  Initialize(gen_element_t*darth)
 	darth[2].func_operations= &function_bank[2];
 
 	
-	
 }
 
+void PrintArray(gen_element_t *darth)
+{
+	int i=0;
+	for(i=0;i<TYPES_NUM;++i)
+	{
+		darth[i].func_operations->print_func(darth[i].element);
+	}
+}
 
+void AddtoArray(gen_element_t *darth, int num_2_add)
+{
+	int i=0;
+	for(i=0;i<TYPES_NUM;++i)
+	{
+		darth[i].func_operations->add_func(num_2_add,&darth[i].element);
+	}
+}
+
+static void CleanUpArray(gen_element_t *darth)
+{
+	int i=0;
+	for(i=0;i<TYPES_NUM;++i)
+	{
+		darth[i].func_operations->clean_up_func(&darth[i].element);
+	}
+	free(darth);
+	darth=NULL;
+	printf("\n\tNo more darth voider! has been nulled\n");
+}
 
 
 int main()
 {
-	int i=0;
 	
 	gen_element_t *darth=calloc(TYPES_NUM,sizeof(gen_element_t));
 	if(NULL ==darth)
@@ -161,26 +193,26 @@ int main()
 
 	Initialize(darth);
 
-	for(i=0;i<TYPES_NUM;++i)
-	{
-		darth[i].func_operations->print_func(darth[i].element);
-		darth[i].func_operations->add_func(10,&darth[i].element);
-		darth[i].func_operations->print_func(darth[i].element);
-	}
+	PrintArray(darth);
+	AddtoArray(darth,10);
+	PrintArray(darth);
 	
-	for(i=0;i<TYPES_NUM;++i)
-	{
-		darth[i].func_operations->clean_up_func(&darth[i].element);
+				/* exercise 9,10
+				printf("size of element_t is %ld\n", sizeof(gen_element_t));
+				printf("zise of *darth is %ld\n", ZISE(*darth));
+				printf("size of float is %ld\n", sizeof(float));
+				float pipi= 3.14159265359;
+				printf("zise of float is %ld\n", ZISE(pipi));
 
-	}
+				*/
+	CleanUpArray(darth);
 	
-	/*manual option:
-	CleanUpArray(&darth[2].element);
-	*/
+	/*
+	manual option:
+	CleanUpAfter(&darth[2].element);
 	free(darth);
 	darth=NULL;
-	
-	
+	*/
 	
 	return (0);
 }
