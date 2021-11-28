@@ -3,12 +3,13 @@
 #include <string.h>         /* strcpy,strcat  */
 
 #define TYPES_NUM (3)
-#define MUM2CHAR (11)
+#define MUM2CHAR (12)
 
 /**** exercise 8,9,10  *****/
 #define MAX2(a,b) ((a)>(b)?(a):(b))
 #define MAX3(a,b,c) ((MAX2(a,b))>(c)?(MAX2((a),(b))):(c))
 #define ZISE(a) ((char*)(&(a)+1)-(char*)&(a))
+#define SIZEOF_TYPE(a) (size_t)(1 + ((a*)0))
 
 typedef int (*add_t)(int num, void *element);
 typedef int (*print_t)(void *element);
@@ -29,28 +30,27 @@ typedef struct gen_element
 	operations_t *func_operations;
 } gen_element_t;
 
-
-
 enum exit_code {PRINT_ERROR = -1, SUCCESS, MEMORY_ALLOCATION_ERROR};
+
 
 static int AddInt(int num, void *element)
 {
-	(*(int*)element)+=num;
+	(*(int*)element) += num;
 	return SUCCESS;
 }
 
 static int AddFloat(int num, void *element)
 {
-	(*(float*)element)+=num;
+	(*(float*)element) += num;
 	return SUCCESS;
 }
 
 static int AddString(int num, void *element){
 	
-	char * temp=(char *)malloc(sizeof(num)*MUM2CHAR);
-	char *temp2=(*(char**)element);
+	char *temp = (char *)malloc(sizeof(num)*MUM2CHAR);
+	char *temp2 = (*(char**)element);
 	
-	if (NULL ==temp)
+	if (NULL == temp)
 	{
 		return MEMORY_ALLOCATION_ERROR;
 	}
@@ -59,14 +59,14 @@ static int AddString(int num, void *element){
 	strcat(temp2,temp);
 	
 	free(temp);
-	temp=NULL;
+	temp = NULL;
 	
 	return SUCCESS;
 }
 
 static int PrintInt(void *element)
 {
-	if(NULL==(element))
+	if(NULL == (element))
 	{
 		printf("NULL==element");
 		return PRINT_ERROR;
@@ -77,7 +77,7 @@ static int PrintInt(void *element)
 
 static int PrintFloat(void *element)
 {
-	if(NULL==(element))
+	if(NULL == (element))
 	{
 		printf("NULL==element");
 		return PRINT_ERROR;
@@ -88,7 +88,7 @@ static int PrintFloat(void *element)
 
 static int PrintString(void *element)
 {
-	if(NULL==(element))
+	if(NULL == (element))
 	{
 		printf("NULL==element");
 		return PRINT_ERROR;
@@ -107,7 +107,7 @@ static int Nothing(void *element)
 static int CleanUpAfter(void *element)
 {
 	free(*(char **)element);
-	element=NULL;
+	element = NULL;
     return SUCCESS;
 	
 }
@@ -120,17 +120,17 @@ static operations_t function_bank[TYPES_NUM] =
 		};
 
 
-static void  Initialize(gen_element_t *darth)
+static void Initialize(gen_element_t *darth)
 {
 	
-	int x=9;
-	float pi=3.14;
+	int x = 9;
+	float pi = 3.14;
 	
 	char * string= "Darth Voider";
 	void * vp_i= (*(void**)&(x));
-	void * vp_f=(*(void**)&(pi));
+	void * vp_f= (*(void**)&(pi));
 	
-	void *vp_s=malloc(sizeof(char*)*(sizeof(string)));	
+	void *vp_s = malloc(sizeof(char*)*(sizeof(string)));	
 	
 	if(NULL == vp_s)
 	{
@@ -138,6 +138,7 @@ static void  Initialize(gen_element_t *darth)
 	}
 
 	strcpy((char*)vp_s,string);
+	
 	darth[0].element=vp_i;
 	darth[0].func_operations= &function_bank[0];
 
@@ -152,7 +153,7 @@ static void  Initialize(gen_element_t *darth)
 
 void PrintArray(gen_element_t *darth)
 {
-	int i=0;
+	int i = 0;
 	for(i=0;i<TYPES_NUM;++i)
 	{
 		darth[i].func_operations->print_func(darth[i].element);
@@ -161,8 +162,8 @@ void PrintArray(gen_element_t *darth)
 
 void AddtoArray(gen_element_t *darth, int num_2_add)
 {
-	int i=0;
-	for(i=0;i<TYPES_NUM;++i)
+	int i = 0;
+	for(i = 0;i<TYPES_NUM;++i)
 	{
 		darth[i].func_operations->add_func(num_2_add,&darth[i].element);
 	}
@@ -176,7 +177,7 @@ static void CleanUpArray(gen_element_t *darth)
 		darth[i].func_operations->clean_up_func(&darth[i].element);
 	}
 	free(darth);
-	darth=NULL;
+	darth = NULL;
 	printf("\n\tNo more darth voider! has been nulled\n");
 }
 
@@ -185,7 +186,7 @@ int main()
 {
 	
 	gen_element_t *darth=calloc(TYPES_NUM,sizeof(gen_element_t));
-	if(NULL ==darth)
+	if(NULL == darth)
 	{
 		printf("error initializing");
 		return MEMORY_ALLOCATION_ERROR;
@@ -196,6 +197,7 @@ int main()
 	PrintArray(darth);
 	AddtoArray(darth,10);
 	PrintArray(darth);
+
 	
 				/* exercise 9,10
 				printf("size of element_t is %ld\n", sizeof(gen_element_t));
