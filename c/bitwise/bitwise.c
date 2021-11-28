@@ -96,11 +96,11 @@ static void MirrorBytes(unsigned int n,int swap)
 		k=k>>1;
 		
 	}
-	printf("\nwhich is %u\n",ans);
+	printf("\nwhich is %u mirrored\n",ans);
 	start=bin+m-1;
 	if(swap){
 		Swap(ptr,start);
-	}
+	
 
 	while(m)
 	{
@@ -108,19 +108,21 @@ static void MirrorBytes(unsigned int n,int swap)
 		--m;
 		ptr++;
 	}
+	}
 	printf("\n");
 }
 
 static int CountBits(unsigned int n)
 {
-	int bin[32]={0};
+	
 	int i;
 	int x=0;
 	for(i=0;n>0;++i)
 	{
 		if(n%2==1)
+		{
 			x++;
-		bin[i]=n%2;
+		}
 		n /=2;
 	}
 	
@@ -215,7 +217,7 @@ void BitwiseSwap(int x, int y)
 
 void MirrorByte(unsigned int n)
 {
-	printf("%d mirrored is ",n);
+	printf("%d  is ",n);
 	MirrorBytes(n,1);
 }
 

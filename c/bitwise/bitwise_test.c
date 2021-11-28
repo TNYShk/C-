@@ -25,12 +25,14 @@ int main()
 	printf("BitSwapByIdx %d\n", BitSwapByIdx(c));;
 	printf("ClosestDividedByHex %u\n", ClosestDividedByHex(22));
 	
-	
 	MirrorByte(18);
+	printf("\n");
+
 	BitwiseSwap(4,50);
 	printf("on bits are %lu\n",CounterBits(54));
 	printf("on bits are no loop %lu\n",CounterBitBut(54));
 	FloatPrintBits(18.2);
 
+	MirrorByte(20);
 	return 0;
 }
