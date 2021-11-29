@@ -162,7 +162,7 @@ unsigned int ClosestDividedByHex(unsigned int);
  * None
  */
 /*void BitwiseSwap(int *, int *);*/
-void BitwiseSwap(int , int );
+void BitwiseSwap(int* , int* );
 
 /*********ex.9*********/
 /* DESCRIPTION:
@@ -186,7 +186,7 @@ size_t CounterBits(unsigned int);
  * RETURN:
  * number of set bits.
  */
-size_t CounterBitBut(unsigned int);
+size_t CountSetBitsNoLoop(unsigned int);
 
 /*********ex.10*********/
 /* DESCRIPTION:

@@ -9,8 +9,9 @@
 int main()
 {
 	char c=5;
-
+	
 	unsigned int ar[]={19,71,15,11,111};
+	
 	int size=sizeof(ar)/sizeof(ar[0]);
 
 	PrintThreeBitsOnElements(ar,size);
@@ -28,11 +29,12 @@ int main()
 	MirrorByte(18);
 	printf("\n");
 
-	BitwiseSwap(4,50);
 	printf("on bits are %lu\n",CounterBits(54));
-	printf("on bits are no loop %lu\n",CounterBitBut(54));
+	
 	FloatPrintBits(18.2);
 
 	MirrorByte(20);
+	
+	
 	return 0;
 }
