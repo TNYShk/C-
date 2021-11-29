@@ -82,10 +82,10 @@ static void MirrorBytes(unsigned int n,int swap)
 	
 	for(i=0;i<m;++i)
 	{
-		bin[INTBIT-1-i]=n%2;
+		bin[INTBIT-1-i] = n%2;
 		n /= 2;
 		printf("%d",bin[i]);
-		ans+=bin[INTBIT-1-i]*k;
+		ans += bin[INTBIT-1-i]*k;
 		k = k>>1;
 		
 	}
@@ -174,7 +174,8 @@ int IsBothIdxOn(unsigned char c)
 checks if 2nd bit OR 6th bit are on */
 int IsOneOfIdxOn(unsigned char c)
 {
-	return ( (2 == (c & 2)) || (32 == (c & 32)) );
+	return !!(34 & c)
+	/*return ( (2 == (c & 2)) || (32 == (c & 32)) );*/
 }
 
 unsigned int BitSwapByIdx(unsigned char c)
