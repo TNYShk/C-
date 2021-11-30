@@ -1,7 +1,10 @@
 #ifndef __WBO_H__
 #define __WBO_H__
 
+#define WORD_SIZE (sizeof(size_t))
 #include <stddef.h>
+
+
 /* Receive pointer, integar, n bytes
 Fill the pointer s with c for n bytes
 Return pointer to s */
