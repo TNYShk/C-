@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stddef.h>
 #include <string.h>
-
+#include <assert.h>
 
 #include "wbo.h"
 
@@ -57,9 +57,7 @@ void *MemCpyByte(void *dest, const void *src, size_t n)
 void *MemCpy(void *dest, const void *src, size_t n)
 {
 	void *runner = dest;
-	const char* src_ptr= (char*)src;
-	char *rub = (char *)dest;
-	size_t num_words= n/ sizeof(size_t);
+	size_t num_words = n/ sizeof(size_t);
 
 	while(num_words)
 	{
@@ -70,12 +68,12 @@ void *MemCpy(void *dest, const void *src, size_t n)
 		--num_words;	
 	}
 
-	rub = (char*)runner;
-	src_ptr = (char*)src;
 	
 	while(n)
 	{
-		*rub++ = *src_ptr++;
+		*(*(char**)&runner) = *(char*)src;
+		++(*(char**)&runner);
+		++(*(char**)&src);
 		--n;
 	}
 
@@ -85,15 +83,22 @@ void *MemCpy(void *dest, const void *src, size_t n)
 
 void *MemMove(void *dest, const void *src, size_t n)
 {
+	assert(NULL != dest);
+	assert(NULL != src);
 
-    if(src < dest)
+	if( (size_t)&src + n > (size_t)&dest)
+	{
+		printf("attention! source overflows destination\n");
+	}
+
+    if(dest > src)
     {
         if((*(size_t*)&dest) - (*(size_t*)&src) > n)
         {
             return MemCpy(dest, src, n);
         }
 
-        while(0 < n)
+        while(n)
         {
             --n;
             *(*(char **)&dest + n) = *(*(char **)&src + n);
@@ -121,17 +126,17 @@ void *MemMove(void *dest, const void *src, size_t n)
 
 int main()
 {
-	char str[]= "Hellooooooo";
+	char str[]= "Hellooo";
 	const char srr[]= "source123456789";
-	size_t len = (sizeof(srr) -1);
-	printf("len is %ld\n", len);
+	
 	/*MemSet(str,'F', 1);
-	MemCpy (str,srr,5);
+	MemCpy (str,srr,9);
 	memcpy(str,srr,0);
 	memmove(str,srr,20);
-	
-	*/
 	MemMove(str,srr,20);
+	*/
+	MemMove(str,srr,3);
+	
 	printf("%s\n",str);
 	return 0;
 }
