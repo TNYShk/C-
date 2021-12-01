@@ -91,14 +91,14 @@ void TestItoaBase()
 void TestAtoiBase()
 {
 	char *str = " 11";
-	char *str2 = "123AB";
+	char *str2 = "123aB";
 	char *str3 = "-1712";
-	char *str4 = "  -**ADD33Q";
+	char *str4 = " 123A";
 	
-	printf("%d\n", AtoiStrToIntBase(str, 2));
-	printf("%d\n", AtoiStrToIntBase(str2, 16));
-	printf("%d\n", AtoiStrToIntBase(str3, 10));
-	printf("%d\n", AtoiStrToIntBase(str4, 17));
+	printf("str: 11 (2)  %d\n", AtoiStrToIntBase(str, 2));
+	printf("str:123aB (16) %d\n", AtoiStrToIntBase(str2, 16));
+	printf("str: -1712 (10) %d\n", AtoiStrToIntBase(str3, 10));
+	printf("str: 123A (36) %d\n", AtoiStrToIntBase(str4, 36));
 }
 
 

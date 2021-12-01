@@ -2,17 +2,14 @@
 #include <string.h>
 #include <stdlib.h>
 #include <assert.h>
-
+#include <ctype.h>
 #include "wboai.h"
 
 #define NUM_CHAR (12)
 #define DECIM (10)
-#define ASCIICHAR (48)
 
-#define IS_LITTLE_ENDIAN (*(int *)&("1") != 0) 
-
-#define MAX2(a,b) ((a)>(b)?(a):(b))
 #define MIN2(a,b) ((a)<(b)?(a):(b))
+#define IS_LITTLE_ENDIAN (*(int *)&("1") != 0) 
 
 
 
@@ -32,10 +29,10 @@ void PrintFromArrays(char *a, char *b, char *c, size_t a_arr, size_t b_arr, size
 	char *a2 = NULL;
 	char *a3 = NULL;
 	
-	temp = (char*)calloc(shorter,sizeof(char*));
-	a1= (char*)calloc(a_arr+1,sizeof(char*));
-	a2 = (char*)calloc(b_arr+1,sizeof(char*));
-	a3 = (char*)calloc(c_arr+1,sizeof(char*));
+	temp = (char*)calloc(shorter, sizeof(char*));
+	a1= (char*)calloc(a_arr+1, sizeof(char*));
+	a2 = (char*)calloc(b_arr+1, sizeof(char*));
+	a3 = (char*)calloc(c_arr+1, sizeof(char*));
 	
 	strncpy(a1,a,a_arr);
 	strncpy(a2,b,b_arr);
@@ -67,7 +64,6 @@ void PrintFromArrays(char *a, char *b, char *c, size_t a_arr, size_t b_arr, size
 		++i;
 	}
 	
-	
 	free(temp);
 	free(a1);
 	free(a2);
@@ -78,8 +74,6 @@ void PrintFromArrays(char *a, char *b, char *c, size_t a_arr, size_t b_arr, size
 	temp = NULL;
 	
 }
-
-
 
 
 static void Reverse(char *str, size_t length)
@@ -104,6 +98,9 @@ char *ItoaIntToStrBase(int value, char *str, unsigned int base)
 	int i = 0;
 	size_t len = 0;
 	char flag = '\0';
+	
+	assert(NULL != str);
+	
 	if(0 > value)
 	{
 		value= -value;
@@ -129,11 +126,10 @@ char *ItoaIntToStrBase(int value, char *str, unsigned int base)
 
 	value /= base;
 	++i;
-	*(ptr + i) = flag;
-	}
 	
+	}
+	*(ptr + i) = flag;
 	len = strlen(str);
-
 	Reverse(str,len);
 	
 	return str;
@@ -145,27 +141,35 @@ int AtoiStrToIntBase(const char *nptr, unsigned int base)
 	int i = 0;
 	int sign = 1;
 
+	assert(NULL != nptr);
+	
 	while (nptr[i] == ' ' || nptr[i] == '\n' || nptr[i] == '\t')
 	{
 		++i;
 	}
-	if ( *nptr == '-')
+	if ( nptr[i] == '-')
 	{
 		sign = -1;
-		++nptr;
+		++i;
 	}
 
-	while (nptr[i])
+	while (isalnum(nptr[i]))
 	{
-		if (nptr[i] >= '0' && nptr[i] <= '9')
+		
+		if (isdigit(nptr[i]))
 		{
 			num *=  base;
 			num += (nptr[i] - '0');
 		}
-		if ((nptr[i] >= 'A') && (nptr[i] <= 'F'))
+		if ((nptr[i] >= 'A') && (nptr[i] <= 'Z'))
 		{
 			num *=  base;
-			num += (nptr[i] - 'A' + 10);
+			num += (nptr[i] - 'A' + DECIM);
+		}
+		else if( (nptr[i] >= 'a') && (nptr[i] <= 'z'))
+		{
+			num *=  base;
+			num += (nptr[i] - 'a' + DECIM);
 		}
 
 	++i;
@@ -177,70 +181,26 @@ int AtoiStrToIntBase(const char *nptr, unsigned int base)
 	
 
 
-
-
 int AtoiStrToInt(const char *nptr)
 {
-	int num = 0;
-	int sign = 1;
-	
+	assert(NULL != nptr);
+	return (AtoiStrToIntBase(nptr,10));  
 
-	while (*nptr == ' ' || *nptr == '\n' || *nptr == '\t' )
-	{
-		++nptr;
-	}
-
-	if ( *nptr == '-')
-	{
-		sign = -1;
-		++nptr;
-	}
-	while (nptr && (*nptr >= '0' && *nptr <= '9'))
-	{
-		num *=  10;
-		num += (*nptr - '0');
-		
-		++nptr;
-	}
-	
-	return sign*num;
 }
 
 
 
 char *ItoaIntToStr(int value, char *str)
 {
-	int i = 0;
-	size_t len = 0;
-	char *ptr = str;
-	char flag = '\0';
+	assert(NULL != str);
+	return ItoaIntToStrBase(value, str, 10);
 	
-	if(value < 0)
-	{
-		value = -value;
-		 flag = '-';
-	}
-	
-	while(value)
-	{
-		char temp = value % DECIM;
-		temp += '0';
-		value /= DECIM;
-		*(ptr+i) = temp;
-		++i;
-		*(ptr+i) = flag;
-	}
-	
-	len = strlen(str);
-
-	Reverse(str,len);
-	return str;
 }
 
 int IsLittleEndian(void)
 {
-		int n = 1;
-		char *indian = (char *)&n;
+		int num = 1;
+		char *indian = (char *)&num;
 
         return (indian[0] == 1);
 }
