@@ -26,6 +26,7 @@ void PrintFromArrays(char *a, char *b, char *c, size_t a_arr, size_t b_arr, size
 	int i = 0;
 	size_t shorter = MIN2(a_arr, b_arr);
 	size_t bigger = a_arr + b_arr - shorter;
+	
 	char *temp = NULL; 
 	char *a1= NULL;
 	char *a2 = NULL;
@@ -55,6 +56,7 @@ void PrintFromArrays(char *a, char *b, char *c, size_t a_arr, size_t b_arr, size
 			--bigger;
 	}
 	i=0;
+	
 	while (shorter)
 	{
 		if (NULL == strchr(a3,*(temp+i)))
@@ -101,8 +103,12 @@ char *ItoaIntToStrBase(int value, char *str, unsigned int base)
 	char *ptr = str;
 	int i = 0;
 	size_t len = 0;
-	
-	
+	char flag = '\0';
+	if(0 > value)
+	{
+		value= -value;
+		flag = '-';
+	}
 	
 	while(value)
 	{
@@ -123,7 +129,7 @@ char *ItoaIntToStrBase(int value, char *str, unsigned int base)
 
 	value /= base;
 	++i;
-	*(ptr + i) = '\0';
+	*(ptr + i) = flag;
 	}
 	
 	len = strlen(str);

@@ -72,21 +72,19 @@ void TestAtoi()
 
 void TestItoaBase()
 {
-	char *str = malloc(sizeof(char) * 33);
-	char *str2 = malloc(sizeof(char) * 33);
-	char *str3 = malloc(sizeof(char) * 33);
+	char str[33] = " ";
+	char str2[33] = " ";
+	char str3[33] = " ";
 	
-	str = ItoaIntToStrBase(3, str, 2);
-	str2 = ItoaIntToStrBase(1779, str2, 10);
-	str3 = ItoaIntToStrBase(4777, str3, 24);
+	ItoaIntToStrBase(3, str, 2);
+	ItoaIntToStrBase(-177, str2, 10);
+	ItoaIntToStrBase(4777, str3, 24);
 	
 	printf("3 base 2 %s\n", str);
-	printf("1779 base 10 %s\n", str2);
+	printf("-177 base 10 %s\n", str2);
 	printf("4777 base 24 %s\n", str3);
 	
-	free(str);
-	free(str2);
-	free(str3);
+
 }
 
 
