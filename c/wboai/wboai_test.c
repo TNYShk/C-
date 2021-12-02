@@ -114,8 +114,8 @@ void CompareAtoiWithSystem(char *str)
 
 void CheckExc2()
 {
-	char arr[] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', '$'};
-	char arr2[] = {'a', 'd', 'q', 't', '$', '!',' ','h'};
+	char arr[] = {'a', 'b', 'c', 'd', 'e', 'd', 'g', '$'};
+	char arr2[] = {'a', 'd', 'q', 't', '$', '!',' ','h',};
 	char arr3[] = {'q', 'q', 'w', '!', '@', '#'};
 	
 	

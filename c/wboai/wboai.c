@@ -8,7 +8,7 @@
 
 
 #define DECIM (10)
-
+#define ASCII (256)
 #define MIN2(a,b) ((a)<(b)?(a):(b))
 
 #define IS_LITTLE_ENDIAN (*(int *)&("=1") != 0 ) 
@@ -20,7 +20,7 @@ void PrintFromArrays(char *a, char *b, char *c, size_t a_arr, size_t b_arr, size
 {
 	
 	size_t i=0;
-	int ascii[256] ={0};
+	int ascii[ASCII] ={0};
 
 	assert (NULL != a);
 	assert (NULL != b);
@@ -38,9 +38,9 @@ void PrintFromArrays(char *a, char *b, char *c, size_t a_arr, size_t b_arr, size
 	{
 		ascii[(int)c[i]] -=1; 
 	}
-	for (i=0;i<256;++i)
+	for (i=0;i<ASCII;++i)
 	{
-		if(ascii[i] == 6)
+		if(ascii[i] > 5)
 			printf(" %c ",(char)i);
 	}
 }
