@@ -10,14 +10,42 @@
 #define DECIM (10)
 
 #define MIN2(a,b) ((a)<(b)?(a):(b))
-#define IS_LITTLE_ENDIAN (*(int *)&("1") != 0) 
+
+#define IS_LITTLE_ENDIAN (*(int *)&("=1") != 0 ) 
 
 
 
 
+void PrintFromArrays(char *a, char *b, char *c, size_t a_arr, size_t b_arr, size_t c_arr)
+{
+	
+	size_t i=0;
+	char array[256] ={0};
 
+	assert (NULL != a);
+	assert (NULL != b);
+	assert (NULL != c);
 
+	for (i=0;i<a_arr;++i)
+	{
+		array[a[i]]= 1;
+	}
+	for (i=0;i<b_arr;++i)
+	{
+		array[b[i]] += 5;
+	}
+	for(i=0; i<c_arr; i++)
+	{
+		array[c[i]] -=1; 
+	}
+	for (i=0;i<256;++i)
+	{
+		if(array[i] == 6)
+			printf(" %c ",i);
+	}
+}
 
+/* previous version, works but as efficient
 void PrintFromArrays(char *a, char *b, char *c, size_t a_arr, size_t b_arr, size_t c_arr)
 {
 
@@ -26,7 +54,7 @@ void PrintFromArrays(char *a, char *b, char *c, size_t a_arr, size_t b_arr, size
 	size_t bigger = a_arr + b_arr - shorter;
 	
 	char *temp = NULL; 
-	char *a1= NULL;
+	char *a1 = NULL;
 	char *a2 = NULL;
 	char *a3 = NULL;
 	
@@ -74,7 +102,7 @@ void PrintFromArrays(char *a, char *b, char *c, size_t a_arr, size_t b_arr, size
 	a3 = NULL;
 	temp = NULL;
 	
-}
+}*/
 
 
 static void Reverse(char *str, size_t length)
@@ -86,9 +114,9 @@ static void Reverse(char *str, size_t length)
 	{
 		char t = *start;
 		*start = *end; 
-			*end = t;
-			++start;
-			--end;
+		*end = t;
+		++start;
+		--end;
 	}
 }
 
@@ -118,7 +146,6 @@ char *ItoaIntToStrBase(int value, char *str, unsigned int base)
 			leftover += 'A';
 			*(ptr+i) = leftover;
 		}
-		
 		else
 		{
 			leftover += '0';
@@ -176,9 +203,8 @@ int AtoiStrToIntBase(const char *nptr, unsigned int base)
 	++i;
 	} 
 	
-	return sign * num;	
-		
-	}
+	return sign * num;		
+}
 	
 
 
@@ -200,9 +226,9 @@ char *ItoaIntToStr(int value, char *str)
 
 int IsLittleEndian(void)
 {
-		int num = 1;
-		char *indian = (char *)&num;
-
-        return (indian[0] == 1);
+	int num = 1;
+	char *indian = (char *)&num;
+        
+    return (indian[0] == 1);
 }
 
