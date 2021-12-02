@@ -20,7 +20,7 @@ void PrintFromArrays(char *a, char *b, char *c, size_t a_arr, size_t b_arr, size
 {
 	
 	size_t i=0;
-	char array[256] ={0};
+	int ascii[256] ={0};
 
 	assert (NULL != a);
 	assert (NULL != b);
@@ -28,24 +28,24 @@ void PrintFromArrays(char *a, char *b, char *c, size_t a_arr, size_t b_arr, size
 
 	for (i=0;i<a_arr;++i)
 	{
-		array[a[i]]= 1;
+		ascii[(int)a[i]]= 1;
 	}
 	for (i=0;i<b_arr;++i)
 	{
-		array[b[i]] += 5;
+		ascii[(int)b[i]] += 5;
 	}
 	for(i=0; i<c_arr; i++)
 	{
-		array[c[i]] -=1; 
+		ascii[(int)c[i]] -=1; 
 	}
 	for (i=0;i<256;++i)
 	{
-		if(array[i] == 6)
-			printf(" %c ",i);
+		if(ascii[i] == 6)
+			printf(" %c ",(char)i);
 	}
 }
 
-/* previous version, works but as efficient
+/* previous version, works but not as efficient
 void PrintFromArrays(char *a, char *b, char *c, size_t a_arr, size_t b_arr, size_t c_arr)
 {
 
