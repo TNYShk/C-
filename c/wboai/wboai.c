@@ -1,11 +1,12 @@
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <ctype.h>
+#include <stdio.h>  /******* printing ****************/
+#include <string.h> /******* strncpy *****************/
+#include <stdlib.h> /******* atoi, memory allocation */
+#include <assert.h> /******* assert viability ********/
+#include <ctype.h>  /******* isalnum, isdigit ********/
+
 #include "wboai.h"
 
-#define NUM_CHAR (12)
+
 #define DECIM (10)
 
 #define MIN2(a,b) ((a)<(b)?(a):(b))

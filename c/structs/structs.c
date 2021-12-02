@@ -23,7 +23,6 @@ typedef struct operations
 } operations_t;
 
 
-
 typedef struct gen_element
 {
 	void *element;
@@ -32,6 +31,13 @@ typedef struct gen_element
 
 enum exit_code {PRINT_ERROR = -1, SUCCESS, MEMORY_ALLOCATION_ERROR};
 
+typedef enum
+{ 	
+	INT = 0, 
+	FLOAT,
+	STRING
+	AMOUNT_ELEMENTS
+}elem_types;
 
 static int AddInt(int num, void *element)
 {
@@ -45,8 +51,9 @@ static int AddFloat(int num, void *element)
 	return SUCCESS;
 }
 
-static int AddString(int num, void *element){
-	
+static int AddString(int num, void *element)
+{
+	/*char num_in_string[NUMCHAR]= ""; */
 	char *temp = (char *)malloc(sizeof(num)*MUM2CHAR);
 	char *temp2 = (*(char**)element);
 	
@@ -55,13 +62,13 @@ static int AddString(int num, void *element){
 		return MEMORY_ALLOCATION_ERROR;
 	}
 	
-	sprintf(temp,"%d ",num);
-	strcat(temp2,temp);
+	sprintf(temp,"%d ", num);
+	strcat(temp2, temp);
 	
 	free(temp);
 	temp = NULL;
 	
-	return SUCCESS;
+	return SUCCESS;NUM_CHAR
 }
 
 static int PrintInt(void *element)
@@ -154,7 +161,7 @@ static void Initialize(gen_element_t *darth)
 void PrintArray(gen_element_t *darth)
 {
 	int i = 0;
-	for(i=0;i<TYPES_NUM;++i)
+	for(i=0; i<TYPES_NUM; ++i)
 	{
 		darth[i].func_operations->print_func(darth[i].element);
 	}
