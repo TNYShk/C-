@@ -36,7 +36,7 @@ void PrintFromArrays(char *a, char *b, char *c, size_t a_arr, size_t b_arr, size
 	}
 	for(i=0; i<c_arr; i++)
 	{
-		ascii[(int)c[i]] -=1; 
+		ascii[(int)c[i]] =0; 
 	}
 	for (i=0;i<ASCII;++i)
 	{
