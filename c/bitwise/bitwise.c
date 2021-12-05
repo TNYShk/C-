@@ -75,12 +75,12 @@ static void MirrorBytes(unsigned int n,int swap)
 	int i;
 	unsigned int k = 1<<31;
 	unsigned int ans = 0;
-	int m= INTBIT;
+	int m = INTBIT;
 	int *ptr;
 	int *start;
-	ptr=bin;
+	ptr = bin;
 	
-	for(i=0;i<m;++i)
+	for(i=0; i<m; ++i)
 	{
 		bin[INTBIT-1-i] = n%2;
 		n /= 2;
@@ -135,7 +135,9 @@ size_t CountSetBitsNoLoop(unsigned int i)
 	i = i - ((i >> 1) & 0x55555555);
 	i = (i & 0x33333333) + ((i >> 2) & 0x33333333);
 	i = (i + (i >> 4)) & 0x0F0F0F0F; 
-	return (i * 0x01010101) >> 24;
+	i = (i & 0x33333333) + ((i >> 8) & 0x33333333);
+	i = (i + (i >> 16)) & 0x0F0F0F0F; 
+	return (i * 0x0101010101010101) >> 32;
 }
 
 
@@ -180,7 +182,7 @@ int IsOneOfIdxOn(unsigned char c)
 
 unsigned int BitSwapByIdx(unsigned char c)
 {
-	char d= (c & B3_5_ON);
+	char d = (c & B3_5_ON);
 	switch(d)
 	{
 		case(B3_5_ON):

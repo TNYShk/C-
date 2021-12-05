@@ -1,8 +1,8 @@
-#include <stdio.h>
+#include <stdio.h>	/*printf? */
 #include <stdlib.h> /* size_t */
 #include <limits.h> /*for LONG_MAX */
 #include <string.h> /* strncat*/
-#include <assert.h>
+#include <assert.h> /* assert user isnt idiot */
 #include "bit_array.h"
 
 #define LONG_LEN (CHAR_BIT * (sizeof(unsigned long)))
@@ -35,9 +35,9 @@ char *BitArrayToString(bits_arr64_t bit_array, char *str)
 {
 	size_t index;
 	char tmp[LONG_LEN] = {0};
+	assert (NULL != str);
 	
-	
-	for (index = 0; index<LONG_LEN; ++index)
+	for (index = 1; index<LONG_LEN; ++index)
 	{
 		sprintf(tmp, "%d" ,BitArrayGetVal(bit_array, (LONG_LEN - 1) - index));
 		strcat(str,tmp);
@@ -48,14 +48,14 @@ char *BitArrayToString(bits_arr64_t bit_array, char *str)
 
 bits_arr64_t BitArraySetOn(bits_arr64_t bit_array, unsigned int index)
 {
-	assert (64 > index);
+	assert (LONG_LEN > index);
 	bit_array |= (ON << (index));                                                                        
 	return bit_array;
 }
 
 bits_arr64_t BitArraySetOff(bits_arr64_t bit_array, unsigned int index)
 {
-	assert (64 > index);
+	assert (LONG_LEN > index);
 	bit_array &= ~(1ul << (index));                                                                        
 	return bit_array;
 }
@@ -82,7 +82,7 @@ bit_t BitArrayGetVal(bits_arr64_t bit_array, unsigned int index)
 
 bits_arr64_t BitArrayFlip(bits_arr64_t bit_array, unsigned int index)
 {
-	assert (64 > index);
+	assert (LONG_LEN > index);
 	bit_array ^= (ON << (index % LONG_LEN)); 
 	return bit_array;
 }

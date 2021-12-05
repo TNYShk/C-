@@ -25,6 +25,7 @@ int main(){
 	assert(NULL != str);
 	assert(NULL != str1);
 	
+	
 
 	bitty = BitArraySetAll(bitty);
 	printf("bitty is %lu\n",bitty);

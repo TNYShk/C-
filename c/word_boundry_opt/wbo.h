@@ -5,15 +5,33 @@
 #include <stddef.h>
 
 
-/* Receive pointer, integar, n bytes
+/* 
+copies c n times into memory area pointed by s.
+
+Receive:
+ pointer,c integer, n bytes
+
 Fill the pointer s with c for n bytes
-Return pointer to s */
+
+
+Return:
+pointer to s 
+
+*/
 void *MemSet(void *s, int c, size_t n);
 
-/* Receive pointer to src, pointer to dest, n bytes size 
-Copy the src memory locations into dest
-Return pointer to dest */
+
+
+/* 
+Receive pointer to src, pointer to dest, n bytes size 
+safe to use in case of overlap?
+copies memory area pointed to by src n times into memory area pointed by dest.
+Return:
+pointer to dest 
+*/
 void *MemCpy(void *dest, const void *src, size_t n);
+
+
 
 /* Receive pointer to src, pointer to dest, n bytes size 
 Move the src memory locations into dest
