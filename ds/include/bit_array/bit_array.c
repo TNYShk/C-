@@ -48,19 +48,21 @@ char *BitArrayToString(bits_arr64_t bit_array, char *str)
 
 bits_arr64_t BitArraySetOn(bits_arr64_t bit_array, unsigned int index)
 {
-	
+	assert (64 > index);
 	bit_array |= (ON << (index));                                                                        
 	return bit_array;
 }
 
 bits_arr64_t BitArraySetOff(bits_arr64_t bit_array, unsigned int index)
 {
+	assert (64 > index);
 	bit_array &= ~(1ul << (index));                                                                        
 	return bit_array;
 }
 
 bits_arr64_t BitArraySetBit(bits_arr64_t bit_array, unsigned int index, bit_t value)
 {
+	assert (64 > index);
 	switch(value)
 	{
 		
@@ -80,6 +82,7 @@ bit_t BitArrayGetVal(bits_arr64_t bit_array, unsigned int index)
 
 bits_arr64_t BitArrayFlip(bits_arr64_t bit_array, unsigned int index)
 {
+	assert (64 > index);
 	bit_array ^= (ON << (index % LONG_LEN)); 
 	return bit_array;
 }
