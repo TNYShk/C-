@@ -1,11 +1,9 @@
-#include <stdio.h>
-
 int foo(void)
 {
-    return 42
+    return 42;
 }
 
 int main(void)
 {
-    printf("%d\n", Foo());
+    printf("hello %d\n", Foo());
 }
