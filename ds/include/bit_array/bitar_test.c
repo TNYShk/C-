@@ -1,12 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h> /* size_t */
-#include <limits.h>
+#include <limits.h> /* CHAR_BIT */
 #include <assert.h>
 #include <string.h> 
 #include "bit_array.h"
 
 
-
+#define LONG_LEN (CHAR_BIT * (sizeof(unsigned long)))
 
 
 
@@ -15,25 +15,34 @@ int main(){
 	static unsigned long bitty;
 	size_t ans,ans1;
 
+	
 	char *str = NULL;
 	char *str1 = NULL;
-	str = calloc(8,sizeof(long));
-	str1 = calloc(8,sizeof(long));
+	
+
+	str = calloc(CHAR_BIT,sizeof(long));
+	str1 = calloc(CHAR_BIT,sizeof(long));
 	assert(NULL != str);
 	assert(NULL != str1);
 	
+
 	bitty = BitArraySetAll(bitty);
 	printf("bitty is %lu\n",bitty);
+	
+	bitty = BitArrayResetAll(bitty);
+	printf("reset all bitty is %ld\n",bitty);
+	bitty = BitArraySetOn(bitty,1);
+	printf("bitty set on,value is:  %ld\n",bitty);
+	bitty = BitArraySetOn(bitty,2);
+	printf("bitty set on value is:  %ld\n",bitty);
 	str = BitArrayToString(bitty,str);
-	bitty = BitArraySetOff(bitty,5);
-	printf("bitty set off 2:  %ld\n",bitty);
-	bitty = BitArraySetOff(bitty,4);
-	printf("bitty set off 4:  %ld\n",bitty);
+	printf("%s\n",str);
+
+	ans = BitArrayCountOff(bitty);
+	printf("%ld bits off \n",ans);
+	bitty = BitArrayMirror(bitty);
 	str1 = BitArrayToString(bitty,str1);
 	printf("%s\n",str1);
-
-	ans1 = BitArrayCountOff(bitty);
-	printf("%ld bits off \n",ans1);
 	/*
 	bitty = BitArrayResetAll(bitty);
 	printf("reset all bitty is %ld\n",bitty);

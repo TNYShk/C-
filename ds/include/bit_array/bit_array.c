@@ -5,16 +5,22 @@
 #include <assert.h>
 #include "bit_array.h"
 
-#define LONG_LEN (8 * (sizeof(unsigned long)))
+#define LONG_LEN (CHAR_BIT * (sizeof(unsigned long)))
 
 #define m1 (0x5555555555555555)
 #define m2 (0x3333333333333333)
 #define m4 (0x0f0f0f0f0f0f0f0f)
+#define m8 (0x00ff00ff00ff00ff)
+#define m16 (0x0000ffff0000ffff)
+#define h01 (0x0101010101010101)
 
+static unsigned long lut_arr[] = {m1,m2,m4,m8,m16,h01};
+
+static unsigned int lut_ar[] = {0,1,1,2,1,2,2,3,1,2,2,3,2,3,3,4};
 
 bits_arr64_t BitArraySetAll(bits_arr64_t bit_array)
 {
-	bit_array = ULONG_MAX;
+	bit_array = OFF - ON;
 	return bit_array;
 
 }
@@ -28,30 +34,28 @@ bits_arr64_t BitArrayResetAll(bits_arr64_t bit_array)
 char *BitArrayToString(bits_arr64_t bit_array, char *str)
 {
 	size_t index;
-	char *tmp = NULL;
-	tmp = calloc(8,sizeof(unsigned long));
+	char tmp[LONG_LEN] = {0};
 	
-	for (index = 1; index<32; ++index)
+	
+	for (index = 0; index<LONG_LEN; ++index)
 	{
-		sprintf(tmp, "%d" ,BitArrayGetVal(bit_array, 63 - index));
+		sprintf(tmp, "%d" ,BitArrayGetVal(bit_array, (LONG_LEN - 1) - index));
 		strcat(str,tmp);
 	}
-	printf("%s\n",str);
-	free(tmp);
-	tmp = NULL;
+	
 	return str;
 }
 
 bits_arr64_t BitArraySetOn(bits_arr64_t bit_array, unsigned int index)
 {
 	
-	bit_array |= (ON << (index % LONG_LEN));                                                                        
+	bit_array |= (ON << (index));                                                                        
 	return bit_array;
 }
 
 bits_arr64_t BitArraySetOff(bits_arr64_t bit_array, unsigned int index)
 {
-	bit_array &= ~(ON << (index % LONG_LEN));                                                                        
+	bit_array &= ~(1ul << (index));                                                                        
 	return bit_array;
 }
 
@@ -65,15 +69,13 @@ bits_arr64_t BitArraySetBit(bits_arr64_t bit_array, unsigned int index, bit_t va
 		case (OFF):	
 			return BitArraySetOff(bit_array,index);
 	}
-	return -1;
+	return bit_array;
 }	
 
 bit_t BitArrayGetVal(bits_arr64_t bit_array, unsigned int index)
 {
-	long unsigned move2bit =  (ON << (index % LONG_LEN));
-	long unsigned compare2bit = move2bit & bit_array;
 	
-	return (move2bit == compare2bit);
+	return ((bit_array >> index) & ON);
 }
 
 bits_arr64_t BitArrayFlip(bits_arr64_t bit_array, unsigned int index)
@@ -82,39 +84,39 @@ bits_arr64_t BitArrayFlip(bits_arr64_t bit_array, unsigned int index)
 	return bit_array;
 }
 
+
+
+
 size_t BitArrayCountOn(bits_arr64_t var)
 {
-    var -= (var >> 1) & 0x5555555555555555;   							  /* binary 101010101010101010101010101010101010101010101010101010101010101 */          
-    var = (var & 0x3333333333333333) + ((var >> 2) & 0x3333333333333333); /* binary 11001100110011001100110011001100110011001100110011001100110011 */
-    var = (var + (var >> 4)) & 0x0f0f0f0f0f0f0f0f;       				  /* binary 111100001111000011110000111100001111000011110000111100001111 */
-    
-    return (var * 0x0101010101010101) >> 56;  							  /* binary 100000001000000010000000100000001000000010000000100000001 */
-
+	int set_nibble = 15;
+	size_t answer;
+	
+	answer = lut_ar[var & set_nibble];
+	answer += lut_ar[(var >> 4) & set_nibble];
+	answer += lut_ar[(var >> 8) & set_nibble];
+	answer += lut_ar[(var >> 12) & set_nibble];
+	answer += lut_ar[(var >> 16) & set_nibble];
+	answer += lut_ar[(var >> 20) & set_nibble];
+	answer += lut_ar[(var >> 24) & set_nibble];
+	answer += lut_ar[(var >> 28) & set_nibble];
+	answer += lut_ar[(var >> 32) & set_nibble];
+	answer += lut_ar[(var >> 36) & set_nibble];
+	answer += lut_ar[(var >> 40) & set_nibble];
+	answer += lut_ar[(var >> 44) & set_nibble];
+	answer += lut_ar[(var >> 48) & set_nibble];
+	answer += lut_ar[(var >> 52) & set_nibble];
+	answer += lut_ar[(var >> 56) & set_nibble];
+	answer += lut_ar[(var >> 60) & set_nibble];
+	
+	return answer;
 }
 
 
-
-/*
-size_t BitArrayCountOn(bits_arr64_t var)
-{
-	
-	long temp = 0;
-	size_t count = 0;
-	
-	while (var != 0)
-	{
-		temp = var-1;
-		var = var & temp;
-		++count;
-	}
-	
-	return count;
-}
-*/
 
 size_t BitArrayCountOff(bits_arr64_t var)
 {
-	return (64 - BitArrayCountOn(var));
+	return (LONG_LEN - BitArrayCountOn(var));
 }
 
 bits_arr64_t BitArrayMirror(bits_arr64_t num)
@@ -137,24 +139,44 @@ bits_arr64_t BitArrayRotateRight(bits_arr64_t bit_array, unsigned int rotation)
 	return temp;
 }
 
+
+bits_arr64_t BitArrayRotateLeft(bits_arr64_t bit_array, unsigned int rotation)
+{
+	size_t temp = (bit_array << rotation) | (bit_array >> (LONG_LEN - rotation));
+	return temp;
+}
+
+/*
 bits_arr64_t BitArrayRotateLeft(bits_arr64_t bit_array, unsigned int rotation)
 {
 	int i=1;
 	size_t bitArLut[64];
 	size_t temp;
-	bitArLut[0] = 1;
+	bitArLut[0] = 1ul;
 	for(i=1;i<64;++i)
 	{
-		bitArLut[i] = bitArLut[i-1] * 2;
+		bitArLut[i] = bitArLut[i-1] * 2ul;
 		
 	}
 	temp = bit_array * bitArLut[rotation];
 	return temp;
 }
+*/
+
 /*
-bits_arr64_t BitArrayRotateLeft(bits_arr64_t bit_array, unsigned int rotation)
+size_t BitArrayCountOn(bits_arr64_t var)
 {
-	size_t temp = (bit_array << rotation) | (bit_array >> (63 - rotation));
-	return temp;
+	
+	long temp = 0;
+	size_t count = 0;
+	
+	while (var != 0)
+	{
+		temp = var-1;
+		var = var & temp;
+		++count;
+	}
+	
+	return count;
 }
 */
