@@ -27,7 +27,7 @@ stack_t *StackCreate(size_t num_of_elements, size_t element_size)
 	sptr->base = malloc(num_of_elements * element_size);
 
 	if ((NULL != sptr) && (NULL != sptr->base))
-		{ 
+	{ 
 
 		sptr->capacity = num_of_elements;
 		sptr->elem_size = element_size;
@@ -56,8 +56,8 @@ int StackIsEmpty(const stack_t *sptr)
 void StackDestroy(stack_t *sptr)
 {
 	free(sptr->base);
-	free(sptr);
 	sptr->base = NULL;
+	free(sptr);
 	sptr = NULL;
 }
 

@@ -20,34 +20,37 @@ int main()
 	
 	StackPush(stacky, &test);
 	ptr2 = StackPeek(stacky);
-	printf("peekaboo %p\n",ptr2);
+	printf("post push adrs %p\n",ptr2);
 
 	
 	StackPush(stacky, &f1);
 	ptr2 = StackPeek(stacky);
-	printf("peekaboo adrs %p\n",StackPeek(stacky));
+	printf("\npost push adrs %p\n",StackPeek(stacky));
 	printf("peekaboo val is %f\n",(*(float*)StackPeek(stacky)));
 	
 
 	StackPush(stacky, ptr);
-	printf("peekaboo adrs %p\n",StackPeek(stacky));
+	printf("\npost push adrs %p\n",StackPeek(stacky));
 	
 
 	StackPush(stacky, &test2);
 	ptr2 = StackPeek(stacky);
-	printf("peekaboo adrs %p\n",ptr2);
-	printf("peekaboo val is %ld\n",(*(size_t*)StackPeek(stacky)));
-	StackIsEmpty(stacky)? printf("stack is empty\n") : printf("stack is not empty\n");
+	printf("post push adrs %p\n",ptr2);
 	
-	printf("occupied elements are: %ld\n",StackSize(stacky));
+	printf("peekaboo value is %ld\n",(*(size_t*)StackPeek(stacky)));
+	StackIsEmpty(stacky)? printf("\nstack is empty\n") : printf("\nstack is not empty\n");
+	
+	printf("\ncurrently, occupied elements are: %ld\n",StackSize(stacky));
 
 	StackPop(stacky); 
-	printf("after pop occupied elements are: %ld\n",StackSize(stacky));
-	printf("peekaboo %p\n",StackPeek(stacky));
+	printf("\nafter pop occupied elements are: %ld\n",StackSize(stacky));
+	printf("adrs in now %p\n",StackPeek(stacky));
 	StackPop(stacky); 
+
 	printf("after pop occupied elements are: %ld\n",StackSize(stacky));
-	printf("total capacity is: %ld\n",StackCapacity(stacky));
-	
+	printf("adrs in now %p\n",StackPeek(stacky));
+	printf("\ntotal capacity is: %ld\n",StackCapacity(stacky));
+	printf("remaining slots: %ld\n",StackCapacity(stacky) - StackSize(stacky));
 	StackDestroy(stacky);
 
 	return 0;
