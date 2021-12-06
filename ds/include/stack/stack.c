@@ -1,7 +1,5 @@
 #include <stdlib.h> /* size_t, dyncamic memory allocation  */
-#include <stdio.h>
 #include <assert.h> /* asserts */
-#include <limits.h> /* CHAR_BIT */
 #include <string.h> /* memcpy*/
 
 #include "stack.h"
