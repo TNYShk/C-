@@ -6,7 +6,6 @@
 
 #include "stack.h"
 
-#define TOTALCAP (CHAR_BIT * sizeof(size_t))
 
 struct stack
 {
@@ -44,7 +43,7 @@ void StackPush(stack_t *sptr, const void *element)
 {
 	memcpy(sptr->top, element, (sptr->elem_size));
 
-	sptr->top = (void *)((size_t *)sptr->top + sptr->elem_size);
+	sptr->top = ((char *)sptr->top + sptr->elem_size);
 }
 
 
@@ -63,18 +62,18 @@ void StackDestroy(stack_t *sptr)
 
 size_t StackSize(const stack_t *sptr)
 {
-	return(((size_t)sptr->top - (size_t)sptr->base)/TOTALCAP);
+	return(((size_t)sptr->top - (size_t)sptr->base)/sptr->elem_size);
 }
 
 void *StackPeek(const stack_t *sptr)
 {
-	return (void *)((size_t *)sptr->top - sptr->elem_size);
+	return (void *)((char *)sptr->top - sptr->elem_size);
 }
 
 void StackPop(stack_t *sptr)
 {
 	
-	sptr->top = (void *)((size_t *)sptr->top - (size_t)sptr->elem_size);
+	sptr->top = (void *)((char *)sptr->top - sptr->elem_size);
 }
 
 size_t StackCapacity(const stack_t *sptr)
