@@ -1,6 +1,6 @@
 #include <stdlib.h> /* size_t, dyncamic memory allocation  */
 #include <stdio.h>
-#include <assert.h>
+#include <assert.h> /* asserts */
 #include <limits.h> /* CHAR_BIT */
 #include <string.h> /* memcpy*/
 
@@ -34,7 +34,7 @@ stack_t *StackCreate(size_t num_of_elements, size_t element_size)
 	
 		sptr->top = sptr->base;
 	}
-	
+
 	return sptr;
 
 
@@ -44,7 +44,7 @@ void StackPush(stack_t *sptr, const void *element)
 {
 	memcpy(sptr->top, element, (sptr->elem_size));
 
-	sptr->top = (void *)((size_t *)sptr->top + (size_t)sptr->elem_size);
+	sptr->top = (void *)((size_t *)sptr->top + sptr->elem_size);
 }
 
 
@@ -68,17 +68,18 @@ size_t StackSize(const stack_t *sptr)
 
 void *StackPeek(const stack_t *sptr)
 {
-	return sptr->top;
+	return (void *)((size_t *)sptr->top - sptr->elem_size);
 }
 
 void StackPop(stack_t *sptr)
 {
+	
 	sptr->top = (void *)((size_t *)sptr->top - (size_t)sptr->elem_size);
 }
 
 size_t StackCapacity(const stack_t *sptr)
 {
-	return (sptr->capacity * sptr->elem_size);
+	return (sptr->capacity);
 }
 
 
