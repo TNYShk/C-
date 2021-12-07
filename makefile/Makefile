@@ -1,5 +1,8 @@
 #code
-GD = gcc -ansi -pedantic-errors -Wall -Wextra -g
+CC = gcc 
+CFLAGS = -ansi -pedantic-errors -Wall -Wextra 
+LDFLAGS = -g
+DEBUG = -ansi -pedantic-errors -Wall -Wextra -g
 
 OBJ = main.o foo.o
 #target : prerequisits, files needed to make the target
@@ -8,13 +11,13 @@ OBJ = main.o foo.o
 
 
 fooer.out : $(OBJ)
-		gcc -g -o fooer.out $(OBJ) 
+	$(LINK.o) -o fooer.out $(OBJ) 
 
 main.o : main.c foo.h
-		$(GD) -c main.c
+	$(COMPILE.c) main.c
 
 foo.o : foo.c foo.h
-		$(GD) -c $(CFLAGS) foo.c
+	$(COMPILE.c) foo.c
 
 
 .PHONY : clean all
@@ -24,3 +27,6 @@ clean :
 
 all : fooer.out
 	./fooer.out	
+
+debug : $(OBJ)
+	$(CC) $(DEBUG) $(OBJ) -o debugged.out
