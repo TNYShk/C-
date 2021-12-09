@@ -53,8 +53,8 @@ int VectorPushBack(vector_t *vptr, const void *element)
 
 	memmove(((char*)vptr->start + (vptr->size * vptr->elem_size)), element, vptr->elem_size);
 	++(vptr->size);
-
-	return (vptr->size);
+	return (vptr == NULL);
+	
 }
 
 
