@@ -46,7 +46,11 @@ void *VectorGetAccessToElement(vector_t *vptr, size_t index)
 
 int VectorPushBack(vector_t *vptr, const void *element)
 {
-	
+	if ( vptr->capacity - vptr->size == 1)
+	{
+		vptr = VectorReserve(vptr, 2 * vptr->capacity);
+	}
+
 	memmove(((char*)vptr->start + (vptr->size * vptr->elem_size)), element, vptr->elem_size);
 	++(vptr->size);
 
@@ -57,9 +61,9 @@ int VectorPushBack(vector_t *vptr, const void *element)
 void VectorPopBack(vector_t *vptr)
 {
 	assert (vptr->size > 0);
-	/* empty size somehow*/
+	if (vptr->capacity - vptr->size == vptr->size)
+	vptr = VectorReserve(vptr, vptr->size + 1);
 	--(vptr->size);
-	memmove(vptr,vptr, vptr->size);
 }
 
 size_t VectorSize(const vector_t *vptr)
@@ -74,16 +78,30 @@ size_t VectorCapacity(const vector_t *vptr)
 	return vptr->capacity;
 }
 
+
+vector_t *VectorReserve(vector_t *vptr, size_t new_size)
+{
+	void **start = realloc(vptr->start, sizeof(size_t *) * new_size);
+		vptr->capacity = new_size; 
+		vptr->start = start;
+
+		return vptr;
+}
+
+
+
+/*
 vector_t *VectorReserve(vector_t *vptr, size_t new_size)
 {
 	if(vptr->capacity < (vptr->size + new_size) )
 	{
-		vector_t *victoria = VectorCreate(vptr->elem_size, new_size);
-		memmove(victoria, vptr, vptr->size);
-		printf("victoria is reserved? %ld\n", victoria->capacity);
+		vector_t *victoria = VectorCreate(vptr->elem_size, vptr->size + new_size);
+		memmove(victoria, vptr, new_size);
+		printf("victoria is reserved?elem size %ld\n", victoria->capacity);
 		VectorDestroy(vptr);
 		return victoria;
 	}
 	return vptr;
 	
 }
+*/
