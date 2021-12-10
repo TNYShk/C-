@@ -103,6 +103,24 @@ int main(void)
 	
 	
 	printf("\n\tcapacity is now %ld\n",VectorCapacity(vitor));
+	printf("\t\t----------------Resize to 2-------------------------------\n");
+	vitor = VectorReserve(vitor, 2);
+	printf("\n\tcapacity is now %ld\n",VectorCapacity(vitor));
+	printf("\t\t-------------------Push ----------------------------------\n");
+	test2 = 26;
+	test = VectorPushBack(vitor,&test2);
+	printf("\nelement pushed into vector's back, zero for success: %ld\n", test);
+	printf("\ncurrent taken elements: %ld\n",VectorSize(vitor));
+	test2 = 27;
+	test = VectorPushBack(vitor,&test2);
+	printf("\nelement pushed into vector's back, zero for success: %ld\n", test);
+	printf("\ncurrent taken elements: %ld\n",VectorSize(vitor));
+	test2 = 27;
+	test = VectorPushBack(vitor,&test2);
+	printf("\nelement pushed into vector's back, zero for success: %ld\n", test);
+	printf("\n\tcapacity is now %ld\n",VectorCapacity(vitor));
+
+
 	VectorDestroy(vitor);
 
 return 0;
