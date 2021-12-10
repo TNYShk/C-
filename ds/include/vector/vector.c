@@ -1,8 +1,13 @@
-#include <stdlib.h> /* size_t */
-#include <stdio.h> /*         */
-#include <string.h>
-#include <assert.h>
+#include <stdlib.h> /* size_t malloc */
+#include <stdio.h> /*  standard library       */
+#include <string.h> /* memmove*/
+#include <assert.h> /* assert */ 
+
 #include "dynamic_vector.h"
+
+#define DOUBLEDWON (2)
+#define ANDONE (1)
+
 
 struct vector
 {
@@ -41,14 +46,14 @@ void VectorDestroy(vector_t *vptr)
 
 void *VectorGetAccessToElement(vector_t *vptr, size_t index)
 {
-	return ((char*)vptr->start + (vptr->elem_size * (index-1))); 
+	return ((char*)vptr->start + (vptr->elem_size * (index - ANDONE))); 
 }
 
 int VectorPushBack(vector_t *vptr, const void *element)
 {
-	if ( vptr->capacity - vptr->size == 1)
+	if ( vptr->capacity - vptr->size == ANDONE)
 	{
-		vptr = VectorReserve(vptr, 2 * vptr->capacity);
+		vptr = VectorReserve(vptr, DOUBLEDWON * vptr->capacity);
 	}
 
 	memmove(((char*)vptr->start + (vptr->size * vptr->elem_size)), element, vptr->elem_size);
@@ -62,7 +67,7 @@ void VectorPopBack(vector_t *vptr)
 {
 	assert (vptr->size > 0);
 	if (vptr->capacity - vptr->size == vptr->size)
-	vptr = VectorReserve(vptr, vptr->size + 1);
+	vptr = VectorReserve(vptr, vptr->size + ANDONE);
 	--(vptr->size);
 }
 
@@ -89,19 +94,3 @@ vector_t *VectorReserve(vector_t *vptr, size_t new_size)
 }
 
 
-
-/*
-vector_t *VectorReserve(vector_t *vptr, size_t new_size)
-{
-	if(vptr->capacity < (vptr->size + new_size) )
-	{
-		vector_t *victoria = VectorCreate(vptr->elem_size, vptr->size + new_size);
-		memmove(victoria, vptr, new_size);
-		printf("victoria is reserved?elem size %ld\n", victoria->capacity);
-		VectorDestroy(vptr);
-		return victoria;
-	}
-	return vptr;
-	
-}
-*/

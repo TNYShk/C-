@@ -1,7 +1,7 @@
 #include <stdlib.h> /* size_t */
-#include <stdio.h> /*         */
-#include <string.h>
-#include <assert.h>
+#include <stdio.h> /*   print      */
+#include <string.h> /* memmove*/
+#include <assert.h> /* assert */
 #include "dynamic_vector.h"
 
 int main(void)
@@ -50,6 +50,37 @@ int main(void)
 	
 	
 	printf("\n\tcapacity is now %ld\n",VectorCapacity(vitor));
+	printf("\t\t-------------Push Push-------------------------------\n");
+	test2 = 17;
+
+	test = VectorPushBack(vitor,&test2);
+	printf("element pushed into vector's back, zero for success: %ld\n", test);
+	test2 = 18;
+	
+	test = VectorPushBack(vitor,&test2);
+	printf("element pushed into vector's back, zero for success: %ld\n", test);
+	printf("\ncurrent taken elements %ld\n",VectorSize(vitor));
+	test2 = 15;
+	test = VectorPushBack(vitor,&test2);
+	printf("element pushed into vector's back, zero for success: %ld\n", test);
+	
+	printf("\ncurrent taken elements: %ld\n",VectorSize(vitor));
+	printf("\ncapacity is now %ld\n",VectorCapacity(vitor));
+	
+	printf("\t\t-------------printing vectors values---------------\n");
+	ptr = VectorGetAccessToElement(vitor,3);
+	printf("\n\telement3 is: %ld\n", *(size_t*)ptr);
+	ptr2 = VectorGetAccessToElement(vitor,1);
+	printf("\n\telement1: %ld\n", *(size_t*)ptr2);
+	ptr2 = VectorGetAccessToElement(vitor,2);
+	printf("\n\telement2: %ld\n", *(size_t*)ptr2);
+	ptr2 = VectorGetAccessToElement(vitor,4);
+	printf("\n\telement4: %ld\n", *(size_t*)ptr2);
+
+
+	printf("\ncurrent taken elements: %ld\n",VectorSize(vitor));
+
+
 	VectorDestroy(vitor);
 
 return 0;
