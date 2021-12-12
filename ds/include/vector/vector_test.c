@@ -7,7 +7,7 @@
 
 int main(void)
 {
-	size_t test,test2;
+	size_t test = 0,test2 = 0;
 	float f = 1.618;
 	void *ptr = NULL;
 	void *ptr2 = NULL;
@@ -58,18 +58,19 @@ int main(void)
 	printf("\t\t-------------------Push-Push-------------------------------\n");
 	test2 = 17;
 
-	test = VectorPushBack(vitor,&test2);
-	printf("element pushed into vector's back, zero for success: %ld\n", test);
+	test = VectorPushBack(vitor, &test2);
+	(test == 0) ? printf("\nyey! great success! pushed \n") : printf("oops! no pushing!\n");
+	
 	test2 = 18;
 	
 	test = VectorPushBack(vitor,&test2);
-	printf("element pushed into vector's back, zero for success: %ld\n", test);
+	(test == 0) ? printf("\nyey! great success! pushed \n") : printf("oops! no pushing!\n");
 	printf("\ncurrent taken elements %ld\n",VectorSize(vitor));
 	
 	test = VectorPushBack(vitor,&f);
 	ptr2 = VectorGetAccessToElement(vitor,4);
 	
-	printf("element pushed into vector's back, zero for success: %ld\n", test);
+	(test == 0) ? printf("\nyey! great success! pushed \n") : printf("oops! no pushing!\n");
 	
 	printf("\ncurrent taken elements: %ld\n",VectorSize(vitor));
 	printf("\ncapacity is now %ld\n",VectorCapacity(vitor));
@@ -89,12 +90,12 @@ int main(void)
 	printf("\t\t-------------------Push Push-------------------------------\n");
 	test2 = 26;
 	test = VectorPushBack(vitor,&test2);
-	printf("\nelement pushed into vector's back, zero for success: %ld\n", test);
+	(test == 0) ? printf("\nyey! great success! pushed \n") : printf("oops! no pushing!\n");
 	ptr2 = VectorGetAccessToElement(vitor,5);
 	printf("\n\tThe 5'th Element: %ld\n", *(size_t*)ptr2);
 	test2 = 200;
 	test = VectorPushBack(vitor,&test2);
-	printf("element pushed into vector's back, zero for success: %ld\n", test);
+	(test == 0) ? printf("\nyey! great success! pushed \n") : printf("oops! no pushing!\n");
 	ptr2 = VectorGetAccessToElement(vitor,6);
 	printf("\n\telement6: %ld\n", *(size_t*)ptr2);
 	printf("\ncurrent taken elements: %ld\n",VectorSize(vitor));
@@ -115,15 +116,15 @@ int main(void)
 	printf("\t\t-------------------Push ----------------------------------\n");
 	test2 = 26;
 	test = VectorPushBack(vitor,&test2);
-	printf("\nelement pushed into vector's back, zero for success: %ld\n", test);
+	(test == 0) ? printf("\nyey! great success! pushed \n") : printf("oops! no pushing!\n");
 	printf("\ncurrent taken elements: %ld\n",VectorSize(vitor));
 	test2 = 27;
 	test = VectorPushBack(vitor,&test2);
-	printf("\nelement pushed into vector's back, zero for success: %ld\n", test);
+	(test == 0) ? printf("\nyey! great success! pushed \n") : printf("oops! no pushing!\n");
 	printf("\ncurrent taken elements: %ld\n",VectorSize(vitor));
 	test2 = 27;
 	test = VectorPushBack(vitor,&test2);
-	printf("\nelement pushed into vector's back, zero for success: %ld\n", test);
+	(test == 0) ? printf("\nyey! great success! pushed \n") : printf("oops! no pushing!\n");
 	printf("\n\tcapacity is now %ld\n",VectorCapacity(vitor));
 
 

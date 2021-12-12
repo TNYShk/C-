@@ -68,7 +68,9 @@ void VectorPopBack(vector_t *vptr)
 	assert (vptr->size > 0);
 
 	if (vptr->capacity - vptr->size >= vptr->size)
+	{
 		vptr = VectorReserve(vptr, vptr->size + ANDONE);
+	}
 	--(vptr->size);
 }
 
