@@ -75,6 +75,7 @@ int CheckParent(char *str2check)
 	stack_t *par_t = NULL;
 	size_t index = 0;
 	size_t length = strlen(str2check);
+	
 	par_t = StackCreate(length, sizeof(char));
 
 	while('\0' != *str2check)
@@ -82,27 +83,22 @@ int CheckParent(char *str2check)
 		if(( *str2check == '{') || (*str2check == '(') || (*str2check == '['))
 		{
 			StackPush(par_t, str2check);
-			ParLut[*str2check] += 1;
+			ParLut[*str2check] += 1; /* not sure how to use it yet*/
 		}
 
 		else
 		{
-
 			char *temp = StackPeek(par_t);
-			size_t bb = *str2check - *temp;
-			/*printf("bb is %ld and temp is %c\n",bb, *temp);
-			printf("str2check is %c\n", *str2check);*/
-			if (bb<= 2)
+			size_t bb = *str2check - *temp; /*ASCII TABLE closing minus opening parenths are up to 2 */
+			if (bb <= 2)
 			{
-				StackPop(par_t);
-				
+				StackPop(par_t);	
 			}
 			else
 			{
-
+			StackDestroy(par_t);	
 			return 12;	
 			}
-			
 			
 		}
 		
