@@ -44,8 +44,6 @@ void PrintMissingMat(int *arr, size_t length)
 	}
 	
 	
-	
-	
 	for (i = 1; i <= length; ++i) /*up to len */
 	{
 		if((size_t)arr[i-1] != i)
@@ -136,11 +134,18 @@ void PrintMissXOR(int arr[], int arr_size)
 int main()
 {
 	int ar[] = {1,6,3,5};
+	int ar2[]= {3,5,2};
 	int lenfth = sizeof(ar)/sizeof(ar[0]);
 	
 	PrintMissingLut(ar,lenfth);
 	PrintMissingMat(ar,lenfth);
 	PrintMissXOR(ar,lenfth);
+	printf("\n");
+	PrintMissingLut(ar2,3);
+	PrintMissingMat(ar2,3);
+	PrintMissXOR(ar2,3);
+
+
 
 	return 0;
 }
