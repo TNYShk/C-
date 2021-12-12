@@ -201,23 +201,9 @@ int main()
 	AddtoArray(darth,10);
 	PrintArray(darth);
 
-	
-				/* exercise 9,10
-				printf("size of element_t is %ld\n", sizeof(gen_element_t));
-				printf("zise of *darth is %ld\n", ZISE(*darth));
-				printf("size of float is %ld\n", sizeof(float));
-				float pipi= 3.14159265359;
-				printf("zise of float is %ld\n", ZISE(pipi));
-
-				*/
 	CleanUpArray(darth);
 	
-	/*
-	manual option:
-	CleanUpAfter(&darth[2].element);
-	free(darth);
-	darth=NULL;
-	*/
+	
 	
 	return (0);
 }
