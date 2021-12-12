@@ -6,7 +6,7 @@
 
 void PrintMissingLut(int *arr, int size)
 {
-	int i = size+2;
+	int i = size + 2;
 	int *new_ar = (int*)calloc((size+2),sizeof(size_t));
 	if(NULL != new_ar){
 
@@ -60,50 +60,6 @@ void PrintMissingMat(int *arr, size_t length)
 
 }
 
-
-void TwoMissingNumsXor(const int array[], size_t max_num)
-{
-	int combined_xor = 0, missing1 = 0, missing2 = 0;
-	int index = 0;
-	
-	for (index = 0; (size_t)index < (max_num - 2); ++index)
-	{
-		combined_xor ^= array[index];
-	}
-	
-	for (index = 1; (size_t)index <= max_num; ++index)
-	{
-		combined_xor ^= index;
-	}
-	
-	combined_xor = combined_xor & (~(combined_xor - 1));
-	
-	for (index = 0; (size_t)index < (max_num - 2); ++index)
-	{
-		if (combined_xor == (combined_xor & array[index]))
-		{
-			missing1 ^= array[index];
-		}
-		else
-		{
-			missing2 ^= array[index];
-		}
-	}
-	
-	for (index = 1; (size_t)index <= max_num; ++index)
-	{
-		if (combined_xor == (combined_xor & index))
-		{
-			missing1 ^= index;
-		}
-		else
-		{
-			missing2 ^= index;
-		}
-	}
-	
-	printf("The two missing numbers are: %d, %d\n", missing1, missing2);
-}
 
 
 void PrintMissXOR(int arr[], int arr_size)
@@ -185,6 +141,7 @@ int main()
 	PrintMissingLut(ar,lenfth);
 	PrintMissingMat(ar,lenfth);
 	PrintMissXOR(ar,lenfth);
+
 	return 0;
 }
 
