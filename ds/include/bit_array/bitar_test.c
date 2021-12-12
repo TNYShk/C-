@@ -37,37 +37,28 @@ int main(){
 	bitty = BitArraySetOn(bitty,2);
 	printf("bitty set on value is:  %ld\n",bitty);
 	str = BitArrayToString(bitty,str);
-	printf("%s\n",str);
-
+	printf("0%s\n",str);
+	ans = BitArrayGetVal(bitty,63);
+	printf("value of bit in location 63 is %ld\n",ans);
+	ans = BitArrayGetVal(bitty,2);
+	printf("value of bit in location 2 is %ld\n",ans);
 	ans = BitArrayCountOff(bitty);
 	printf("%ld bits off \n",ans);
 	bitty = BitArrayMirror(bitty);
+
 	str1 = BitArrayToString(bitty,str1);
-	printf("%s\n",str1);
-	/*
-	bitty = BitArrayResetAll(bitty);
-	printf("reset all bitty is %ld\n",bitty);
+	printf("0%s\n",str1);
 	
-	bitty = BitArraySetOn(bitty,0);
-	printf("bitty set on 0:  %ld\n",bitty);
-	bitty = BitArraySetOn(bitty,1);
-	printf("bitty set on 1:  %ld\n",bitty);
-	bitty = BitArraySetOn(bitty,2);
-	printf("bitty set on 2:  %ld\n",bitty);
-	str1 = BitArrayToString(bitty,str1);	
-
-	ans1 = BitArrayCountOn(bitty);
-	printf("%ld bits on \n",ans1);
-	*/
-
+	bitty = BitArrayRotateLeft(bitty,1);
+	
+	printf("post 1 left rotations\n%s\n",BitArrayToString(bitty,str1));
 
 	free(str);
 	str = NULL;
 	free(str1);
 	str1= NULL;
 	/*
-	ans = BitArrayGetVal(bitty,63);
-	printf("value of bit in location is %ld\n",ans);
+	
 	ans = BitArrayGetVal(bitty,62);
 	printf("value of bit in location is %ld\n",ans);
 	bitty = BitArrayMirror(bitty);

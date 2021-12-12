@@ -8,11 +8,13 @@
 int main(void)
 {
 	size_t test,test2;
-	void *ptr;
-	void *ptr2;
+	float f = 1.618;
+	void *ptr = NULL;
+	void *ptr2 = NULL;
 	vector_t *vitor = NULL;
 	vitor = VectorCreate(sizeof(size_t), 3);
 	assert (NULL != vitor); 
+	
 	printf("\n\t\t---------------Initialized!--welcome Vitor!---------------\n");
 	printf("\ninitialized capacity: %ld\n",VectorCapacity(vitor));
 	printf("\t\t---------------Adding 3 elements to Vitor the vector---------------\n");
@@ -28,6 +30,7 @@ int main(void)
 	test2 = 7;
 	test = VectorPushBack(vitor,&test2);
 	printf("element pushed into vector's back, zero for success: %ld\n", test);
+
 	printf("\ncurrent taken elements: %ld\n",VectorSize(vitor));
 	printf("\ncapacity is now %ld\n",VectorCapacity(vitor));
 	
@@ -39,6 +42,7 @@ int main(void)
 	printf("\n\telement1: %ld\n", *(size_t*)ptr2);
 	ptr2 = VectorGetAccessToElement(vitor,2);
 	printf("\n\telement2: %ld\n", *(size_t*)ptr2);
+	
 
 	printf("\ncurrent taken elements: %ld\n",VectorSize(vitor));
 
@@ -61,8 +65,10 @@ int main(void)
 	test = VectorPushBack(vitor,&test2);
 	printf("element pushed into vector's back, zero for success: %ld\n", test);
 	printf("\ncurrent taken elements %ld\n",VectorSize(vitor));
-	test2 = 15;
-	test = VectorPushBack(vitor,&test2);
+	
+	test = VectorPushBack(vitor,&f);
+	ptr2 = VectorGetAccessToElement(vitor,4);
+	
 	printf("element pushed into vector's back, zero for success: %ld\n", test);
 	
 	printf("\ncurrent taken elements: %ld\n",VectorSize(vitor));
@@ -76,7 +82,7 @@ int main(void)
 	ptr2 = VectorGetAccessToElement(vitor,2);
 	printf("\n\telement2: %ld\n", *(size_t*)ptr2);
 	ptr2 = VectorGetAccessToElement(vitor,4);
-	printf("\n\telement4: %ld\n", *(size_t*)ptr2);
+	printf("\n\telement4: %f\n", *(float *)ptr2);
 
 
 	

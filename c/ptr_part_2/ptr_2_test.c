@@ -29,27 +29,27 @@ printf("My StrSpn: %ld\n",StrSpn(need,tt));
 printf("original strspn: %ld\n",strspn(test1,tt1));
 printf("My StrSpn: %ld\n\n",StrSpn(test1,tt1));
 
-printf("StStr: %s\n",StrStr(haystack,need));
+printf("StStr: %s\n\n",StrStr(haystack,need));
 
 isPalindrome(palindrome);
 isPalindrome(palindrome2);
 isPalindrome(palindrome3);
 
-printf("StrnCpy is: %s\n",StrnCpy(buffer,bul,13));
+printf("\nStrnCpy is: %s\n",StrnCpy(buffer,bul,13));
 printf("StrCpy: %s\n",StrCpy(buffer,array2copy));
 
 
 
-printf("StrCaseCmp of %s and %s is %d\n",tt,tt1,StrCaseCmp(tt,tt1));
+printf("\nStrCaseCmp of %s and %s is %d\n",tt,tt1,StrCaseCmp(tt,tt1));
 printf("Strchar,will print from first occurance of %c in %s (if found), thus: %s\n",test,tt1,StrChr(tt1,test));
 
 ptr_ch= StrDup(mlc_ar);
-printf("strdup worked?yay!=> %s\n",ptr_ch);
+printf("\nstrdup worked?yay!=> %s\n",ptr_ch);
 free(ptr_ch);
 ptr_ch=NULL;
 
 
-printf("StrnCat: %s\n",StrnCat(buffer,bul,10));
+printf("\nStrnCat: %s\n",StrnCat(buffer,bul,10));
 
 printf("StrCat: %s\n",StrCat(buffer,mlc_ar));
 

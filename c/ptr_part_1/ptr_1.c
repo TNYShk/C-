@@ -14,8 +14,8 @@ void SwapPtrSize_t(size_t **a,size_t **b)
 void Swap2Ints(int *num1, int *num2)
 {
 	int placeholder= *num1;
-	*num1= *num2;
-	*num2= placeholder;
+	*num1 = *num2;
+	*num2 = placeholder;
 }
 
 
@@ -23,7 +23,7 @@ int* CopyArray(int ar_length,int *ptr_array)
 {
 	
 	int *copyA,i;
-	copyA=(int*)malloc(ar_length*sizeof(int));
+	copyA = (int*)malloc(ar_length*sizeof(int));
 	
 	if (NULL == copyA)
 	{
@@ -41,9 +41,9 @@ return copyA;
 
 void SwapSizeT(size_t *st1,size_t *st2)
 {
-	long unsigned int holder=*st1;
-	*st1=*st2;
-	*st2=holder;
+	long unsigned int holder = *st1;
+	*st1 = *st2;
+	*st2 = holder;
   	return;
 }
 

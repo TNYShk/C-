@@ -6,6 +6,7 @@
 #include "bit_array.h"
 
 #define LONG_LEN (CHAR_BIT * (sizeof(unsigned long)))
+#define ONN (1ul)
 
 #define m1 (0x5555555555555555)
 #define m2 (0x3333333333333333)
@@ -14,21 +15,22 @@
 #define m16 (0x0000ffff0000ffff)
 #define h01 (0x0101010101010101)
 
-static unsigned long lut_mirror[] = {m1,m2,m4,m8,m16,h01};
+static const unsigned long lut_mirror[] = {m1,m2,m4,m8,m16,h01};
 
-static unsigned int lut_ar[] = {0,1,1,2,1,2,2,3,1,2,2,3,2,3,3,4};
+static const unsigned int lut_ar[] = {0,1,1,2,1,2,2,3,1,2,2,3,2,3,3,4};
 
 bits_arr64_t BitArraySetAll(bits_arr64_t bit_array)
 {
-	bit_array = OFF - ON;
-	return bit_array;
+	
+	/*bit_array = ULONG_MAX, OFF - ON */
+	return (bit_array = OFF - ON);
 
 }
 
 bits_arr64_t BitArrayResetAll(bits_arr64_t bit_array)
 {
-	bit_array = OFF;
-	return bit_array;
+	
+	return (bit_array = OFF);
 }
 
 char *BitArrayToString(bits_arr64_t bit_array, char *str)
@@ -39,7 +41,7 @@ char *BitArrayToString(bits_arr64_t bit_array, char *str)
 	
 	for (index = 1; index<LONG_LEN; ++index)
 	{
-		sprintf(tmp, "%d" ,BitArrayGetVal(bit_array, (LONG_LEN - 1) - index));
+		sprintf(tmp, "%d" ,BitArrayGetVal(bit_array, (LONG_LEN - ONN) - index));
 		strcat(str,tmp);
 	}
 	
@@ -49,20 +51,20 @@ char *BitArrayToString(bits_arr64_t bit_array, char *str)
 bits_arr64_t BitArraySetOn(bits_arr64_t bit_array, unsigned int index)
 {
 	assert (LONG_LEN > index);
-	bit_array |= (ON << (index));                                                                        
-	return bit_array;
+	                                                                    
+	return (bit_array |= (ONN << (index)));   
 }
 
 bits_arr64_t BitArraySetOff(bits_arr64_t bit_array, unsigned int index)
 {
 	assert (LONG_LEN > index);
-	bit_array &= ~(1ul << (index));                                                                        
+	bit_array &= ~(ONN << (index));                                                                        
 	return bit_array;
 }
 
 bits_arr64_t BitArraySetBit(bits_arr64_t bit_array, unsigned int index, bit_t value)
 {
-	assert (64 > index);
+	assert (LONG_LEN > index);
 	switch(value)
 	{
 		
@@ -76,14 +78,14 @@ bits_arr64_t BitArraySetBit(bits_arr64_t bit_array, unsigned int index, bit_t va
 
 bit_t BitArrayGetVal(bits_arr64_t bit_array, unsigned int index)
 {
-	
-	return ((bit_array >> index) & ON);
+	assert (LONG_LEN > index);
+	return ((bit_array >> index) & ONN);
 }
 
 bits_arr64_t BitArrayFlip(bits_arr64_t bit_array, unsigned int index)
 {
 	assert (LONG_LEN > index);
-	bit_array ^= (ON << (index % LONG_LEN)); 
+	bit_array ^= (ONN << (index % LONG_LEN)); 
 	return bit_array;
 }
 
@@ -93,7 +95,7 @@ bits_arr64_t BitArrayFlip(bits_arr64_t bit_array, unsigned int index)
 size_t BitArrayCountOn(bits_arr64_t var)
 {
 	int set_nibble = 15;
-	size_t answer;
+	size_t answer = 0;
 	
 	answer = lut_ar[var & set_nibble];
 	answer += lut_ar[(var >> 4) & set_nibble];
@@ -115,7 +117,15 @@ size_t BitArrayCountOn(bits_arr64_t var)
 	return answer;
 }
 
-
+/*
+int CountOnBots(bits_arr64_t var)
+{
+    var -= (var >> 1) & m1;             //put count of each 2 bits into those 2 bits
+    var = (var & m2) + ((var >> 2) & m2); //put count of each 4 bits into those 4 bits 
+    var = (var + (var >> 4)) & m4;        //put count of each 8 bits into those 8 bits 
+    return (var * h01) >> 56;  //returns left 8 bits of x + (x<<8) + (x<<16) + (x<<24) + ... 
+}
+*/
 
 size_t BitArrayCountOff(bits_arr64_t var)
 {
@@ -130,23 +140,20 @@ bits_arr64_t BitArrayMirror(bits_arr64_t num)
     num = ((num >> 8) & m8) | ((num << 8) & 0xFF00FF00FF00FF00);
     num = ((num >> 4) & m4) | ((num << 4) & 0xF0F0F0F0F0F0F0F0);
     num = ((num >> 2) & m2) | ((num << 2) & 0xCCCCCCCCCCCCCCCC);
-    num = ((num >> 1) & m1) | ((num << 1) & 0xAAAAAAAAAAAAAAAA);
+    num = ((num >> ONN) & m1) | ((num << ONN) & 0xAAAAAAAAAAAAAAAA);
 
     return num;
 }
 
 bits_arr64_t BitArrayRotateRight(bits_arr64_t bit_array, unsigned int rotation)
 {
-	size_t temp = (bit_array >> rotation) | (bit_array << (LONG_LEN - rotation));
-	
-	return temp;
+	return (bit_array >> rotation) | (bit_array << (LONG_LEN - rotation));
 }
 
 
 bits_arr64_t BitArrayRotateLeft(bits_arr64_t bit_array, unsigned int rotation)
 {
-	size_t temp = (bit_array << rotation) | (bit_array >> (LONG_LEN - rotation));
-	return temp;
+	return (bit_array << rotation) | (bit_array >> (LONG_LEN - rotation));
 }
 
 /*
@@ -156,7 +163,7 @@ bits_arr64_t BitArrayRotateLeft(bits_arr64_t bit_array, unsigned int rotation)
 	size_t bitArLut[64];
 	size_t temp;
 	bitArLut[0] = 1ul;
-	for(i=1;i<64;++i)
+	for(i=1;i<32;++i)
 	{
 		bitArLut[i] = bitArLut[i-1] * 2ul;
 		
@@ -181,14 +188,5 @@ size_t BitArrayCountOn(bits_arr64_t var)
 	}
 	
 	return count;
-}
-*/
-/*
-int popcount64c(bits_arr64_t x)
-{
-    x -= (x >> 1) & m1;             //put count of each 2 bits into those 2 bits
-    x = (x & m2) + ((x >> 2) & m2); //put count of each 4 bits into those 4 bits 
-    x = (x + (x >> 4)) & m4;        //put count of each 8 bits into those 8 bits 
-    return (x * h01) >> 56;  //returns left 8 bits of x + (x<<8) + (x<<16) + (x<<24) + ... 
 }
 */
