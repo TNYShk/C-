@@ -7,6 +7,24 @@
 
 const int aA = 32;    /* the difference between upper case and lower case */
 
+
+char *StrCat(char *dest, const char *src)
+{
+	size_t length_src = StrLen(src);
+	return StrnCat(dest, src, length_src);
+}
+
+char *StrnCat(char *dest, const char *src, size_t n)
+{
+	size_t length_dest = StrLen(dest);
+	char *ptr = dest + length_dest;
+	StrnCpy(ptr,src,n);
+	return dest;
+}
+
+
+
+
 char *StrCpy(char *destination, const char *source)
 {
 	
@@ -126,19 +144,7 @@ char *StrDup(const char *s)
 	return StrnCpy(dup, s, length);
 }
 
-char *StrCat(char *dest, const char *src)
-{
-	size_t length_src = StrLen(src);
-	return StrnCat(dest, src, length_src);
-}
 
-char *StrnCat(char *dest, const char *src, size_t n)
-{
-	size_t length_dest = StrLen(dest);
-	char *ptr = dest + length_dest;
-	StrnCpy(ptr,src,n);
-	return dest;
-}
 
 
 int StrnCmp (const char *str1,const char *str2)

@@ -7,7 +7,7 @@
 
 int main(){
 
-char* buffer=(char*)malloc(1000*sizeof(char));
+char* buffer=(char*)calloc(1000,sizeof(char));
 
 char array2copy[]="Hello is this the right place?";
 char bul[]="bullsh*t";
@@ -21,7 +21,7 @@ const char mlc_ar[]="array_with_malloc";
 char palindrome[]="AbbcbbA";
 char palindrome2[]="12376321";
 char palindrome3[]="!123&5&321!";
-char *ptr_ch;
+char *ptr_ch = buffer;
 
 
 printf("original strspn: %ld\n",strspn(need,tt));
@@ -49,7 +49,7 @@ free(ptr_ch);
 ptr_ch = NULL;
 
 
-printf("\nStrnCat: %s\n",StrnCat(buffer,bul,10));
+
 
 printf("StrCat: %s\n",StrCat(buffer,mlc_ar));
 
