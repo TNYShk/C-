@@ -65,13 +65,13 @@ size_t StackSize(const stack_t *sptr)
 
 void *StackPeek(const stack_t *sptr)
 {
-	return (void *)((char *)sptr->top - sptr->elem_size);
+	return ((char *)sptr->top - sptr->elem_size);
 }
 
 void StackPop(stack_t *sptr)
 {
 	
-	sptr->top = (void *)((char *)sptr->top - sptr->elem_size);
+	sptr->top = ((char *)sptr->top - sptr->elem_size);
 }
 
 size_t StackCapacity(const stack_t *sptr)

@@ -1,28 +1,28 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include <stdio.h> /* standard lib, printf*/
+#include <stdlib.h> /* dynamic memory allocation*/
 
 #include "ptr_1.h"
 
 
 
-void SwapPtrSize_t(size_t **a,size_t **b)
+void SwapPtrSize_t(size_t **a, size_t **b)
 {
-	SwapSizeT((size_t *)a, (size_t *)b);
+	SwapSizeT( (size_t *)a, (size_t *)b );
 }
 
 
 void Swap2Ints(int *num1, int *num2)
 {
-	int placeholder= *num1;
+	int placeholder = *num1;
 	*num1 = *num2;
 	*num2 = placeholder;
 }
 
 
-int* CopyArray(int ar_length,int *ptr_array)
+int *CopyArray(int ar_length,int *ptr_array)
 {
 	
-	int *copyA,i;
+	int *copyA = NULL,i = 0;
 	copyA = (int*)malloc(ar_length*sizeof(int));
 	
 	if (NULL == copyA)
@@ -30,13 +30,13 @@ int* CopyArray(int ar_length,int *ptr_array)
 		return NULL;
 	}
 	
-	for (i=0;i<ar_length;i++)
+	for (i=0; i < ar_length; ++i)
 	{
-		*(copyA+i) = *(ptr_array+i);
-		printf("copyA[%d] is %d\n", i,copyA[i]);
+		*(copyA + i) = *(ptr_array + i);
+		printf("copyA[%d] is %d\n", i, copyA[i]);
 	}
 	
-return copyA;
+	return copyA;
 }
 
 void SwapSizeT(size_t *st1,size_t *st2)

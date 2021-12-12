@@ -1,5 +1,5 @@
 #include <stdio.h>  /*     standard library, because why not  */
-#include <stdlib.h> 
+#include <stdlib.h>  /* dynamic memory allocation*/
 #include <assert.h> /*     test assertions made  */
 #include <string.h> /* to test str-related funcs & stop crying */
 

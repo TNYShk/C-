@@ -29,15 +29,11 @@ typedef struct gen_element
 	operations_t *func_operations;
 } gen_element_t;
 
-enum exit_code {PRINT_ERROR = -1, SUCCESS, MEMORY_ALLOCATION_ERROR};
+enum exit_code {PRINT_ERROR = -1, SUCCESS, MEMORY_ALLOCATION_ERROR = -2};
 
-typedef enum
+typedef enum 
 { 	
-	INT = 0, 
-	FLOAT,
-	STRING
-	AMOUNT_ELEMENTS
-}elem_types;
+	INT = 0, FLOAT, STRING, AMOUNT_ELEMENTS} elem_types;
 
 static int AddInt(int num, void *element)
 {
@@ -68,7 +64,7 @@ static int AddString(int num, void *element)
 	free(temp);
 	temp = NULL;
 	
-	return SUCCESS;NUM_CHAR
+	return SUCCESS;
 }
 
 static int PrintInt(void *element)
@@ -132,10 +128,10 @@ static void Initialize(gen_element_t *darth)
 	
 	int x = 9;
 	float pi = 3.14;
-	
-	char * string= "Darth Voider";
-	void * vp_i= (*(void**)&(x));
-	void * vp_f= (*(void**)&(pi));
+	char *string = "Darth Voider";
+
+	void *vp_i = (*(void**)&(x));
+	void *vp_f = (*(void**)&(pi));
 	
 	void *vp_s = malloc(sizeof(char*)*(sizeof(string)));	
 	
@@ -144,15 +140,15 @@ static void Initialize(gen_element_t *darth)
 		printf("error initializing");
 	}
 
-	strcpy((char*)vp_s,string);
+	strcpy((char*)vp_s, string);
 	
-	darth[0].element=vp_i;
+	darth[0].element = vp_i;
 	darth[0].func_operations= &function_bank[0];
 
-	darth[1].element=vp_f;
+	darth[1].element = vp_f;
 	darth[1].func_operations= &function_bank[1];
 	
-	darth[2].element= vp_s;
+	darth[2].element = vp_s;
 	darth[2].func_operations= &function_bank[2];
 
 	
@@ -161,7 +157,7 @@ static void Initialize(gen_element_t *darth)
 void PrintArray(gen_element_t *darth)
 {
 	int i = 0;
-	for(i=0; i<TYPES_NUM; ++i)
+	for(i = 0; i < TYPES_NUM; ++i)
 	{
 		darth[i].func_operations->print_func(darth[i].element);
 	}
@@ -170,7 +166,7 @@ void PrintArray(gen_element_t *darth)
 void AddtoArray(gen_element_t *darth, int num_2_add)
 {
 	int i = 0;
-	for(i = 0;i<TYPES_NUM;++i)
+	for(i = 0;i < TYPES_NUM; ++i)
 	{
 		darth[i].func_operations->add_func(num_2_add,&darth[i].element);
 	}
@@ -179,7 +175,7 @@ void AddtoArray(gen_element_t *darth, int num_2_add)
 static void CleanUpArray(gen_element_t *darth)
 {
 	int i=0;
-	for(i=0;i<TYPES_NUM;++i)
+	for(i=0;i < TYPES_NUM; ++i)
 	{
 		darth[i].func_operations->clean_up_func(&darth[i].element);
 	}
@@ -192,7 +188,7 @@ static void CleanUpArray(gen_element_t *darth)
 int main()
 {
 	
-	gen_element_t *darth=calloc(TYPES_NUM,sizeof(gen_element_t));
+	gen_element_t *darth = calloc(TYPES_NUM,sizeof(gen_element_t));
 	if(NULL == darth)
 	{
 		printf("error initializing");

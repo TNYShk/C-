@@ -1,26 +1,27 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <string.h>
+#include <stdio.h>  /*     standard library, because why not  */
+#include <stdlib.h>  /* dynamic memory allocation*/
+#include <assert.h> /*     test assertions made  */
+#include <string.h> /* to test str-related funcs & stop crying */
 
 #include "ptr_2.h"
 
-int main(){
+int main()
+{
 
-char* buffer=(char*)calloc(1000,sizeof(char));
+char* buffer = (char*)calloc(1000,sizeof(char));
 
-char array2copy[]="Hello is this the right place?";
-char bul[]="bullsh*t";
-char tt[]="Tatyanna";
-char tt1[]="tatyanQna";
-char test= '*';
-char test1[]= "Q";
-char haystack[]= "need search for needle in a haystack";
-char need[]= "needle";
-const char mlc_ar[]="array_with_malloc";
-char palindrome[]="AbbcbbA";
-char palindrome2[]="12376321";
-char palindrome3[]="!123&5&321!";
+char array2copy[] = "Hello is this the right place?";
+char bul[] = "bullsh*t";
+char tt[] = "Tatyanna";
+char tt1[] = "tatyanQna";
+char test = '*';
+char test1[] = "Q";
+char haystack[] = "need search for needle in a haystack";
+char need[] = "needle";
+const char mlc_ar[] = "array_with_malloc";
+char palindrome[] = "AbbcbbA";
+char palindrome2[] = "12376321";
+char palindrome3[] = "!123&5&321!";
 char *ptr_ch = buffer;
 
 
@@ -35,7 +36,7 @@ isPalindrome(palindrome);
 isPalindrome(palindrome2);
 isPalindrome(palindrome3);
 
-printf("\nStrnCpy is: %s\n",StrnCpy(buffer,bul,13));
+printf("\nStrnCpy is: %s\n",StrnCpy(buffer, bul, 13));
 printf("StrCpy: %s\n",StrCpy(buffer,array2copy));
 
 printf("\n%s lenght is %ld\n",bul, StrLen(bul));

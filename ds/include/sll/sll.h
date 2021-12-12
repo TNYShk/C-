@@ -40,6 +40,9 @@ int SListForEach(const slist_iter_t from, const slist_iter_t to, action_func_t a
 /* time complexity: O(1), space complexity O(1) */
 slist_iter_t SListBegin(const slist_t *slist);
 
+
+
+/*point to dummy */
 /* time complexity: O(1), space complexity O(1) */
 slist_iter_t SListEnd(const slist_t *slist); 
 /* we want the list to work with exactly one dummy for something. after we will read about dummies we will know what for*/
