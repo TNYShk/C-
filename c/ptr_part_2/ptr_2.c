@@ -5,7 +5,7 @@
 
 #include "ptr_2.h"
 
-const int aA=32;    /* the difference between upper case and lower case */
+const int aA = 32;    /* the difference between upper case and lower case */
 
 char *StrCpy(char *destination, const char *source)
 {
@@ -23,8 +23,8 @@ char *StrCpy(char *destination, const char *source)
 
 char *StrnCpy(char *dest, const char *src, size_t n)
 {
-	char * ptr_dest= dest+n;
-	char *ptr_s= dest;
+	char *ptr_dest = dest+n;
+	char *ptr_s = dest;
 	while (dest < ptr_dest) 
 	{
 		if ('\0' != *src)
@@ -60,38 +60,39 @@ int StrCaseCmp(const char *str1, const char *str2)
 {
 	assert(NULL != str1);
 	assert(NULL != str2);
+	
 	while (*str2 && ( (*str1 - *str2 == aA) || (*str2 - *str1 == aA) || (*str1 == *str2) ))
 	{
-	  str1++;
-	  str2++;
+	  ++str1;
+	  ++str2;
 	}
+   
    return (*str1 - *str2);
 
 }
 
-char *StrChr(const char *str, int ch)
+char *StrChr(const char *str, int ch2find)
 {
 	assert(NULL != str);
-	while('\0' != *str)
+	
+	while('\0' != *str && *str != ch2find)
 	{
-		if (*str == ch)
-		{
-			return (char *)str;
-		}
-		str++; 
+		++str; 
 	}
-	if (*str == ch)
-	{
-		return (char *)str;	
-	}
-	return NULL;
+	if(*str == '\0')
+		return NULL;
+	return (char *)str;
 }
 
 
 size_t StrSpn(const char *s, const char *accept)
 {
 	
-	size_t counter= 0;
+	size_t counter = 0;
+
+	assert (NULL != s);
+	assert (NULL != accept);
+
 	while ( ('\0' != *s) && (StrChr(accept,*s) != NULL) )
 	{
 		++s;
@@ -104,26 +105,29 @@ size_t StrSpn(const char *s, const char *accept)
 
 size_t StrLen(const char *str)
 {
-	size_t size=0;
-	while(*str && ++str && ++size);
-	return size;
+	size_t index = 0;
+	assert(NULL != str);
+	while( *(str + index) != '\0')
+	{
+		++index;
+	}
+	return index;
 }
 
 char *StrDup(const char *s)
 {
 	size_t length = StrLen(s);
-	char *dup = (char*)malloc(length*sizeof(char)+1);
+	char *dup = (char *)calloc((length + 1), sizeof(char));
 	if (NULL == dup)
 	{
 		return NULL;
 	}
-	dup = StrnCpy(dup, s, length);
-	return dup;
+	
+	return StrnCpy(dup, s, length);
 }
 
 char *StrCat(char *dest, const char *src)
 {
-	
 	size_t length_src = StrLen(src);
 	return StrnCat(dest, src, length_src);
 }

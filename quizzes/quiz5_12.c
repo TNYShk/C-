@@ -14,7 +14,7 @@ void PrintMissingLut(int *arr, int size)
 	{
 		new_ar[arr[i]] = arr[i];
 	}
-	printf("missing numbers are: ");
+	printf("LUT: missing numbers are: ");
 	for (i=1;i<=size+2; ++i)
 	{
 		if (new_ar[i] == 0)
@@ -37,14 +37,14 @@ void PrintMissingMat(int *arr, size_t length)
 
 	org_sum = avg * (length+2);
 	diff = org_sum;
-	/*printf("org_sum is %ld\n", org_sum);*/
+	
 	for(i = 0; i<length ; ++i)
 	{
 		diff -= arr[i];
 	}
-	/*printf("diff is %ld miss nums are in it\n",diff);*/
 	
-	/*printf("avg is %f\n", avg);*/
+	
+	
 	
 	for (i = 1; i <= length; ++i) /*up to len */
 	{
@@ -56,7 +56,7 @@ void PrintMissingMat(int *arr, size_t length)
 	}
 	
 	missing2 = diff - missing1; 
-	printf("\nmissing nums are %ld and %ld\n", missing1, missing2);
+	printf("\nMATH: missing nums are %ld and %ld\n", missing1, missing2);
 
 }
 
@@ -104,24 +104,6 @@ void TwoMissingNumsXor(const int array[], size_t max_num)
 	
 	printf("The two missing numbers are: %d, %d\n", missing1, missing2);
 }
-
-
-
-
-
-int main()
-{
-	int ar[] = {1,6,3,5};
-	int lenfth = sizeof(ar)/sizeof(ar[0]);
-	
-	/*PrintMissingLut(ar,lenfth);*/
-	PrintMissingMat(ar,lenfth);
-	return 0;
-}
-
-
-
-
 
 
 void PrintMissXOR(int arr[], int arr_size)
@@ -187,6 +169,27 @@ void PrintMissXOR(int arr[], int arr_size)
     }
 
 
-    printf("the 2 missing numbers are %d and %d\n", set_y, notset_x);
+    printf("XOR: the 2 missing numbers are %d and %d\n", set_y, notset_x);
 }
+
+
+
+
+
+
+int main()
+{
+	int ar[] = {1,6,3,5};
+	int lenfth = sizeof(ar)/sizeof(ar[0]);
+	
+	PrintMissingLut(ar,lenfth);
+	PrintMissingMat(ar,lenfth);
+	PrintMissXOR(ar,lenfth);
+	return 0;
+}
+
+
+
+
+
 

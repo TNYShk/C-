@@ -13,7 +13,7 @@ char array2copy[]="Hello is this the right place?";
 char bul[]="bullsh*t";
 char tt[]="Tatyanna";
 char tt1[]="tatyanQna";
-char test= 'Q';
+char test= '*';
 char test1[]= "Q";
 char haystack[]= "need search for needle in a haystack";
 char need[]= "needle";
@@ -38,15 +38,15 @@ isPalindrome(palindrome3);
 printf("\nStrnCpy is: %s\n",StrnCpy(buffer,bul,13));
 printf("StrCpy: %s\n",StrCpy(buffer,array2copy));
 
-
+printf("\n%s lenght is %ld\n",bul, StrLen(bul));
 
 printf("\nStrCaseCmp of %s and %s is %d\n",tt,tt1,StrCaseCmp(tt,tt1));
-printf("Strchar,will print from first occurance of %c in %s (if found), thus: %s\n",test,tt1,StrChr(tt1,test));
+printf("\nStrChr,will print from first occurance of %c in %s (if found), thus: %s\n",test,tt1,StrChr(tt1,test));
 
 ptr_ch= StrDup(mlc_ar);
 printf("\nstrdup worked?yay!=> %s\n",ptr_ch);
 free(ptr_ch);
-ptr_ch=NULL;
+ptr_ch = NULL;
 
 
 printf("\nStrnCat: %s\n",StrnCat(buffer,bul,10));

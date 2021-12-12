@@ -13,7 +13,7 @@
 int main(){
 
 	static unsigned long bitty;
-	size_t ans,ans1;
+	size_t ans;
 
 	
 	char *str = NULL;
@@ -34,8 +34,11 @@ int main(){
 	printf("reset all bitty is %ld\n",bitty);
 	bitty = BitArraySetOn(bitty,1);
 	printf("bitty set on,value is:  %ld\n",bitty);
-	bitty = BitArraySetOn(bitty,2);
+	bitty = BitArraySetBit(bitty,2,1);
+	/* bitty = BitArraySetOn(bitty,2);  */
 	printf("bitty set on value is:  %ld\n",bitty);
+	bitty = BitArrayFlip(bitty,2);
+	printf("flipped idx2: %ld\n",bitty);
 	str = BitArrayToString(bitty,str);
 	printf("0%s\n",str);
 	ans = BitArrayGetVal(bitty,63);
@@ -44,14 +47,15 @@ int main(){
 	printf("value of bit in location 2 is %ld\n",ans);
 	ans = BitArrayCountOff(bitty);
 	printf("%ld bits off \n",ans);
-	bitty = BitArrayMirror(bitty);
+	ans = BitArrayCountOn(bitty);
+	printf("%ld bits ON \n",ans);
 
-	str1 = BitArrayToString(bitty,str1);
-	printf("0%s\n",str1);
+
 	
-	bitty = BitArrayRotateLeft(bitty,1);
 	
-	printf("post 1 left rotations\n%s\n",BitArrayToString(bitty,str1));
+	bitty = BitArrayRotateLeft(bitty,2);
+	
+	printf("post 2 left rotations\n%s\n",BitArrayToString(bitty,str1));
 
 	free(str);
 	str = NULL;

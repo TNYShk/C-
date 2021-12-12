@@ -5,7 +5,7 @@
 #include <assert.h> /* assert user isnt idiot */
 #include "bit_array.h"
 
-#define LONG_LEN (CHAR_BIT * (sizeof(unsigned long)))
+#define LONG_LEN (CHAR_BIT * (sizeof(unsigned long))) /* 64*/
 #define ONN (1ul)
 
 #define m1 (0x5555555555555555)
@@ -22,7 +22,7 @@ static const unsigned int lut_ar[] = {0,1,1,2,1,2,2,3,1,2,2,3,2,3,3,4};
 bits_arr64_t BitArraySetAll(bits_arr64_t bit_array)
 {
 	
-	/*bit_array = ULONG_MAX, OFF - ON */
+
 	return (bit_array = OFF - ON);
 
 }
@@ -35,11 +35,11 @@ bits_arr64_t BitArrayResetAll(bits_arr64_t bit_array)
 
 char *BitArrayToString(bits_arr64_t bit_array, char *str)
 {
-	size_t index;
+	size_t index = 0;
 	char tmp[LONG_LEN] = {0};
 	assert (NULL != str);
 	
-	for (index = 1; index<LONG_LEN; ++index)
+	for (index = ONN; index < LONG_LEN; ++index)
 	{
 		sprintf(tmp, "%d" ,BitArrayGetVal(bit_array, (LONG_LEN - ONN) - index));
 		strcat(str,tmp);
@@ -50,30 +50,22 @@ char *BitArrayToString(bits_arr64_t bit_array, char *str)
 
 bits_arr64_t BitArraySetOn(bits_arr64_t bit_array, unsigned int index)
 {
-	assert (LONG_LEN > index);
-	                                                                    
+	assert (LONG_LEN > index);                                                               
 	return (bit_array |= (ONN << (index)));   
 }
 
 bits_arr64_t BitArraySetOff(bits_arr64_t bit_array, unsigned int index)
 {
-	assert (LONG_LEN > index);
-	bit_array &= ~(ONN << (index));                                                                        
-	return bit_array;
+	assert (LONG_LEN > index);                                                                      
+	return (bit_array &= ~(ONN << (index)));
 }
 
 bits_arr64_t BitArraySetBit(bits_arr64_t bit_array, unsigned int index, bit_t value)
 {
 	assert (LONG_LEN > index);
-	switch(value)
-	{
-		
-		case (ON):
-			return BitArraySetOn(bit_array,index);
-		case (OFF):	
-			return BitArraySetOff(bit_array,index);
-	}
-	return bit_array;
+
+	return  (BitArraySetOff(bit_array, index) | ((bits_arr64_t)value << index));
+	
 }	
 
 bit_t BitArrayGetVal(bits_arr64_t bit_array, unsigned int index)
@@ -85,16 +77,14 @@ bit_t BitArrayGetVal(bits_arr64_t bit_array, unsigned int index)
 bits_arr64_t BitArrayFlip(bits_arr64_t bit_array, unsigned int index)
 {
 	assert (LONG_LEN > index);
-	bit_array ^= (ONN << (index % LONG_LEN)); 
-	return bit_array;
+	
+	return (bit_array ^= (ONN << index ));
 }
-
-
 
 
 size_t BitArrayCountOn(bits_arr64_t var)
 {
-	int set_nibble = 15;
+	int set_nibble = 0xFul;
 	size_t answer = 0;
 	
 	answer = lut_ar[var & set_nibble];
@@ -147,13 +137,13 @@ bits_arr64_t BitArrayMirror(bits_arr64_t num)
 
 bits_arr64_t BitArrayRotateRight(bits_arr64_t bit_array, unsigned int rotation)
 {
-	return (bit_array >> rotation) | (bit_array << (LONG_LEN - rotation));
+	return bit_array >> (rotation & (LONG_LEN - 1)) | bit_array << (LONG_LEN - (rotation & (LONG_LEN - 1)));
 }
 
 
 bits_arr64_t BitArrayRotateLeft(bits_arr64_t bit_array, unsigned int rotation)
 {
-	return (bit_array << rotation) | (bit_array >> (LONG_LEN - rotation));
+	return bit_array << (rotation & (LONG_LEN - 1)) | bit_array >> (LONG_LEN - (rotation & (LONG_LEN - 1)));
 }
 
 /*
