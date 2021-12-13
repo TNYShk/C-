@@ -57,9 +57,7 @@ slist_t *SListCreate(void)
 
 	sllist->head = dummy;
 	sllist->tail = dummy;
-	
 	return sllist;
-
 }
 
 void SListDestroy(slist_t *slist)
@@ -128,11 +126,13 @@ slist_iter_t SListInsertAfter(slist_iter_t where, const void *data)
 	return node_after;
 }
 
+
 void *SListGetData( slist_iter_t iterator)
 {
 	assert (NULL != iterator);
 	return iterator->data;
 }
+
 
 void SListSetData(slist_iter_t iterator, const void *data)
 {
@@ -251,23 +251,25 @@ slist_iter_t SListFind(const slist_iter_t from, const slist_iter_t to, match_fun
 int SListForEach(const slist_iter_t from, const slist_iter_t to, action_func_t action_func, void *param)
 {
     slist_iter_t current = NULL;
-    int signal = 0;
+    
+    int result = 0;
     
     assert(NULL != from);
     assert(NULL != to);
     assert(NULL != param);
+    assert(NULL != action_func);
     
     current = from;
     
     while (!SListIsEqual(to, current))
     {
-        signal = action_func(current->data, param);
-        if (FAIL == signal)
+        result = action_func(current->data, param);
+        if (FAIL == result)
         {
-            return signal;
+            return result;
         }
         current = SListNext(current);
     }
     
-    return signal;
+    return result;
 }
