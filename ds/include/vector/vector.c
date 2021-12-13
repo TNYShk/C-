@@ -22,6 +22,10 @@ struct vector
 vector_t *VectorCreate(size_t element_size, size_t cap)
 {
 	vector_t *vicky = NULL;
+	
+	assert (0 < element_size);
+	assert (0 < cap);
+	
 	vicky = (vector_t *)malloc(sizeof(vector_t));
 	vicky->start = calloc(cap, element_size);
 
@@ -30,7 +34,7 @@ vector_t *VectorCreate(size_t element_size, size_t cap)
 
 	vicky->capacity = cap;
 	vicky->elem_size = element_size;
-	vicky->size = 0;
+	
 
 	return vicky;
 }
@@ -53,6 +57,7 @@ void *VectorGetAccessToElement(vector_t *vptr, size_t index)
 
 int VectorPushBack(vector_t *vptr, const void *element)
 {
+
 	if ( ANDONE >= vptr->capacity - vptr->size)
 	{
 		vptr = VectorReserve(vptr, DOUBLEDWON * vptr->capacity);
@@ -90,16 +95,16 @@ size_t VectorCapacity(const vector_t *vptr)
 
 vector_t *VectorReserve(vector_t *vptr, size_t new_size)
 {
-	void **start = NULL;
-	assert (NULL != vptr);
+	void *start = NULL;
 	
+	assert (NULL != vptr);
 
 	if ((vptr->size) > new_size)
 	{
 		++new_size;
 	}
 		
-	start = realloc(vptr->start, sizeof(size_t *) * new_size);
+	start = realloc(vptr->start, sizeof(vptr->elem_size) * new_size);
 	assert (NULL != start);
 
 	vptr->capacity = new_size; 
