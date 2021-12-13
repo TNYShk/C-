@@ -5,9 +5,15 @@
                                                  /* reviewed by Amit*/
 #include "dynamic_vector.h"
 
-#define DOUBLEDWON (2)
+#define GROWTHFACTOR (2)
 #define ANDONE (1)
 
+
+enum
+{
+	ERROR = -1,
+	SUCCESS 
+};
 
 struct vector
 {
@@ -21,96 +27,104 @@ struct vector
 
 vector_t *VectorCreate(size_t element_size, size_t cap)
 {
-	vector_t *vicky = NULL;
+	vector_t *vector = NULL;
 	
-	assert (0 < element_size);
-	assert (0 < cap);
 	
-	vicky = (vector_t *)malloc(sizeof(vector_t));
-	vicky->start = calloc(cap, element_size);
+	vector = (vector_t *)malloc(sizeof(vector_t));
+	vector->start = calloc(cap, element_size);
 
-	assert (NULL != vicky);
-	assert(NULL != vicky->start);
+	assert (NULL != vector);
+	assert (NULL != vector->start);
 
-	vicky->capacity = cap;
-	vicky->elem_size = element_size;
-	
+	vector->capacity = cap;
+	vector->elem_size = element_size;
+	vector->size = 0;
 
-	return vicky;
+	return vector;
 }
 
 
-void VectorDestroy(vector_t *vptr)
+void VectorDestroy(vector_t *vec_ptr)
 {
-	free(vptr->start);
-	vptr->start = NULL;
-	free(vptr);
-	vptr = NULL;
+	free(vec_ptr->start);
+	vec_ptr->start = NULL;
+	free(vec_ptr);
+	vec_ptr = NULL;
 }
 
 
-void *VectorGetAccessToElement(vector_t *vptr, size_t index)
+void *VectorGetAccessToElement(vector_t *vec_ptr, size_t index)
 {
-	return ((char*)vptr->start + (vptr->elem_size * (index - ANDONE))); 
+	return ((char*)vec_ptr->start + (vec_ptr->elem_size * (index - ANDONE))); 
 }
 
 
-int VectorPushBack(vector_t *vptr, const void *element)
+int VectorPushBack(vector_t *vec_ptr, const void *element)
 {
+	void *start = NULL;
 
-	if ( ANDONE >= vptr->capacity - vptr->size)
+	if (NULL == vec_ptr)
 	{
-		vptr = VectorReserve(vptr, DOUBLEDWON * vptr->capacity);
+		return ERROR;
 	}
 
-	memmove(((char*)vptr->start + (vptr->size * vptr->elem_size)), element, vptr->elem_size);
-	++(vptr->size);
-	return (vptr == NULL);	
-}
-
-
-void VectorPopBack(vector_t *vptr)
-{
-	assert (vptr->size > 0);
-
-	if (vptr->capacity - vptr->size >= vptr->size)
+	if ( ANDONE >= vec_ptr->capacity - vec_ptr->size)
 	{
-		vptr = VectorReserve(vptr, vptr->size + ANDONE);
+		vec_ptr = VectorReserve(vec_ptr, GROWTHFACTOR * vec_ptr->capacity);
 	}
-	--(vptr->size);
+
+	start = memmove(((char*)vec_ptr->start + (vec_ptr->size * vec_ptr->elem_size)), element, vec_ptr->elem_size);
+	
+	assert (NULL != start);
+	
+	++(vec_ptr->size);
+	return (vec_ptr == NULL);	
 }
 
-size_t VectorSize(const vector_t *vptr)
+
+void VectorPopBack(vector_t *vec_ptr)
 {
-	assert(NULL != vptr);
-	return (vptr->size);
+
+	if (vec_ptr->capacity - vec_ptr->size >= vec_ptr->size)
+	{
+		vec_ptr = VectorReserve(vec_ptr, vec_ptr->size + ANDONE);
+	}
+	--(vec_ptr->size);
 }
 
-size_t VectorCapacity(const vector_t *vptr)
+size_t VectorSize(const vector_t *vec_ptr)
 {
-	assert(NULL != vptr);
-	return vptr->capacity;
+	return (vec_ptr->size);
+	
+}
+
+size_t VectorCapacity(const vector_t *vec_ptr)
+{
+	return vec_ptr->capacity;
 }
 
 
-vector_t *VectorReserve(vector_t *vptr, size_t new_size)
+vector_t *VectorReserve(vector_t *vec_ptr, size_t new_size)
 {
 	void *start = NULL;
 	
-	assert (NULL != vptr);
+	if (NULL == vec_ptr)
+	{
+		return NULL;
+	}
 
-	if ((vptr->size) > new_size)
+	if ((vec_ptr->size) > new_size)
 	{
 		++new_size;
 	}
 		
-	start = realloc(vptr->start, sizeof(vptr->elem_size) * new_size);
+	start = realloc(vec_ptr->start, sizeof(vec_ptr->elem_size) * new_size);
 	assert (NULL != start);
 
-	vptr->capacity = new_size; 
-	vptr->start = start;
+	vec_ptr->capacity = new_size; 
+	vec_ptr->start = start;
 
-	return vptr;
+	return vec_ptr;
 }
 
 
