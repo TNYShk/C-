@@ -17,6 +17,7 @@ int main()
 	Istart = SListBegin(twinky);
 	printf("size is %ld\n", sizeof(twinky));
 	
+	
 	Istart = SListInsertBefore(Istart, ptr);
 	ptr = SListGetData(Istart);
 	printf("ptr is %ld\n",*(size_t*)ptr);
@@ -30,7 +31,7 @@ int main()
 	
 	printf("is it empty? %d\n", SListIsEmpty(twinky));
 
-	/*printf("number of nodes is %ld\n",SListCount(twinky));*/
+	printf("number of nodes is %lu\n",SListCount(twinky));
 	SListDestroy(twinky);
 
 	return 0;

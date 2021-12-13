@@ -14,7 +14,7 @@ the itterator uses slist_t and the node uses slist_iter_t ?
 struct slist
 {
     slist_iter_t head;
-    slist_iter_t tail; /* tail is the dummy its moves */
+    slist_iter_t tail; /* tail is the dummy it moves */
     
 };
 
@@ -60,7 +60,7 @@ slist_t *SListCreate(void)
 
 void SListDestroy(slist_t *slist)
 {
-	
+	slist_iter_t next = NULL;
 	slist_iter_t current =  slist->head;
 
 	assert(NULL != slist);
@@ -68,9 +68,12 @@ void SListDestroy(slist_t *slist)
 	
 	while (current != slist->tail)
 	{
-		current = SListRemove(current);
-		
+		next = current->next;
+		free(current);
+		current = NULL;
+		current = next;
 	}
+
 	free(slist->tail);
 	slist->tail = NULL;
 	free(slist);
@@ -84,7 +87,21 @@ slist_iter_t SListInsertBefore(const slist_iter_t where, const void *data)
 	slist_iter_t temp = NULL;
 	temp = (slist_iter_t)malloc(sizeof(struct slist_node));
 
-	assert (NULL != temp);
+	if (NULL == temp)
+	{
+		return NULL;
+	}
+
+	if (NULL == where->next)
+	{
+		if (SListIsEqual(((slist_t *)(where->data))->head, ((slist_t *)(where->data))-> tail))
+        {
+			((slist_t *)(where->data))->head = temp;
+			temp->next = where;
+	        temp->data = (void *)data; 
+	        return temp;
+    	}
+	}
 
 	temp->data = where->data;
 	temp->next = where->next;
@@ -94,7 +111,6 @@ slist_iter_t SListInsertBefore(const slist_iter_t where, const void *data)
 
 	return where;
 
-
 }
 
 
@@ -102,23 +118,23 @@ slist_iter_t SListInsertBefore(const slist_iter_t where, const void *data)
 slist_iter_t SListInsertAfter(slist_iter_t where, const void *data)
 {
 	slist_iter_t node_after = NULL;
-	node_after = (slist_iter_t)malloc(sizeof(struct slist_node));
+	node_after = (struct slist_node *)malloc(sizeof(struct slist_node));
 	
 	assert (NULL != node_after);
 
-	node_after->data = memcpy(where->data,data,sizeof(node_after));
+	node_after->data = memcpy(where->data,data, sizeof(node_after));
 	node_after->next = where->next;
 	
 	where->next = node_after;
 
-	return where;
+	return node_after;
 }
 
 void *SListGetData( slist_iter_t iterator)
 {
 	assert (NULL != iterator);
 
-	return (void*)iterator->data;
+	return iterator->data;
 }
 
 void SListSetData(slist_iter_t iterator, const void *data)
@@ -139,6 +155,19 @@ int SListIsEmpty(const slist_t *slist)
 	return (slist->head == slist->tail);
 }
 
+slist_iter_t SListNext(const slist_iter_t iterator)
+{
+	if(iterator->next == NULL)
+	{
+		return iterator;
+	}
+	return iterator->next;
+}
+
+
+
+
+
 slist_iter_t SListRemove(slist_iter_t iterator)
 {
 	slist_iter_t replacement = NULL;
@@ -146,7 +175,6 @@ slist_iter_t SListRemove(slist_iter_t iterator)
 
 	if(NULL == iterator->next)
 	{
-
 		return iterator;
 	}
 	replacement = iterator->next;
@@ -167,15 +195,16 @@ slist_iter_t SListRemove(slist_iter_t iterator)
 size_t SListCount(const slist_t *slist)
 {
 	size_t counter = 0;
-	slist_iter_t temp = slist->head;
+	slist_iter_t current = slist->head;
+
 	assert(NULL != slist);
 
 	printf("youre here\n");
 	
-	while(temp != slist->tail)
+	while(current != slist->tail)
 	{
 		++counter;
-		temp = temp->next;
+		current = current->next;
 		printf("%ld\n", counter);
 	}
 	return counter;
@@ -185,4 +214,9 @@ slist_iter_t SListBegin(const slist_t *slist)
 {
 	assert (NULL != slist);
 	return slist->head;
+}
+
+int SListIsEqual(const slist_iter_t iterator1, const slist_iter_t iterator2)
+{
+	return ( iterator1 == iterator2);
 }
