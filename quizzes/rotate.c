@@ -6,7 +6,8 @@ enum states{SUCCESS,FAIL};
 int isRotation(const char *s1, const char *s2)
 {
 	char spotter = *s1;
-	char *cut_here_s2= strchr(s2, spotter);
+	char *cut_here_s2 = strchr(s2, spotter);
+	
 	while(cut_here_s2)
 	{
 		size_t leng= strlen(cut_here_s2);
@@ -17,7 +18,7 @@ int isRotation(const char *s1, const char *s2)
 		}
 		else
 		{
-			cut_here_s2= strchr(cut_here_s2+1,spotter);
+			cut_here_s2 = strchr(cut_here_s2 + 1,spotter);
 		}
 	}
 	return FAIL;	

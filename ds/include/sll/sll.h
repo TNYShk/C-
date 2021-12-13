@@ -10,6 +10,11 @@ typedef int (*match_func_t)(const void *data, void *param);
 typedef int (*action_func_t)(void *data, void *param);
 
 
+
+
+
+
+
 /* time complexity: O(1), space complexity O(1) */
 slist_t *SListCreate(void);
 
@@ -19,7 +24,10 @@ void SListDestroy(slist_t *slist);
 /* time complexity: O(1), space complexity O(1) */
 slist_iter_t SListInsertBefore(const slist_iter_t where, const void *data); 
 
-/* time complexity: O(1), space complexity O(1) */
+
+/* time complexity: O(1), space complexity O(1) 
+amortized complexity! if malloc fails, do need to run on the sll to find and return End which is O(n) 
+*/
 slist_iter_t SListInsertAfter(slist_iter_t where,const void *data);
 
 /* time complexity: O(1), space complexity O(1) */

@@ -98,23 +98,19 @@ char RotateLeft(char byte, unsigned int nbits)
 /* Q9 */
 void SwapPtrs(int **p1, int **p2)
 {
-	int **temp = p1;
-	printf("p1 is %x and adrs is %p\n", *p1, p1);
-	printf("p2 is %x and adrs is %p\n", *p2, p2);
+	int *temp = *p1;
+	*p1 = *p2;
+	*p2 = temp;
 	
-	p1 = p2;
-	printf("p1 is %x and adrs is %p\n", *p1, p1);
-	p2 = temp;
-	
-	printf("p2 is %x and adrs is %p\n", *p2, p2);
 }
 /* Q11.1 */
 size_t Strlen(const char *str)
 {
 	size_t index = 0;
 	assert(NULL != str);
-	while( *(str + index) != '\0')
+	while( *str != '\0')
 	{
+		++str;
 		++index;
 	}
 	return index;
@@ -187,6 +183,21 @@ unsigned long GetFibonacci(unsigned int n)
 	fibo = NULL;
 	return ans;
 }
+
+int anotherFibo(int nelement)
+{
+	int ans = 1, x1 = 1, x2 = 1;
+	
+	while(nelement > 2)
+	{
+		ans = x1 + x2;
+		x1 = x2;
+		x2 = ans;
+		--nelement;
+	}
+	return ans;
+
+}
 /* Q13 */
 void IntToString(int num, char *str)
 {
@@ -242,7 +253,7 @@ int main()
 	char *s3 = NULL;
 	int *p1;
 	int *p2;
-	int x=5,y=6;
+	int x = 5,y = 6;
 	
 	/*s_t sticky; */
 	
@@ -251,8 +262,12 @@ int main()
 	s3 = (char *)calloc(100, sizeof(char));
 	p1= &x;
 	p2 = &y;
-
+	printf("a is now %x and b  %x\n",p1,p2);
 	SwapPtrs(&p1,&p2);
+	printf("a is now %x and b  %x\n",p1,p2);
+	printf("\nlength of %s is %ld\n",strong, Strlen(strong));
+	printf("\nanother fibo element 9 is %d\n", anotherFibo(9) );
+	/*
 	printf("fibo 9 is %ld\n",GetFibonacci(9));
 	printf("size of sticky is: %ld\n", sizeof(s_t));
 	printf("on bits in 251 is %ld\n", CountSetBits(251));
@@ -280,5 +295,5 @@ int main()
 	free(s3);
 	s3 = NULL;
 	/*foo();*/
-	return 0;
+		return 0;
 }

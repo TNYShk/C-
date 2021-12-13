@@ -8,16 +8,19 @@ int q3(long num);
 
 unsigned int CountCouples(unsigned int check)
 	{
-	unsigned int m=3;
-	unsigned int k =1<<31;
-	int counter=0;
+	unsigned int m = 3;
+	unsigned int k = 1<<31;
+	int counter = 0;
 	do
 	{
-		if((check&m)==m){
+		if((check & m)== m)
+		{
 			++counter;
 		}
+
 		m=m<<1;
 	}while (m<k);
+
 	return counter;
 	}
 	
@@ -40,9 +43,9 @@ unsigned int CountCouples1(unsigned int check)
 
 int q3(long num)
 {
-	int x=0;
-	long temp=0;
-	int count=0;
+	int x = 0;
+	long temp = 0;
+	int count = 0;
 	
 	while (num !=0)
 	{

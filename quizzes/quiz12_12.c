@@ -18,11 +18,11 @@ typedef struct stack
 
 stack_t *StackCreate(size_t num_of_elements, size_t element_size);
 int CheckParent(char *);
-void StackPush(stack_t *, const void *);
-void StackPop(stack_t *);
-void *StackPeek(const stack_t *sptr);
-void StackDestroy(stack_t *sptr);
-int StackIsEmpty(const stack_t *sptr);
+static void StackPush(stack_t *, const void *);
+static void StackPop(stack_t *);
+static void *StackPeek(const stack_t *sptr);
+static void StackDestroy(stack_t *sptr);
+static int StackIsEmpty(const stack_t *sptr);
 
 
 stack_t *StackCreate(size_t num_of_elements, size_t element_size)
@@ -47,25 +47,25 @@ stack_t *StackCreate(size_t num_of_elements, size_t element_size)
 }
 
 
-void StackPush(stack_t *sptr, const void *element)
+static void StackPush(stack_t *sptr, const void *element)
 {
 	memcpy(sptr->top, element, (sptr->elem_size));
 
 	sptr->top = ((char *)sptr->top + sptr->elem_size);
 }
 
-void *StackPeek(const stack_t *sptr)
+static void *StackPeek(const stack_t *sptr)
 {
 	return ((char *)sptr->top - sptr->elem_size);
 }
 
-void StackPop(stack_t *sptr)
+static void StackPop(stack_t *sptr)
 {
 	
 	sptr->top = ((char *)sptr->top - sptr->elem_size);
 }
 
-int StackIsEmpty(const stack_t *sptr)
+static int StackIsEmpty(const stack_t *sptr)
 {
 	return (sptr->top == sptr->base);
 }
@@ -110,7 +110,7 @@ int CheckParent(char *str2check)
 
 }
 
-void StackDestroy(stack_t *sptr)
+static void StackDestroy(stack_t *sptr)
 {
 	free(sptr->base);
 	sptr->base = NULL;
@@ -123,8 +123,10 @@ int main()
 {
 	char str[] = "[()](){[()]()}";
 	char st[] = "[{}(])";
-	printf("1 is ok, 12 is not\n");
-	printf("str is %d\n",CheckParent(str));
-	printf("st is %d\n",CheckParent(st));
+	char st1[] = "[[[[{}(])";
+	printf("1 is OK, 12 is NOT ok\n");
+	printf("\nstr %s is %d\n",str, CheckParent(str));
+	printf("\nst %s is %d\n",st, CheckParent(st));
+	printf("\nst1 %s is %d\n",st1,CheckParent(st1));
 	return 0;
 } 
