@@ -59,6 +59,7 @@ void *VectorGetAccessToElement(vector_t *vec_ptr, size_t index)
 {
 	assert(0 < index);
 	assert (NULL != vec_ptr);
+	
 	return ((char*)vec_ptr->start + (vec_ptr->elem_size * (index - ANDONE))); 
 }
 
