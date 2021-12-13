@@ -11,10 +11,11 @@
 
 struct vector
 {
+	void *start;
 	size_t capacity;
 	size_t elem_size;
 	size_t size;	
-	void *start;
+	
 }; 
 
 
@@ -90,15 +91,17 @@ size_t VectorCapacity(const vector_t *vptr)
 vector_t *VectorReserve(vector_t *vptr, size_t new_size)
 {
 	void **start = NULL;
+
 	if ((vptr->size) > new_size)
 	{
 		++new_size;
 	}
-		start = realloc(vptr->start, sizeof(size_t *) * new_size);
-		vptr->capacity = new_size; 
-		vptr->start = start;
+		
+	start = realloc(vptr->start, sizeof(size_t *) * new_size);
+	vptr->capacity = new_size; 
+	vptr->start = start;
 
-		return vptr;
+	return vptr;
 }
 
 
