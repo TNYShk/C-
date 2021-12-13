@@ -32,8 +32,8 @@ slist_t *SListCreate(void)
 	slist_t *slinky = NULL;
 	slist_iter_t dummy = NULL;
 
-	slinky = (slist_t *)malloc(sizeof(slist_t)*2);
-	dummy = (slist_iter_t)malloc(sizeof(slist_iter_t)*sizeof(slist_t));
+	slinky = (slist_t *)malloc(sizeof(slist_t));
+	dummy = (slist_iter_t)malloc(sizeof(struct slist_node));
 	
 	
 	assert (NULL != slinky);
@@ -64,19 +64,26 @@ void SListDestroy(slist_t *slist)
 	free(slist);
 }
 
-/*
+/* create node, copy the data in to it, then change values of the data between the 2 nodes (where and new) then */
+
 slist_iter_t SListInsertBefore(const slist_iter_t where, const void *data)
 {
-	
+	slist_iter_t temp = NULL;
+	temp = (slist_iter_t)malloc(sizeof(struct slist_node));
+	temp->data = data;
+	where->data = 
+
 
 	return where;
 
 
-}*/
+}
+
+
 
 slist_iter_t SListInsertAfter(slist_iter_t where, const void *data)
 {
-	slist_iter_t node_after = (slist_iter_t)malloc(sizeof(slist_iter_t)*sizeof(slist_t));
+	slist_iter_t node_after = (slist_iter_t)malloc(sizeof(struct slist_node));
 	
 	node_after->data = memcpy(node_after->data,data,sizeof(node_after));
 	node_after->next = where->next;
@@ -86,3 +93,21 @@ slist_iter_t SListInsertAfter(slist_iter_t where, const void *data)
 	return node_after;
 }
 
+void *SListGetData(const slist_iter_t iterator)
+{
+	assert (NULL != iterator);
+
+	return (void*)iterator->data;
+}
+
+void SListSetData(slist_iter_t iterator, const void *data)
+{
+	assert(NULL != iterator );
+	assert(NULL != data);
+	iterator->data = data;
+}
+
+int SListIsEqual(const slist_iter_t iterator1, const slist_iter_t iterator2)
+{
+	
+}

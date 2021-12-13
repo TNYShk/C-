@@ -10,7 +10,7 @@ int main()
 	void *ptr = NULL;
 	slist_t *twinky = SListCreate();
 	
-	slist_iter_t node = twinky->head;
+	/*slist_iter_t node = twinky->head;*/
 	int x = 5;
 	ptr = &x;
 	

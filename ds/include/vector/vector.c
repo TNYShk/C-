@@ -91,6 +91,8 @@ size_t VectorCapacity(const vector_t *vptr)
 vector_t *VectorReserve(vector_t *vptr, size_t new_size)
 {
 	void **start = NULL;
+	assert (NULL != vptr);
+	
 
 	if ((vptr->size) > new_size)
 	{
@@ -98,6 +100,8 @@ vector_t *VectorReserve(vector_t *vptr, size_t new_size)
 	}
 		
 	start = realloc(vptr->start, sizeof(size_t *) * new_size);
+	assert (NULL != start);
+
 	vptr->capacity = new_size; 
 	vptr->start = start;
 
