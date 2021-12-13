@@ -29,12 +29,14 @@ vector_t *VectorCreate(size_t element_size, size_t cap)
 {
 	vector_t *vector = NULL;
 	
-	
 	vector = (vector_t *)malloc(sizeof(vector_t));
 	vector->start = calloc(cap, element_size);
 
-	assert (NULL != vector);
-	assert (NULL != vector->start);
+	if ((NULL == vector) || (NULL == vector->start))
+	{
+		return NULL;
+	}
+	
 
 	vector->capacity = cap;
 	vector->elem_size = element_size;
@@ -55,6 +57,8 @@ void VectorDestroy(vector_t *vec_ptr)
 
 void *VectorGetAccessToElement(vector_t *vec_ptr, size_t index)
 {
+	assert(0 < index);
+	assert (NULL != vec_ptr);
 	return ((char*)vec_ptr->start + (vec_ptr->elem_size * (index - ANDONE))); 
 }
 
@@ -75,7 +79,10 @@ int VectorPushBack(vector_t *vec_ptr, const void *element)
 
 	start = memmove(((char*)vec_ptr->start + (vec_ptr->size * vec_ptr->elem_size)), element, vec_ptr->elem_size);
 	
-	assert (NULL != start);
+	if (NULL == start)
+	{
+		return ERROR;
+	}
 	
 	++(vec_ptr->size);
 	return (vec_ptr == NULL);	
@@ -84,7 +91,8 @@ int VectorPushBack(vector_t *vec_ptr, const void *element)
 
 void VectorPopBack(vector_t *vec_ptr)
 {
-	
+	assert(NULL != vec_ptr);
+
 	if (vec_ptr->capacity - vec_ptr->size >= vec_ptr->size)
 	{
 		vec_ptr = VectorReserve(vec_ptr, vec_ptr->size + ANDONE);
@@ -92,12 +100,13 @@ void VectorPopBack(vector_t *vec_ptr)
 	--(vec_ptr->size);
 }
 
+/* if vec_ptr is NULL, return value is undefined and its users problem?*/
 size_t VectorSize(const vector_t *vec_ptr)
 {
 	return (vec_ptr->size);
 	
 }
-
+/* if vec_ptr is NULL, return value is undefined and its users problem?*/
 size_t VectorCapacity(const vector_t *vec_ptr)
 {
 	return vec_ptr->capacity;
@@ -119,7 +128,10 @@ vector_t *VectorReserve(vector_t *vec_ptr, size_t new_size)
 	}
 		
 	start = realloc(vec_ptr->start, sizeof(vec_ptr->elem_size) * new_size);
-	assert (NULL != start);
+	if (NULL == start)
+	{
+		return vec_ptr;
+	}
 
 	vec_ptr->capacity = new_size; 
 	vec_ptr->start = start;

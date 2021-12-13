@@ -21,7 +21,13 @@ slist_t *SListCreate(void);
 /* time complexity: O(n), space complexity O(1) */
 void SListDestroy(slist_t *slist);
 
-/* time complexity: O(1), space complexity O(1) */
+
+
+
+/* time complexity: O(1), space complexity O(1) 
+returns iter_t
+
+*/
 slist_iter_t SListInsertBefore(const slist_iter_t where, const void *data); 
 
 
@@ -36,7 +42,12 @@ slist_iter_t SListRemove(slist_iter_t iterator);
 /* time complexity: O(n), space complexity O(1) */
 size_t SListCount(const slist_t *slist);
 
-/* time complexity: O(1), space complexity O(1) */
+/* time complexity: O(1), space complexity O(1) 
+	return 0 is list is NOT empty;
+	returns 1 if its empty
+
+
+*/
 int SListIsEmpty(const slist_t *slist);
 
 /* time complexity: O(n), space complexity O(1) */

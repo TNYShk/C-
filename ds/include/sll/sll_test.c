@@ -9,14 +9,28 @@ int main()
 {
 	void *ptr = NULL;
 	slist_t *twinky = SListCreate();
+	slist_iter_t Istart = NULL;
+	slist_iter_t testinsert = NULL;
 	
-	/*slist_iter_t node = twinky->head;*/
-	int x = 5;
+	size_t x = 5;
 	ptr = &x;
-	
-	
+	Istart = SListBegin(twinky);
 	printf("size is %ld\n", sizeof(twinky));
-	SListInsertAfter(node, ptr);
+	
+	Istart = SListInsertBefore(Istart, ptr);
+	ptr = SListGetData(Istart);
+	printf("ptr is %ld\n",*(size_t*)ptr);
+	
+	x = 500;
+	ptr = &x;
+	testinsert = SListInsertAfter(Istart,ptr);
+	
+	ptr = SListGetData(testinsert);
+	printf("SListInsertAfter start value is %ld\n",*(size_t*)ptr);
+	
+	printf("is it empty? %d\n", SListIsEmpty(twinky));
+
+	/*printf("number of nodes is %ld\n",SListCount(twinky));*/
 	SListDestroy(twinky);
 
 	return 0;
