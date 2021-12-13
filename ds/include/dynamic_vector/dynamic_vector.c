@@ -84,7 +84,7 @@ int VectorPushBack(vector_t *vec_ptr, const void *element)
 
 void VectorPopBack(vector_t *vec_ptr)
 {
-
+	
 	if (vec_ptr->capacity - vec_ptr->size >= vec_ptr->size)
 	{
 		vec_ptr = VectorReserve(vec_ptr, vec_ptr->size + ANDONE);
