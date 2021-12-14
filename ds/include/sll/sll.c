@@ -1,7 +1,7 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <string.h>
+#include <stdio.h> /* printf, size_t  */
+#include <stdlib.h> /* memory allocation  */
+#include <assert.h> /* assert() */
+#include <string.h> /* memcpy */
 
 #include "sll.h"
 
@@ -28,12 +28,12 @@ struct slist_node
 slist_t *SListCreate(void)
 {
 	
-	slist_t *sllist = NULL;
+	slist_t *slist = NULL;
 	slist_iter_t dummy = NULL;
 
-	sllist = (slist_t *)malloc(sizeof(slist_t));
+	slist = (slist_t *)malloc(sizeof(slist_t));
 
-	if(NULL == sllist)
+	if(NULL == slist)
 	{
 		return NULL;
 	}
@@ -42,17 +42,17 @@ slist_t *SListCreate(void)
 	
 	if (NULL == dummy)
 	{
-		free(sllist);
-		sllist = NULL;
+		free(slist);
+		slist = NULL;
 		return NULL;
 	}
 	
-	dummy->data = sllist;
+	dummy->data = slist;
 	dummy->next = NULL;
 
-	sllist->head = dummy;
-	sllist->tail = dummy;
-	return sllist;
+	slist->head = dummy;
+	slist->tail = dummy;
+	return slist;
 }
 
 void SListDestroy(slist_t *slist)
@@ -72,6 +72,7 @@ void SListDestroy(slist_t *slist)
 
 	free(slist->tail);
 	slist->tail = NULL;
+
 	free(slist);
 	slist = NULL;
 }
@@ -101,7 +102,6 @@ slist_iter_t SListInsertBefore(const slist_iter_t where, const void *data)
 
 	if (SListIsEqual(((slist_t *)(where->data))->head, ((slist_t *)(where->data))-> tail))
     {
-		
 		temp->next = where;
 	    temp->data = (void *)data; 
 	    ((slist_t *)(where->data))->head = temp;
@@ -124,9 +124,14 @@ slist_iter_t SListInsertAfter(slist_iter_t where, const void *data)
 	
 	if (NULL == node_after)
 	{
-		/* malloc failed */
-		return SListNext(where);
+		node_after = where;
+		while (NULL != node_after->next)
+		{
+			node_after = node_after->next;
+		}
+		return node_after;
 	}
+
 
 	node_after->data = (void *)data; 
 	node_after->next = where->next;
@@ -145,6 +150,7 @@ slist_iter_t SListInsertAfter(slist_iter_t where, const void *data)
 void *SListGetData( slist_iter_t iterator)
 {
 	assert (NULL != iterator);
+
 	return iterator->data;
 }
 
@@ -163,13 +169,14 @@ void SListSetData(slist_iter_t iterator, const void *data)
 int SListIsEmpty(const slist_t *slist)
 {
 	assert (NULL != slist);
+
 	return (slist->head == slist->tail);
 }
 
 
 slist_iter_t SListNext(const slist_iter_t iterator)
 {
-	if(iterator->next == NULL)
+	if(NULL == iterator->next)
 	{
 		return iterator;
 	}
@@ -178,29 +185,7 @@ slist_iter_t SListNext(const slist_iter_t iterator)
 
 
 
-/* not*/
-void SlistAppend(slist_t *dest, slist_t *src)
-{
-	
-	dest -> tail -> data = src -> head -> data;
-	dest -> tail -> next = src -> head -> next;
-	
-	dest -> tail = src -> tail;
-	
-	src -> head -> data = src;
-	src -> head -> next = NULL;
-	
-	src -> tail = src -> head;
 
-	/*
-	slist_iter_t new_src = SListBegin(src);
-	dest -> tail->next  = SListBegin(src);
-	dest ->tail->data = SListGetData(SListBegin(src));
-	dest->tail = SListEnd(src);
-	src->head = new_src;
-	src->tail = dest->tail;
-	*/
-}
 
 
 slist_iter_t SListRemove(slist_iter_t iterator)
@@ -209,7 +194,7 @@ slist_iter_t SListRemove(slist_iter_t iterator)
 	
 	if(NULL == iterator->next)
 	{
-		printf("cant remove this node dummy!\n");
+		printf("cant remove empty node dummy!\n");
 		return iterator;
 	}
 	
@@ -248,6 +233,7 @@ size_t SListCount(const slist_t *slist)
 slist_iter_t SListBegin(const slist_t *slist)
 {
 	assert (NULL != slist);
+
 	return slist->head;
 }
 
@@ -298,7 +284,6 @@ int SListForEach(const slist_iter_t from, const slist_iter_t to, action_func_t a
     assert(NULL != from);
     assert(NULL != to);
     assert(NULL != param);
-    assert(NULL != action_func);
     
     current = from;
     
@@ -315,3 +300,18 @@ int SListForEach(const slist_iter_t from, const slist_iter_t to, action_func_t a
     return result;
 }
 
+void SlistAppend(slist_t *dest, slist_t *src)
+{
+	
+	dest->tail->data = SListGetData(SListBegin(src));
+	dest->tail->next = src->head->next;
+
+	dest->tail = SListEnd(src);
+	
+	src->head->data = src;
+	src->head->next = NULL;
+	
+	src->tail = src->head;
+	
+
+}
