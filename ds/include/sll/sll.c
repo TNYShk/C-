@@ -2,12 +2,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
-/*
-typedef struct slist slist_t;
-typedef struct slist_node* slist_iter_t; 
 
-the itterator uses slist_t and the node uses slist_iter_t ?
-*/
 #include "sll.h"
 
 enum 
@@ -90,15 +85,15 @@ slist_iter_t SListInsertBefore(const slist_iter_t where, const void *data)
 
 	if (NULL == temp)
 	{
-		
 		return NULL;
 	}
+	assert (NULL != where);
 
 	if (SListIsEqual(((slist_t *)(where->data))->head, ((slist_t *)(where->data))-> tail))
     {
 		((slist_t *)(where->data))->head = temp;
 		temp->next = where;
-	    temp->data = (void *)data; /* memcpy here causes seg fault*/
+	    temp->data = (void *)data; 
 	    return temp;
     }
 	
@@ -126,6 +121,11 @@ slist_iter_t SListInsertAfter(slist_iter_t where, const void *data)
 	node_after->next = where->next;
 	
 	where->next = node_after;
+	
+	if(NULL == node_after->next) /* if the newly added element is now the last-dummy, need to reassign tail*/
+	{
+		((slist_t *)(where->data))->tail = node_after;
+	}
 
 	return node_after;
 }
@@ -140,18 +140,18 @@ void *SListGetData( slist_iter_t iterator)
 
 void SListSetData(slist_iter_t iterator, const void *data)
 {
-	slist_iter_t temp = NULL;
-	assert (NULL != iterator);
-
-	temp->data = memcpy(temp->data,data,sizeof(struct slist_node));
-	assert (NULL != temp);
 	
-	iterator->data = temp->data;
+	assert (NULL != iterator);
+	assert (NULL != data);
+
+	iterator->data = (void *)data; 
+	
 }
 
 
 int SListIsEmpty(const slist_t *slist)
 {
+	assert (NULL != slist);
 	return (slist->head == slist->tail);
 }
 
@@ -172,7 +172,7 @@ slist_iter_t SListRemove(slist_iter_t iterator)
 	
 	if(NULL == iterator->next)
 	{
-		printf("cant remove empty list\n");
+		printf("cant remove this node dummy!\n");
 		return iterator;
 	}
 	
