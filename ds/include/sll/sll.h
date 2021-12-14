@@ -143,4 +143,11 @@ checks wether 2 nodes point to the same location
 */
 int SListIsEqual(const slist_iter_t iterator1, const slist_iter_t iterator2);
 
+
+/* time complexity: O(1), space complexity O(1)
+** appends src to the end of dest, while maintating src viability (stand alone)
+
+*/
+void SlistAppend(slist_t *dest, slist_t *src);
+
 #endif /* __SLL_H__ */

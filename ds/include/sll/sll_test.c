@@ -8,24 +8,36 @@
 int main()
 {
 	void *ptr = NULL;
+	void *kptr = NULL;
 	slist_t *twinky = SListCreate();
+	slist_t *kika = SListCreate();
 	slist_iter_t Istart = NULL;
 	slist_iter_t testinsert = NULL;
 	slist_iter_t testinsertb4 = NULL;
 	slist_iter_t end = NULL;
+
+	slist_iter_t Kstart = NULL;
+	slist_iter_t Kinsert = NULL;
+	slist_iter_t Knsertb4 = NULL;
+	slist_iter_t Kend = NULL;
+
+
+	int y = 27;
 	size_t x = 5;
 	float f = 3.14;
 	ptr = &x;
 	Istart = SListBegin(twinky);
 	
-	
 	printf("Created SLL fresh! Zero for empty: %d\n", SListIsEmpty(twinky));
+
+	printf("\n*************************Adding nodes***********************\n");
 	Istart = SListInsertBefore(Istart, ptr);
 	ptr = SListGetData(Istart);
 	printf("\ninserted first value(before dummy)! value is %ld\n",*(size_t*)ptr);
 	
 	x = 500;
 	ptr = &x;
+	kptr = &y;
 	testinsert = SListInsertAfter(Istart,ptr);
 	
 	ptr = SListGetData(testinsert);
@@ -53,11 +65,25 @@ int main()
 	SListSetData(testinsertb4,(void*)&f);
 	ptr = SListGetData(testinsertb4);
 	printf("\nSetValue test, changed to %f\n",*(float *)ptr);
-	printf("\tnumber of nodes: %lu\n",SListCount(twinky));
 
+	printf("\nAre 2 nodes equal? Zero for no %d\n",SListIsEqual(Istart,testinsert));
+	printf("\n\tnumber of nodes: %lu\n",SListCount(twinky));
+
+	/***************************/
+	Kstart = SListBegin(kika);
+	Kinsert = SListInsertAfter(Kstart,kptr);
+	printf("\n\tnumber of nodes kika: %lu\n",SListCount(kika));
+	/*
+	SlistAppend(kika, twinky);
+	printf("\n\tpost append number of nodes kika: %lu\n",SListCount(kika));
+	printf("\n\tnumber of nodes twinky: %lu\n",SListCount(twinky));
+	testinsertb4 = SListInsertAfter(testinsertb4,kptr);
+	printf("\n\tnumber of nodes twinky post insertion: %lu\n",SListCount(twinky));
+	printf("\n\tnumber of nodes kika: %lu\n",SListCount(kika));
+	*/
 
 	SListDestroy(twinky);
-
+	SListDestroy(kika);
 	return 0;
 }
 

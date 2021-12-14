@@ -83,23 +83,34 @@ slist_iter_t SListInsertBefore(const slist_iter_t where, const void *data)
 	slist_iter_t temp = NULL;
 	temp = (slist_iter_t)malloc(sizeof(struct slist_node));
 
+
+ 	assert(NULL != data);
+ 	assert(NULL != where);
+
 	if (NULL == temp)
 	{
-		return NULL;
+		temp = where;
+		while (NULL != temp->next)
+		{
+			temp = temp->next;
+		}
+		return temp;
 	}
+
 	assert (NULL != where);
 
 	if (SListIsEqual(((slist_t *)(where->data))->head, ((slist_t *)(where->data))-> tail))
     {
-		((slist_t *)(where->data))->head = temp;
+		
 		temp->next = where;
 	    temp->data = (void *)data; 
+	    ((slist_t *)(where->data))->head = temp;
 	    return temp;
     }
 	
 	temp->data = where->data;
 	temp->next = where->next;
-	where->data = (void *)data; /*memcpy(where->data, data, sizeof(temp));*/
+	where->data = (void *)data; 
 	where->next = temp;
 
 	return where;
@@ -117,7 +128,7 @@ slist_iter_t SListInsertAfter(slist_iter_t where, const void *data)
 		return SListNext(where);
 	}
 
-	node_after->data = (void *)data; /*memcpy(where->data,data, sizeof(node_after));*/
+	node_after->data = (void *)data; 
 	node_after->next = where->next;
 	
 	where->next = node_after;
@@ -163,6 +174,32 @@ slist_iter_t SListNext(const slist_iter_t iterator)
 		return iterator;
 	}
 	return iterator->next;
+}
+
+
+
+/* not*/
+void SlistAppend(slist_t *dest, slist_t *src)
+{
+	
+	dest -> tail -> data = src -> head -> data;
+	dest -> tail -> next = src -> head -> next;
+	
+	dest -> tail = src -> tail;
+	
+	src -> head -> data = src;
+	src -> head -> next = NULL;
+	
+	src -> tail = src -> head;
+
+	/*
+	slist_iter_t new_src = SListBegin(src);
+	dest -> tail->next  = SListBegin(src);
+	dest ->tail->data = SListGetData(SListBegin(src));
+	dest->tail = SListEnd(src);
+	src->head = new_src;
+	src->tail = dest->tail;
+	*/
 }
 
 
@@ -277,3 +314,4 @@ int SListForEach(const slist_iter_t from, const slist_iter_t to, action_func_t a
     
     return result;
 }
+
