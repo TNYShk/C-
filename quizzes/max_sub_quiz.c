@@ -2,21 +2,25 @@
 
 int FindMaxSub(const int *arr, size_t ar_len)
 {
-	size_t start =0;
+	size_t start = 0;
 	size_t end = 0;
 	int untillnow = *arr;
-	int global_max=*arr;
-	for(end=1;end<ar_len; ++end)
+	int global_max = *arr;
+
+	for(end = 1;end < ar_len; ++end)
 	{
-		untillnow= *(arr+end) + untillnow * (untillnow>0);
-		if (untillnow == *(arr+end)){
-			start=end;
+		untillnow = *(arr + end) + untillnow * (untillnow > 0);
+		if (untillnow == *(arr + end))
+		{
+			start = end;
 		}
-		printf("what is >0 %d\n",(untillnow>0));
-	if (global_max < untillnow){
-		global_max= untillnow;
-		printf("start is %d\n", start);
-		printf("end is %d\n", end);
+		printf("what is >0 %d\n",(untillnow > 0));
+
+		if (global_max < untillnow)
+		{
+			global_max = untillnow;
+			printf("start is %d\n", start);
+			printf("end is %d\n", end);
 		}
 	}
 	return global_max;
@@ -24,29 +28,31 @@ int FindMaxSub(const int *arr, size_t ar_len)
 
 
 
-int maxLocalSum(int *ar, int length)
+int maxLocalSum(int *array, int length)
 {
-	int *start=ar;
-	int *run=ar+1;
-	int max_sum,cur_sum = *start;
+	int *start = array;
+	int *runner = array + 1;
 	
-	while(run<ar+length)
+	int max_sum = *start ,cur_sum = *start;
+	
+	while(runner < array + length)
 	{
-		cur_sum = *start + *run ;
+		cur_sum = *start + *runner;
 		
 		if(cur_sum > max_sum)
 		{
-			max_sum=cur_sum;
-			cur_sum= *start;
-			printf("start is %ld\n",start-ar);
+			max_sum = cur_sum;
+			cur_sum = *start;
+
+			printf("start is %ld\n",start - array);
 			
-			if(*start < *run)
+			if(*start < *runner)
 			{
-			start=run;
+			start = runner;
 			}
 			
 		}
-	run++;
+	++runner;
 	}
 	
 	return max_sum;
