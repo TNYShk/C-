@@ -12,12 +12,7 @@ struct queue
 	slist_t *slist;
 };
 
-enum stats
-{
-	FAIL = -1, 
-	NOTK, 
-	OK
-};
+
 
 
 queue_t *QueueCreate(void)
@@ -28,14 +23,15 @@ queue_t *QueueCreate(void)
 
 	if(NULL == qt)
 	{
-		return NULL
+		return NULL;
 	}
-	qt->sll = SListCreate();
+
+	qt->slist = SListCreate();
 
 	if (NULL == qt->slist)
 	{
 		free(qt);
-		qt = NULL
+		qt = NULL;
 	}
 
 	return qt;
@@ -54,13 +50,47 @@ void QueueDestroy(queue_t *queue)
 int QueueEnqueue(queue_t *queue, void *data)
 {
 
-	slist_iter_t  qlist= NULL
+	slist_iter_t qtlist = NULL;
 
 	assert(NULL != queue);
 	assert(NULL != data);
 
+	qtlist = SListInsertBefore(SListEnd(queue->slist),data);
 
+	return (!SListIsEmpty(queue->slist));
 }
 
 
+void QueueDequeue(queue_t *queue)
+{
+	assert (NULL != queue);
 
+	SListRemove(SListBegin(queue->slist));
+}
+
+void *QueuePeek(const queue_t *queue)
+{
+	assert (NULL != queue);
+
+	return SListGetData(SListBegin(queue->slist));
+}
+
+size_t QueueSize(const queue_t *queue)
+{
+
+	assert (NULL != queue);
+	return SListCount(queue->slist);
+}
+
+int QueueIsEmpty(const queue_t *queue)
+{
+	return SListIsEmpty(queue->sll);
+}
+
+void QueueAppend(queue_t *dest, queue_t *src)
+{
+	assert (NULL != dest);
+	assert (NULL != src);
+	
+	SlistAppend(dest->slist, src->slist);
+}
