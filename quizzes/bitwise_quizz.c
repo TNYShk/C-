@@ -31,19 +31,19 @@ unsigned int CountCouples1(unsigned int check)
 	int counter = 0;
 	do
 	{
-	if((check&m) == m)
-	{
-		++counter;
-	}
+		if((check&m) == m)
+		{
+			++counter;
+		}
 	check >>=1;
 	
 	}while (check);
+	
 	return counter;
 }
 
 int q3(long num)
 {
-	
 	int count = 0;
 	
 	while (num !=0)

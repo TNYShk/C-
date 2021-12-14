@@ -67,7 +67,7 @@ void PrintMissXOR(int arr[], int arr_size)
     int xor_combined = 0;
     int i = 0;
     int leastsig = 1;
-    int notset_x = 0;
+    int unset_x = 0;
     int set_y = 0;
     int found = 0;
 
@@ -105,7 +105,7 @@ void PrintMissXOR(int arr[], int arr_size)
         
         else
         {
-            notset_x ^= i;
+            unset_x ^= i;
         }
     }
 
@@ -118,12 +118,12 @@ void PrintMissXOR(int arr[], int arr_size)
         
         else
         {
-            notset_x ^= arr[i];
+            unset_x ^= arr[i];
         }
     }
 
 
-    printf("XOR: the 2 missing numbers are %d and %d\n", set_y, notset_x);
+    printf("XOR: the 2 missing numbers are %d and %d\n", set_y, unset_x);
 }
 
 

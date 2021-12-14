@@ -5,13 +5,18 @@
 
 typedef struct queue queue_t;
 
-/* time complexity: O(1), space complexity O(1) */
+/* time complexity: O(1), space complexity O(1) 
+creates new queue
+*/
 queue_t *QueueCreate(void);
 
 /* time complexity: O(n), space complexity O(1) */
 void QueueDestroy(queue_t *queue);
 
-/* time complexity: O(1), space complexity O(1) */
+/* time complexity: O(1), space complexity O(1) 
+add element to the top of queue
+returns boolean result
+*/
 int QueueEnqueue(queue_t *queue, void *data);
 
 /* time complexity: O(1), space complexity O(1) */
