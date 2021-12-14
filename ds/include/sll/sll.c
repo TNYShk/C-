@@ -3,6 +3,8 @@
 #include <assert.h> /* assert() */
 #include <string.h> /* memcpy */
 
+
+/****************** reviewed by Nurit***********/
 #include "sll.h"
 
 enum 
@@ -15,7 +17,7 @@ enum
 struct slist
 {
     slist_iter_t head;
-    slist_iter_t tail; /* tail is the dummy it moves */
+    slist_iter_t tail; 
 };
 
 struct slist_node
@@ -52,6 +54,7 @@ slist_t *SListCreate(void)
 
 	slist->head = dummy;
 	slist->tail = dummy;
+	
 	return slist;
 }
 
@@ -62,7 +65,6 @@ void SListDestroy(slist_t *slist)
 
 	assert(NULL != slist);
 
-	
 	while (current != slist->tail)
 	{
 		next = current->next;
@@ -84,7 +86,6 @@ slist_iter_t SListInsertBefore(const slist_iter_t where, const void *data)
 	slist_iter_t temp = NULL;
 	temp = (slist_iter_t)malloc(sizeof(struct slist_node));
 
-
  	assert(NULL != data);
  	assert(NULL != where);
 
@@ -105,6 +106,7 @@ slist_iter_t SListInsertBefore(const slist_iter_t where, const void *data)
 		temp->next = where;
 	    temp->data = (void *)data; 
 	    ((slist_t *)(where->data))->head = temp;
+
 	    return temp;
     }
 	
@@ -120,6 +122,10 @@ slist_iter_t SListInsertBefore(const slist_iter_t where, const void *data)
 slist_iter_t SListInsertAfter(slist_iter_t where, const void *data)
 {
 	slist_iter_t node_after = NULL;
+	
+	assert(NULL != data);
+ 	assert(NULL != where);
+
 	node_after = (struct slist_node *)malloc(sizeof(struct slist_node));
 	
 	if (NULL == node_after)
@@ -131,7 +137,6 @@ slist_iter_t SListInsertAfter(slist_iter_t where, const void *data)
 		}
 		return node_after;
 	}
-
 
 	node_after->data = (void *)data; 
 	node_after->next = where->next;
@@ -157,12 +162,10 @@ void *SListGetData( slist_iter_t iterator)
 
 void SListSetData(slist_iter_t iterator, const void *data)
 {
-	
 	assert (NULL != iterator);
 	assert (NULL != data);
 
 	iterator->data = (void *)data; 
-	
 }
 
 
@@ -184,17 +187,13 @@ slist_iter_t SListNext(const slist_iter_t iterator)
 }
 
 
-
-
-
-
 slist_iter_t SListRemove(slist_iter_t iterator)
 {
 	slist_iter_t replacement = NULL;
 	
 	if(NULL == iterator->next)
 	{
-		printf("cant remove empty node dummy!\n");
+		printf("cant remove dummy!\n");
 		return iterator;
 	}
 	
@@ -310,8 +309,7 @@ void SlistAppend(slist_t *dest, slist_t *src)
 	
 	src->head->data = src;
 	src->head->next = NULL;
-	
-	src->tail = src->head;
-	
 
+	src->tail = SListBegin(src);
+	
 }

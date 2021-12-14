@@ -1,6 +1,7 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
+#include <stdio.h> /* printf, size_t  */
+#include <stdlib.h> /* memory allocation  */
+#include <assert.h> /* assert() */
+#include <string.h> /* memcpy */
 
 
 #include "sll.h"
