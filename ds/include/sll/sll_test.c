@@ -13,6 +13,7 @@ int main()
 	slist_iter_t testinsert = NULL;
 	slist_iter_t end = NULL;
 	size_t x = 5;
+	float f = 3.14;
 	ptr = &x;
 	Istart = SListBegin(twinky);
 	
@@ -33,6 +34,11 @@ int main()
 
 	printf("number of nodes: %lu\n",SListCount(twinky));
 	end = SListEnd(twinky);
+	end =SListRemove(end);
+	ptr = &f;
+	testinsert = SListInsertBefore(testinsert,ptr);
+	ptr = SListGetData(testinsert);
+	printf("SListInsertBefore end value, value is %f\n",*(float *)ptr);
 	ptr = SListGetData(end);
 	printf("\nvalue of last element (dummy) is garbage  %ld\n",*(size_t*)ptr);
 

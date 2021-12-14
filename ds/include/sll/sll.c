@@ -72,7 +72,6 @@ void SListDestroy(slist_t *slist)
 	{
 		next = current->next;
 		free(current);
-		current = NULL;
 		current = next;
 	}
 
@@ -91,6 +90,7 @@ slist_iter_t SListInsertBefore(const slist_iter_t where, const void *data)
 
 	if (NULL == temp)
 	{
+		
 		return NULL;
 	}
 
@@ -104,7 +104,7 @@ slist_iter_t SListInsertBefore(const slist_iter_t where, const void *data)
 	
 	temp->data = where->data;
 	temp->next = where->next;
-	where->data = memcpy(where->data, data, sizeof(temp));
+	where->data = (void *)data; /*memcpy(where->data, data, sizeof(temp));*/
 	where->next = temp;
 
 	return where;
@@ -116,9 +116,13 @@ slist_iter_t SListInsertAfter(slist_iter_t where, const void *data)
 	slist_iter_t node_after = NULL;
 	node_after = (struct slist_node *)malloc(sizeof(struct slist_node));
 	
-	assert (NULL != node_after);
+	if (NULL == node_after)
+	{
+		/* malloc failed */
+		return SListNext(where);
+	}
 
-	node_after->data = memcpy(where->data,data, sizeof(node_after));
+	node_after->data = (void *)data; /*memcpy(where->data,data, sizeof(node_after));*/
 	node_after->next = where->next;
 	
 	where->next = node_after;
@@ -165,10 +169,10 @@ slist_iter_t SListNext(const slist_iter_t iterator)
 slist_iter_t SListRemove(slist_iter_t iterator)
 {
 	slist_iter_t replacement = NULL;
-	/* need to reassign head in case first element removed */
-
+	
 	if(NULL == iterator->next)
 	{
+		printf("cant remove empty list\n");
 		return iterator;
 	}
 	
