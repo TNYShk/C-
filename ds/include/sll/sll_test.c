@@ -27,9 +27,14 @@ int main()
 	size_t x = 5;
 	float f = 3.14;
 	ptr = &x;
+	kptr = &y;
+
+
+	printf("Created SLL fresh! (1 is empty) %d\n", SListIsEmpty(kika));
+	
 	Istart = SListBegin(twinky);
 	
-	printf("Created SLL fresh! Zero for empty: %d\n", SListIsEmpty(twinky));
+	
 
 	printf("\n*************************Adding nodes***********************\n");
 	Istart = SListInsertBefore(Istart, ptr);
@@ -37,23 +42,24 @@ int main()
 	printf("\ninserted first value(before dummy)! value is %ld\n",*(size_t*)ptr);
 	
 	x = 500;
-	ptr = &x;
-	kptr = &y;
+	
 	testinsert = SListInsertAfter(Istart,ptr);
 	
 	ptr = SListGetData(testinsert);
 	printf("SListInsertAfter start value, value is %ld\n",*(size_t*)ptr);
 	
-	printf("is sll empty? (zero for NO) %d\n", SListIsEmpty(twinky));
+	printf("is sll empty? (zero if NO) %d\n", SListIsEmpty(twinky));
 
 	printf("\tnumber of nodes: %lu\n",SListCount(twinky));
 	end = SListEnd(twinky);
+	
 	printf("\n*************************removing nodes***********************\n");
 	end = SListRemove(end);
 	testinsert = SListRemove(testinsert);
-	printf("\tnumber of nodes: %lu\n",SListCount(twinky));
+	printf("\tnumber of nodes post removal: %lu\n",SListCount(twinky));
 	ptr = &f;
-	printf("\n*************************Adding nodes***********************\n");
+
+	printf("\n***********************Adding & Viewing nodes***********************\n");
 	testinsertb4 = SListInsertAfter(testinsert,ptr);
 	ptr = SListGetData(testinsertb4);
 	printf("SListInsertafter end value, value is %f\n",*(float *)ptr);
@@ -70,10 +76,10 @@ int main()
 	printf("\nAre 2 nodes equal? Zero for no %d\n",SListIsEqual(Istart,testinsert));
 	printf("\n\tnumber of nodes: %lu\n",SListCount(twinky));
 
-	printf("\n*************************another list ***********************\n");
-	Kstart = SListBegin(kika);
+	
 
 	printf("\n************************Adding node new list***********************\n");
+	Kstart = SListBegin(kika);
 	Kinsert = SListInsertAfter(Kstart,kptr);
 	printf("\n\tnumber of nodes kika_list: %lu\n",SListCount(kika));
 	ptr = SListGetData(Kinsert);
@@ -83,7 +89,7 @@ int main()
 	SlistAppend(kika, twinky);
 	printf("\n\tpost append number of nodes kika: %lu\n",SListCount(kika));
 	printf("\n\tnumber of nodes twinky: %lu\n",SListCount(twinky));
-	
+
 	printf("\n*************************Adding nodes to twinky***********************\n");
 	Kend = SListInsertAfter(SListBegin(twinky),kptr);
 	kptr = SListGetData(Kend);

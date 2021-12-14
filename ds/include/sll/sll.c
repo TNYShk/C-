@@ -301,7 +301,6 @@ int SListForEach(const slist_iter_t from, const slist_iter_t to, action_func_t a
 
 void SlistAppend(slist_t *dest, slist_t *src)
 {
-	
 	dest->tail->data = SListGetData(SListBegin(src));
 	dest->tail->next = src->head->next;
 

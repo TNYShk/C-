@@ -12,9 +12,6 @@ typedef int (*action_func_t)(void *data, void *param);
 
 
 
-
-
-
 /* time complexity: O(1), space complexity O(1) 
 
 initializes sll
