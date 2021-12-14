@@ -3,6 +3,13 @@
 
 #include <stddef.h>  /* size_t */
 
+enum stats
+{
+	FAIL = -1, 
+	NOTK, 
+	OK
+};
+
 typedef struct queue queue_t;
 
 /* time complexity: O(1), space complexity O(1) */

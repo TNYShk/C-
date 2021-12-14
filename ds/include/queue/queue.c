@@ -13,7 +13,7 @@ struct queue
 };
 
 
-
+static void *QPeekBottom(queue_t *queue);
 
 queue_t *QueueCreate(void)
 {
@@ -46,6 +46,8 @@ void QueueDestroy(queue_t *queue)
 	free(queue);
 	queue = NULL;
 }
+
+
 
 int QueueEnqueue(queue_t *queue, void *data)
 {
@@ -94,3 +96,4 @@ void QueueAppend(queue_t *dest, queue_t *src)
 
 	SlistAppend(dest->slist, src->slist);
 }
+

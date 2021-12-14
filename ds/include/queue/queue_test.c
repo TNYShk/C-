@@ -20,18 +20,23 @@ int main(void)
 	float f = 3.14;
 
 	qt = QueueCreate();
-
+	(QueueIsEmpty(qt) == OK) ? printf("Q is Empty\n") : printf("Q has been stuffed\n");
 	ptr = &f;
-	printf("enqued? %d\n", QueueEnqueue(qt,ptr));
+	printf("enqueing %d\n", QueueEnqueue(qt,ptr));
+	(QueueIsEmpty(qt) == OK) ? printf("Q is Empty\n") : printf("Q has been stuffed\n");
 	peek = QueuePeek(qt);
-	printf("peekaboo! %f\n", *(float*)peek);
+	printf("peekaboo! top %f\n", *(float*)peek);
 
 	ptr = &t;
-	printf("enqued? %d\n", QueueEnqueue(qt,ptr));
+	printf("enqueing %d\n", QueueEnqueue(qt,ptr));
+	printf("size? %ld\n",QueueSize(qt));
+	
+	t = 666;
+	printf("enqueing %d\n", QueueEnqueue(qt,ptr));
 	printf("size? %ld\n",QueueSize(qt));
 	
 	peek = QueuePeek(qt);
-	printf("peekaboo! %ld\n", *(size_t*)peek);
+	printf("peekaboo! top %ld\n", *(size_t*)peek);
 
 	QueueDequeue(qt);
 
