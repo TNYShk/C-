@@ -23,17 +23,23 @@ int main(void)
 
 	ptr = &f;
 	printf("enqued? %d\n", QueueEnqueue(qt,ptr));
+	peek = QueuePeek(qt);
+	printf("peekaboo! %f\n", *(float*)peek);
+
 	ptr = &t;
 	printf("enqued? %d\n", QueueEnqueue(qt,ptr));
 	printf("size? %ld\n",QueueSize(qt));
 	
 	peek = QueuePeek(qt);
-	printf("peekaboo! %f\n", *(float*)peek);
+	printf("peekaboo! %ld\n", *(size_t*)peek);
 
 	QueueDequeue(qt);
 
 	ptr = QueuePeek(qt);
 	printf("peekaboo! %ld\n", *(size_t*)peek);
+
+	
+
 	
 
 

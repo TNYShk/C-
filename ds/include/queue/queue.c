@@ -55,7 +55,7 @@ int QueueEnqueue(queue_t *queue, void *data)
 	assert(NULL != queue);
 	assert(NULL != data);
 
-	qtlist = SListInsertBefore(SListEnd(queue->slist),data);
+	qtlist = SListInsertAfter(SListBegin(queue->slist),data);
 
 	return (!SListIsEmpty(queue->slist));
 }
@@ -72,25 +72,25 @@ void *QueuePeek(const queue_t *queue)
 {
 	assert (NULL != queue);
 
-	return SListGetData(SListBegin(queue->slist));
+	return SListGetData(SListNext(SListBegin(queue->slist)));
 }
 
 size_t QueueSize(const queue_t *queue)
 {
-
 	assert (NULL != queue);
 	return SListCount(queue->slist);
 }
 
 int QueueIsEmpty(const queue_t *queue)
 {
-	return SListIsEmpty(queue->sll);
+	assert (NULL != queue);
+	return SListIsEmpty(queue->slist);
 }
 
 void QueueAppend(queue_t *dest, queue_t *src)
 {
 	assert (NULL != dest);
 	assert (NULL != src);
-	
+
 	SlistAppend(dest->slist, src->slist);
 }
