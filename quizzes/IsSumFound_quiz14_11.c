@@ -16,14 +16,14 @@ int IsSumFound(int *sorted_ar, int target, int size)
 	
 	while(left<right)
 	{
-		int sum= *left + *right;
+		int sum = *left + *right;
 		if(sum == target)
 		{
 			printf("found target %d at\nlocation a: %p\nlocation b: %p\n",target,left,right);
 			
 			return 1;
 		}
-		if(sum>target)
+		if(sum > target)
 			--right;
 		else
 		{
@@ -37,7 +37,7 @@ int IsSumFound(int *sorted_ar, int target, int size)
 int main (void)
 {
 	int ar[5]= {2,4,7,12,14};
-	int x= IsSumFound(ar,21,5);
+	int x = IsSumFound(ar,21,5);
 	printf("ar[0] location %p\n",&ar[0]);
 	printf("ar[1] location %p\n",&ar[1]);
 	printf("ar[2] location %p\n",&ar[2]);

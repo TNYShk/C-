@@ -5,7 +5,7 @@
 
 
 
-static ParLut[255] = {0};
+static ParLut[255] = {0}; /*not sure how to use it yet*/
 
 typedef struct stack
 {

@@ -1,21 +1,22 @@
 #include <stdio.h>
 
-void TF(int);
+void DivideFiveThree(int);
 void PrintReverse(int, char *);
-const int aA =32;
+
+const int aA ='a' - 'A';
 
 
 
 
 void PrintReverse(int length, char *string)
 {
-	char *str_end= length + string;
+	char *str_end = length + string;
 	
-		while (string <= str_end && (str_end--))
+		while (string <= str_end && (--str_end))
 		{
-			if((*str_end<=90) && (*str_end >=65))
+			if((*str_end <= 'Z') && (*str_end >= 'A'))
 			{
-				printf("%c",*str_end+aA);
+				printf("%c",*str_end + aA);
 			}
 			
 			else 
@@ -29,11 +30,12 @@ void PrintReverse(int length, char *string)
 
 
 
+/*divide by 3,5 */
 
-void TF(int number)
+void DivideFiveThree(int number)
 {
-	int i;
-	for(i=1;i<=number;i++)
+	int i = 0;
+	for(i = 1; i <= number; ++i)
 	{
 		if ((i % 3 == 0) && (i % 5 == 0))
 		{
@@ -63,7 +65,7 @@ void TF(int number)
 
 int main ()
 {
-TF(15);
+DivideFiveThree(15);
 printf("\n");
 PrintReverse(11,"HeLLO WoRlD");
 printf("\n");
