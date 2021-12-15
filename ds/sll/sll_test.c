@@ -63,7 +63,6 @@ int main()
 	printf("\ninserted first value(before dummy)! value is %ld\n",*(size_t*)ptr);
 	
 	x = 500;
-	
 	testinsert = SListInsertAfter(Istart,ptr);
 	
 	ptr = SListGetData(testinsert);
@@ -91,13 +90,13 @@ int main()
 	ptr = &f;
 	printf("SListInsertBefore end value, value is %f\n",*(float *)ptr);
 	
-	
 	f = 1.99999;
 	SListSetData(testinsertb4,(void*)&f);
 	ptr = SListGetData(testinsertb4);
 	printf("\nSetValue test, changed to %f\n",*(float *)ptr);
+	
 	ans = SListForEach(Istart,testinsertb4,MatchTest,ptr);
-	printf("check nodes if they are equial to %f, ans is %d\n",f, ans);
+	printf("\ncheck nodes if they are equal to %f, ans is %d\n",f, ans);
 
 	printf("\nAre 2 nodes equal? Zero for no %d\n",SListIsEqual(Istart,testinsert));
 	printf("\n\tnumber of nodes: %lu\n",SListCount(twinky));

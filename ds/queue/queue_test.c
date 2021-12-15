@@ -20,44 +20,53 @@ int main(void)
 	void *peek = NULL;
 
 	size_t t = 444;
-
 	float f = 3.14;
 
 	qt = QueueCreate();
 	qt2 = QueueCreate();
-	(QueueIsEmpty(qt) == 1) ? printf("Q is Empty\n") : printf("Q has been stuffed\n");
+
+	(QueueIsEmpty(qt) == 1) ? printf("\nQ is Empty\n") : printf("\nQ has been stuffed\n");
 	ptr = &f;
-	printf("enqueing %d\n", QueueEnqueue(qt,ptr));
-	printf("\nenqueing to qt2 (%d)\n\n", QueueEnqueue(qt2,ptr));
+
+	printf("---------------------------enque Q and Q2---------------------\n");
+	printf("enque (%d)\n", QueueEnqueue(qt,ptr));
+	printf("\nenque to Q2 (%d)\n\n", QueueEnqueue(qt2,ptr));
 	(QueueIsEmpty(qt) == 1) ? printf("Q is Empty\n") : printf("Q has been stuffed\n");
+	(QueueIsEmpty(qt2) == 1) ? printf("Q2 is Empty\n") : printf("Q2 has been stuffed\n");
 	
+	printf("---------------------------peek into Q---------------------\n");
 	peek = QueuePeek(qt);
-	printf("peekaboo! top %f\n", *(float*)peek);
+	printf("peekaboo! %f\n", *(float*)peek);
 
+	printf("------------------enque Q & Q2 same val---------------------\n");
 	ptr = &t;
-	printf("enqueing %d\n", QueueEnqueue(qt,ptr));
-	printf("\nenqueing to qt2 (%d)\n\n", QueueEnqueue(qt2,ptr));
-	
+	printf("enque to Q(%d)\n", QueueEnqueue(qt,ptr));
+	printf("\nenque to Q2 (%d)\n", QueueEnqueue(qt2,ptr));
+	printf("---------------------------peek into Q2---------------------\n");
+	peek = QueuePeek(qt2);
+	printf("peekaboo!  %f\n", *(float*)peek);
 
-	printf("qt2 size? %ld\n",QueueSize(qt2));
-	printf("qt size? %ld\n",QueueSize(qt));
+	printf("Q2 size? %ld\n",QueueSize(qt2));
+	printf("Q size? %ld\n",QueueSize(qt));
 
 	QueueAppend(qt,qt2);
+	printf("\nAppended Q2 into Q1\n");
+	printf("post append Q2 size: %ld\n",QueueSize(qt2));
 
-	printf("Appended qt2 into qt1\n");
-	peek = QueuePeek(qt);
-	printf("\npeekaboo!  %f\n", *(float *)peek);
+	printf("---------------------------enque and deque into Q---------------------\n");
+	
 	t = 666;
-	printf("enqueing qt1 %d\n", QueueEnqueue(qt,ptr));
+	printf("enque Q (%d)\n", QueueEnqueue(qt,ptr));
 
 	QueueDequeue(qt);
-	printf("post dequeue qt1 size? %ld\n",QueueSize(qt));
-	printf("enqueing qt1 %d\n", QueueEnqueue(qt,ptr));
-	printf("size? %ld\n",QueueSize(qt));
+	printf("post dequeue Q size: %ld\n",QueueSize(qt));
+	printf("enque Q (%d)\n", QueueEnqueue(qt,ptr));
+	printf("Q size? %ld\n",QueueSize(qt));
 	QueueDequeue(qt);
-	printf("dequeue size? %ld\n",QueueSize(qt));
+	printf("post dequeue Q size: %ld\n",QueueSize(qt));
 
 	
+	printf("---------------------------peek into Q---------------------\n");
 	peek = QueuePeek(qt);
 	printf("peekaboo!  %ld\n", *(size_t*)peek);
 
