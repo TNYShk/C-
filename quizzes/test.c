@@ -16,6 +16,24 @@ typedef struct s
 static const unsigned int lut_ar[] = {0,1,1,2,1,2,2,3,1,2,2,3,2,3,3,4};
 
 
+static void PrintBits(unsigned char byte)
+{
+	int string[1] = {0};
+	unsigned char bit_mask = 1u;
+	while(byte)
+	{
+		
+		*string = byte&bit_mask;
+		byte>>=1;
+		printf("%d",*string);
+		
+		 
+	}
+	printf("\n");
+	
+}
+
+
 /* Q6 */
 size_t CountSetBits(unsigned char ch)
 {
@@ -93,8 +111,11 @@ size_t CountOnBB(unsigned char cc)
 char RotateLeft(char byte, unsigned int nbits)
 {
 	assert(8 > nbits);
+	
 	return ( (byte << nbits) | ( byte >> (CHAR_BIT - nbits) ));
 }
+
+
 /* Q9 */
 void SwapPtrs(int **p1, int **p2)
 {
@@ -267,6 +288,9 @@ int main()
 	printf("a is now %x and b  %x\n",p1,p2);
 	printf("\nlength of %s is %ld\n",strong, Strlen(strong));
 	printf("\nanother fibo element 9 is %d\n", anotherFibo(9) );
+	
+	PrintBits(7u);
+	PrintBits(RotateLeft(7,6));
 	/*
 	printf("fibo 9 is %ld\n",GetFibonacci(9));
 	printf("size of sticky is: %ld\n", sizeof(s_t));
@@ -292,8 +316,9 @@ int main()
 	SwapInts(&x, &y);
 	printf("sizeof short is %ld\n",sizeof(short));
 	printf("sizeof unsigned int is %ld\n",sizeof(unsigned int));
+	
+	/*foo();*/
 	free(s3);
 	s3 = NULL;
-	/*foo();*/
-		return 0;
+	return 0;
 }

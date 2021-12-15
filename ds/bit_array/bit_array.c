@@ -15,7 +15,7 @@
 #define m16 (0x0000ffff0000ffff)
 #define h01 (0x0101010101010101)
 
-static const unsigned long lut_mirror[] = {m1,m2,m4,m8,m16,h01};
+/*static const unsigned long lut_mirror[] = {m1,m2,m4,m8,m16,h01};*/
 
 static const unsigned int lut_ar[] = {0,1,1,2,1,2,2,3,1,2,2,3,2,3,3,4};
 

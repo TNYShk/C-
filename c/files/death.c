@@ -28,23 +28,32 @@ typedef int (*foo)(const char *,const char *s);
 typedef int (*barf)(char *s, char *filename);
 
 
-typedef struct Death{
+typedef struct Death
+{
 
-	char* name;
+	char *name;
 	foo compare;
 	barf action;
-} Death;
+} death_t;
 
-enum struname{Exit,Remove,Count,ToBegin,Write,FIVE};
+enum struname
+{
+	Exit,
+	Remove,
+	Count,
+	ToBegin,
+	Write,
+	FIVE
+};
 
 
 
 int DoExit(char *, char *);
-static void InitStruct(Death *);
+static void InitStruct(death_t *);
 FILE* GetFile(char *argv[]);
-int DoNothing(const char *str,const char *file);
-int AddtoStart(char*,char*);
-static int CompareChar(const char* str, const char* ch);
+int DoNothing(const char *str, const char *file);
+int AddtoStart(char *,char *);
+static int CompareChar(const char *str, const char *ch);
 int fCopy(FILE * ,FILE *);
 
 
@@ -52,17 +61,17 @@ int fCopy(FILE * ,FILE *);
 int main(int argc, char *argv[])
 {
 	
-	int isRunning=1;
+	int isRunning = 1;
 	static char sentence[MAX];
-	static Death array[FIVE];
+	static death_t array[FIVE];
 	
-	char *filename;
-	if(NULL ==argv[1]){
+	char *filename = NULL;
+	if(NULL == argv[1]){
 		printf("restart! forgot file name\n");
 		return 0;
 	}
 
-	filename= argv[1];
+	filename = argv[1];
 
 	InitStruct(array);
 	
@@ -71,11 +80,11 @@ int main(int argc, char *argv[])
 		int i;
 		fgets (sentence,MAX,stdin);
 		
-		for(i=0;i<FIVE;i++)
+		for(i = 0;i<FIVE;i++)
 		{ 
 			if(0 == array[i].compare(array[i].name,sentence))
 			{
-				isRunning=array[i].action(sentence,filename);
+				isRunning = array[i].action(sentence,filename);
 
 				break;
 			}
@@ -102,7 +111,7 @@ int DoExit(char *str, char *file){
 	
 	(void)str;
 	(void)file;
-	return 0;
+	return Exit;
 }
 
 
@@ -110,7 +119,7 @@ int DoRemove(char *str, char *file)
 {
 	int ans;
 	(void)str;
-	ans =remove(file);
+	ans = remove(file);
 	return (0 == ans);
 }
 
@@ -123,14 +132,14 @@ int DoNothing(const char *str,const char *file)
 }
 
 
-int CountLines(char *sent,char* file)
+int CountLines(char *sent, char *file)
 {
 	char cc;
-	int count=0;
+	int count = 0;
 	FILE * pFile;
 	pFile = fopen (file,"r");
 	if(NULL != pFile){
-	for(cc= getc(pFile); cc!=EOF; cc=getc(pFile))
+	for(cc = getc(pFile); cc != EOF; cc = getc(pFile))
 	{
 		if ('\n' == cc)
 		{
@@ -145,10 +154,12 @@ int CountLines(char *sent,char* file)
 }
 
 
-static int CompareChar(const char * str, const char * ch)
+static int CompareChar(const char *str, const char *ch)
 {
-	if(*str==*ch)
-		return 0;
+	if(*str == *ch)
+	{
+		return Exit;
+	}
 	return 1;
 }
 
@@ -156,14 +167,15 @@ static int CompareChar(const char * str, const char * ch)
 
 int AppendtoStart(char*string,char*file)
 {
-	FILE * pFile;
-	FILE * cFile;
+	FILE *pFile;
+	FILE *cFile;
 	assert (NULL != file);
 	pFile = fopen (file,"r+");
-	cFile= fopen("new_file","a+");
+	cFile = fopen("new_file","a+");
+	
 	fputs (++string,cFile);
 	
-	if(0==fCopy(pFile,cFile)){
+	if(0 == fCopy(pFile,cFile)){
 		fclose(pFile);
 		fclose(cFile);
 		remove(file);
@@ -172,7 +184,7 @@ int AppendtoStart(char*string,char*file)
 	}
 	fclose(pFile);
 	fclose(cFile);
-	return 0;
+	return Exit;
 }
 
 
@@ -187,31 +199,31 @@ int fCopy(FILE * fsrc,FILE *fdest)
 	}
 	if (ferror(fsrc) || ferror(fdest))
 		return EOF;
-	return 0;
+	return Exit;
 }
 	
 
-static void InitStruct(Death * array) /*pointer to struct of type death*/
+static void InitStruct(death_t * array) /*pointer to struct of type death*/
 {	
-	array[Exit].name="-exit\n";
-	array[Exit].compare= strcmp;
-	array[Exit].action= DoExit;
+	array[Exit].name = "-exit\n";
+	array[Exit].compare = strcmp;
+	array[Exit].action = DoExit;
 
-	array[Remove].name="-remove\n";
-	array[Remove].compare= strcmp;
-	array[Remove].action= DoRemove;
+	array[Remove].name = "-remove\n";
+	array[Remove].compare = strcmp;
+	array[Remove].action = DoRemove;
 
-	array[Count].name="-count\n";
-	array[Count].compare=strcmp;
-	array[Count].action=CountLines;
+	array[Count].name = "-count\n";
+	array[Count].compare = strcmp;
+	array[Count].action = CountLines;
 
-	array[3].name="<";
-	array[3].compare=CompareChar;
-	array[3].action=AppendtoStart;
+	array[3].name = "<";
+	array[3].compare = CompareChar;
+	array[3].action = AppendtoStart;
 
-	array[Write].name=" ";
-	array[Write].compare=DoNothing;
-	array[Write].action=doWrite;
+	array[Write].name = " ";
+	array[Write].compare = DoNothing;
+	array[Write].action = doWrite;
 
 }
 
