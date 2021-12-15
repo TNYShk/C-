@@ -6,6 +6,12 @@
 
 #include "sll.h"
 
+
+/* havent finished testing!!*/
+
+
+
+
 int MatchFloat(void *data, void *param)
 {
     return (*(float *)data == *(float *)param);
@@ -18,8 +24,6 @@ int AddDecimal(void *data, void *param)
 
     return *(int *)data;
 }
-
-
 
 
 int main()
@@ -94,7 +98,7 @@ int main()
 	printf("\nSetValue test, changed to %f\n",*(float *)ptr);
 	ans = SListForEach(Istart,testinsertb4,MatchTest,ptr);
 	printf("check nodes if they are equial to %f, ans is %d\n",f, ans);
-	
+
 	printf("\nAre 2 nodes equal? Zero for no %d\n",SListIsEqual(Istart,testinsert));
 	printf("\n\tnumber of nodes: %lu\n",SListCount(twinky));
 
