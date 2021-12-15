@@ -1,7 +1,10 @@
 #include <stdlib.h> /* size_t, dyncamic memory allocation  */
 #include <assert.h> /* asserts */
 #include <string.h> /* memcpy*/
-#include <stdio.h>
+#include <stdio.h> /* printf */
+
+/* ********reviewed by Nurit *************/
+
 
 typedef struct node
 {
@@ -9,14 +12,11 @@ typedef struct node
 	struct node *next;
 }node_t;
 
+
 node_t *Flip(node_t *head);
 int HasLoop(const node_t *head);
 node_t *FindIntersection(node_t *head_1, node_t *head_2);
 
-
-
-
-/* test each func separetly!! since the node_t is volatile*/
 
 int main()
 {
@@ -27,18 +27,18 @@ int main()
 	int t = 26;
 	int ans = -1;
 
-	node_t *head;
-	node_t *head2;
-	node_t *temp;
+	node_t *head = NULL;
+	node_t *head2 = NULL;
+	node_t *temp = NULL;
 	
 	
-	/*list 1 */
+	/*structs list 1 */
 	node_t one;
 	node_t two; 
 	node_t three; 
 	node_t four; 
 	
-	/*list 2 */
+	/*structs list 2 */
 	node_t onew;
 	node_t twow; 
 	
@@ -53,35 +53,36 @@ int main()
 	three.next = &four;
 	four.data = &w;
 	four.next = NULL;
-	/*four.next = &one; to test loop*/
 	
+	
+
+	printf("\n\t--------------------------2 lists, check for loop--------------------------------\n");
+	head = &one;
+	ans = HasLoop(head);
+	printf("list 1 is there a loop? zero for no: %d\n", ans);
+
 	onew.data = &t;
 	onew.next = &twow;
 	twow.data = &w;
-	twow.next = &three;
+	twow.next = &onew;
 
-	head = &one;
 	head2 = &onew;
+	ans = HasLoop(head2);
 
-
-	/*
-	ans = HasLoop(head);
-	printf("ans is: %d\n", ans);
-	*/
+	printf("list 2 is there a loop? zero for no: %d\n", ans);
+	printf("\n\t--------------------------find intersection--------------------------------\n");
+	twow.next = &three;
 	temp = FindIntersection(head,head2);
-	printf("temp data? %d\n", *(int*)temp->data);
+	printf("check for intersection node, its value is: %d\n", *(int*)temp->data);
 
-	/*
-	printf("data in one.next->data is %d\n", *(int*)one.next->data);
-	
-	printf("data in two.next->data is %d\n", *(int*)two.next->data);
-	
-	
-	Flip(head);
-
-	printf("\ndata in two.next->data is %d\n", *(int*)two.next->data);
+	printf("\n\t--------------------------flip--------------------------------------\n");
 	printf("data in three.next->data is %d\n", *(int*)three.next->data);
-	*/
+	Flip(head);
+	printf("post flip data in two.next->data is %d\n", *(int*)two.next->data);
+	printf("post flip data in three.next->data is %d\n", *(int*)three.next->data);
+
+
+
 return 0;
 	
 }
@@ -90,7 +91,9 @@ return 0;
 
 node_t *Flip(node_t *head)
 {
-	node_t *temp1, *temp2, *temp3;
+	node_t *temp1 = NULL, *temp2 = NULL, *temp3 = NULL;
+
+	assert (NULL != head);
 
 	temp3 = head;
 	temp1 = temp3;
@@ -114,12 +117,14 @@ int HasLoop(const node_t *head)
 	const node_t *temp1 = head;
 	const node_t *temp2 = head;
 
+	assert (NULL != head);
+
 	do
 	{
 		temp1 = temp1->next;
 		temp2 = temp2->next->next;
 	}
-	while ((temp1 != temp2) && (temp2 != NULL));
+	while ((temp1 != temp2) && (NULL != temp2));
 
 	return (temp1 == temp2);
 
@@ -129,18 +134,22 @@ node_t *FindIntersection(node_t *head_1, node_t *head_2)
 {
 	node_t *temp1 = head_1;
 	node_t *temp2 = head_2;
+
 	int count1 = 0;
 	int count2 = 0;
 	int diff = 0;
 
-	while(temp1->next != NULL)
+	assert (NULL != head_1);
+	assert (NULL != head_2);
+
+	while(NULL != temp1->next)
 	{
 		++count1;
 		temp1 = temp1->next;
 	}
 	temp1 = head_1;
 
-	while(temp2->next != NULL)
+	while(NULL != temp2->next)
 	{
 		++count2;
 		temp2 = temp2->next;
@@ -167,7 +176,7 @@ node_t *FindIntersection(node_t *head_1, node_t *head_2)
 		}
 	}
 
-	while( (temp1->next != NULL) || (temp2->next != NULL))
+	while( (temp1->next != NULL) || (temp2->next != NULL) )
 	{
 		if(temp1->next == temp2->next)
 		{
