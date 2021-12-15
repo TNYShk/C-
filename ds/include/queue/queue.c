@@ -12,8 +12,13 @@ struct queue
 	slist_t *slist;
 };
 
-
-static void *QPeekBottom(queue_t *queue);
+static void *QPeekBottom(queue_t *queue)
+{
+	void * ptr = NULL;
+	
+	ptr = SListGetData(SListEnd(queue->slist));
+	return ptr;
+}
 
 queue_t *QueueCreate(void)
 {
@@ -57,7 +62,10 @@ int QueueEnqueue(queue_t *queue, void *data)
 	assert(NULL != queue);
 	assert(NULL != data);
 
-	qtlist = SListInsertAfter(SListBegin(queue->slist),data);
+	/*qtlist = SListInsertAfter(SListBegin(queue->slist),data);*/
+	
+
+	qtlist = SListInsertBefore(SListEnd(queue->slist),data);
 
 	return (!SListIsEmpty(queue->slist));
 }
@@ -72,9 +80,10 @@ void QueueDequeue(queue_t *queue)
 
 void *QueuePeek(const queue_t *queue)
 {
+	
 	assert (NULL != queue);
 
-	return SListGetData(SListNext(SListBegin(queue->slist)));
+	return SListGetData(SListBegin(queue->slist));
 }
 
 size_t QueueSize(const queue_t *queue)

@@ -134,7 +134,7 @@ bits_arr64_t BitArrayMirror(bits_arr64_t num)
 
     return num;
 }
-
+/* instead of % and assert, verify that rotation is within boundaries */
 bits_arr64_t BitArrayRotateRight(bits_arr64_t bit_array, unsigned int rotation)
 {
 	return bit_array >> (rotation & (LONG_LEN - 1)) | bit_array << (LONG_LEN - (rotation & (LONG_LEN - 1)));

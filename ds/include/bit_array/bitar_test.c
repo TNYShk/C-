@@ -8,6 +8,22 @@
 
 #define LONG_LEN (CHAR_BIT * (sizeof(unsigned long)))
 
+static void PrintBits(unsigned char byte)
+{
+	int string[1] = {0};
+	unsigned char bit_mask = 1u;
+	while(byte)
+	{
+		
+		*string = byte&bit_mask;
+		byte>>=1;
+		printf("%d",*string);
+		
+		 
+	}
+	printf("\n");
+	
+}
 
 
 int main(){
@@ -37,10 +53,15 @@ int main(){
 	bitty = BitArraySetBit(bitty,2,1);
 	/* bitty = BitArraySetOn(bitty,2);  */
 	printf("bitty set on value is:  %ld\n",bitty);
+	str = BitArrayToString(bitty,str);
+	printf("%s\n",str);
 	bitty = BitArrayFlip(bitty,2);
 	printf("flipped idx2: %ld\n",bitty);
-	str = BitArrayToString(bitty,str);
-	printf("0%s\n",str);
+	PrintBits(BitArrayFlip(bitty,2));
+
+	bitty = BitArrayFlip(bitty,2);
+	printf("flipped again idx2: %ld\n",bitty);
+
 	ans = BitArrayGetVal(bitty,63);
 	printf("value of bit in location 63 is %ld\n",ans);
 	ans = BitArrayGetVal(bitty,2);

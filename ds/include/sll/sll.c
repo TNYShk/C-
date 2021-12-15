@@ -7,7 +7,7 @@
 /****************** reviewed by Nurit***********/
 #include "sll.h"
 
-enum 
+enum stats
 {
 	FAIL = -1, 
 	NOTK, 
@@ -220,7 +220,7 @@ size_t SListCount(const slist_t *slist)
 
 	assert(NULL != slist);
 
-	while(current != slist->tail)
+	while(current->next != NULL)
 	{
 		++counter;
 		current = current->next;

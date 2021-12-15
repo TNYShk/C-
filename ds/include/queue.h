@@ -11,7 +11,8 @@ queue_t *QueueCreate(void);
 /* time complexity: O(n), space complexity O(1) */
 void QueueDestroy(queue_t *queue);
 
-/* time complexity: O(1), space complexity O(1) */
+/* time complexity: O(1), space complexity O(1) 
+*/
 int QueueEnqueue(queue_t *queue, void *data);
 
 /* time complexity: O(1), space complexity O(1) */
