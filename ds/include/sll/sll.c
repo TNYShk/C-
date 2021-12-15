@@ -65,15 +65,12 @@ void SListDestroy(slist_t *slist)
 
 	assert(NULL != slist);
 
-	while (current != slist->tail)
+	while (current != NULL)
 	{
 		next = current->next;
 		free(current);
 		current = next;
 	}
-
-	free(slist->tail);
-	slist->tail = NULL;
 
 	free(slist);
 	slist = NULL;
@@ -81,7 +78,7 @@ void SListDestroy(slist_t *slist)
 
 
 
-slist_iter_t SListInsertBefore(const slist_iter_t where, const void *data)
+slist_iter_t SListInsertBefore(const slist_iter_t where, void *data)
 {
 	slist_iter_t temp = NULL;
 	temp = (slist_iter_t)malloc(sizeof(struct slist_node));
@@ -104,7 +101,7 @@ slist_iter_t SListInsertBefore(const slist_iter_t where, const void *data)
 	if (SListIsEqual(((slist_t *)(where->data))->head, ((slist_t *)(where->data))-> tail))
     {
 		temp->next = where;
-	    temp->data = (void *)data; 
+	    temp->data = data; 
 	    ((slist_t *)(where->data))->head = temp;
 
 	    return temp;
@@ -112,14 +109,14 @@ slist_iter_t SListInsertBefore(const slist_iter_t where, const void *data)
 	
 	temp->data = where->data;
 	temp->next = where->next;
-	where->data = (void *)data; 
+	where->data = data; 
 	where->next = temp;
 
 	return where;
 }
 
 
-slist_iter_t SListInsertAfter(slist_iter_t where, const void *data)
+slist_iter_t SListInsertAfter(slist_iter_t where,  void *data)
 {
 	slist_iter_t node_after = NULL;
 	
@@ -138,7 +135,7 @@ slist_iter_t SListInsertAfter(slist_iter_t where, const void *data)
 		return node_after;
 	}
 
-	node_after->data = (void *)data; 
+	node_after->data = data; 
 	node_after->next = where->next;
 	
 	where->next = node_after;
@@ -160,12 +157,12 @@ void *SListGetData( slist_iter_t iterator)
 }
 
 
-void SListSetData(slist_iter_t iterator, const void *data)
+void SListSetData(slist_iter_t iterator, void *data)
 {
 	assert (NULL != iterator);
 	assert (NULL != data);
 
-	iterator->data = (void *)data; 
+	iterator->data = data; 
 }
 
 
@@ -250,7 +247,6 @@ int SListIsEqual(const slist_iter_t iterator1, const slist_iter_t iterator2)
 slist_iter_t SListFind(const slist_iter_t from, const slist_iter_t to, match_func_t is_match, void *param)
 {
     slist_iter_t temp_result = NULL;
-    int match = 0;
     
     assert(NULL != from);
     assert(NULL != to);
@@ -260,44 +256,38 @@ slist_iter_t SListFind(const slist_iter_t from, const slist_iter_t to, match_fun
     
     while (!SListIsEqual(to, temp_result))
     {
-        match = is_match(temp_result->data, param);
-        
-        if (OK == match)
-        {
-            return temp_result;
-        }
-        
-        temp_result = SListNext(temp_result);
+       if(is_match(temp_result->data, param))
+       {
+       		return temp_result;
+       }
+    
+    temp_result = SListNext(temp_result);
     }
     
     return NULL;
 }
 
 
-int SListForEach(const slist_iter_t from, const slist_iter_t to, action_func_t action_func, void *param)
+int SListForEach( slist_iter_t from,  slist_iter_t to, action_func_t action_func, void *param)
 {
     slist_iter_t current = NULL;
-    
-    int result = 0;
-    
+    int ans = FAIL;
     assert(NULL != from);
     assert(NULL != to);
     assert(NULL != param);
     
     current = from;
     
-    while (!SListIsEqual(to, current))
+    while (current != to)
     {
-        result = action_func(current->data, param);
-        if (FAIL == result)
-        {
-            return result;
-        }
+        
+        ans = action_func(current->data, param);
         current = SListNext(current);
     }
     
-    return result;
+    return ans;
 }
+
 
 void SlistAppend(slist_t *dest, slist_t *src)
 {

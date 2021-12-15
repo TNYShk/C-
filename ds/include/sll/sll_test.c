@@ -6,6 +6,22 @@
 
 #include "sll.h"
 
+int MatchFloat(void *data, void *param)
+{
+    return (*(float *)data == *(float *)param);
+}
+
+
+int AddDecimal(void *data, void *param)
+{
+    *(int *)data = *(int *)data + *(int *)param;
+
+    return *(int *)data;
+}
+
+
+
+
 int main()
 {
 	void *ptr = NULL;
@@ -20,16 +36,17 @@ int main()
 	slist_iter_t Kstart = NULL;
 	slist_iter_t Kinsert = NULL;
 	slist_iter_t Kend = NULL;
+	match_func_t MatchTest = MatchFloat;
 
-
-
+	int ans = -2;
 	int y = 27;
 	size_t x = 5;
 	float f = 3.14;
+	float ff = 1.618;
 	ptr = &x;
 	kptr = &y;
 
-
+	
 	printf("Created SLL fresh! (1 is empty) %d\n", SListIsEmpty(kika));
 	
 	Istart = SListBegin(twinky);
@@ -57,22 +74,27 @@ int main()
 	end = SListRemove(end);
 	testinsert = SListRemove(testinsert);
 	printf("\tnumber of nodes post removal: %lu\n",SListCount(twinky));
-	ptr = &f;
+	ptr = &ff;
 
 	printf("\n***********************Adding & Viewing nodes***********************\n");
 	testinsertb4 = SListInsertAfter(testinsert,ptr);
 	ptr = SListGetData(testinsertb4);
 	printf("SListInsertafter end value, value is %f\n",*(float *)ptr);
-	f = 1.618;
-	ptr = &f;
+	
+	ptr = &ff;
 	testinsertb4 = SListInsertBefore(testinsert,ptr);
 	ptr = SListGetData(testinsertb4);
+	ptr = &f;
 	printf("SListInsertBefore end value, value is %f\n",*(float *)ptr);
+	
+	
 	f = 1.99999;
 	SListSetData(testinsertb4,(void*)&f);
 	ptr = SListGetData(testinsertb4);
 	printf("\nSetValue test, changed to %f\n",*(float *)ptr);
-
+	ans = SListForEach(Istart,testinsertb4,MatchTest,ptr);
+	printf("check nodes if they are equial to %f, ans is %d\n",f, ans);
+	
 	printf("\nAre 2 nodes equal? Zero for no %d\n",SListIsEqual(Istart,testinsert));
 	printf("\n\tnumber of nodes: %lu\n",SListCount(twinky));
 

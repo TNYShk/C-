@@ -6,7 +6,7 @@
 typedef struct slist slist_t;
 typedef struct slist_node* slist_iter_t;    /* current pointer*/
 
-typedef int (*match_func_t)(const void *data, void *param);
+typedef int (*match_func_t)(void *data, void *param);
 typedef int (*action_func_t)(void *data, void *param);
 
 
@@ -37,7 +37,7 @@ inserts new node right befor the requsted node (where)
 returns the node that was added
 
 */
-slist_iter_t SListInsertBefore(const slist_iter_t where, const void *data); 
+slist_iter_t SListInsertBefore(const slist_iter_t where, void *data); 
 
 
 
@@ -47,7 +47,7 @@ slist_iter_t SListInsertBefore(const slist_iter_t where, const void *data);
 amortized complexity! **if malloc fails*** do need to run on the sll to find and return End which is O(n) 
 returns node that was inserted
 */
-slist_iter_t SListInsertAfter(slist_iter_t where,const void *data);
+slist_iter_t SListInsertAfter(slist_iter_t where,void *data);
 
 
 
@@ -92,7 +92,7 @@ slist_iter_t SListFind(const slist_iter_t from, const slist_iter_t to, match_fun
 
 
 /* time complexity: O(n), space complexity O(1) */
-int SListForEach(const slist_iter_t from, const slist_iter_t to, action_func_t action_func, void *param);
+int SListForEach( slist_iter_t from, slist_iter_t to, action_func_t action_func, void *param);
 
 
 
@@ -131,7 +131,7 @@ void *SListGetData(const slist_iter_t iterator);
 set data to the node
 no return value
 */
-void SListSetData(slist_iter_t iterator, const void *data);
+void SListSetData(slist_iter_t iterator, void *data);
 
 /* time complexity: O(1), space complexity O(1) 
 

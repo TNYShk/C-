@@ -12,13 +12,6 @@ struct queue
 	slist_t *slist;
 };
 
-static void *QPeekBottom(queue_t *queue)
-{
-	void * ptr = NULL;
-	
-	ptr = SListGetData(SListEnd(queue->slist));
-	return ptr;
-}
 
 queue_t *QueueCreate(void)
 {
@@ -61,9 +54,6 @@ int QueueEnqueue(queue_t *queue, void *data)
 
 	assert(NULL != queue);
 	assert(NULL != data);
-
-	/*qtlist = SListInsertAfter(SListBegin(queue->slist),data);*/
-	
 
 	qtlist = SListInsertBefore(SListEnd(queue->slist),data);
 
