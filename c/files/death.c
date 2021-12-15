@@ -229,7 +229,7 @@ static void InitStruct(death_t * array) /*pointer to struct of type death*/
 
 
 
-/*
+
 FILE* GetFile(char *argv[])
 {
 	FILE * pFile;
@@ -248,4 +248,4 @@ FILE* GetFile(char *argv[])
 	}
 	return pFile;
 }
-*/
+
