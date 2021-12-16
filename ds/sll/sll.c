@@ -1,10 +1,11 @@
 #include <stdio.h> /* printf, size_t  */
 #include <stdlib.h> /* memory allocation  */
 #include <assert.h> /* assert() */
-#include <string.h> /* memcpy */
+
 
 
 /****************** reviewed by Nurit***********/
+/**********i havent tested Find***********/
 #include "sll.h"
 
 enum stats
@@ -77,7 +78,6 @@ void SListDestroy(slist_t *slist)
 }
 
 
-
 slist_iter_t SListInsertBefore(const slist_iter_t where, void *data)
 {
 	slist_iter_t temp = NULL;
@@ -106,7 +106,6 @@ slist_iter_t SListInsertBefore(const slist_iter_t where, void *data)
 
 	    return temp;
     }
-	
 	temp->data = where->data;
 	temp->next = where->next;
 	where->data = data; 
@@ -137,14 +136,12 @@ slist_iter_t SListInsertAfter(slist_iter_t where,  void *data)
 
 	node_after->data = data; 
 	node_after->next = where->next;
-	
 	where->next = node_after;
 	
 	if(NULL == node_after->next) /* if the newly added element is now the last-dummy, need to reassign tail*/
 	{
 		((slist_t *)(where->data))->tail = node_after;
 	}
-
 	return node_after;
 }
 
@@ -236,6 +233,7 @@ slist_iter_t SListBegin(const slist_t *slist)
 slist_iter_t SListEnd(const slist_t *slist)
 {
 	assert (NULL != slist);
+
 	return slist->tail;
 }
 
@@ -293,12 +291,10 @@ void SlistAppend(slist_t *dest, slist_t *src)
 {
 	dest->tail->data = SListGetData(SListBegin(src));
 	dest->tail->next = src->head->next;
-
 	dest->tail = SListEnd(src);
-	
+
 	src->head->data = src;
 	src->head->next = NULL;
-
 	src->tail = SListBegin(src);
 	
 }
