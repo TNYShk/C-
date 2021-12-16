@@ -291,12 +291,17 @@ int SListForEach( slist_iter_t from,  slist_iter_t to, action_func_t action_func
 
 void SlistAppend(slist_t *dest, slist_t *src)
 {
-	dest->tail->data = SListGetData(SListBegin(src));
 	dest->tail->next = src->head->next;
-	dest->tail = SListEnd(src);
+    dest->tail->data = src->head->data;
+	
+	dest->tail = src->tail;
+	dest->tail->data = dest;
 
 	src->head->data = src;
 	src->head->next = NULL;
-	src->tail = SListBegin(src);
+	src->tail = src->head;
 	
 }
+	
+    
+    
