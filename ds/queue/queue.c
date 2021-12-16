@@ -1,7 +1,6 @@
 #include <stdio.h> /* printf, size_t  */
 #include <stdlib.h> /* memory allocation  */
 #include <assert.h> /* assert() */
-#include <string.h> /* memcpy */
 
 #include "sll.h"
 #include "queue.h"
@@ -10,6 +9,13 @@
 struct queue
 {
 	slist_t *slist;
+};
+
+enum stat
+{
+	FAIL = -1,
+	NOTFAIL,
+	OK
 };
 
 
@@ -30,6 +36,7 @@ queue_t *QueueCreate(void)
 	{
 		free(qt);
 		qt = NULL;
+		return NULL;
 	}
 
 	return qt;
@@ -49,15 +56,19 @@ void QueueDestroy(queue_t *queue)
 
 int QueueEnqueue(queue_t *queue, void *data)
 {
-
-	slist_iter_t qtlist = NULL;
+	size_t org_size = 0, new_size =0;
+	
 
 	assert(NULL != queue);
 	assert(NULL != data);
 
-	qtlist = SListInsertBefore(SListEnd(queue->slist),data);
+	org_size = QueueSize(queue);
+	SListInsertBefore(SListEnd(queue->slist),data);
+	new_size = QueueSize(queue);
 
-	return (!SListIsEmpty(queue->slist));
+	return (org_size != new_size);
+
+
 }
 
 

@@ -6,7 +6,7 @@
 #include "sll.h"
 #include "queue.h"
 
-/*testing is a mass not complete! */
+/*menory leak and error in append */
 
 
 
@@ -52,12 +52,11 @@ int main(void)
 	QueueAppend(qt,qt2);
 	printf("\nAppended Q2 into Q1\n");
 	printf("post append Q2 size: %ld\n",QueueSize(qt2));
+	printf("post append Q2 size: %ld\n",QueueSize(qt));
 
 	printf("---------------------------enque and deque into Q---------------------\n");
 	
-	t = 666;
-	printf("enque Q (%d)\n", QueueEnqueue(qt,ptr));
-
+	
 	QueueDequeue(qt);
 	printf("post dequeue Q size: %ld\n",QueueSize(qt));
 	printf("enque Q (%d)\n", QueueEnqueue(qt,ptr));
@@ -74,8 +73,8 @@ int main(void)
 	
 
 
-	QueueDestroy(qt);
+	
 	QueueDestroy(qt2);
-
+	QueueDestroy(qt);
 	return 0;
 }
