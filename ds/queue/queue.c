@@ -5,6 +5,7 @@
 #include "sll.h"
 #include "queue.h"
 
+/* reviewed by David, his test file and sll show no memory leak */
 
 struct queue
 {
@@ -90,12 +91,14 @@ void *QueuePeek(const queue_t *queue)
 size_t QueueSize(const queue_t *queue)
 {
 	assert (NULL != queue);
+
 	return SListCount(queue->slist);
 }
 
 int QueueIsEmpty(const queue_t *queue)
 {
 	assert (NULL != queue);
+
 	return SListIsEmpty(queue->slist);
 }
 
