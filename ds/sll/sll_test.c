@@ -8,20 +8,8 @@
 /* havent finished testing the add func!!*/
 
 
-
-
-int MatchFloat(void *data, void *param)
-{
-    return (*(float *)data == *(float *)param);
-}
-
-
-int AddDecimal(void *data, void *param)
-{
-    *(int *)data = *(int *)data + *(int *)param;
-
-    return *(int *)data;
-}
+int MatchFloat(void *data, void *param);
+int AddDecimal(void *data, void *param);
 
 
 int main()
@@ -127,3 +115,16 @@ int main()
 }
 
 
+
+int MatchFloat(void *data, void *param)
+{
+    return (*(float *)data == *(float *)param);
+}
+
+
+int AddDecimal(void *data, void *param)
+{
+    *(int *)data = *(int *)data + *(int *)param;
+
+    return *(int *)data;
+}
