@@ -35,13 +35,11 @@ void StupidSwap(int *a, int *b)
 
 int main()
 {
-	void *p1;
-	void *p2;
+	void *p1 = NULL;
+	void *p2 = NULL;
 	size_t z = 5;
-	int x,y;
-	x = 3;
-	y = 7;
-
+	int x = 3,y = 7;
+	
 
 	p1=(void*)&x;
 	p2=(void*)&z;
