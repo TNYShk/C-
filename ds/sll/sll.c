@@ -98,8 +98,6 @@ slist_iter_t SListInsertBefore(const slist_iter_t where, void *data)
 		return temp;
 	}
 
-	assert (NULL != where);
-
 	if (SListIsEqual(((slist_t *)(where->data))->head, ((slist_t *)(where->data))-> tail))
     {
 		temp->next = where;
@@ -112,6 +110,11 @@ slist_iter_t SListInsertBefore(const slist_iter_t where, void *data)
 	temp->next = where->next;
 	where->data = data; 
 	where->next = temp;
+	
+	if (NULL == temp->next)
+	{
+		((slist_t *)(temp->data))->tail = temp;
+	}
 
 	return where;
 }
