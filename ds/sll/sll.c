@@ -55,7 +55,14 @@ slist_t *SListCreate(void)
 	return slist;
 }
 /*
-static void InitNode(slist_t *slist, slist_iter_t new node);
+static void InitNode(slist_t *slist, slist_iter_t new_node)
+{
+	new_node->data = slist;
+	new_node->next = NULL;
+
+	slist->head = new_node;
+	slist->tail = new_node;	
+}
 */
 void SListDestroy(slist_t *slist)
 {
