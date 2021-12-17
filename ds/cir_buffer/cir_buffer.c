@@ -9,6 +9,7 @@
 #include "cir_buffer.h"
 
 
+
 struct cbuffer
 {
     size_t capacity;
@@ -16,6 +17,21 @@ struct cbuffer
     size_t size;
     char buffy[1];
 };
+
+static void CBuffPrint(cbuffer_t *buffer)
+{
+	size_t start = buffer->head;
+	size_t capac = buffer->capacity;
+	printf("printing buffer:\n");
+	while(start != buffer->size)	
+	{
+		printf("%c", buffer->buffy[start]);
+		start = (start + 1)%capac;
+	}
+	printf("\n");
+
+}
+
 
 
 cbuffer_t *CBuffCreate(size_t capacity)
@@ -52,34 +68,58 @@ size_t CBuffCapacity(const cbuffer_t *buffer)
 
 ssize_t CBuffWrite(cbuffer_t *buffer,const void *src, size_t count)
 {
-	ssize_t ans = -1;
 	
+	ssize_t counter = count;
 
 	assert(NULL != buffer);
 	assert(0 < count);
 
-	while ((CBuffFreeSpace(buffer) > 0) && count)
+	if ((CBuffFreeSpace(buffer) == 0))
+	{
+		return -1;
+	}
+
+	while ( (buffer->head != buffer->size + 1 ) &&  (CBuffFreeSpace(buffer) > 0) && count )
 	
 	{
-		buffer->buffy[buffer->size] = *(*(const char **)&src)++ ;
 		
-		++buffer->size;
-		++ans;
+		buffer->buffy[buffer->size] = *(*(const char **)&src)++;
+		buffer->size = (buffer->size + 1) % buffer->capacity; 
+		/*++buffer->size % buffer->capacity; */
 		--count;
 	}
 	
-	return (ans+1);
+	CBuffPrint(buffer);
+	return (counter - count);
 }
-/*
-ssize_t CBuffRead(cbuffer_t *buffer, void *dest, size_t count);
-*/
+
+
+
+ssize_t CBuffRead(cbuffer_t *buffer, void *dest, size_t count)
+{
+	ssize_t counter = count;
+
+
+	while (count)
+	{ 
+		 *(*(char **)&dest)++ = buffer->buffy[buffer->head];
+		buffer->head = (buffer->head + 1) % buffer->capacity; 
+		/*++buffer->head % buffer->capacity; */
+		--count;
+		
+	}
+	
+	return (counter - count);
+}	
+
 int CBuffIsEmpty(const cbuffer_t *buffer)
 {
-	return ((buffer->capacity - buffer->size == CBuffCapacity(buffer))? 1 : 0);
+	return (buffer->head == buffer->size ? 1 : 0);
 }
 
 
 size_t CBuffFreeSpace(const cbuffer_t *buffer)
 {
-	return (buffer->capacity - buffer->size);
+	return (buffer->capacity - buffer->size + buffer->head);
 }
+
