@@ -34,7 +34,7 @@ static void CBuffPrint(cbuffer_t *buffer)
 }
 static int CBuffFull(cbuffer_t *buffer)
 {
-	return (buffer->head == buffer->tail);
+	return ((buffer->head == buffer->tail)&& (buffer->head == 0));
 }
 
 
@@ -78,7 +78,7 @@ ssize_t CBuffWrite(cbuffer_t *buffer,const void *src, size_t count)
 	assert(0 < count);
 
 	
-	if ((buffer->head == buffer->tail) && (buffer->head == 0))
+	if (CBuffFull(buffer))
 	{
 		return -1;
 	}
@@ -95,10 +95,6 @@ ssize_t CBuffWrite(cbuffer_t *buffer,const void *src, size_t count)
 	}
 	printf("tail post while in idx %ld\n", buffer->tail);
 
-	if(CBuffFull(buffer))
-	{
-		buffer->head = (buffer->head) % buffer->capacity; 
-	}
 
 	if (buffer->head == buffer->tail+1)
 	{
