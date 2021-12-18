@@ -59,6 +59,8 @@ int main(void)
 	
 	QueueDequeue(qt);
 	printf("post dequeue Q size: %ld\n",QueueSize(qt));
+	peek = QueuePeek(qt);
+	printf("peekaboo!  %ld\n", *(size_t*)peek);
 	printf("enque Q (%d)\n", QueueEnqueue(qt,ptr));
 	printf("Q size? %ld\n",QueueSize(qt));
 	QueueDequeue(qt);
@@ -67,7 +69,7 @@ int main(void)
 	
 	printf("---------------------------peek into Q---------------------\n");
 	peek = QueuePeek(qt);
-	printf("peekaboo!  %ld\n", *(size_t*)peek);
+	printf("peekaboo!  %f\n", *(float*)peek);
 
 
 	

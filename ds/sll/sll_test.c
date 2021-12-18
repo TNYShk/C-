@@ -19,6 +19,7 @@ int main()
 
 	slist_t *twinky = SListCreate();
 	slist_t *kika = SListCreate();
+	
 	slist_iter_t Istart = NULL;
 	slist_iter_t testinsert = NULL;
 	slist_iter_t testinsertb4 = NULL;
