@@ -16,6 +16,7 @@ int main()
 {
 	void *ptr = NULL;
 	void *kptr = NULL;
+
 	slist_t *twinky = SListCreate();
 	slist_t *kika = SListCreate();
 	slist_iter_t Istart = NULL;
@@ -57,15 +58,18 @@ int main()
 	printf("is sll empty? (zero if NO) %d\n", SListIsEmpty(twinky));
 
 	printf("\tnumber of nodes: %lu\n",SListCount(twinky));
-	end = SListEnd(twinky);
+	
 	
 	printf("\n*************************removing nodes***********************\n");
-	end = SListRemove(end);
-	testinsert = SListRemove(testinsert);
+	
+	end = SListRemove(testinsert);
 	printf("\tnumber of nodes post removal: %lu\n",SListCount(twinky));
-	ptr = &ff;
+	ptr = SListGetData(Istart);
+	printf("node removed, value is %ld\n",*(size_t *)ptr);
+	
 
 	printf("\n***********************Adding & Viewing nodes***********************\n");
+	ptr = &ff;
 	testinsertb4 = SListInsertAfter(testinsert,ptr);
 	ptr = SListGetData(testinsertb4);
 	printf("SListInsertafter end value, value is %f\n",*(float *)ptr);

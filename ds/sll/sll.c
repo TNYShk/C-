@@ -29,7 +29,23 @@ struct slist_node
     slist_iter_t next;
 };
 
-/* minimize returns, its a spegetti code.. make 1 if else, also mallo needs casting to ptr, make it mode explicit */
+
+static slist_iter_t InitNode(slist_iter_t new_node,void *data)
+{
+	
+	new_node = (struct slist_node *)malloc(sizeof(struct slist_node));
+
+	if(new_node != NULL)
+	{
+		new_node->data = data;
+		new_node->next = NULL;
+		return new_node;
+	}
+	
+	return NULL;
+}
+
+
 slist_t *SListCreate(void)
 {
 	
@@ -37,8 +53,8 @@ slist_t *SListCreate(void)
 	slist_iter_t dummy = NULL;
 
 	slist = (slist_t *)malloc(sizeof(slist_t));
-	dummy = (struct slist_node*)malloc(sizeof(struct slist_node));
-	
+	dummy = InitNode(dummy,slist);
+
 	if( (NULL == slist) || (NULL == dummy) )
 	{
 		free(slist);
@@ -46,24 +62,12 @@ slist_t *SListCreate(void)
 		return NULL;
 	}
 	
-	dummy->data = slist;
-	dummy->next = NULL;
-
 	slist->head = dummy;
 	slist->tail = dummy;
 	
 	return slist;
 }
-/*
-static void InitNode(slist_t *slist, slist_iter_t new_node)
-{
-	new_node->data = slist;
-	new_node->next = NULL;
 
-	slist->head = new_node;
-	slist->tail = new_node;	
-}
-*/
 void SListDestroy(slist_t *slist)
 {
 	slist_iter_t next = NULL;
@@ -86,9 +90,8 @@ void SListDestroy(slist_t *slist)
 slist_iter_t SListInsertBefore(const slist_iter_t where, void *data)
 {
 	slist_iter_t temp = NULL;
-	temp = (slist_iter_t)malloc(sizeof(struct slist_node));
-
- 	
+	temp = InitNode(temp, data);
+	
  	assert(NULL != where);
 
 	if (NULL == temp)
@@ -104,7 +107,7 @@ slist_iter_t SListInsertBefore(const slist_iter_t where, void *data)
 	if (SListIsEqual(((slist_t *)(where->data))->head, ((slist_t *)(where->data))-> tail))
     {
 		temp->next = where;
-	    temp->data = data; 
+	   
 	    ((slist_t *)(where->data))->head = temp;
 
 	    return temp;
@@ -123,13 +126,15 @@ slist_iter_t SListInsertBefore(const slist_iter_t where, void *data)
 }
 
 
+
+
 slist_iter_t SListInsertAfter(slist_iter_t where, void *data)
 {
 	slist_iter_t node_after = NULL;
 	
  	assert(NULL != where);
 
-	node_after = (struct slist_node *)malloc(sizeof(struct slist_node));
+	node_after = InitNode(node_after, data);
 	
 	if (NULL == node_after)
 	{
@@ -137,16 +142,16 @@ slist_iter_t SListInsertAfter(slist_iter_t where, void *data)
 
 		while (NULL != node_after->next)
 		{
-			node_after = SListNext(node_after);
+			node_after = node_after->next;
 		}
 		return node_after;
 	}
 
-	node_after->data = data; 
 	node_after->next = where->next;
 	where->next = node_after;
 	
-	if(NULL == node_after->next) /* if the newly added element is now the last-dummy, need to reassign tail*/
+	/* if the newly added element is now the last-dummy, need to reassign tail*/
+	if(NULL == node_after->next) 
 	{
 		((slist_t *)(where->data))->tail = node_after;
 	}

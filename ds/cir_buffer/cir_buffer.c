@@ -38,16 +38,14 @@ cbuffer_t *CBuffCreate(size_t capacity)
 {
 	cbuffer_t *cyc_buff = NULL;
 
-	cyc_buff = (cbuffer_t *)malloc(offsetof(cbuffer_t, buffy) + capacity);
+	cyc_buff = (cbuffer_t *)calloc(offsetof(cbuffer_t, buffy) + capacity + 1, sizeof(char));
 
 	assert(NULL != cyc_buff);
 	assert(0 < capacity);
 
 	cyc_buff->capacity = capacity;
-	cyc_buff->head = 0;
-	cyc_buff->size = 0;
-
-	printf("offset of buffer in struct = %ld\n", offsetof(struct cbuffer, buffy));
+	cyc_buff->head = cyc_buff->buffy[capacity];
+	cyc_buff->size = cyc_buff->buffy[0];
 
 	return cyc_buff;
 }
@@ -74,19 +72,15 @@ ssize_t CBuffWrite(cbuffer_t *buffer,const void *src, size_t count)
 	assert(NULL != buffer);
 	assert(0 < count);
 
-	if ((CBuffFreeSpace(buffer) == 0))
-	{
-		return -1;
-	}
 
-	while ( (buffer->head != buffer->size + 1 ) &&  (CBuffFreeSpace(buffer) > 0) && count )
+	while ( (buffer->head != buffer->size + 1 ) && count )
 	
 	{
 		
 		buffer->buffy[buffer->size] = *(*(const char **)&src)++;
 		buffer->size = (buffer->size + 1) % buffer->capacity; 
-		/*++buffer->size % buffer->capacity; */
 		--count;
+		printf("tail moved to idx %ld\n", buffer->size);
 	}
 	
 	CBuffPrint(buffer);
@@ -100,12 +94,12 @@ ssize_t CBuffRead(cbuffer_t *buffer, void *dest, size_t count)
 	ssize_t counter = count;
 
 
-	while (count)
+	while ((buffer->head != buffer->size ) && count)
 	{ 
 		 *(*(char **)&dest)++ = buffer->buffy[buffer->head];
 		buffer->head = (buffer->head + 1) % buffer->capacity; 
-		/*++buffer->head % buffer->capacity; */
 		--count;
+		printf("head moved to idx %ld\n", buffer->head);
 		
 	}
 	
@@ -120,6 +114,10 @@ int CBuffIsEmpty(const cbuffer_t *buffer)
 
 size_t CBuffFreeSpace(const cbuffer_t *buffer)
 {
+	if( (buffer->capacity - buffer->size + buffer->head) >buffer->capacity)
+	{
+		return ((buffer->capacity - buffer->size + buffer->head)% buffer->capacity);
+	}
 	return (buffer->capacity - buffer->size + buffer->head);
 }
 
