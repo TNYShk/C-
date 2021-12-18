@@ -1,8 +1,7 @@
 #include <stdlib.h> /* size_t, dyncamic memory allocation  */
-#include <stdio.h>
-#include <assert.h>
-#include <limits.h>
-#include <string.h>
+#include <stdio.h> /* printf*/
+#include <assert.h> /* asserts */
+
 #include "stack.h"
 
 
@@ -11,10 +10,12 @@ int main()
 
 {
 	stack_t *stacky = NULL;
-	size_t test,test2 = 5;
+	size_t test = 9,test2 = 5;
 	float f1 = 3.14;
+	
 	void *ptr = &test;
 	void *ptr2 = NULL;
+	
 	stacky = StackCreate(10,8);
 	assert (NULL != stacky);
 	
@@ -50,6 +51,7 @@ int main()
 	
 	printf("\ntotal capacity is: %ld\n",StackCapacity(stacky));
 	printf("remaining slots: %ld\n",StackCapacity(stacky) - StackSize(stacky));
+	
 	StackDestroy(stacky);
 
 	return 0;
