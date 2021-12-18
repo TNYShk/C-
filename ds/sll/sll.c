@@ -98,29 +98,23 @@ slist_iter_t SListInsertBefore(const slist_iter_t where, void *data)
 		temp = where;
 		while (NULL != temp->next)
 		{
-			temp = temp->next;
+			temp = SListNext(temp);
 		}
 		return temp;
 	}
-
-	if (SListIsEqual(((slist_t *)(where->data))->head, ((slist_t *)(where->data))-> tail))
-    {
-		temp->next = where;
-	    ((slist_t *)(where->data))->head = temp;
-
-	    return temp;
-    }
-	temp->data = where->data;
-	temp->next = SListNext(where);
-	where->data = data; 
-	where->next = temp;
 	
-	if (NULL == temp->next)
+	if (NULL == where->next)
 	{
-		((slist_t *)(temp->data))->tail = temp;
+		((slist_t *)(where->data))->tail = temp;
 	}
 
-	return where;
+		temp->data = where->data;
+		temp->next = SListNext(where);
+		
+		where->data = data; 
+		where->next = temp;
+		
+		return where;
 }
 
 
@@ -136,7 +130,7 @@ slist_iter_t SListInsertAfter(slist_iter_t where, void *data)
 	if (NULL == node_after)
 	{
 		node_after = where;
-
+		node_after->next = SListNext(where);
 		while (NULL != node_after->next)
 		{
 			node_after = SListNext(node_after);
@@ -252,19 +246,20 @@ int SListIsEqual(const slist_iter_t iterator1, const slist_iter_t iterator2)
 slist_iter_t SListFind(const slist_iter_t from, const slist_iter_t to, match_func_t is_match, void *param)
 {
     slist_iter_t temp_result = NULL;
-    
+    size_t counter = 0;
     assert(NULL != from);
     assert(NULL != to);
  
     temp_result = from;
     
-    while (!SListIsEqual(to, temp_result))
+    while (temp_result!= NULL)
     {
-       if(is_match(SListGetData(temp_result), param))
+       if(is_match(temp_result->data, param))
        {
+       		printf("\nlocated %ld elements from 'from'  ",counter);
        		return temp_result;
        }
-    
+    ++counter;
     temp_result = SListNext(temp_result);
     }
     
