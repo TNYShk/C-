@@ -18,6 +18,7 @@ int HasLoop(const node_t *head);
 node_t *FindIntersection(node_t *head_1, node_t *head_2);
 
 
+
 int main()
 {
 	int x = 1;
@@ -186,4 +187,9 @@ node_t *FindIntersection(node_t *head_1, node_t *head_2)
 		temp2 = temp2->next;
 	}
 	return NULL;
+}
+
+void TestUno()
+{
+
 }

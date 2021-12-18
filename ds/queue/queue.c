@@ -19,7 +19,6 @@ struct queue
 
 
 
-
 queue_t *QueueCreate(void)
 {
 	queue_t *qt = NULL;
