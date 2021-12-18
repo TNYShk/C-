@@ -5,24 +5,24 @@
 #include "sll.h"
 
 
-/* havent finished testing the add func!!*/
-
 
 int MatchFloat(void *data, void *param);
 int AddDecimal(void *data, void *param);
-
 void TestOne();
 void TestTwo();
 
 
 
-int main()
+int main(void)
 {
 
 	TestOne();
 	TestTwo();
 	return 0;
 }
+
+
+
 
 
 void TestOne()

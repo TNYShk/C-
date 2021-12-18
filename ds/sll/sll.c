@@ -2,11 +2,12 @@
 #include <stdlib.h> /* memory allocation  */
 #include <assert.h> /* assert() */
 
+/****************** reviewed by Nurit **********
+ * updated file on 18_12
+ * 
+ * */
 
 
-/****************** reviewed by Nurit ***********/
-
-/**********i havent tested Find***********/
 
 #include "sll.h"
 
