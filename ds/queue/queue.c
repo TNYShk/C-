@@ -5,19 +5,19 @@
 #include "sll.h"
 #include "queue.h"
 
-/* reviewed by David, his test file and sll show no memory leak */
+/*********Reviewed by David**********
+*		Dec 16						*
+*									*
+*		created by Tanya			*
+*		Updated Dec 18				*
+************************************/
 
 struct queue
 {
 	slist_t *slist;
 };
 
-enum stat
-{
-	FAIL = -1,
-	NOTFAIL,
-	OK
-};
+
 
 
 queue_t *QueueCreate(void)
@@ -57,21 +57,16 @@ void QueueDestroy(queue_t *queue)
 
 int QueueEnqueue(queue_t *queue, void *data)
 {
-	size_t org_size = 0, new_size =0;
+	size_t org_size = 0, new_size = 0;
 	
-
 	assert(NULL != queue);
-	assert(NULL != data);
 
 	org_size = QueueSize(queue);
 	SListInsertBefore(SListEnd(queue->slist),data);
 	new_size = QueueSize(queue);
 
 	return (org_size != new_size);
-
-
 }
-
 
 void QueueDequeue(queue_t *queue)
 {
@@ -82,7 +77,6 @@ void QueueDequeue(queue_t *queue)
 
 void *QueuePeek(const queue_t *queue)
 {
-	
 	assert (NULL != queue);
 
 	return SListGetData(SListBegin(queue->slist));
