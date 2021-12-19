@@ -97,19 +97,44 @@ int DListIsEmpty(const dlist_t *dll)
 
 }
 
-/*
+
 size_t DListSize(const dlist_t *dll)
 {
+     size_t count = 0;
+     dlist_iter_t counter = dll->head;
+     
+     assert(NULL != dll);
     
+     while (counter->next != dll->tail)
+     {
+     	++count;
+     	counter = counter->next;
+     }
+     return count;
 }
 
 
-dlist_iter_t DListInsert(dlist_iter_t iter, void *data)
+dlist_iter_t DListInsert(dlist_iter_t where, void *data)
 {
-    
+    dlist_iter_t node = InitLNode(node, data);
+
+    assert(NULL != where);
+
+   
+
+    if (NULL == where->prev)
+    {
+    	((dlist_t *)(where->data))->head->next = node;
+    }
+
+    where->prev->next = node;
+    node->next = where;
+    node->prev = where->prev;
+
+    return node; 
 }
 
-
+/*
 dlist_iter_t DListRemove(dlist_iter_t iter)
 {
     
@@ -145,60 +170,53 @@ void DListSplice(dlist_iter_t where, dlist_iter_t from, dlist_iter_t to)
     
 }
 
-
+*/
 dlist_iter_t DListBegin(const dlist_t *dll)
 {
-    
+     assert(NULL != dll);
+
+     return dll->head->next;
 }
 
 
 dlist_iter_t DListEnd(const dlist_t *dll)
 {
-    
+     assert(NULL != dll);
+
+     return dll->tail->prev;
 }
 
 
 dlist_iter_t DListNext(dlist_iter_t iter)
 {
-    
+    assert( NULL != iter);
+
+    return iter->next;
 }
 
 
 dlist_iter_t DListPrev(dlist_iter_t iter)
 {
-    
+    assert( NULL != iter);
+
+    return iter->prev;
 }
 
 
 void *DListGetData(dlist_iter_t iter)
 {
-    
+    assert( NULL != iter);
+
+    return iter->data;
 }
 
 
 int DListIsEqual(dlist_iter_t iter1, dlist_iter_t iter2)
 {
     
+    assert( NULL != iter1);
+    assert( NULL != iter2);
+
+    return (iter1 == iter2);
 }
 
-
-dlist_iter_t DListFind(dlist_iter_t from, dlist_iter_t to,
-	match_func_t is_match, void *param)
-{
-    
-}
-
-*Return TRUE 1 FALSE 0 and inserts all found into result list *
-int DListMultiFind(dlist_iter_t from, dlist_iter_t to,
-	match_func_t is_match, void *param, dlist_t *result_list)
-{
-    
-}
-
-
-int DListForEach(dlist_iter_t from, dlist_iter_t to,
-	action_func_t action_func, void *param)
-{
-    
-}
-*/
