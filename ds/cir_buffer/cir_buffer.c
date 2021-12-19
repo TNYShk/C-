@@ -18,26 +18,24 @@ struct cbuffer
     char buffy[1];
 };
 
+/*
 static void CBuffPrint(cbuffer_t *buffer)
 {
 	size_t capac = buffer->capacity;
 	size_t start = buffer->head;
+	ssize_t size = 	buffer->tail;
 	printf("printing buffer:\n");
-	while(start != buffer->tail)	
+	
+	while((start != (size_t)size) && capac)	
 	{
 		printf("%c", buffer->buffy[start]);
-		start = (start + 1)%capac;
-		
+		++start;
+		--capac;
 	}
 	printf("\n");
 
 }
-static int CBuffFull(cbuffer_t *buffer)
-{
-	return ((buffer->head == buffer->tail)&& (buffer->head == 0));
-}
-
-
+*/
 
 cbuffer_t *CBuffCreate(size_t capacity)
 {
@@ -49,7 +47,7 @@ cbuffer_t *CBuffCreate(size_t capacity)
 	assert(0 < capacity);
 
 	cyc_buff->capacity = capacity;
-	cyc_buff->head = capacity;
+	cyc_buff->head = 0;
 	cyc_buff->tail = 0; 
 
 	return cyc_buff;
@@ -72,44 +70,43 @@ size_t CBuffCapacity(const cbuffer_t *buffer)
 ssize_t CBuffWrite(cbuffer_t *buffer,const void *src, size_t count)
 {
 	ssize_t counter = count;
-	size_t cap = buffer->capacity;
+	ssize_t size = 0;
 
 	assert(NULL != buffer);
 	assert(0 < count);
 
 	
-	if (CBuffFull(buffer))
+	if (0 == CBuffFreeSpace(buffer))
 	{
 		return -1;
 	}
 	
-	while (cap && (buffer->head != buffer->tail+1) && count )
-	
+	while ((size_t)size < count && CBuffFreeSpace(buffer) > 0)
 	{
+		if((size_t)size >= buffer->capacity)
+		{
+			buffer->tail = 0;
+		}
+
 		buffer->buffy[buffer->tail] = *(*(const char **)&src);
 		++(*(const char **)&src);
-		buffer->tail = (buffer->tail + 1) % buffer->capacity;             
-		--count;
-		--cap;
+		buffer->tail = (buffer->tail + 1);             
+		--counter;
+		++size;
 		
 	}
-	printf("tail post while in idx %ld\n", buffer->tail);
-
-
-	if (buffer->head == buffer->tail+1)
-	{
-		buffer->buffy[buffer->head] = *(*(const char **)&src);
-		--count;
-	}
-	printf("head is now in idx %ld\n", buffer->head);
+	
 	/*CBuffPrint(buffer);*/
-	return (counter - count);
+	return (size);
 }
 
 
 ssize_t CBuffRead(cbuffer_t *buffer, void *dest, size_t count)
 {
 	ssize_t counter = count;
+	
+	assert(NULL != buffer);
+	assert( 0 < count);
 	
 	if(CBuffFreeSpace(buffer) == buffer->capacity)
 	{
@@ -122,35 +119,27 @@ ssize_t CBuffRead(cbuffer_t *buffer, void *dest, size_t count)
 
 	while ((buffer->head != buffer->tail) && count)
 	{ 
-		 *(*(char **)&dest)++ = buffer->buffy[buffer->head];
+		*(*(char **)&dest) = buffer->buffy[buffer->head];
+		++(*(char **)&dest);
 		buffer->head = (buffer->head + 1) % buffer->capacity; 
 		--count;
-		
-		
 	}
-	printf("tail post while in idx %ld\n", buffer->tail);
-	printf("head is in idx %ld\n", buffer->head);
-	
 	
 	return (counter - count);
 }	
 
 int CBuffIsEmpty(const cbuffer_t *buffer)
 {
-	return ((buffer->head + buffer->tail- buffer->capacity == 0) ? 1 : 0);
+	assert(NULL != buffer);
+
+	return ((buffer->tail == 0) ? 1 : 0);
 }
 
 
 size_t CBuffFreeSpace(const cbuffer_t *buffer)
 {
-	if (buffer->head - buffer->tail == 1)
-	{
-		return 0;
-	}
-	if( (buffer->capacity - buffer->tail + buffer->head) >buffer->capacity)
-	{
-		return ((buffer->capacity - buffer->tail + buffer->head)% buffer->capacity);
-	}
+	assert(NULL != buffer);
+
 	return (buffer->capacity - buffer->tail + buffer->head);
 }
 
