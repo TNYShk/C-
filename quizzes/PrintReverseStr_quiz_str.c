@@ -62,13 +62,46 @@ void DivideFiveThree(int number)
 	}
 
 }
+/* less if's*/
+void DivideFiveThre(int number)
+{
+	int i = 0;
+
+	for(i = 1; i <= number; ++i)
+	{
+		if ((i % 3 == 0) || (i % 5 == 0))
+		{
+			if (i % 5 == 0)
+			{
+				printf("F");
+			}
+
+			printf("T ");
+		}
+	  	else
+			{
+				printf(" %d ",i);
+			}	
+		
+	}
+
+}
+
+
+
+
+
+
 
 int main ()
 {
-DivideFiveThree(15);
-printf("\n");
-PrintReverse(11,"HeLLO WoRlD");
-printf("\n");
+	DivideFiveThree(15);
+	printf("\n");
+	DivideFiveThre(15);
+	printf("\n");
+	PrintReverse(11,"HeLLO WoRlD");
+	printf("\n");
 
 return 0;
 }
+
