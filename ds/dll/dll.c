@@ -116,12 +116,15 @@ size_t DListSize(const dlist_t *dll)
 
 dlist_iter_t DListInsert(dlist_iter_t where, void *data)
 {
-    dlist_iter_t node = InitLNode(node, data);
+    dlist_iter_t node = NULL;
+   	node =  InitLNode(node, data);
 
     assert(NULL != where);
 
-   
-
+	if (NULL == node)
+	{
+		return where;
+	}
     if (NULL == where->prev)
     {
     	((dlist_t *)(where->data))->head->next = node;
@@ -134,43 +137,29 @@ dlist_iter_t DListInsert(dlist_iter_t where, void *data)
     return node; 
 }
 
-/*
+
 dlist_iter_t DListRemove(dlist_iter_t iter)
 {
-    
+    dlist_iter_t remove = NULL;
+
+    if( (NULL == iter->next ) || (NULL == iter->prev) )
+    {
+		printf("cant remove dummy!\n");
+		return iter;
+    }
+
+    remove = iter->next;
+    iter->data = remove->data;
+    iter->next = remove->next;
+
+    free(remove);
+    remove = NULL;
+
+    return iter;
+
 }
 
 
-dlist_iter_t DListPushFront(dlist_t *dll, void *data)
-{
-    
-}
-
-
-dlist_iter_t DListPushBack(dlist_t *dll, void *data)
-{
-    
-}
-
-
-void *DListPopFront(dlist_t *dll)
-{
-    
-}
-
-
-void *DListPopBack(dlist_t *dll)
-{
-    
-}
-
-
-void DListSplice(dlist_iter_t where, dlist_iter_t from, dlist_iter_t to)
-{
-    
-}
-
-*/
 dlist_iter_t DListBegin(const dlist_t *dll)
 {
      assert(NULL != dll);
