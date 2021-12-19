@@ -122,6 +122,7 @@ ssize_t CBuffRead(cbuffer_t *buffer, void *dest, size_t count)
 	return (counter - count);
 }	
 
+
 int CBuffIsEmpty(const cbuffer_t *buffer)
 {
 	assert(NULL != buffer);

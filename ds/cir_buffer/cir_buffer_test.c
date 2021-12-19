@@ -2,7 +2,7 @@
 #include <stdio.h> /* printf */
 #include <assert.h> /* assert */
 #include <stddef.h> /* offsetof*/
-
+#include <stdlib.h> /* mem alllocation*/
 #include "cir_buffer.h"
 
 void Testone();
@@ -34,11 +34,11 @@ void Testone()
 	printf("Capacity is %ld\n", CBuffCapacity(cyc_buff));
 	printf("struct empty? %d\n", CBuffIsEmpty(cyc_buff));
 	printf("struct free space = %ld\n", CBuffFreeSpace(cyc_buff));
-	printf("\n**************** writing to buffer**************************\n");
+	printf("\n**************** writing 2 to buffer**************************\n");
 	ans = CBuffWrite(cyc_buff,string,2);
 	printf("written %ld bytes\n", ans);
 	printf("struct free space = %ld\n\n", CBuffFreeSpace(cyc_buff));
-	printf("\n**************** writing to buffer**************************\n");
+	printf("\n**************** writing 8 to buffer**************************\n");
 	ans = CBuffWrite(cyc_buff,string,8);
 	printf("written %ld bytes\n", ans);
 	printf("struct free space = %ld\n\n", CBuffFreeSpace(cyc_buff));
@@ -56,7 +56,9 @@ void Testtwo()
 	char *string = "hello there";
 
 	ssize_t ans = 0;
-	char dest[BUFSIZ];
+	char *dest = NULL;
+	dest = (char*)calloc(BUFSIZ, sizeof(char));
+	
 	printf("\n\t----------------------Test2-------------------------------\n");
 	cyc_buff  = CBuffCreate(10);
 
@@ -74,8 +76,8 @@ void Testtwo()
 	printf("\n-------------------Reading 4 from buffer-------------------------------\n");
 	ans = CBuffRead(cyc_buff,dest,4);
 	printf("read %ld bytes from buffer\n",ans);
-	
 	printf("struct free space = %ld\n", CBuffFreeSpace(cyc_buff));
+	printf("destination is %s\n", dest);
 	
 	printf("\n-------------------Reading 2 more----------------------------------\n");
 	ans = CBuffRead(cyc_buff,dest,2);
@@ -105,6 +107,7 @@ void Testtwo()
 	printf("written %ld bytes\n\n", ans);
 	printf("struct free space = %ld\n", CBuffFreeSpace(cyc_buff));
 	
-
+	free(dest);
+	dest = NULL;
 	CBuffDestroy(cyc_buff);
 }
