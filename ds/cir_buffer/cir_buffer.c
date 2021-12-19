@@ -69,8 +69,7 @@ size_t CBuffCapacity(const cbuffer_t *buffer)
 
 ssize_t CBuffWrite(cbuffer_t *buffer,const void *src, size_t count)
 {
-	ssize_t counter = count;
-	ssize_t size = 0;
+	ssize_t counter = 0;
 
 	assert(NULL != buffer);
 	assert(0 < count);
@@ -81,9 +80,9 @@ ssize_t CBuffWrite(cbuffer_t *buffer,const void *src, size_t count)
 		return -1;
 	}
 	
-	while ((size_t)size < count && CBuffFreeSpace(buffer) > 0)
+	while ((size_t)counter < count && CBuffFreeSpace(buffer) > 0)
 	{
-		if((size_t)size >= buffer->capacity)
+		if(buffer->tail == buffer->capacity)
 		{
 			buffer->tail = 0;
 		}
@@ -91,20 +90,17 @@ ssize_t CBuffWrite(cbuffer_t *buffer,const void *src, size_t count)
 		buffer->buffy[buffer->tail] = *(*(const char **)&src);
 		++(*(const char **)&src);
 		buffer->tail = (buffer->tail + 1);             
-		--counter;
-		++size;
-		
+		++counter;
 	}
-	
-	/*CBuffPrint(buffer);*/
-	return (size);
+
+	return (counter);
 }
 
 
 ssize_t CBuffRead(cbuffer_t *buffer, void *dest, size_t count)
 {
 	ssize_t counter = count;
-	
+
 	assert(NULL != buffer);
 	assert( 0 < count);
 	
@@ -112,16 +108,17 @@ ssize_t CBuffRead(cbuffer_t *buffer, void *dest, size_t count)
 	{
 		return -1;
 	}
-	if(buffer->head == buffer->capacity)
-	{
-		buffer->head = buffer->head % buffer->capacity; 
-	}
+
 
 	while ((buffer->head != buffer->tail) && count)
 	{ 
+		if(buffer->head == buffer->capacity)
+		{
+			buffer->head = 0; 
+		}
 		*(*(char **)&dest) = buffer->buffy[buffer->head];
 		++(*(char **)&dest);
-		buffer->head = (buffer->head + 1) % buffer->capacity; 
+		buffer->head = (buffer->head + 1); 
 		--count;
 	}
 	
@@ -132,7 +129,7 @@ int CBuffIsEmpty(const cbuffer_t *buffer)
 {
 	assert(NULL != buffer);
 
-	return ((buffer->tail == 0) ? 1 : 0);
+	return ((buffer->tail == buffer->head) ? 1 : 0);
 }
 
 
@@ -140,6 +137,11 @@ size_t CBuffFreeSpace(const cbuffer_t *buffer)
 {
 	assert(NULL != buffer);
 
+	if( (buffer->capacity - buffer->tail + buffer->head) > buffer->capacity)
+	{
+		return ((buffer->capacity - buffer->tail + buffer->head)% buffer->capacity);
+	}
 	return (buffer->capacity - buffer->tail + buffer->head);
+	
 }
 
