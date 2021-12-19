@@ -149,13 +149,30 @@ dlist_iter_t DListRemove(dlist_iter_t iter)
     }
 
     remove = iter->next;
-    iter->data = remove->data;
-    iter->next = remove->next;
+    iter->data = DListGetData(remove);
+    iter->next = DListNext(remove);
 
     free(remove);
     remove = NULL;
 
     return iter;
+
+}
+
+
+dlist_iter_t DListPushFront(dlist_t *dll, void *data)
+{
+	dlist_iter_t node = NULL;
+   	
+	assert(NULL != dll);
+	node = DListInsert(dll->head->next,data);
+	if(NULL == node)
+	{
+		printf("wasnt done, heres the head\n");
+		return (DListGetData(DListBegin(dll)));
+	}
+	return node;
+
 
 }
 
