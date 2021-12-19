@@ -86,7 +86,7 @@ void Testtwo()
 	ans = CBuffRead(cyc_buff,dest,2);
 	printf("read %ld bytes from buffer\n",ans);
 	printf("struct free space = %ld\n", CBuffFreeSpace(cyc_buff));
-
+	printf("is Empty? %d\n", CBuffIsEmpty(cyc_buff));
 	printf("\n-------------------Writing 5 to buffer-------------------------------\n");
 	ans = CBuffWrite(cyc_buff,string,5);
 	printf("written %ld bytes\n", ans);
@@ -96,7 +96,7 @@ void Testtwo()
 	printf("\n-------------------Reading 2 from buffer-------------------------------\n");
 	ans = CBuffRead(cyc_buff,dest,2);
 	printf("read %ld bytes from buffer\n",ans);
-	
+	printf("struct empty? %d\n", CBuffIsEmpty(cyc_buff));
 	printf("struct free space = %ld\n", CBuffFreeSpace(cyc_buff));
 
 	printf("\n-------------------Writing 5 to buffer-------------------------------\n");

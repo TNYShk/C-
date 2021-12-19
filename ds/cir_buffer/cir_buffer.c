@@ -2,13 +2,22 @@
 #include <stdlib.h> /* memort allocation */
 #include <assert.h> /* assert */
 #include <stddef.h> /* offsetof*/
-
-#include <stdio.h> /* printf */
-
+#include <stdio.h> /* printf for internal Print Func */
 
 #include "cir_buffer.h"
 
+/*********Reviewed by Erez**********
+*		     Dec 19					*
+*									*
+*		created by Tanya			*
+*		  							*
+************************************/
 
+enum options
+{
+	NOT = -1,
+	START
+};
 
 struct cbuffer
 {
@@ -18,24 +27,9 @@ struct cbuffer
     char buffy[1];
 };
 
-/*
-static void CBuffPrint(cbuffer_t *buffer)
-{
-	size_t capac = buffer->capacity;
-	size_t start = buffer->head;
-	ssize_t size = 	buffer->tail;
-	printf("printing buffer:\n");
-	
-	while((start != (size_t)size) && capac)	
-	{
-		printf("%c", buffer->buffy[start]);
-		++start;
-		--capac;
-	}
-	printf("\n");
 
-}
-*/
+/*static void CBuffPrint(cbuffer_t *buffer)*/
+/*use it to print in Write Func, before return, CBuffPrint(buffer)*/
 
 cbuffer_t *CBuffCreate(size_t capacity)
 {
@@ -43,12 +37,16 @@ cbuffer_t *CBuffCreate(size_t capacity)
 
 	cyc_buff = (cbuffer_t *)calloc(offsetof(cbuffer_t, buffy) + capacity , sizeof(char));
 
-	assert(NULL != cyc_buff);
+	if(NULL == cyc_buff)
+	{
+		return NULL;
+	}
+
 	assert(0 < capacity);
 
 	cyc_buff->capacity = capacity;
-	cyc_buff->head = 0;
-	cyc_buff->tail = 0; 
+	cyc_buff->head = START;
+	cyc_buff->tail = START; 
 
 	return cyc_buff;
 }
@@ -69,30 +67,30 @@ size_t CBuffCapacity(const cbuffer_t *buffer)
 
 ssize_t CBuffWrite(cbuffer_t *buffer,const void *src, size_t count)
 {
-	ssize_t counter = 0;
+	ssize_t counter = START;
 
 	assert(NULL != buffer);
 	assert(0 < count);
 
 	
-	if (0 == CBuffFreeSpace(buffer))
+	if (START == CBuffFreeSpace(buffer))
 	{
-		return -1;
+		return NOT;
 	}
 	
-	while ((size_t)counter < count && CBuffFreeSpace(buffer) > 0)
+	while ((size_t)counter < count && CBuffFreeSpace(buffer) > START)
 	{
 		if(buffer->tail == buffer->capacity)
 		{
-			buffer->tail = 0;
+			buffer->tail = START;
 		}
 
 		buffer->buffy[buffer->tail] = *(*(const char **)&src);
 		++(*(const char **)&src);
-		buffer->tail = (buffer->tail + 1);             
+		++buffer->tail;             
 		++counter;
 	}
-
+	
 	return (counter);
 }
 
@@ -106,19 +104,18 @@ ssize_t CBuffRead(cbuffer_t *buffer, void *dest, size_t count)
 	
 	if(CBuffFreeSpace(buffer) == buffer->capacity)
 	{
-		return -1;
+		return NOT;
 	}
-
 
 	while ((buffer->head != buffer->tail) && count)
 	{ 
 		if(buffer->head == buffer->capacity)
 		{
-			buffer->head = 0; 
+			buffer->head = START; 
 		}
 		*(*(char **)&dest) = buffer->buffy[buffer->head];
 		++(*(char **)&dest);
-		buffer->head = (buffer->head + 1); 
+		++buffer->head;
 		--count;
 	}
 	
@@ -145,3 +142,22 @@ size_t CBuffFreeSpace(const cbuffer_t *buffer)
 	
 }
 
+
+
+/*
+static void CBuffPrint(cbuffer_t *buffer)
+{
+	size_t capac = buffer->capacity;
+	size_t start = buffer->head;
+	ssize_t size = 	buffer->tail;
+	printf("printing buffer:\n");
+	
+	while((start != (size_t)size) && capac)	
+	{
+		printf("%c", buffer->buffy[start]);
+		++start;
+		--capac;
+	}
+	printf("\n");
+
+}*/
