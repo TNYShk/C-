@@ -17,7 +17,8 @@ node_t *Flip(node_t *head);
 int HasLoop(const node_t *head);
 node_t *FindIntersection(node_t *head_1, node_t *head_2);
 
-
+static size_t countElements(node_t *head);
+static void MoveHead(node_t *head, size_t bymuch);
 
 int main()
 {
@@ -92,104 +93,107 @@ return 0;
 
 node_t *Flip(node_t *head)
 {
-	node_t *temp1 = NULL, *temp2 = NULL, *temp3 = NULL;
+	node_t *temp1 = NULL, *new_head = NULL, *prev_head = NULL;
 
 	assert (NULL != head);
 
-	temp3 = head;
-	temp1 = temp3;
-	temp2 = temp1->next;
+	prev_head = head;
+	temp1 = prev_head;
+	new_head = temp1->next;
 
-	while (NULL != temp2)
+	while (NULL != new_head)
 	{
-		temp1 = temp2;
-		temp2 = temp1->next;
-		temp1->next = temp3;
-		temp3 = temp1;
+		temp1 = new_head;
+		new_head = temp1->next;
+		temp1->next = prev_head;
+		prev_head = temp1;
 
 	}
 	head->next = NULL;
 
-	return temp2;
+	return new_head;
 }
 
 int HasLoop(const node_t *head)
 {
-	const node_t *temp1 = head;
-	const node_t *temp2 = head;
+	const node_t *turtois = head;
+	const node_t *rabit = head;
 
 	assert (NULL != head);
 
 	do
 	{
-		temp1 = temp1->next;
-		temp2 = temp2->next->next;
+		turtois = turtois->next;
+		rabit = rabit->next->next;
 	}
-	while ((temp1 != temp2) && (NULL != temp2));
+	while ((turtois != rabit) && (NULL != rabit));
 
-	return (temp1 == temp2);
+	return (turtois == rabit);
 
 }
 
 node_t *FindIntersection(node_t *head_1, node_t *head_2)
 {
-	node_t *temp1 = head_1;
-	node_t *temp2 = head_2;
+	node_t *run1 = head_1;
+	node_t *run2 = head_2;
 
 	int count1 = 0;
 	int count2 = 0;
-	int diff = 0;
+	int delta = 0;
 
 	assert (NULL != head_1);
 	assert (NULL != head_2);
+	
+	count1 = countElements(run1);
+	run1 = head_1;
 
-	while(NULL != temp1->next)
+	count2 = countElements(run2);
+	run2 = head_2;
+
+	delta = count1 - count2;
+
+	if (0 > delta)
 	{
-		++count1;
-		temp1 = temp1->next;
-	}
-	temp1 = head_1;
-
-	while(NULL != temp2->next)
-	{
-		++count2;
-		temp2 = temp2->next;
-	}
-	temp2 = head_2;
-
-	diff = count1 - count2;
-
-	if (0 > diff)
-	{
-		diff = -diff;
-		while (diff)
-		{
-			temp2 = temp2->next;
-			--diff;
-		}
+		delta = -delta;
+		MoveHead(run2, delta);
 	}
 	else
 	{
-		while(diff)
-		{
-			temp1 = temp1->next;
-			--diff;
-		}
+		MoveHead(run1, delta);
 	}
 
-	while( (temp1->next != NULL) || (temp2->next != NULL) )
+	while( (run1->next != NULL) || (run2->next != NULL) )
 	{
-		if(temp1->next == temp2->next)
+		if(run1->next == run2->next)
 		{
-			return temp1->next;
+			return run1->next;
 		}
-		temp1 = temp1->next;
-		temp2 = temp2->next;
+		run1 = run1->next;
+		run2 = run2->next;
 	}
 	return NULL;
 }
 
-void TestUno()
-{
 
+static size_t countElements(node_t *head2check)
+{
+	size_t counter = 0;
+
+	assert(NULL != head2check);
+
+	while (NULL != head2check->next)
+	{
+		++counter;
+		head2check = head2check->next;
+	}
+	return counter;
+}
+
+static void MoveHead(node_t *head, size_t delta)	
+{
+	while(delta)
+	{
+		head = head->next;
+		--delta;
+	}
 }
