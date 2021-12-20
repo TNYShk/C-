@@ -111,7 +111,7 @@ void TestOne(void)
 	PrintDListForward(test);
 	
 
-	printf("\n\t------------------------Push Back 3 nodes ------------------------------------------\n");
+	printf("\n\t------------------------Push Back 3 nodes ---------------------------------\n");
 	
 	DListPushBack(test, &t);
 	DListPushBack(test, &num);
@@ -136,7 +136,7 @@ void TestTwo()
 	size_t wto = 2;
 	size_t three = 3;
 	size_t hund = 100;
-	printf("\n\t*************************-Test 2-*********************************\n\n");
+	printf("\n\n\n\t*************************-Test 2-*********************************\n\n");
 	
 	test1 = DListCreate();
 	test2 = DListCreate();
@@ -153,16 +153,16 @@ void TestTwo()
 	tctest = DListPushBack(test2, &wto);
 	PrintDListForward(test2);
 
-	printf("\n\t---------------------Pop Front-----------------------------\n");
+	printf("\n\t-----------------------------Pop Front-----------------------------------\n");
 	DListPopFront(test2);
 	PrintDListForward(test2);
 
-	printf("\n\t---------------------Insert 2 nodes-----------------------------\n");
+	printf("\n\t-------------------------Insert 2 nodes----------------------------------\n");
 	DListInsert(tctest,&wto);
 	DListInsert(tctest,&one);
 	PrintDListForward(test2);
 
-	printf("\n\t---------------------Push num 3 Back & Front-----------------------------\n");
+	printf("\n\t----------------------Push num 3 Back & Front----------------------------\n");
 	DListPushBack(test2, &three);
 	DListPushFront(test2, &three);
 	
@@ -195,7 +195,7 @@ void TestTwo()
 	DListPushFront(test1, &one);
 	PrintDListForward(test1);
 	
-	printf("\n-----------------------------Find function test:--------------------------:\n\n");
+	printf("\n\n\t-----------------------------Find function test:--------------------------\n");
 	
 	printf("Trying to find number 100 in main list:\n");
 	TestFind(DListBegin(test2), DListEnd(test2), MatchNum, &hund);
@@ -204,7 +204,7 @@ void TestTwo()
 	assert(DListFind(DListBegin(test2), DListEnd(test2), MatchNum, &one) != NULL);
 	PrintDListForward(test2);
 	
-	printf("\n---------------------------MultiFind into new list3--------------------------:\n\n");
+	printf("\n\n\t---------------------------MultiFind into new list3--------------------------\n");
 	
 	multifind_test = DListCreate();
 	PrintDListForward(multifind_test);
@@ -214,11 +214,11 @@ void TestTwo()
 	PrintDListForward(test2);
 	
 
-	printf("\n---------------------------For Each test--adding num to each element------------------------:\n\n");
-	printf("\n---------before-----------:\n");
+	printf("\n\n\t---------------------------For Each test--adding num to each element------------------------\n");
+	printf("\n---------Pre For Each-----------:\n");
 	PrintDListForward(test1);
 	DListForEach(DListBegin(test1), DListEnd(test1),AddInt, &one);
-	printf("\n---------after-----------:\n");
+	printf("\n---------Post For Each-----------:\n");
 	PrintDListForward(test1);
 
 

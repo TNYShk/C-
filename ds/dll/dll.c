@@ -71,7 +71,7 @@ dlist_t *DListCreate(void)
     dlist_node_t *dummy_tail = NULL;
    
    dll =  (dlist_t *)malloc(sizeof(dlist_t));
-   
+   	
     dummy_head = (dlist_node_t *)malloc(sizeof(dlist_node_t));
     dummy_tail = (dlist_node_t *)malloc(sizeof(dlist_node_t));
     
@@ -216,6 +216,7 @@ dlist_iter_t DListPushBack(dlist_t *dll, void *data)
 void *DListPopFront(dlist_t *dll)
 {
 	void *data = DListGetData(DListBegin(dll));
+	
 	assert(NULL != dll);
 
 	DListRemove(DListBegin(dll));
@@ -226,7 +227,9 @@ void *DListPopFront(dlist_t *dll)
 void *DListPopBack(dlist_t *dll)
 {
 	void *data = DListGetData(DListEnd(dll)->prev);
+	
 	assert(NULL != dll);
+
 	DListRemove(DListEnd(dll)->prev);
 	
 	return data;
@@ -287,7 +290,6 @@ dlist_iter_t DListFind(dlist_iter_t from, dlist_iter_t to, match_func_t is_match
 	
 	assert( NULL != from);
 	assert( NULL != to);
-	assert( NULL != is_match);
 	
 	while (from != to)
 	{
@@ -366,7 +368,7 @@ void DListSplice(dlist_iter_t where, dlist_iter_t from, dlist_iter_t to)
 int MatchNum(const void *data, void *param)
 {	
 	assert(NULL != param);
-	
+
 	return (*(size_t *)data == *(size_t *)param);
 }
 
