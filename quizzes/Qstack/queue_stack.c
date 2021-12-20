@@ -20,8 +20,8 @@ typedef struct qstack
 
 void Dequeue(qstack_t *q_t)
 {
-	assert(NULL != q_t->stackDQ);
-	StackPop(q_t->stackDQ);
+	assert(NULL != q_t->stackEQ);
+	StackPop(q_t->stackEQ);
 }
 
 
@@ -40,6 +40,15 @@ void Enqueue(qstack_t *q_t, void *data)
 		StackPop(q_t->stackDQ);
 	}
 }
+
+void *QTPeek(const qstack_t *q_t)
+{
+	assert(NULL != q_t);
+
+	return StackPeek(q_t->stackEQ);
+
+}
+
 void Destroy(qstack_t *q_t)
 {
 	StackDestroy(q_t->stackDQ);
@@ -57,14 +66,20 @@ int test = 9,test2 = 5;
 void *viewptr = NULL;
 qt = (qstack_t *)calloc(2,sizeof(struct qstack));
 
-qt->stackDQ = StackCreate(10,4);
-qt->stackEQ = StackCreate(10,4);
+qt->stackDQ = StackCreate(5,4);
+qt->stackEQ = StackCreate(5,4);
 
 assert(NULL!= qt);
 
 Enqueue(qt,&test);
 Enqueue(qt,&test2);
 
+viewptr = QTPeek(qt);
+printf("peekaboo! %d\n", *(int*)viewptr);
+
+Dequeue(qt);
+viewptr = QTPeek(qt);
+printf("Post DQ peekaboo! %d\n", *(int*)viewptr);
 
 Destroy(qt);
 
