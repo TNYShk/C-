@@ -22,6 +22,9 @@ void TestOne(void)
 	dlist_iter_t atest = NULL;
 	dlist_iter_t btest = NULL;
 	dlist_iter_t ctest = NULL;
+	dlist_iter_t dtest = NULL;
+	dlist_iter_t etest = NULL;
+
 	void *ptr = NULL;
 	
 	int num = 666;
@@ -63,11 +66,31 @@ void TestOne(void)
 	printf("\ntrying to remove End or Begin:\n");
 	DListRemove(DListEnd(test));
 	printf("size is %ld\n",DListSize(test));
-	printf("\n\t----------------pushing nodes--------------------------------\n");
-	ctest = DListPushFront(test, &t);
+	printf("\n\t----------------pushing nodes Front--------------------------------\n");
+	dtest = DListPushFront(test, &t);
 	printf("size is %ld\n",DListSize(test));
-	ptr = DListGetData(ctest);
+	ptr = DListGetData(dtest);
+	
 	printf("pushed node to front, value is %ld\n",*(size_t*)ptr);
+	printf("\n\t---------------------Pop Front-----------------------------\n");
+	
+	ptr = DListPopFront(test);
+	printf("popped front, value is %ld\n",*(size_t *)ptr);
+	printf("size is now %ld\n",DListSize(test));
+	printf("\n\t---------------inserted 2------------------------------------------\n");
+	
+	etest = DListInsert(dtest,&t);
+	etest = DListInsert(etest,&num);
+	printf("size is now %ld\n",DListSize(test));
+	printf("\n\t------------------------------Pop Back-----------------------------\n");
+	ptr = DListPopBack(test);
+	printf("popped back, value is %d\n",*(int *)ptr);
+	printf("size is now %ld\n",DListSize(test));
+	/*dtest = DListPushBack(test, &num);
+	ptr = DListGetData(dtest);
+	printf("dtest is %d\n",*(int*)ptr);
+	printf("size is %ld\n",DListSize(test));
+	*/
 	DListDestroy(test);
 
 }

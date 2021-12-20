@@ -30,6 +30,8 @@ typedef struct dlist_node
 } dlist_node_t;
 
 
+
+/*****************Service Funcs ******************************/
 static dlist_iter_t InitLNode(dlist_iter_t new_e, void *data)
 {
 
@@ -44,6 +46,16 @@ static dlist_iter_t InitLNode(dlist_iter_t new_e, void *data)
 	return new_e;
 }
 
+static dlist_iter_t RetrieveTail(dlist_iter_t iter)
+{
+
+	while(NULL != iter->next)
+	{
+		iter = DListNext(iter);
+	}
+	return iter;
+}
+/***************End Service Funcs ******************************/
 	
 dlist_t *DListCreate(void)
 {
@@ -56,6 +68,7 @@ dlist_t *DListCreate(void)
     {
     	return NULL;
     }
+
     dll->head = InitLNode(dummy_head, dll);
     dll->tail = InitLNode(dummy_tail, dll);
 
@@ -120,19 +133,23 @@ dlist_iter_t DListInsert(dlist_iter_t where, void *data)
    	node =  InitLNode(node, data);
 
     assert(NULL != where);
-
+	
 	if (NULL == node)
 	{
-		return where;
+		return RetrieveTail(where);
 	}
+	
     if (NULL == where->prev)
     {
     	((dlist_t *)(where->data))->head->next = node;
     }
-
-    where->prev->next = node;
+   
+    
     node->next = where;
     node->prev = where->prev;
+    where->prev->next = node;
+
+
 
     return node; 
 }
@@ -142,7 +159,7 @@ dlist_iter_t DListRemove(dlist_iter_t iter)
 {
     dlist_iter_t remove = NULL;
 
-    if( (NULL == iter->next ) || (NULL == iter->prev) )
+    if(NULL == iter->next)
     {
 		printf("cant remove dummy!\n");
 		return iter;
@@ -156,7 +173,6 @@ dlist_iter_t DListRemove(dlist_iter_t iter)
     remove = NULL;
 
     return iter;
-
 }
 
 
@@ -165,16 +181,49 @@ dlist_iter_t DListPushFront(dlist_t *dll, void *data)
 	dlist_iter_t node = NULL;
    	
 	assert(NULL != dll);
-	node = DListInsert(dll->head->next,data);
+	node = DListInsert(DListBegin(dll),data);
+	
 	if(NULL == node)
 	{
 		printf("wasnt done, heres the head\n");
-		return (DListGetData(DListBegin(dll)));
+		return (DListBegin(dll));
 	}
 	return node;
-
-
 }
+/* not working */
+dlist_iter_t DListPushBack(dlist_t *dll, void *data)
+{
+	dlist_iter_t node = NULL;
+   	
+	assert(NULL != dll);
+	
+	node = DListInsert(dll->tail,data);
+	if(NULL == node)
+	{
+		printf("wasnt done, heres the end\n");
+		return (DListEnd(dll));
+	}
+	
+
+	return node;
+}
+
+void *DListPopFront(dlist_t *dll)
+{
+	void *data = DListGetData(DListBegin(dll));
+	DListRemove((DListBegin(dll)));
+	return data;
+}
+
+void *DListPopBack(dlist_t *dll)
+{
+	void *data = DListGetData(DListEnd(dll)->prev->next);
+
+	DListRemove(DListEnd(dll)->prev);
+	
+	return data;
+}
+
 
 
 dlist_iter_t DListBegin(const dlist_t *dll)
@@ -189,7 +238,7 @@ dlist_iter_t DListEnd(const dlist_t *dll)
 {
      assert(NULL != dll);
 
-     return dll->tail->prev;
+     return dll->tail;
 }
 
 

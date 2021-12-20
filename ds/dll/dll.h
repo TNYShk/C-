@@ -19,7 +19,7 @@ typedef struct dlist_node
 */
 
 typedef struct dlist dlist_t;
-typedef struct dlist_node *dlist_iter_t;
+typedef struct dlist_node * dlist_iter_t;
 typedef int (*match_func_t)(const void *data, void *param);
 typedef int (*action_func_t)(void *data, void *param);
 
