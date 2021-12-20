@@ -107,13 +107,13 @@ dlist_t *DListCreate(void)
 void DListDestroy(dlist_t *dll)
 {
    dlist_node_t *current_node = dll->head;
-	dlist_node_t *next_node = current_node->next;
+	dlist_node_t *next_node = DListNext(current_node);
 	
 	while (NULL != next_node)
 	{ 
 		free(current_node);
 		current_node = next_node;
-		next_node = current_node->next;
+		next_node = DListNext(current_node);
 	}
 	
 	free(current_node);
@@ -185,7 +185,7 @@ dlist_iter_t DListRemove(dlist_iter_t iter)
 		return iter;
     }
 
-    next_node = iter->next;
+    next_node = DListNext(iter);
     iter->prev->next = DListNext(iter);
     iter->next->prev = DListPrev(iter);
 
@@ -353,13 +353,13 @@ void DListSplice(dlist_iter_t where, dlist_iter_t from, dlist_iter_t to)
     assert(NULL != from);
     assert(NULL != to);
  
-    splice_node = to->prev;
+    splice_node = DListPrev(to);
     
     from->prev->next = to;
-    to->prev = from->prev;
+    to->prev = DListPrev(from);
     
     where->prev->next = from;
-    from->prev = where->prev;
+    from->prev = DListPrev(where);
     
     splice_node->next = where;
     where->prev = splice_node;

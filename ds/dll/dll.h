@@ -25,7 +25,7 @@ typedef int (*action_func_t)(void *data, void *param);
 
 /* O(1) time, O(1) memory 
 Create the doubly-linked list
-return ptr to it, NULL if failed*/
+Return ptr to it, NULL if failed*/
 dlist_t *DListCreate(void);
 
 /* O(n) time, O(1) memory 
