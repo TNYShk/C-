@@ -3,105 +3,229 @@
 
 #include <stddef.h> /* size_t */
 
-/*
-struct dlist
-{
-	struct dlist_node *head;
-	struct dlist_node *tail;
-};
+/************************************
+*   Author: Tanya
+*	Exercise: Doubley Linked List
+*   Date: Dec 20, 2021
+************************************/
 
-typedef struct dlist_node
-{
-	void *data;
-	struct dlist_node *next;
-	struct dlist_node *prev;
-} dlist_node_t;
-*/
 
 typedef struct dlist dlist_t;
 typedef struct dlist_node * dlist_iter_t;
 typedef int (*match_func_t)(const void *data, void *param);
 typedef int (*action_func_t)(void *data, void *param);
 
-/* O(1) time, O(1) memory 
-Create the doubly-linked list
-Return ptr to it, NULL if failed*/
+/*
+ * DESCRIPTION: 
+ * Creates a new Double Linked List ("dll")
+ * 
+ * !don't forget to free allocated memory!
+ *
+ * PARAMS: Nada
+ * 
+ * RETURN: Pointer to the newly created dll, otherwise NULL
+ * O(1) time, O(1) memory */
 dlist_t *DListCreate(void);
 
-/* O(n) time, O(1) memory 
-destroy Dll, free allocated memory of its n elements*/
+/*
+ * DESCRIPTION: 
+ * Destroy Double Linked List ("dll")
+ * 
+ * free's allocated memory
+ *
+ * PARAMS: Pointer to the dll to remove
+ * 
+ * RETURN: 
+ * O(n) time, O(1) memory */
 void DListDestroy(dlist_t *dll);
 
-/* O(1) time, O(1) memory 
-check if the Dll is empty
-return 1 for empty*/
+/*
+ * DESCRIPTION: 
+ * Checks if the dll is Empty
+ * 
+ * PARAMS: Pointer to the dll
+ * 
+ * RETURN: 1 if Empty, 0 if not 
+ * O(1) time, O(1) memory */
 int DListIsEmpty(const dlist_t *dll);
 
-/* O(n) time, O(1) memory 
-count number of elements in the dll*/
+/*
+ * DESCRIPTION: 
+ * Counts elements of the dll
+ * 
+ * PARAMS: Pointer to the dll
+ * 
+ * RETURN: number of elements counted 
+ * O(n) time, O(1) memory */
 size_t DListSize(const dlist_t *dll);
 
-/* O(1) time, O(1) memory 
-inserts new element to the requested location, before
-returns the new element, or last element if failed*/
+/*
+ * DESCRIPTION: 
+ * Inserts new element before the requested location
+ * 
+ * PARAMS: Destination element, void data to insert
+ * 
+ * RETURN: Inserted Element, in case of FAIL, returns the last element of the dll 
+ * O(1) time, O(1) memory */
 dlist_iter_t DListInsert(dlist_iter_t where, void *data);
 
-/* O(1) time, O(1) memory 
-remove requested element from the dll
-return the element before, or the End element if failed*/
+/*
+ * DESCRIPTION: 
+ * Remove requested element from the dll
+ * 
+ * PARAMS: Element to remove 
+ * 
+ * RETURN: Element thats now in place of the removed (next in line)
+ * O(1) time, O(1) memory */
 dlist_iter_t DListRemove(dlist_iter_t iter);
 
-/* O(1) time, O(1) memory 
-add new element to the top of the dll
-returns the newly added element\head*/
+
+/*
+ * DESCRIPTION: 
+ * Push new element at the top of the dll
+ * 
+ * PARAMS: Pointer to the dll, void data to insert
+ * 
+ * RETURN: Newly added element (Beginning)
+ * O(1) time, O(1) memory */
 dlist_iter_t DListPushFront(dlist_t *dll, void *data);
 
-/* O(1) time, O(1) memory 
-add new element to the back of the dll,
-returns the newly added element, of the end element*/
+/*
+ * DESCRIPTION: 
+ * Push new element to the back of the dll
+ * 
+ * PARAMS: Pointer to the dll, void data to insert
+ * 
+ * RETURN: Newly added element (Last in line)
+ * O(1) time, O(1) memory */
 dlist_iter_t DListPushBack(dlist_t *dll, void *data);
 
-/* O(1) time, O(1) memory 
-remove the front element from the dll
-returns its data*/
+/*
+ * DESCRIPTION: 
+ * Pops element from the top of the dll (remove)
+ * 
+ * PARAMS: Pointer to the dll
+ * 
+ * RETURN: Data stored in the element that was removed
+ * O(1) time, O(1) memory */
 void *DListPopFront(dlist_t *dll);
 
-/* O(1) time, O(1) memory 
-remove element from the back
-return its data*/
+/*
+ * DESCRIPTION: 
+ * Pops element from the back of the dll (removes)
+ * 
+ * PARAMS: Pointer to the dll
+ * 
+ * RETURN: Data stored in the element that was removed
+ * O(1) time, O(1) memory */
 void *DListPopBack(dlist_t *dll);
 
-/* O(1) time, O(1) memory */
+/*
+ * DESCRIPTION: 
+ * Splices (cuts) the requested elements out of the list
+ * 
+ * PARAMS: Where - place the spliced elements, From - element to cut from, 
+ * To - element to cut up to
+ * 
+ * RETURN: None
+ * O(1) time, O(1) memory */
 void DListSplice(dlist_iter_t where, dlist_iter_t from, dlist_iter_t to);
 
-/* O(1) time, O(1) memory 
-returns the first element*/
+/*
+ * DESCRIPTION: 
+ * Returns the Top/first element of the dll
+ * 
+ * PARAMS: Pointer to the dll
+ * 
+ * RETURN: The first element of the list
+ * O(1) time, O(1) memory */
 dlist_iter_t DListBegin(const dlist_t *dll);
 
-/* O(1) time, O(1) memory */
+/*
+ * DESCRIPTION: 
+ * Returns the Tail of the dll
+ * Tail can't be removed and isn't part of the dll (not counted). 
+ * like a Sheep Herder
+ * PARAMS: Pointer to the dll
+ * 
+ * RETURN: The closing element of the list, cant be removed
+ * O(1) time, O(1) memory */
 dlist_iter_t DListEnd(const dlist_t *dll);
 
-/* O(1) time, O(1) memory */
+/*
+ * DESCRIPTION: 
+ * Returns the next element
+ * 
+ * PARAMS: Iterator - Element
+ * 
+ * RETURN: Element After
+ * O(1) time, O(1) memory */
 dlist_iter_t DListNext(dlist_iter_t iter);
 
-/* O(1) time, O(1) memory */
+/*
+ * DESCRIPTION: 
+ * Returns the previous element
+ * 
+ * PARAMS: Iterator - Element 
+ * 
+ * RETURN: Element before Iterator received 
+ * O(1) time, O(1) memory */
 dlist_iter_t DListPrev(dlist_iter_t iter);
 
-/* O(1) time, O(1) memory */
+/*
+ * DESCRIPTION: 
+ * Get the data from the element
+ * 
+ * PARAMS: Iterator - Element 
+ * 
+ * RETURN: the data stored in that element
+ * O(1) time, O(1) memory */
 void *DListGetData(dlist_iter_t iter);
 
-/* O(1) time, O(1) memory */
+/*
+ * DESCRIPTION: 
+ * Checks wether given iterators (elements) are equal
+ * 
+ * PARAMS: Iterators - Elements to compatr
+ * 
+ * RETURN: Boolean, 1 if they are equal, 0 otherwise
+ * O(1) time, O(1) memory */
 int DListIsEqual(dlist_iter_t iter1, dlist_iter_t iter2);
 
-/* O(n) time, O(1) memory */
+/*
+ * DESCRIPTION: 
+ * Searched the given range for the desired param, with given function
+ * 
+ * PARAMS: Iterators - Elements range to llok for (from -to), 
+ * Comparing Function, Data to look for
+ * 
+ * RETURN: matching Iterator, NULL if not found
+ * O(n) time, O(1) memory */
 dlist_iter_t DListFind(dlist_iter_t from, dlist_iter_t to,
 	match_func_t is_match, void *param);
 
-/* O(n) time, O(1) memory */
+/*
+ * DESCRIPTION: 
+ * Searched the given range for the desired param, 
+ * places located elements into a new dll.
+ * 
+ * PARAMS: Iterators - Elements range to look for (from -to), 
+ * Data to look for, Result dll to places found elements
+ * 
+ * RETURN: Boolean val:  0 Success, -1 Fail
+ * O(n) time, O(1) memory */
 int DListMultiFind(dlist_iter_t from, dlist_iter_t to,
 	match_func_t is_match, void *param, dlist_t *result_list);
 
-/* O(n) time, O(1) memory */
+/*
+ * DESCRIPTION: 
+ * Performs an action on the given range of elements, using the given parameter
+ * 
+ * PARAMS: Iterators - Elements range for the action (from -to), 
+ * Param to do, Action function that does the action with the param on the range
+ * 
+ * RETURN: Boolean,  0 Success, -1 Fail
+ * O(n) time, O(1) memory */
 int DListForEach(dlist_iter_t from, dlist_iter_t to,
 	action_func_t action_func, void *param);
 

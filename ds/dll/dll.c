@@ -11,14 +11,11 @@
  * Reviewer: Erez                  *
  ***********************************/
 
-
-
 #include "dll.h"
 
 #define SUCCESS (0)
 #define FAIL (-1)
 #define FOUND (1)
-
 
 
 struct dlist
@@ -33,7 +30,6 @@ typedef struct dlist_node
 	struct dlist_node *next;
 	struct dlist_node *prev;
 } dlist_node_t;
-
 
 
 /*****************Service Funcs ******************************/
@@ -69,13 +65,13 @@ dlist_t *DListCreate(void)
     dlist_t *dll = NULL;
    	dlist_node_t *dummy_head = NULL;
     dlist_node_t *dummy_tail = NULL;
-   
-   dll =  (dlist_t *)malloc(sizeof(dlist_t));
+	
+	dll =  (dlist_t *)malloc(sizeof(dlist_t));
    	
     dummy_head = (dlist_node_t *)malloc(sizeof(dlist_node_t));
     dummy_tail = (dlist_node_t *)malloc(sizeof(dlist_node_t));
     
-     if (NULL == dll || NULL == dummy_head || NULL == dummy_tail)
+    if (NULL == dll || NULL == dummy_head || NULL == dummy_tail)
      {
      	free(dll);
      	dll = NULL;
@@ -99,14 +95,12 @@ dlist_t *DListCreate(void)
 	dummy_tail->prev = dummy_head;
 
     return dll;
- 
-
 }
 
 
 void DListDestroy(dlist_t *dll)
 {
-   dlist_node_t *current_node = dll->head;
+   	dlist_node_t *current_node = dll->head;
 	dlist_node_t *next_node = DListNext(current_node);
 	
 	while (NULL != next_node)
@@ -129,23 +123,22 @@ int DListIsEmpty(const dlist_t *dll)
     assert(NULL != dll);
 
     return (dll->head->next == dll->tail);
-
 }
 
 
 size_t DListSize(const dlist_t *dll)
 {
-     size_t count = 0;
-     dlist_iter_t counter = dll->head;
+    size_t count = 0;
+    dlist_iter_t runner = dll->head;
      
-     assert(NULL != dll);
+    assert(NULL != dll);
     
-     while (counter->next != dll->tail)
-     {
+    while (runner->next != dll->tail)
+    {
      	++count;
-     	counter = DListNext(counter);
-     }
-     return count;
+     	runner = DListNext(runner);
+    }
+    return count;
 }
 
 
@@ -181,7 +174,7 @@ dlist_iter_t DListRemove(dlist_iter_t iter)
 
     if(NULL == iter->next || NULL == iter->prev)
     {
-		printf("cant remove dummy!\n");
+		/*printf("cant remove dummy!\n");*/
 		return iter;
     }
 
@@ -193,7 +186,6 @@ dlist_iter_t DListRemove(dlist_iter_t iter)
     iter = NULL;
 
     return next_node;
-
 }
 
 
@@ -224,6 +216,7 @@ void *DListPopFront(dlist_t *dll)
 	return data;
 }
 
+
 void *DListPopBack(dlist_t *dll)
 {
 	void *data = DListGetData(DListEnd(dll)->prev);
@@ -238,17 +231,17 @@ void *DListPopBack(dlist_t *dll)
 
 dlist_iter_t DListBegin(const dlist_t *dll)
 {
-     assert(NULL != dll);
+    assert(NULL != dll);
 
-     return dll->head->next;
+    return dll->head->next;
 }
 
 
 dlist_iter_t DListEnd(const dlist_t *dll)
 {
-     assert(NULL != dll);
+    assert(NULL != dll);
 
-     return dll->tail;
+    return dll->tail;
 }
 
 
@@ -285,6 +278,7 @@ int DListIsEqual(dlist_iter_t iter1, dlist_iter_t iter2)
     return (iter1 == iter2);
 }
 
+
 dlist_iter_t DListFind(dlist_iter_t from, dlist_iter_t to, match_func_t is_match, void *param)
 {
 	
@@ -302,8 +296,8 @@ dlist_iter_t DListFind(dlist_iter_t from, dlist_iter_t to, match_func_t is_match
 	}
 	
 	return NULL;
-
 }
+
 
 int DListForEach(dlist_iter_t from, dlist_iter_t to, action_func_t action_func, void *param)
 {
@@ -324,6 +318,7 @@ int DListForEach(dlist_iter_t from, dlist_iter_t to, action_func_t action_func, 
     return status;
 }
 
+
 int DListMultiFind(dlist_iter_t from, dlist_iter_t to, match_func_t is_match, void *param, dlist_t *result_list)
 {
 	assert( NULL != from);
@@ -341,9 +336,10 @@ int DListMultiFind(dlist_iter_t from, dlist_iter_t to, match_func_t is_match, vo
 
 		from = DListNext(from);
 	}
+	
 	return SUCCESS;
-
 }
+
 
 void DListSplice(dlist_iter_t where, dlist_iter_t from, dlist_iter_t to)
 {
@@ -365,6 +361,9 @@ void DListSplice(dlist_iter_t where, dlist_iter_t from, dlist_iter_t to)
     where->prev = splice_node;
 }
 
+
+
+/*test fir each and find funcs */
 int MatchNum(const void *data, void *param)
 {	
 	assert(NULL != param);
