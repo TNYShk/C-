@@ -36,7 +36,7 @@ typedef struct dlist_node
 
 
 /*****************Service Funcs ******************************/
-/*
+
 static dlist_iter_t InitLNode(dlist_iter_t new_e, void *data)
 {
 
@@ -49,7 +49,7 @@ static dlist_iter_t InitLNode(dlist_iter_t new_e, void *data)
 		new_e->next = NULL;
 	}
 	return new_e;
-}*/
+}
 
 static dlist_iter_t RetrieveTail(dlist_iter_t iter)
 {
@@ -142,7 +142,7 @@ size_t DListSize(const dlist_t *dll)
      while (counter->next != dll->tail)
      {
      	++count;
-     	counter = counter->next;
+     	counter = DListNext(counter);
      }
      return count;
 }
@@ -151,7 +151,7 @@ size_t DListSize(const dlist_t *dll)
 dlist_iter_t DListInsert(dlist_iter_t where, void *data)
 {
     dlist_iter_t node = NULL;
-   	node = (dlist_node_t *)malloc(sizeof(dlist_node_t));
+   	node = InitLNode(node, data);
 
     assert(NULL != where);
 	
@@ -162,7 +162,7 @@ dlist_iter_t DListInsert(dlist_iter_t where, void *data)
 	
 
     node->data = data;
-	node->prev = where->prev;
+	node->prev = DListPrev(where);
 	node->next = where;
 	
 	where->prev->next = node;
@@ -187,34 +187,14 @@ dlist_iter_t DListRemove(dlist_iter_t iter)
     }
 
     next_node = iter->next;
-    iter->prev->next = iter->next;
-    iter->next->prev = iter->prev;
+    iter->prev->next = DListNext(iter);
+    iter->next->prev = DListPrev(iter);
 
     free(iter);
     iter = NULL;
 
     return next_node;
 
-   /*
-    dlist_iter_t remove = NULL;
-
-    assert(NULL != iter);
-
-    if(NULL == iter->next || NULL == iter->prev)
-    {
-		printf("cant remove dummy!\n");
-		return iter;
-    }
-
-    remove = DListNext(iter);
-    iter->data = DListGetData(remove);
-    iter->next = DListNext(remove);
-
-    free(remove);
-    remove = NULL;
-
-    return iter;
-  */
 }
 
 
@@ -377,7 +357,7 @@ void DListSplice(dlist_iter_t where, dlist_iter_t from, dlist_iter_t to)
     where->prev = splice_node;
 }
 
-int MatchInt(const void *data, void *param)
+int MatchNum(const void *data, void *param)
 {	
 	return (*(size_t *)data == *(size_t *)param);
 }
