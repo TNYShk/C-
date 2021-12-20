@@ -197,7 +197,7 @@ dlist_iter_t DListPushBack(dlist_t *dll, void *data)
    	
 	assert(NULL != dll);
 	
-	node = DListInsert(dll->tail,data);
+	node = DListInsert(dll->tail->prev->next,data);
 	if(NULL == node)
 	{
 		printf("wasnt done, heres the end\n");

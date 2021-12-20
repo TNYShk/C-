@@ -24,6 +24,7 @@ void TestOne(void)
 	dlist_iter_t ctest = NULL;
 	dlist_iter_t dtest = NULL;
 	dlist_iter_t etest = NULL;
+	dlist_iter_t ftest = NULL;
 
 	void *ptr = NULL;
 	
@@ -86,11 +87,12 @@ void TestOne(void)
 	ptr = DListPopBack(test);
 	printf("popped back, value is %d\n",*(int *)ptr);
 	printf("size is now %ld\n",DListSize(test));
-	/*dtest = DListPushBack(test, &num);
-	ptr = DListGetData(dtest);
-	printf("dtest is %d\n",*(int*)ptr);
+	printf("\n\t----------------push node Back--------------------------------\n");
+	ftest = DListPushBack(test, &num);
+	ptr = DListGetData(ftest);
+	printf("ftest is %d\n",*(int*)ptr);
 	printf("size is %ld\n",DListSize(test));
-	*/
+	
 	DListDestroy(test);
 
 }
