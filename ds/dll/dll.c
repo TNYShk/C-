@@ -4,10 +4,11 @@
 
 /***********************************
  * Doubly Linked List WS		   *
+ *  Proud Surviver           	   *
  * by Tanya					       *
- *             					   *
+ *   Dec 20				           *
  *                                 *
- * Reviewer:                       *
+ * Reviewer: Erez                  *
  ***********************************/
 
 
@@ -61,6 +62,7 @@ static dlist_iter_t RetrieveTail(dlist_iter_t iter)
 	return iter;
 }
 /***************End Service Funcs ******************************/
+
 	
 dlist_t *DListCreate(void)
 {
@@ -100,7 +102,6 @@ dlist_t *DListCreate(void)
  
 
 }
-
 
 
 void DListDestroy(dlist_t *dll)
@@ -160,7 +161,6 @@ dlist_iter_t DListInsert(dlist_iter_t where, void *data)
 		return RetrieveTail(where);
 	}
 	
-
     node->data = data;
 	node->prev = DListPrev(where);
 	node->next = where;
@@ -168,7 +168,6 @@ dlist_iter_t DListInsert(dlist_iter_t where, void *data)
 	where->prev->next = node;
 	where->prev = node;
 
-    
     return node; 
 }
 
@@ -213,9 +212,12 @@ dlist_iter_t DListPushBack(dlist_t *dll, void *data)
 	return DListInsert(DListEnd(dll), data);
 }
 
+
 void *DListPopFront(dlist_t *dll)
 {
 	void *data = DListGetData(DListBegin(dll));
+	assert(NULL != dll);
+
 	DListRemove(DListBegin(dll));
 	
 	return data;
@@ -224,6 +226,7 @@ void *DListPopFront(dlist_t *dll)
 void *DListPopBack(dlist_t *dll)
 {
 	void *data = DListGetData(DListEnd(dll)->prev);
+	assert(NULL != dll);
 	DListRemove(DListEnd(dll)->prev);
 	
 	return data;
@@ -282,9 +285,9 @@ int DListIsEqual(dlist_iter_t iter1, dlist_iter_t iter2)
 dlist_iter_t DListFind(dlist_iter_t from, dlist_iter_t to, match_func_t is_match, void *param)
 {
 	
-	assert(NULL != from);
-	assert(NULL != to);
-	assert(NULL != is_match);
+	assert( NULL != from);
+	assert( NULL != to);
+	assert( NULL != is_match);
 	
 	while (from != to)
 	{
@@ -306,8 +309,8 @@ int DListForEach(dlist_iter_t from, dlist_iter_t to, action_func_t action_func, 
     int status = FAIL;
     dlist_iter_t current = NULL;
 
-    assert(NULL != from);
-    assert(NULL != to);
+    assert( NULL != from);
+    assert( NULL != to);
   
     current = from;
     while (!DListIsEqual(current, to))
@@ -321,7 +324,9 @@ int DListForEach(dlist_iter_t from, dlist_iter_t to, action_func_t action_func, 
 
 int DListMultiFind(dlist_iter_t from, dlist_iter_t to, match_func_t is_match, void *param, dlist_t *result_list)
 {
-	
+	assert( NULL != from);
+    assert( NULL != to);
+
 	while(from != to)
 	{
 		if(is_match(from->data, param))
@@ -341,6 +346,7 @@ int DListMultiFind(dlist_iter_t from, dlist_iter_t to, match_func_t is_match, vo
 void DListSplice(dlist_iter_t where, dlist_iter_t from, dlist_iter_t to)
 {
 	dlist_iter_t splice_node = NULL;
+    
     assert(NULL != where);
     assert(NULL != from);
     assert(NULL != to);
@@ -359,13 +365,14 @@ void DListSplice(dlist_iter_t where, dlist_iter_t from, dlist_iter_t to)
 
 int MatchNum(const void *data, void *param)
 {	
+	assert(NULL != param);
+	
 	return (*(size_t *)data == *(size_t *)param);
 }
 
 int AddInt(void *data, void *param)
 {
-	assert(NULL != data);
-	assert(NULL != param);
+	assert( NULL != param);
 	
 	*(size_t *)data += *(size_t *)param;
 	
