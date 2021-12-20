@@ -6,14 +6,24 @@
 #define PRINT_NODE(node) (printf("node at address %p has int %d, prev is %p, next is %p\n", \
         (void *)node, *(int *)DListGetData(node), (void *)DListPrev(node), (void *)DListNext(node)));
 
+/***********************************
+ * Doubly Linked List WS		   *
+ *  Proud Surviver           	   *
+ * by Tanya					       *
+ *   Dec 20				           *
+ *                                 *
+ * Reviewer: Erez                  *
+ ***********************************/
+
+
 
 
 void TestOne();
 void TestTwo();
+
 int MatchNum(const void *data, void *param);
 void TestFind(dlist_iter_t from, dlist_iter_t to, match_func_t is_match, void *data);
 int AddInt(void *data, void *param);
-
 
 
 static void PrintDListForward(const dlist_t *dlist)
@@ -56,10 +66,6 @@ void TestOne(void)
 	dlist_iter_t btest = NULL;
 	dlist_iter_t dtest = NULL;
 	
-	
-
-	
-	
 	int num = 666;
 	int another_num = 26;
 	size_t t = 111;
@@ -73,7 +79,6 @@ void TestOne(void)
 	(1 == DListIsEmpty(test)) ? printf("Empty dlist\n") : printf("NOT Empty dlist\n");
 	atest = DListBegin(test);
 	printf("size is %ld\n",DListSize(test));
-	
 	
 
 	printf("\n\t---------------Insert nodes to list-------------------------\n");
@@ -120,10 +125,9 @@ void TestOne(void)
 	printf("\n\t------------------------Is Equal?------------------------------------------\n");
 	printf("Pushed to End , is it equal? %d\n",(DListIsEqual(DListPrev(DListEnd(test)),dtest)));
 	
-
 	DListDestroy(test);
-
 }
+
 
 void TestTwo()
 {
@@ -227,10 +231,6 @@ void TestTwo()
 	DListDestroy(test1);
 	DListDestroy(test2);
 }
-
-
-
-
 
 
 void TestFind(dlist_iter_t from, dlist_iter_t to, match_func_t is_match, void *data)

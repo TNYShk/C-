@@ -13,9 +13,12 @@
 
 #include "dll.h"
 
-#define SUCCESS (0)
-#define FAIL (-1)
-#define FOUND (1)
+enum stats
+{
+	FAIL = -1,
+	SUCCESS,
+	FOUND
+};
 
 
 struct dlist
@@ -336,7 +339,7 @@ int DListMultiFind(dlist_iter_t from, dlist_iter_t to, match_func_t is_match, vo
 
 		from = DListNext(from);
 	}
-	
+
 	return SUCCESS;
 }
 

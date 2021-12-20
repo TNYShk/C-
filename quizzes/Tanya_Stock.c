@@ -91,13 +91,10 @@ stock_t MaxProfitStock(int *stock, size_t length)
  	stocky.max_profit = *sell - *buy;
  	runner = sell;
 
-		
-
 	while(runner < stock + length)
  	{
  		if(*runner > *sell)
  		{
-
  			int delta = *runner - *buy;
  			
  			sell = runner;
@@ -107,12 +104,14 @@ stock_t MaxProfitStock(int *stock, size_t length)
  				stocky.max_profit = delta;
  			}
  		}
+
  		else if(*runner < *buy)
  		{
  			buy = sell = runner;
  		}
- 		++runner;
+ 	  ++runner;
  	}
+
  	stocky.p_buy = buy;
  	stocky.p_sell = sell;
 
