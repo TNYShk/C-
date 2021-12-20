@@ -152,7 +152,7 @@ void TestTwo()
 
 	(1 == DListIsEmpty(test2)) ? printf("Empty dlist\n") : printf("NOT Empty dlist\n");
 
-	printf("\n\t----------------pushing nodesFront Back--------------------------------\n");
+	printf("\n\t----------------Pushing nodesFront & Back--------------------------------\n");
 
 	tatest = DListBegin(test2);
 	DListPushFront(test2, &one);
@@ -180,8 +180,8 @@ void TestTwo()
 	
 	printf("\n\t----------------------------list1 -----------------------------\n");
 	PrintDListForward(test2);
-/*
-	printf("\n\t---------------------------list2 -----------------------------\n");
+
+	printf("\n\t-------------------------New list2, pushing to front 3X1 -----------------------------\n");
 	DListPushFront(test1, &one);
 	DListPushFront(test1, &one);
 	DListPushFront(test1, &one);
@@ -194,7 +194,14 @@ void TestTwo()
 	printf("\n\t-----------------------post splice list2 -----------------------------\n");
 
 	PrintDListForward(test1);
-	
+
+	printf("\n\t------------------------Pop BackX3 list1 -----------------------------\n");
+	DListPopBack(test2);
+	DListPopBack(test2);
+	DListPopBack(test2);
+	PrintDListForward(test2);
+
+	/*
 	printf("\n\t-----------------------add element to list2 -----------------------------\n");
 	DListPushFront(test1, &one);
 	PrintDListForward(test1);
