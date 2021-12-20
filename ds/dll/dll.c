@@ -14,7 +14,9 @@
 
 #include "dll.h"
 
-
+#define SUCCESS (0)
+#define FAIL (-1)
+#define FOUND (1)
 
 
 
@@ -34,6 +36,7 @@ typedef struct dlist_node
 
 
 /*****************Service Funcs ******************************/
+/*
 static dlist_iter_t InitLNode(dlist_iter_t new_e, void *data)
 {
 
@@ -46,7 +49,7 @@ static dlist_iter_t InitLNode(dlist_iter_t new_e, void *data)
 		new_e->next = NULL;
 	}
 	return new_e;
-}
+}*/
 
 static dlist_iter_t RetrieveTail(dlist_iter_t iter)
 {
@@ -102,18 +105,19 @@ dlist_t *DListCreate(void)
 
 void DListDestroy(dlist_t *dll)
 {
-   dlist_node_t *next = NULL;
-	dlist_node_t *current =  dll->head;
-
-	assert(NULL != dll);
-
-	while (current != NULL)
-	{
-		next = current->next;
-		free(current);
-		current = next;
+   dlist_node_t *current_node = dll->head;
+	dlist_node_t *next_node = current_node->next;
+	
+	while (NULL != next_node)
+	{ 
+		free(current_node);
+		current_node = next_node;
+		next_node = current_node->next;
 	}
-
+	
+	free(current_node);
+	current_node = NULL;
+	
 	free(dll);
 	dll = NULL;
 }
@@ -147,7 +151,7 @@ size_t DListSize(const dlist_t *dll)
 dlist_iter_t DListInsert(dlist_iter_t where, void *data)
 {
     dlist_iter_t node = NULL;
-   	node =  (dlist_node_t *)malloc(sizeof(dlist_node_t));
+   	node = (dlist_node_t *)malloc(sizeof(dlist_node_t));
 
     assert(NULL != where);
 	
@@ -171,6 +175,7 @@ dlist_iter_t DListInsert(dlist_iter_t where, void *data)
 
 dlist_iter_t DListRemove(dlist_iter_t iter)
 {
+   
     dlist_iter_t remove = NULL;
 
     assert(NULL != iter);
@@ -181,7 +186,7 @@ dlist_iter_t DListRemove(dlist_iter_t iter)
 		return iter;
     }
 
-    remove = iter->next;
+    remove = DListNext(iter);
     iter->data = DListGetData(remove);
     iter->next = DListNext(remove);
 
@@ -189,9 +194,10 @@ dlist_iter_t DListRemove(dlist_iter_t iter)
     remove = NULL;
 
     return iter;
+  
 }
 
-
+/*
 dlist_iter_t DListPushFront(dlist_t *dll, void *data)
 {
 	dlist_iter_t node = NULL;
@@ -209,11 +215,25 @@ dlist_iter_t DListPushFront(dlist_t *dll, void *data)
 
 dlist_iter_t DListPushBack(dlist_t *dll, void *data)
 {
-	
 	assert(NULL != dll);
 	
 	return DListInsert(DListEnd(dll), data);
 
+}
+*/
+dlist_iter_t DListPushFront(dlist_t *dll, void *data)
+{
+	assert(NULL != dll);
+	
+	return DListInsert(DListBegin(dll), data);
+}
+
+
+dlist_iter_t DListPushBack(dlist_t *dll, void *data)
+{
+	assert(NULL != dll);
+	
+	return DListInsert(DListEnd(dll), data);
 }
 
 void *DListPopFront(dlist_t *dll)
@@ -285,30 +305,38 @@ int DListIsEqual(dlist_iter_t iter1, dlist_iter_t iter2)
 dlist_iter_t DListFind(dlist_iter_t from, dlist_iter_t to, match_func_t is_match, void *param)
 {
 	
-	assert( NULL != from);
-    assert( NULL != to);
-
-    while ((from != to) && !is_match(from->data, param))
+	assert(NULL != from);
+	assert(NULL != to);
+	assert(NULL != is_match);
+	
+	while (from != to)
 	{
+		if (is_match(from->data, param))
+		{
+			return from;
+		}
+		
 		from = DListNext(from);
 	}
+	
+	return NULL;
 
-	return from;
 }
 
 int DListForEach(dlist_iter_t from, dlist_iter_t to, action_func_t action_func, void *param)
 {
 
-    int status = -1;
-
+    int status = FAIL;
+    dlist_iter_t current = NULL;
+    
     assert(NULL != from);
     assert(NULL != to);
   
-    
-    while (!DListIsEqual(from, to))
+    current = from;
+    while (!DListIsEqual(current, to))
     {
-        status = action_func(from->data, param);
-        from = DListNext(from);
+        status = action_func(current->data, param);
+        current = DListNext(current);
     }
     
     return status;
@@ -323,24 +351,23 @@ int DListMultiFind(dlist_iter_t from, dlist_iter_t to, match_func_t is_match, vo
 		{
 			if(DListEnd(result_list) == DListPushBack(result_list, from))
 			{
-				return 1;
+				return FOUND;
 			}
 		}
 
 		from = DListNext(from);
 	}
-	return 0;
+	return SUCCESS;
 
 }
 
 void DListSplice(dlist_iter_t where, dlist_iter_t from, dlist_iter_t to)
 {
 	dlist_iter_t splice_node = NULL;
-    
     assert(NULL != where);
     assert(NULL != from);
     assert(NULL != to);
-    
+ 
     splice_node = to->prev;
     
     from->prev->next = to;
@@ -353,3 +380,17 @@ void DListSplice(dlist_iter_t where, dlist_iter_t from, dlist_iter_t to)
     where->prev = splice_node;
 }
 
+int MatchInt(const void *data, void *param)
+{	
+	return (*(size_t *)data == *(size_t *)param);
+}
+
+int AddInt(void *data, void *param)
+{
+	assert(NULL != data);
+	assert(NULL != param);
+	
+	*(size_t *)data += *(size_t *)param;
+	
+	return SUCCESS;
+}
