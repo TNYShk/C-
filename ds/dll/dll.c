@@ -16,6 +16,8 @@
 
 
 
+
+
 struct dlist
 {
 	struct dlist_node *head;
@@ -59,25 +61,40 @@ static dlist_iter_t RetrieveTail(dlist_iter_t iter)
 	
 dlist_t *DListCreate(void)
 {
-    dlist_t *dll = (dlist_t *)malloc(sizeof(dlist_t));
-   
-    dlist_node_t *dummy_head = NULL;
+    dlist_t *dll = NULL;
+   	dlist_node_t *dummy_head = NULL;
     dlist_node_t *dummy_tail = NULL;
-
-    if (NULL == dll)
-    {
-    	return NULL;
-    }
-
-    dll->head = InitLNode(dummy_head, dll);
-    dll->tail = InitLNode(dummy_tail, dll);
-
+   
+   dll =  (dlist_t *)malloc(sizeof(dlist_t));
+   
+    dummy_head = (dlist_node_t *)malloc(sizeof(dlist_node_t));
+    dummy_tail = (dlist_node_t *)malloc(sizeof(dlist_node_t));
     
-    
-	 dll->head->next = dll->tail;
-	 dll->tail->prev = dll->head;
-    
+     if (NULL == dll || NULL == dummy_head || NULL == dummy_tail)
+     {
+     	free(dll);
+     	dll = NULL;
+     	free(dummy_head);
+     	dummy_head = NULL;
+     	free(dummy_tail);
+     	dummy_tail = NULL;
+     	
+     	return NULL;
+ 	
+     }
+   	dll->head = dummy_head;
+	dll->tail = dummy_tail;
+	
+	dummy_head->data = dll;
+	dummy_head->next = dummy_tail;
+	dummy_head->prev = NULL;
+	
+	dummy_tail->data = dll;
+	dummy_tail->next = NULL;
+	dummy_tail->prev = dummy_head;
+
     return dll;
+ 
 
 }
 
@@ -130,7 +147,7 @@ size_t DListSize(const dlist_t *dll)
 dlist_iter_t DListInsert(dlist_iter_t where, void *data)
 {
     dlist_iter_t node = NULL;
-   	node =  InitLNode(node, data);
+   	node =  (dlist_node_t *)malloc(sizeof(dlist_node_t));
 
     assert(NULL != where);
 	
@@ -139,18 +156,15 @@ dlist_iter_t DListInsert(dlist_iter_t where, void *data)
 		return RetrieveTail(where);
 	}
 	
-    if (NULL == where->prev)
-    {
-    	((dlist_t *)(where->data))->head->next = node;
-    }
-   
+
+    node->data = data;
+	node->prev = where->prev;
+	node->next = where;
+	
+	where->prev->next = node;
+	where->prev = node;
+
     
-    node->next = where;
-    node->prev = where->prev;
-    where->prev->next = node;
-
-
-
     return node; 
 }
 
@@ -159,7 +173,9 @@ dlist_iter_t DListRemove(dlist_iter_t iter)
 {
     dlist_iter_t remove = NULL;
 
-    if(NULL == iter->next)
+    assert(NULL != iter);
+
+    if(NULL == iter->next || NULL == iter->prev)
     {
 		printf("cant remove dummy!\n");
 		return iter;
@@ -190,40 +206,31 @@ dlist_iter_t DListPushFront(dlist_t *dll, void *data)
 	}
 	return node;
 }
-/* not working */
+
 dlist_iter_t DListPushBack(dlist_t *dll, void *data)
 {
-	dlist_iter_t node = NULL;
-   	
+	
 	assert(NULL != dll);
 	
-	node = DListInsert(dll->tail->prev->next,data);
-	if(NULL == node)
-	{
-		printf("wasnt done, heres the end\n");
-		return (DListEnd(dll));
-	}
-	
+	return DListInsert(DListEnd(dll), data);
 
-	return node;
 }
 
 void *DListPopFront(dlist_t *dll)
 {
 	void *data = DListGetData(DListBegin(dll));
-	DListRemove((DListBegin(dll)));
+	DListRemove(DListBegin(dll));
+	
 	return data;
 }
 
 void *DListPopBack(dlist_t *dll)
 {
-	void *data = DListGetData(DListEnd(dll)->prev->next);
-
+	void *data = DListGetData(DListEnd(dll)->prev);
 	DListRemove(DListEnd(dll)->prev);
 	
 	return data;
 }
-
 
 
 dlist_iter_t DListBegin(const dlist_t *dll)
@@ -273,5 +280,76 @@ int DListIsEqual(dlist_iter_t iter1, dlist_iter_t iter2)
     assert( NULL != iter2);
 
     return (iter1 == iter2);
+}
+
+dlist_iter_t DListFind(dlist_iter_t from, dlist_iter_t to, match_func_t is_match, void *param)
+{
+	
+	assert( NULL != from);
+    assert( NULL != to);
+
+    while ((from != to) && !is_match(from->data, param))
+	{
+		from = DListNext(from);
+	}
+
+	return from;
+}
+
+int DListForEach(dlist_iter_t from, dlist_iter_t to, action_func_t action_func, void *param)
+{
+
+    int status = -1;
+
+    assert(NULL != from);
+    assert(NULL != to);
+  
+    
+    while (!DListIsEqual(from, to))
+    {
+        status = action_func(from->data, param);
+        from = DListNext(from);
+    }
+    
+    return status;
+}
+
+int DListMultiFind(dlist_iter_t from, dlist_iter_t to, match_func_t is_match, void *param, dlist_t *result_list)
+{
+	
+	while(from != to)
+	{
+		if(is_match(from->data, param))
+		{
+			if(DListEnd(result_list) == DListPushBack(result_list, from))
+			{
+				return 1;
+			}
+		}
+
+		from = DListNext(from);
+	}
+	return 0;
+
+}
+
+void DListSplice(dlist_iter_t where, dlist_iter_t from, dlist_iter_t to)
+{
+	dlist_iter_t splice_node = NULL;
+    
+    assert(NULL != where);
+    assert(NULL != from);
+    assert(NULL != to);
+    
+    splice_node = to->prev;
+    
+    from->prev->next = to;
+    to->prev = from->prev;
+    
+    where->prev->next = from;
+    from->prev = where->prev;
+    
+    splice_node->next = where;
+    where->prev = splice_node;
 }
 
