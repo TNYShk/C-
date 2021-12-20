@@ -175,7 +175,27 @@ dlist_iter_t DListInsert(dlist_iter_t where, void *data)
 
 dlist_iter_t DListRemove(dlist_iter_t iter)
 {
-   
+
+	dlist_iter_t next_node = NULL;
+
+    assert(NULL != iter);
+
+    if(NULL == iter->next || NULL == iter->prev)
+    {
+		printf("cant remove dummy!\n");
+		return iter;
+    }
+
+    next_node = iter->next;
+    iter->prev->next = iter->next;
+    iter->next->prev = iter->prev;
+
+    free(iter);
+    iter = NULL;
+
+    return next_node;
+
+   /*
     dlist_iter_t remove = NULL;
 
     assert(NULL != iter);
@@ -194,33 +214,10 @@ dlist_iter_t DListRemove(dlist_iter_t iter)
     remove = NULL;
 
     return iter;
-  
+  */
 }
 
-/*
-dlist_iter_t DListPushFront(dlist_t *dll, void *data)
-{
-	dlist_iter_t node = NULL;
-   	
-	assert(NULL != dll);
-	node = DListInsert(DListBegin(dll),data);
-	
-	if(NULL == node)
-	{
-		printf("wasnt done, heres the head\n");
-		return (DListBegin(dll));
-	}
-	return node;
-}
 
-dlist_iter_t DListPushBack(dlist_t *dll, void *data)
-{
-	assert(NULL != dll);
-	
-	return DListInsert(DListEnd(dll), data);
-
-}
-*/
 dlist_iter_t DListPushFront(dlist_t *dll, void *data)
 {
 	assert(NULL != dll);
@@ -328,7 +325,7 @@ int DListForEach(dlist_iter_t from, dlist_iter_t to, action_func_t action_func, 
 
     int status = FAIL;
     dlist_iter_t current = NULL;
-    
+
     assert(NULL != from);
     assert(NULL != to);
   

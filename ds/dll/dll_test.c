@@ -41,7 +41,7 @@ static void PrintDListForward(const dlist_t *dlist)
 int main (void)
 {
 
-	TestOne();
+	/*TestOne();*/
 	TestTwo();
 
 
@@ -97,29 +97,32 @@ void TestOne(void)
 	
 	ctest = DListRemove(atest);
 	printf("post removal size is %ld\n",DListSize(test));
-	printf("\ntrying to remove End or Begin:\n");
-	DListRemove(DListEnd(test));
+	PrintDListForward(test);
+	DListRemove(DListPrev(DListEnd(test)));
+
 	printf("size is %ld\n",DListSize(test));
 	PrintDListForward(test);
 	
 	printf("\n\t---------------------pushing nodes Front--------------------------------\n");
 	dtest = DListPushFront(test, &t);
+	DListPushFront(test, &another_num);
 	printf("size is %ld\n",DListSize(test));
 	
 	PrintDListForward(test);
 
 	printf("\n\t---------------------------Pop Front-----------------------------------\n");
 	DListPopFront(test);
+	PrintDListForward(test);
 	
-	printf("size is now %ld\n",DListSize(test));
-	PrintDListForward(test);
 
-	printf("\n\t------------------------inserted 3------------------------------------------\n");
-	etest = DListInsert(dtest,&t);
-	ftest = DListInsert(etest,&num);
-	ctest = DListInsert(ftest,&another_num);
+	printf("\n\t------------------------Push Back 3 nodes ------------------------------------------\n");
+	
+	DListPushBack(test, &t);
+	DListPushBack(test, &num);
+	dtest = DListPushBack(test, &another_num);
 	PrintDListForward(test);
-	printf("inserted before end, is it equal? %d\n",(DListIsEqual(DListPrev(DListEnd(test)),dtest)));
+	printf("\n\t------------------------Is Equal?------------------------------------------\n");
+	printf("Pushed to End , is it equal? %d\n",(DListIsEqual(DListPrev(DListEnd(test)),dtest)));
 	
 
 	DListDestroy(test);
@@ -149,31 +152,41 @@ void TestTwo()
 
 	(1 == DListIsEmpty(test2)) ? printf("Empty dlist\n") : printf("NOT Empty dlist\n");
 
-	printf("\n\t----------------pushing nodes 2 Front--------------------------------\n");
+	printf("\n\t----------------pushing nodesFront Back--------------------------------\n");
 
 	tatest = DListBegin(test2);
-	tatest = DListPushFront(test2, &one);
-	tbtest = DListPushFront(test2, &wto);
+	DListPushFront(test2, &one);
+	tctest = DListPushBack(test2, &wto);
 	PrintDListForward(test2);
 
 	printf("\n\t---------------------Pop Front-----------------------------\n");
 	DListPopFront(test2);
 	PrintDListForward(test2);
 
-	printf("\n\t---------------------insert 5-----------------------------\n");
-	tctest = DListInsert(tbtest,&three);
-	PrintDListForward(test2);
-	DListInsert(tctest,&wto);
+
+	
+	
+	
+	printf("\n\t---------------------Insert 2 nodes-----------------------------\n");
+	tbtest = DListInsert(tctest,&wto);
 	DListInsert(tctest,&one);
+	PrintDListForward(test2);
+	
+	
+
+	printf("\n\t---------------------Push num 3 Back & Front-----------------------------\n");
+	DListPushBack(test2, &three);
 	DListPushFront(test2, &three);
+	
 	printf("\n\t----------------------------list1 -----------------------------\n");
 	PrintDListForward(test2);
-
+/*
 	printf("\n\t---------------------------list2 -----------------------------\n");
 	DListPushFront(test1, &one);
 	DListPushFront(test1, &one);
 	DListPushFront(test1, &one);
 	PrintDListForward(test1);
+	
 	printf("\n\t---------------------splice remove from one add to other ------------------------\n");
 	DListSplice(DListBegin(test2), DListNext(DListBegin(test1)), DListEnd(test1));
 	printf("\n\t------------------------post splice list1 -----------------------------\n");
@@ -181,6 +194,7 @@ void TestTwo()
 	printf("\n\t-----------------------post splice list2 -----------------------------\n");
 
 	PrintDListForward(test1);
+	
 	printf("\n\t-----------------------add element to list2 -----------------------------\n");
 	DListPushFront(test1, &one);
 	PrintDListForward(test1);
@@ -194,6 +208,15 @@ void TestTwo()
 	printf("\n---------------------------MultiFind into new list--------------------------:\n\n");
 	
 	multifind_test = DListCreate();
+	PrintDListForward(multifind_test);
+	DListInsert(DListEnd(multifind_test),&hund);
+	DListInsert(DListEnd(multifind_test),&one);
+	DListPushBack(multifind_test,&three);
+	PrintDListForward(multifind_test);
+
+	DListPopBack(multifind_test);
+	PrintDListForward(multifind_test);
+	
 	DListMultiFind(DListBegin(test2), DListEnd(test2), MatchInt, &one, multifind_test);
 	PrintDListForward(multifind_test);
 
@@ -206,6 +229,7 @@ void TestTwo()
 
 
 	DListDestroy(multifind_test);
+	*/
 	DListDestroy(test1);
 	DListDestroy(test2);
 }
