@@ -18,23 +18,23 @@ struct sort_list_iter
 
 /*
  * DESCRIPTION: 
- * Creates a new Double Linked List ("dll")
+ * Creates a new Sorted Linked List 
  * 
  * !don't forget to free allocated memory!
  *
  * PARAMS: Nada
  * 
- * RETURN: Pointer to the newly created dll, otherwise NULL
+ * RETURN: Pointer to the newly created sorted list, otherwise NULL
  * Complexity: O(1) time, O(1) memory. */
 sort_list_t *SortListCreate(cmp_func_t sort_func);
 
 /*
  * DESCRIPTION: 
- * Destroy Double Linked List ("dll")
+ * Destroy Sorted Linked List 
  * 
  * free's allocated memory
  *
- * PARAMS: Pointer to the dll to remove
+ * PARAMS: Pointer to the list to remove
  * 
  * RETURN: 
  * Complexity: O(n) time, O(1) memory. */
@@ -42,9 +42,9 @@ void SortListDestroy(sort_list_t *slist);
 
 /*
  * DESCRIPTION: 
- * Counts elements of the dll
+ * Counts elements of the list
  * 
- * PARAMS: Pointer to the dll
+ * PARAMS: Pointer to the list
  * 
  * RETURN: number of elements counted 
  * Complexity: O(n) time, O(1) memory. */
@@ -52,7 +52,7 @@ size_t SortListSize(const sort_list_t *slist);
 
 /*
  * DESCRIPTION: 
- * Checks if the dll is Empty
+ * Checks if the list is Empty
  * 
  * PARAMS: Pointer to the dll
  * 
@@ -60,10 +60,9 @@ size_t SortListSize(const sort_list_t *slist);
  * Complexity: O(1) time, O(1) memory. */
 int SortListIsEmpty(const sort_list_t *slist);
 
-
 /*
  * DESCRIPTION: 
- * Inserts new element before the requested location
+ * Inserts and sorts element to the correct location
  * 
  * PARAMS: Destination element, void data to insert
  * 
@@ -73,7 +72,7 @@ sort_list_iter_t SortListInsert(sort_list_t *slist, void *data);
 
 /*
  * DESCRIPTION: 
- * Remove requested element from the dll
+ * Remove requested element from the list
  * 
  * PARAMS: Element to remove 
  * 
@@ -83,7 +82,7 @@ sort_list_iter_t SortListRemove(sort_list_iter_t iter);
 
 /*
  * DESCRIPTION: 
- * Returns the Top/first element of the dll
+ * Returns the Top/first element of the list
  * 
  * PARAMS: Pointer to the dll
  * 
@@ -93,10 +92,10 @@ sort_list_iter_t SortListBegin(const sort_list_t *slist);
 
 /*
  * DESCRIPTION: 
- * Returns the Tail of the dll
- * Tail can't be removed and isn't part of the dll (not counted). 
+ * Returns the Tail of the list
+ * Tail can't be removed and isn't part of the list (not counted). 
  * like a Sheep Herder
- * PARAMS: Pointer to the dll
+ * PARAMS: Pointer to the list
  * 
  * RETURN: The closing element of the list, cant be removed
  * Complexity: O(1) time, O(1) memory. */
@@ -104,11 +103,11 @@ sort_list_iter_t SortListEnd(const sort_list_t *slist);
 
 /*
  * DESCRIPTION: 
- * Returns the next element
+ * Returns the next element in the sorted list
  * 
- * PARAMS: Iterator - Element
+ * PARAMS: iter 
  * 
- * RETURN: Element After
+ * RETURN: iter After
  * Complexity: O(1) time, O(1) memory. */
 sort_list_iter_t SortListNext(sort_list_iter_t iter);
 
@@ -144,7 +143,7 @@ int SortListIterIsEqual(sort_list_iter_t iter1, sort_list_iter_t iter2);
 
 /*
  * DESCRIPTION: 
- * Pops element from the top of the dll (remove)
+ * Pops element from the top of the list (smallest)
  * 
  * PARAMS: Pointer to the dll
  * 
@@ -154,7 +153,7 @@ void *SortListPopFront(sort_list_t *slist);
 
 /*
  * DESCRIPTION: 
- * Pops element from the back of the dll (removes)
+ * Pops element from the back of the list
  * 
  * PARAMS: Pointer to the dll
  * 
@@ -164,49 +163,48 @@ void *SortListPopBack(sort_list_t *slist);
 
 /*
  * DESCRIPTION: 
- * Pops element from the back of the dll (removes)
+ * performs action on the given range of elements.
+ * !list might not be sorted after this!
+ * PARAMS: from - to elements to work on, the desired action and its parameter
  * 
- * PARAMS: Pointer to the dll
- * 
- * RETURN: Data stored in the element that was removed
- * Complexity: O(n) time, O(1) memory. *
+ * RETURN: Zero for SUCCESS, -1 FAIL
+ * Complexity: O(n) time, O(1) memory.
  * ifdef NDEBUG: checks that 'from' and 'to' are from the same list */
 int SortListForEach(sort_list_iter_t from, sort_list_iter_t to, 
     action_func_t action_func, void *param);
 
 /*
- * DESCRIPTION: 
+ * DESCRIPTION: Merges the src sorted list into the dest list. 
+ * end result dest list is also sorted
  * 
- * 
- * PARAMS: 
+ * PARAMS: sorted lists, destination and source
  * 
  * RETURN: None
-* Complexity: O(n) time, O(1) memory. */
+ * Complexity: O(n) time, O(1) memory. */
 void SortListMerge(sort_list_t *dest, sort_list_t *src);
 
 /*
  * DESCRIPTION: 
- * Pops element from the back of the dll (removes)
+ * Searches for the an element (contating the desired data) in the list
  * 
- * PARAMS: Pointer to the dll
+ * PARAMS: sorted list to search in, range of elements, 
+ * and the critera (data) to look for
  * 
- * RETURN: Data stored in the element that was removed
- * Complexity: O(n) time, O(1) memory.
- uses dll find
-  */
+ * RETURN: element that matched, otherwise NULL
+ * Complexity: O(n) time, O(1) memory.*/
 sort_list_iter_t SortListFind(sort_list_t *slist, sort_list_iter_t from, 
     sort_list_iter_t to, const void *data);
 
 /*
  * DESCRIPTION: 
- * Pops element from the back of the dll (removes)
+ * Searches the list for the given param, using the match function, 
+ * provided in the struct
  * 
- * PARAMS: Pointer to the dll
+ * PARAMS: range of elements to search, comparison function 
+ * and the critera (param) to look for
  * 
- * RETURN: Data stored in the element that was removed
- * Complexity: O(n) time, O(1) memory. 
- משתמש בפונקציה במבנה הניהולי
- */
+ * RETURN: element that matched, otherwise NULL
+ * Complexity: O(n) time, O(1) memory. */
 sort_list_iter_t SortListFindIf(sort_list_iter_t from, sort_list_iter_t to, 
     match_func_t match_func, const void *param);
 

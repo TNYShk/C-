@@ -1,21 +1,36 @@
 /***********************************
  * Sorted Linked List WS		   *
- *           	   *
+ *           	                   *
  * by Tanya					       *
- *   			           *
+ *   		In Progress	           *
  *                                 *
- * Reviewer:                 *
+ * Reviewer:                       *
  ***********************************/
 
-#include <stdio.h> /* printf, size_t  */
+#include <stdio.h>  /* printf, size_t      */
 #include <stdlib.h> /* memory allocation  */
-#include <assert.h> /* assert() */
-#include <string.h>
+#include <assert.h> /* assert()          */
+#include <string.h> /* printf           */
+
 #include "dll.h"
 #include "sorted_list.h"
 
 #define PRINT_NODE(node) (printf("node at address %p has int %d, prev is %p, next is %p\n", \
         (void *)node, *(int *)DListGetData(node), (void *)DListPrev(node), (void *)DListNext(node)));
+
+
+
+int CompareData(const void *left, const void *right);
+int AddNum(void *data, void *param);
+int MatchNums(const void *data, void *param);
+static void PrintSListForward(const sort_list_t *slist);
+void TestOne();
+void TestTwo();
+
+
+
+
+
 
 
 static void PrintSListForward(const sort_list_t *slist)
@@ -30,24 +45,13 @@ static void PrintSListForward(const sort_list_t *slist)
     
     while (!SortListIterIsEqual(runner, SortListEnd(slist)))
     {
-        /*printf("in while"); */
+       
         printf("%d ", *(int *)SortListGetData(runner));
         runner = SortListNext(runner);
     }
     printf("\n\nSize of list is: %lu. List %s.\n", SortListSize(slist), SortListIsEmpty(slist) ? "is empty" : "is not empty");
     printf("-------list ends------\n");
 }
-
-
-
-int CompareData(const void *left, const void *right);
-int AddNum(void *data, void *param);
-int MatchNum(const void *data, void *param);
-
-void TestOne();
-void TestTwo();
-
-
 
 
 int main (void)
@@ -111,7 +115,7 @@ void TestTwo()
     size_t s = 77;
     size_t ans = 0;
     size_t uno = 1;
-    void *ptr = NULL;
+    
     sort_list_t *test = NULL;
     sort_list_t *test2 = NULL;
     sort_list_iter_t iter1, iter2, iter3, iter4;
@@ -124,19 +128,16 @@ void TestTwo()
     iter1 = SortListInsert(test, &one);
     iter1 = SortListInsert(test, &y);
     iter1 = SortListInsert(test, &y);
-    iter1 = SortListInsert(test, &s);
     iter1 = SortListInsert(test, &ans);
-    iter1 = SortListInsert(test, &x);
-    
-    (SortListSize(test) > 0)? printf("size is %ld\n",SortListSize(test)) : printf("empty list\n");
-
+   
     iter2 = SortListInsert(test2, &s);
     iter2 = SortListInsert(test2, &ans);
     iter2 = SortListInsert(test2, &x);
-    
-    (SortListSize(test2) > 0)? printf("size is %ld\n",SortListSize(test2)) : printf("empty list\n");
+
+   
     
     printf("\n\t**************Before Merge********************************\n");
+
     printf("\t**************list1 src********************************\n");
     PrintSListForward(test);
     printf("\t**************list2 dest********************************\n");
@@ -150,18 +151,22 @@ void TestTwo()
     PrintSListForward(test);
     printf("\t**************list2 dest********************************\n");
     PrintSListForward(test2);
+    
     printf("\t****insert to list1 src ***********\n");
     iter1 = SortListInsert(test, &y);
     iter3 = SortListInsert(test, &y);
     PrintSListForward(test);
     printf("\t****insert to list2 dest ***********\n");
-    iter2 = SortListInsert(test2, &x);
-  
+    iter2 = SortListInsert(test, &x);
+    
     PrintSListForward(test2);
-    printf("\n\t**************Test SortListForEach add 1 to list1********************************\n");
-    ans = SortListForEach(iter3, iter1, AddNum, &uno);
+    printf("\n\t**************  Test SortListForEach add 1 to list1********************************\n");
+    SortListForEach(iter3, iter1, AddNum, &uno);
     PrintSListForward(test);
-
+    
+    printf("\n\t**************  Test SortListFindIf search for zero********************************\n");
+    iter4 = SortListFindIf(iter3, iter1,&MatchNums, &ans);
+    
     SortListDestroy(test);
     SortListDestroy(test2);
 
