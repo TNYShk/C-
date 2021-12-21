@@ -1,15 +1,16 @@
-#ifndef __SORT_LIST_H__
-#define __SORT_LIST_H__
+#ifndef __SORTED_LIST_H__
+#define __SORTED_LIST_H__
 
-#include "../dll/dll.h"
+#include "dll.h"  /* dlist_iter_t */
 
 typedef int (*cmp_func_t)(const void *left, const void *right);
 
 typedef struct sort_list sort_list_t;
-typedef struct sort_list_iter *sort_list_iter_t;
+typedef struct sort_list_iter sort_list_iter_t;
+
 struct sort_list_iter
 {
-    dlist_iter_t it;
+    dlist_iter_t diter;            
 #ifdef DEBUG
     sort_list_t *slist;
 #endif
@@ -206,4 +207,4 @@ sort_list_iter_t SortListFindIf(sort_list_iter_t from, sort_list_iter_t to,
     match_func_t match_func, const void *param);
 
 
-#endif /* __SORT_LIST_H__ */
+#endif /* __SORTED_LIST_H__ */
