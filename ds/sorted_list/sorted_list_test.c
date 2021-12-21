@@ -14,8 +14,6 @@
 #include "dll.h"
 #include "sorted_list.h"
 
-
-
 #define PRINT_NODE(node) (printf("node at address %p has int %d, prev is %p, next is %p\n", \
         (void *)node, *(int *)DListGetData(node), (void *)DListPrev(node), (void *)DListNext(node)));
 
@@ -40,25 +38,17 @@ static void PrintSListForward(const sort_list_t *slist)
     printf("-------list ends------\n");
 }
 
-/*
-typedef int (*cmp_func_t)(const void *left, const void *right);
 
-typedef struct sort_list sort_list_t;
-typedef struct sort_list_iter sort_list_iter_t;
-
-struct sort_list_iter
-{
-    dlist_iter_t diter;            
-#ifdef DEBUG
-    sort_list_t *slist;
-#endif
-};
-*/
 
 int CompareData(const void *left, const void *right);
+int AddNum(void *data, void *param);
+int MatchNum(const void *data, void *param);
 
 void TestOne();
 void TestTwo();
+
+
+
 
 int main (void)
 {
@@ -120,10 +110,11 @@ void TestTwo()
     size_t one = 11;
     size_t s = 77;
     size_t ans = 0;
+    size_t uno = 1;
     void *ptr = NULL;
     sort_list_t *test = NULL;
     sort_list_t *test2 = NULL;
-    sort_list_iter_t iter1, iter2;
+    sort_list_iter_t iter1, iter2, iter3, iter4;
     test = SortListCreate(CompareData);
     test2 = SortListCreate(CompareData);
   
@@ -160,13 +151,21 @@ void TestTwo()
     printf("\t**************list2 dest********************************\n");
     PrintSListForward(test2);
     printf("\t****insert to list1 src ***********\n");
-    iter1 = SortListInsert(test, &ans);
+    iter1 = SortListInsert(test, &y);
+    iter3 = SortListInsert(test, &y);
     PrintSListForward(test);
-    printf("\t****insert to list2 src ***********\n");
-    iter2 = SortListInsert(test2, &ans);
+    printf("\t****insert to list2 dest ***********\n");
+    iter2 = SortListInsert(test2, &x);
+  
     PrintSListForward(test2);
+    printf("\n\t**************Test SortListForEach add 1 to list1********************************\n");
+    ans = SortListForEach(iter3, iter1, AddNum, &uno);
+    PrintSListForward(test);
+
     SortListDestroy(test);
     SortListDestroy(test2);
+
+    
 
 
 }

@@ -195,7 +195,8 @@ sort_list_iter_t SortListPrev(sort_list_iter_t iter)
 
 int SortListForEach(sort_list_iter_t from, sort_list_iter_t to, action_func_t action_func, void *param)
 {
-    return (DListForEach(from.diter, to.diter, action_func, param));
+       int ans = DListForEach(from.diter, to.diter, action_func, param);
+    return ans;
 
 }
 
@@ -231,3 +232,14 @@ void SortListMerge(sort_list_t *dest, sort_list_t *src)
     }
     
 }
+int AddNum(void *data, void *param)
+{
+    assert( NULL != param);
+   
+
+    *(size_t *)data += *(size_t *)param ;
+    
+    return SUCCESS;
+}
+
+
