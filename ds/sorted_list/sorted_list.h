@@ -191,7 +191,9 @@ void SortListMerge(sort_list_t *dest, sort_list_t *src);
  * PARAMS: Pointer to the dll
  * 
  * RETURN: Data stored in the element that was removed
- * Complexity: O(n) time, O(1) memory. */
+ * Complexity: O(n) time, O(1) memory.
+ uses dll find
+  */
 sort_list_iter_t SortListFind(sort_list_t *slist, sort_list_iter_t from, 
     sort_list_iter_t to, const void *data);
 
@@ -202,7 +204,9 @@ sort_list_iter_t SortListFind(sort_list_t *slist, sort_list_iter_t from,
  * PARAMS: Pointer to the dll
  * 
  * RETURN: Data stored in the element that was removed
- * Complexity: O(n) time, O(1) memory. */
+ * Complexity: O(n) time, O(1) memory. 
+ משתמש בפונקציה במבנה הניהולי
+ */
 sort_list_iter_t SortListFindIf(sort_list_iter_t from, sort_list_iter_t to, 
     match_func_t match_func, const void *param);
 

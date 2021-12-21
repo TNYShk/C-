@@ -20,25 +20,25 @@
         (void *)node, *(int *)DListGetData(node), (void *)DListPrev(node), (void *)DListNext(node)));
 
 
-static void PrintDListForward(const dlist_t *dlist)
+static void PrintSListForward(const sort_list_t *slist)
 {
+    sort_list_iter_t runner;
     
-    dlist_iter_t runner = NULL;
+    assert(NULL != slist);
     
-    assert(NULL != dlist);
-    
-    runner = DListPrev(DListBegin(dlist));
+    runner = SortListBegin(slist);
     
     printf("\n-------List is:------\n");
     
-    while (runner != NULL)
+    while (!SortListIterIsEqual(runner, SortListEnd(slist)))
     {
-        PRINT_NODE(runner);
-        runner = DListNext(runner);
+        /*printf("in while"); */
+        printf("%d ", *(int *)SortListGetData(runner));
+        runner = SortListNext(runner);
     }
-    printf("Size of list is: %lu. List %s.\n", DListSize(dlist), DListIsEmpty(dlist) ? "is empty" : "is not empty");
+    printf("\n\nSize of list is: %lu. List %s.\n", SortListSize(slist), SortListIsEmpty(slist) ? "is empty" : "is not empty");
+    printf("-------list ends------\n");
 }
-
 
 /*
 typedef int (*cmp_func_t)(const void *left, const void *right);
@@ -57,35 +57,48 @@ struct sort_list_iter
 
 int CompareData(const void *left, const void *right);
 
-
+void TestOne();
 
 int main (void)
 {
-    size_t x = 6;
-    size_t y = 7;
-
-    sort_list_t *test = NULL;
-    sort_list_iter_t iter1,iter2;
-    test = SortListCreate(CompareData);
-  
     
-    iter1 = SortListInsert(test, &x);
-    iter2 = SortListInsert(test, &y);
-
-   (SortListSize(test) > 0)? printf("size is %ld\n",SortListSize(test)) : printf("empty list\n");
-    
-   (SortListIsEmpty(test) == 1)? printf("IsEmpty -empty list\n") : printf("Not empty list\n");
-
- 
-
-   
- 
-
-
-
-    SortListDestroy(test);
-
-
+    TestOne();
     return 0;
 }
 
+void TestOne()
+{
+    size_t x = 6;
+    size_t y = 8;
+    size_t t = 1;
+    size_t s = 7;
+    void *ptr = NULL;
+    sort_list_t *test = NULL;
+    sort_list_iter_t iter1, iter2;
+    test = SortListCreate(CompareData);
+  
+    printf("\n\t***********************-Test-1-*********************************\n\n");
+    printf("\t****create sorted list, insert and pop front and back***********\n");
+     
+    iter2 = SortListInsert(test, &t);
+    iter2 = SortListInsert(test, &y);
+    iter2 = SortListInsert(test, &s);
+    iter2 = SortListInsert(test, &x);
+    iter2 = SortListInsert(test, &t);
+    
+    
+    
+    PrintSListForward(test);
+   
+   (SortListSize(test) > 0)? printf("size is %ld\n",SortListSize(test)) : printf("empty list\n");
+  
+   (SortListIsEmpty(test) == 1) ? printf("IsEmpty -empty list\n") : printf("Not empty list\n");
+   ptr = SortListPopFront(test);
+   printf("pop front data is %ld\n",*(size_t*)ptr);
+   ptr = SortListPopBack(test);
+   printf("pop back data is %ld\n",*(size_t*)ptr);
+   
+    (SortListSize(test) > 0)? printf("size is %ld\n",SortListSize(test)) : printf("empty list\n");
+
+    SortListDestroy(test);
+}
