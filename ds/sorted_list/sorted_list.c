@@ -207,23 +207,23 @@ sort_list_iter_t SortListFindIf(sort_list_iter_t from, sort_list_iter_t to, matc
 
 void SortListMerge(sort_list_t *dest, sort_list_t *src)
 {
-    dlist_iter_t run_where = {0};
-    dlist_iter_t run_to = {0};
+    dlist_iter_t run_dest = {0};
+    dlist_iter_t run_src = {0};
 
     assert(NULL != dest);
     assert(NULL != src);
 
-    run_where = DListBegin(dest->dll);
-    run_to = DListBegin(src->dll);
+    run_dest = DListBegin(dest->dll);
+    run_src = DListBegin(src->dll);
 
-    while(!DListIsEqual(run_where, DListEnd(dest->dll)))
+    while(!DListIsEqual(run_dest, DListEnd(dest->dll)))
     {
-        while (0 > dest->sort_func(run_where, run_to))
+        while (0 > CompareData(DListGetData(run_src),DListGetData(run_dest)))
         {
-            run_to = DListNext(run_to);
+            run_src = DListNext(run_src);
         }
-        DListSplice(run_where, DListBegin(src->dll), run_to);
-        run_where = DListNext(run_where);
+        DListSplice(run_dest, DListBegin(src->dll), run_src);
+        run_dest = DListNext(run_dest);
     }
-
+    SortListInsert(dest, SortListPopBack(src));
 }

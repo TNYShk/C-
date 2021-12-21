@@ -58,11 +58,13 @@ struct sort_list_iter
 int CompareData(const void *left, const void *right);
 
 void TestOne();
+void TestTwo();
 
 int main (void)
 {
     
     TestOne();
+    TestTwo();
     return 0;
 }
 
@@ -101,9 +103,70 @@ void TestOne()
    
     (SortListSize(test) > 0)? printf("size is %ld\n",SortListSize(test)) : printf("empty list\n");
     PrintSListForward(test);
-    
+    printf("\t**************insert and remove node********************************\n");
     ans = y * s;
     iter1 = SortListInsert(test, &ans);
     PrintSListForward(test);
+    SortListRemove(iter1);
+    PrintSListForward(test);
+    
     SortListDestroy(test);
+}
+
+void TestTwo()
+{
+    size_t x = 60;
+    size_t y = -88;
+    size_t one = 11;
+    size_t s = 77;
+    size_t ans = 0;
+    void *ptr = NULL;
+    sort_list_t *test = NULL;
+    sort_list_t *test2 = NULL;
+    sort_list_iter_t iter1, iter2;
+    test = SortListCreate(CompareData);
+    test2 = SortListCreate(CompareData);
+  
+    printf("\n\t***********************-Test-2-*********************************\n\n");
+    printf("\t****create 2 sorted lists, insert in them ***********\n");
+     
+    iter1 = SortListInsert(test, &one);
+    iter1 = SortListInsert(test, &y);
+    iter1 = SortListInsert(test, &y);
+    iter1 = SortListInsert(test, &s);
+    iter1 = SortListInsert(test, &ans);
+    iter1 = SortListInsert(test, &x);
+    
+    (SortListSize(test) > 0)? printf("size is %ld\n",SortListSize(test)) : printf("empty list\n");
+
+    iter2 = SortListInsert(test2, &s);
+    iter2 = SortListInsert(test2, &ans);
+    iter2 = SortListInsert(test2, &x);
+    
+    (SortListSize(test2) > 0)? printf("size is %ld\n",SortListSize(test2)) : printf("empty list\n");
+    
+    printf("\t**************Before Merge********************************\n");
+    printf("\t**************list1 src********************************\n");
+    PrintSListForward(test);
+    printf("\t**************list2 dest********************************\n");
+    PrintSListForward(test2);
+     
+    printf("\t**************Post Merge********************************\n");
+    SortListMerge(test2, test);
+    
+   
+    printf("\t**************list1 src********************************\n");
+    PrintSListForward(test);
+    printf("\t**************list2 dest********************************\n");
+    PrintSListForward(test2);
+    printf("\t****insert to list1 src ***********\n");
+    iter1 = SortListInsert(test, &ans);
+    PrintSListForward(test);
+    printf("\t****insert to list2 src ***********\n");
+    iter2 = SortListInsert(test2, &ans);
+    PrintSListForward(test2);
+    SortListDestroy(test);
+    SortListDestroy(test2);
+
+
 }
