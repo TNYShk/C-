@@ -56,7 +56,7 @@ size_t SortListSize(const sort_list_t *slist);
  * PARAMS: Pointer to the dll
  * 
  * RETURN: 1 if Empty, 0 if not 
-/* Complexity: O(1) time, O(1) memory. */
+ * Complexity: O(1) time, O(1) memory. */
 int SortListIsEmpty(const sort_list_t *slist);
 
 
@@ -161,20 +161,47 @@ void *SortListPopFront(sort_list_t *slist);
  * Complexity: O(1) time, O(1) memory. */
 void *SortListPopBack(sort_list_t *slist);
 
-
-/* Complexity: O(n) time, O(1) memory. */
-/* ifdef NDEBUG: checks that 'from' and 'to' are from the same list */
+/*
+ * DESCRIPTION: 
+ * Pops element from the back of the dll (removes)
+ * 
+ * PARAMS: Pointer to the dll
+ * 
+ * RETURN: Data stored in the element that was removed
+ * Complexity: O(n) time, O(1) memory. *
+ * ifdef NDEBUG: checks that 'from' and 'to' are from the same list */
 int SortListForEach(sort_list_iter_t from, sort_list_iter_t to, 
     action_func_t action_func, void *param);
 
-/* Complexity: O(n) time, O(1) memory. */
+/*
+ * DESCRIPTION: 
+ * 
+ * 
+ * PARAMS: 
+ * 
+ * RETURN: None
+* Complexity: O(n) time, O(1) memory. */
 void SortListMerge(sort_list_t *dest, sort_list_t *src);
 
-/* Complexity: O(n) time, O(1) memory. */
+/*
+ * DESCRIPTION: 
+ * Pops element from the back of the dll (removes)
+ * 
+ * PARAMS: Pointer to the dll
+ * 
+ * RETURN: Data stored in the element that was removed
+ * Complexity: O(n) time, O(1) memory. */
 sort_list_iter_t SortListFind(sort_list_t *slist, sort_list_iter_t from, 
     sort_list_iter_t to, const void *data);
 
-/* Complexity: O(n) time, O(1) memory. */
+/*
+ * DESCRIPTION: 
+ * Pops element from the back of the dll (removes)
+ * 
+ * PARAMS: Pointer to the dll
+ * 
+ * RETURN: Data stored in the element that was removed
+ * Complexity: O(n) time, O(1) memory. */
 sort_list_iter_t SortListFindIf(sort_list_iter_t from, sort_list_iter_t to, 
     match_func_t match_func, const void *param);
 
