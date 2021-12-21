@@ -70,22 +70,23 @@ void TestOne()
 {
     size_t x = 6;
     size_t y = 8;
-    size_t t = 1;
+    size_t one = 1;
     size_t s = 7;
+    size_t ans = 0;
     void *ptr = NULL;
     sort_list_t *test = NULL;
-    sort_list_iter_t iter1, iter2;
+    sort_list_iter_t iter1;
     test = SortListCreate(CompareData);
   
     printf("\n\t***********************-Test-1-*********************************\n\n");
     printf("\t****create sorted list, insert and pop front and back***********\n");
      
-    iter2 = SortListInsert(test, &t);
-    iter2 = SortListInsert(test, &y);
-    iter2 = SortListInsert(test, &s);
-    iter2 = SortListInsert(test, &x);
-    iter2 = SortListInsert(test, &t);
-    
+    iter1 = SortListInsert(test, &one);
+    iter1 = SortListInsert(test, &y);
+    iter1 = SortListInsert(test, &y);
+    iter1 = SortListInsert(test, &s);
+    iter1 = SortListInsert(test, &one);
+    iter1 = SortListInsert(test, &x);
     
     
     PrintSListForward(test);
@@ -99,6 +100,10 @@ void TestOne()
    printf("pop back data is %ld\n",*(size_t*)ptr);
    
     (SortListSize(test) > 0)? printf("size is %ld\n",SortListSize(test)) : printf("empty list\n");
-
+    PrintSListForward(test);
+    
+    ans = y * s;
+    iter1 = SortListInsert(test, &ans);
+    PrintSListForward(test);
     SortListDestroy(test);
 }

@@ -37,7 +37,6 @@ int CompareData(const void *left, const void *right)
    
 }
 
-
 sort_list_t *SortListCreate(cmp_func_t sort_func)
 {
     sort_list_t *sortl = NULL;
@@ -100,23 +99,20 @@ struct sort_list_iter
 sort_list_iter_t SortListInsert(sort_list_t *slist, void *data)
 {
    
-    sort_list_iter_t datas;
-
-    int comp = 1;
+    sort_list_iter_t runner = {0};
 
     assert(NULL != slist);
     
-    datas.diter = DListBegin(slist->dll);
-   
-    while(!DListIsEqual(DListEnd(slist->dll), datas.diter) &&  (comp > 0) )
+    runner.diter = DListBegin(slist->dll);
+
+    while(!DListIsEqual(runner.diter, DListEnd(slist->dll)) &&  (0 < CompareData(data, DListGetData(runner.diter))))
     { 
-        comp = CompareData(DListGetData(datas.diter), data);
-        datas.diter = DListNext(datas.diter);
-        printf("comp is %d\n", comp);
+
+        runner.diter = DListNext(runner.diter);
     }
 
-    datas.diter = DListInsert(datas.diter, data);
-    return datas;
+    runner.diter = DListInsert(runner.diter, data);
+    return runner;
 }
 
 
@@ -129,12 +125,13 @@ sort_list_iter_t SortListRemove(sort_list_iter_t iter)
 
 sort_list_iter_t SortListBegin(const sort_list_t *slist)
 {
-    sort_list_iter_t holder;
+    sort_list_iter_t holder = {0};
     assert(NULL != slist);
 
     holder.diter = DListBegin(slist->dll);
+    
     #ifdef DEBUG
-    iter.slist = slist;
+        iter.slist = slist;
     #endif
 
     return holder;
@@ -142,12 +139,13 @@ sort_list_iter_t SortListBegin(const sort_list_t *slist)
 
 sort_list_iter_t SortListEnd(const sort_list_t *slist)
 {
-    sort_list_iter_t holder;
+    sort_list_iter_t holder = {0};
     assert(NULL != slist);
 
     holder.diter = DListEnd(slist->dll);
-     #ifdef DEBUG
-    iter.slist = slist;
+    
+    #ifdef DEBUG
+        iter.slist = slist;
     #endif
 
     return holder;
@@ -171,6 +169,7 @@ void *SortListPopFront(sort_list_t *slist)
 void *SortListPopBack(sort_list_t *slist)
 {
     void *data = NULL;
+
     assert(NULL != slist);
 
     data = DListPopBack(slist->dll);
@@ -208,23 +207,23 @@ sort_list_iter_t SortListFindIf(sort_list_iter_t from, sort_list_iter_t to, matc
 
 void SortListMerge(sort_list_t *dest, sort_list_t *src)
 {
-    dlist_iter_t runner_where = NULL;
-    dlist_iter_t run_to = NULL;
+    dlist_iter_t run_where = {0};
+    dlist_iter_t run_to = {0};
 
     assert(NULL != dest);
     assert(NULL != src);
 
-    runner_where = DListBegin(dest->dll);
+    run_where = DListBegin(dest->dll);
     run_to = DListBegin(src->dll);
 
-    while(!DListIsEqual(runner_where, DListEnd(dest->dll)))
+    while(!DListIsEqual(run_where, DListEnd(dest->dll)))
     {
-        while (0 > dest->sort_func(runner_where, run_to))
+        while (0 > dest->sort_func(run_where, run_to))
         {
             run_to = DListNext(run_to);
         }
-        DListSplice(runner_where, DListBegin(src->dll), run_to);
-        runner_where = DListNext(runner_where);
+        DListSplice(run_where, DListBegin(src->dll), run_to);
+        run_where = DListNext(run_where);
     }
 
 }
