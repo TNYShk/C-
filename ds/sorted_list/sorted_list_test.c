@@ -145,7 +145,7 @@ void TestTwo()
     
     (SortListSize(test2) > 0)? printf("size is %ld\n",SortListSize(test2)) : printf("empty list\n");
     
-    printf("\t**************Before Merge********************************\n");
+    printf("\n\t**************Before Merge********************************\n");
     printf("\t**************list1 src********************************\n");
     PrintSListForward(test);
     printf("\t**************list2 dest********************************\n");

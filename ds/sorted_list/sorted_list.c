@@ -225,5 +225,9 @@ void SortListMerge(sort_list_t *dest, sort_list_t *src)
         DListSplice(run_dest, DListBegin(src->dll), run_src);
         run_dest = DListNext(run_dest);
     }
-    SortListInsert(dest, SortListPopBack(src));
+    while(!SortListIsEmpty(src))
+    {
+        SortListInsert(dest, SortListPopBack(src));
+    }
+    
 }
