@@ -5,6 +5,8 @@
                                                  /* reviewed by Amit*/
 #include "dynamic_vector.h"
 
+
+
 #define GROWTHFACTOR (2)
 #define ANDONE (1)
 
@@ -29,15 +31,17 @@ vector_t *VectorCreate(size_t element_size, size_t cap)
 {
 	vector_t *vector = NULL;
 	
+	assert(0 < cap);
+	assert(0 < element_size);
+	
 	vector = (vector_t *)malloc(sizeof(vector_t));
 	vector->start = calloc(cap, element_size);
 
-	if ((NULL == vector) || (NULL == vector->start))
+	if (NULL == vector || NULL == vector->start )
 	{
 		return NULL;
 	}
 	
-
 	vector->capacity = cap;
 	vector->elem_size = element_size;
 	vector->size = 0;
@@ -50,6 +54,7 @@ void VectorDestroy(vector_t *vec_ptr)
 {
 	free(vec_ptr->start);
 	vec_ptr->start = NULL;
+
 	free(vec_ptr);
 	vec_ptr = NULL;
 }
@@ -68,10 +73,7 @@ int VectorPushBack(vector_t *vec_ptr, const void *element)
 {
 	void *start = NULL;
 
-	if (NULL == vec_ptr)
-	{
-		return ERROR;
-	}
+	assert(NULL != vec_ptr);
 
 	if ( ANDONE >= vec_ptr->capacity - vec_ptr->size)
 	{
@@ -118,10 +120,7 @@ vector_t *VectorReserve(vector_t *vec_ptr, size_t new_size)
 {
 	void *start = NULL;
 	
-	if (NULL == vec_ptr)
-	{
-		return NULL;
-	}
+	assert(NULL != vec_ptr);
 
 	if ((vec_ptr->size) > new_size)
 	{
@@ -129,11 +128,12 @@ vector_t *VectorReserve(vector_t *vec_ptr, size_t new_size)
 	}
 		
 	start = realloc(vec_ptr->start, sizeof(vec_ptr->elem_size) * new_size);
+	
 	if (NULL == start)
 	{
 		return vec_ptr;
 	}
-
+	
 	vec_ptr->capacity = new_size; 
 	vec_ptr->start = start;
 

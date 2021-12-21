@@ -11,7 +11,6 @@ struct stack
 	size_t capacity; 
 	size_t elem_size;
 	void *base;
-
 }; 
 
 
