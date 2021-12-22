@@ -13,7 +13,10 @@ int main(void)
 	printf("new uid %ld\n", new.u_id);
 	printf("new uid %ld\n", new.u_id);
 	printf("new time %ld\n", new.t_id);
-	printf("new1 time %ld\n", new1.t_id);
+	printf("new1 time in seconds since 1970 %ld\n", new1.t_id/3600);
 	printf("new1 uid %ld\n", new1.u_id);
+
+	printf("is the same? %d\n",UIDIsSame(new,new1));
+	printf("is the same? %d\n",UIDIsSame(new,new));
 	return 0;
 }

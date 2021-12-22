@@ -15,20 +15,26 @@ const ilrd_uid_t UIDBadUID ={0,0,0};
 ilrd_uid_t UIDCreate(void)
 {
 	 static size_t uid = 0;
-	 ilrd_uid_t test = {0};
-	 time_t time = time(NULL);
+	 ilrd_uid_t ucontainer = {0};
+
+	 time_t times = time(NULL);
 	 pid_t pid = getpid();
 
-	 test.u_id = ++uid;
-	 test.t_id = time;
-	 test.p_id = pid;
+	 ucontainer.u_id = ++uid;
+	 ucontainer.t_id = times;
+	 ucontainer.p_id = pid;
 
-	 if( (test.t_id == -1) || (test.p_id == -1) )
+	 if( (ucontainer.t_id == -1) || (ucontainer.p_id == -1) )
 	 {
-	 	test = UIDBadUID;
+	 	ucontainer = UIDBadUID;
 	 }
 	
 
-	 return test;
+	 return ucontainer;
+}
+
+int UIDIsSame(const ilrd_uid_t uid1, const ilrd_uid_t uid2)
+{
+	return ( (uid1.u_id == uid2.u_id) && (uid1.p_id == uid2.p_id) && (uid1.t_id == uid2.t_id));
 }
 
