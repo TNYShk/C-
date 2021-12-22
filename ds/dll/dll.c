@@ -7,7 +7,7 @@
  *  Proud Surviver           	   *
  * by Tanya					       *
  *   Dec 20				           *
- *                                 *
+ *   updated Dec 22                *
  * Reviewer: Erez                  *
  ***********************************/
 
@@ -56,7 +56,6 @@ static dlist_iter_t InitLNode(dlist_iter_t new_e, void *data)
 
 static dlist_iter_t RetrieveTail(dlist_iter_t iter)
 {
-
 	while(NULL != iter->next)
 	{
 		iter = DListNext(iter);
@@ -66,7 +65,6 @@ static dlist_iter_t RetrieveTail(dlist_iter_t iter)
 
 static void ConnectNodes(dlist_iter_t from, dlist_iter_t to)
 {
-
     from->prev->next = to;
     to->prev = DListPrev(from);
 }
@@ -315,7 +313,6 @@ int DListForEach(dlist_iter_t from, dlist_iter_t to, action_func_t action_func, 
     return status;
 }
 
-/* if not found,  return 'to'*/
 dlist_iter_t DListFind(dlist_iter_t from, dlist_iter_t to, match_func_t is_match, void *param)
 {
 	
