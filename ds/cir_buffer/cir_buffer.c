@@ -1,3 +1,10 @@
+/*********Reviewed by Erez**********
+*		     Dec 19					*
+*									*
+*		created by Tanya			*
+*		  							*
+************************************/
+
 #include <unistd.h> /* size_t ssize_t*/
 #include <stdlib.h> /* memort allocation */
 #include <assert.h> /* assert */
@@ -6,12 +13,6 @@
 
 #include "cir_buffer.h"
 
-/*********Reviewed by Erez**********
-*		     Dec 19					*
-*									*
-*		created by Tanya			*
-*		  							*
-************************************/
 
 enum options
 {

@@ -2,10 +2,15 @@
 #include <stdlib.h> /* memory allocation  */
 #include <assert.h> /* assert() */
 
-/****************** reviewed by Nurit **********
- * updated file on 18_12
- * 
- * */
+
+/***********************************
+ * Single Linked List WS		   *
+ *           Dec 18,2021 		   *
+ * by Tanya					       *
+ *   			          		   *
+ *                                 *
+ * Reviewer: Nurit                 *
+ ***********************************/
 
 
 

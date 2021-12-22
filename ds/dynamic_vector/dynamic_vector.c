@@ -1,8 +1,17 @@
+/**********************************************
+ * Dynamic Vector- Source Code          	  *
+ * Developer: Tanya                   		  *
+ * 2021-12 -13                       		  *
+ *                                            *
+ *      reviewed by Amit               		  *
+**********************************************/
+
+
 #include <stdlib.h> /*  size_t dynamic memory allocation */
 #include <stdio.h>   /*  standard library               */
 #include <string.h>   /*  memmove                      */
 #include <assert.h>    /* assert                      */ 
-                                                 /* reviewed by Amit*/
+                                                
 #include "dynamic_vector.h"
 
 

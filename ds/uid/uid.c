@@ -17,7 +17,6 @@
 const ilrd_uid_t UIDBadUID ={0,0,0};
 
 
-
 ilrd_uid_t UIDCreate(void)
 {
 	 static size_t uid = 0;

@@ -138,6 +138,7 @@ void *SortListPopFront(sort_list_t *slist)
     assert(NULL != slist);
 
     data = DListPopFront(slist->dll);
+
     return data;
 }
 

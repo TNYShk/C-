@@ -12,10 +12,24 @@ typedef struct
 
 extern const ilrd_uid_t UIDBadUID;
 
-/* Complexity: O(1) time, O(1) space. */
+/*
+ * DESCRIPTION: 
+ * Creates UID
+ * 
+ * PARAMS: None
+ * 
+ * RETURN: UID Struct
+ * Complexity: O(1) time, O(1) space. */
 ilrd_uid_t UIDCreate(void);
 
-/* Complexity: O(1) time, O(1) space. */
+/*
+ * DESCRIPTION: 
+ * Compares two UID's
+ * 
+ * PARAMS: UID's to compare
+ * 
+ * RETURN: 1 if TRUE, 0 of not
+ * Complexity: O(1) time, O(1) space. */
 int UIDIsSame(const ilrd_uid_t uid1, const ilrd_uid_t uid2);
 
-#endif /* __ILRD_UID_H__ */
+#endif /* __UID_H__ */
