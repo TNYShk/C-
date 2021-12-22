@@ -12,8 +12,9 @@
 #include <assert.h> /* assert()          */
 #include <string.h> /*memset            */
 
+#include "dll.h" /*  double linked list funcs */
 #include "sorted_list.h"
-#include "dll.h" 
+
 
 
 enum stats
@@ -111,7 +112,6 @@ sort_list_iter_t SortListBegin(const sort_list_t *slist)
     assert(NULL != slist);
 
     holder.diter = DListBegin(slist->dll);
-    
     return holder;
 }
 
@@ -122,7 +122,6 @@ sort_list_iter_t SortListEnd(const sort_list_t *slist)
     assert(NULL != slist);
 
     holder.diter = DListEnd(slist->dll);
-
     return holder;
 }
 
@@ -138,7 +137,6 @@ void *SortListPopFront(sort_list_t *slist)
     assert(NULL != slist);
 
     data = DListPopFront(slist->dll);
-
     return data;
 }
 
@@ -187,7 +185,7 @@ sort_list_iter_t SortListFindIf(sort_list_iter_t from, sort_list_iter_t to, matc
     iter.diter = DListFind(from.diter, to.diter, match_func, (void *)param);
     return iter;
 }
-
+/* will sit on this on the weekend, write new pseudo */
 void SortListMerge(sort_list_t *dest, sort_list_t *src)
 {
     sort_list_iter_t where_dest = {0};
@@ -222,15 +220,11 @@ void SortListMerge(sort_list_t *dest, sort_list_t *src)
    /** O(n*m) ****
     while(!SortListIsEmpty(src))
     {
-        sort_list_iter_t run_dest = {0};
-        sort_list_iter_t run_src = {0};
-        run_dest = SortListBegin(dest);
-        run_src = SortListBegin(src);
-
         SortListInsert(dest, SortListPopBack(src));
         SortListInsert(dest, SortListPopFront(src));
    */
 }
+
 
 
 sort_list_iter_t SortListFind(sort_list_t *slist, sort_list_iter_t from, sort_list_iter_t to, const void *data)

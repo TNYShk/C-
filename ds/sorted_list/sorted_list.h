@@ -22,7 +22,7 @@ struct sort_list_iter
  * 
  * !don't forget to free allocated memory!
  *
- * PARAMS: Nada
+ * PARAMS: sort function to use for the sorting of the list
  * 
  * RETURN: Pointer to the newly created sorted list, otherwise NULL
  * Complexity: O(1) time, O(1) memory. */
