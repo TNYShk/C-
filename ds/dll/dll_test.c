@@ -135,7 +135,7 @@ void TestTwo()
 	dlist_t *test2 = NULL;
 	dlist_t *multifind_test = NULL;
 	dlist_iter_t tctest = NULL;
-
+	int answer = -5;
 	size_t one = 1;
 	size_t wto = 2;
 	size_t three = 3;
@@ -211,11 +211,10 @@ void TestTwo()
 	printf("\n\n\t---------------------------MultiFind into new list3--------------------------\n");
 	
 	multifind_test = DListCreate();
-	PrintDListForward(multifind_test);
 
-	DListMultiFind(DListBegin(test2), DListEnd(test2), MatchNum, &one, multifind_test);
-	PrintDListForward(multifind_test);
-	PrintDListForward(test2);
+	answer = DListMultiFind(DListBegin(test2), DListEnd(test2), MatchNum, &one, multifind_test);
+	(answer == 0)? printf("Multifound! and inserted to new list!, its size is %ld\n",DListSize(multifind_test)): printf("Multifind didnt find \n");
+	DListDestroy(multifind_test);
 	
 
 	printf("\n\n\t---------------------------For Each test--adding num to each element------------------------\n");
@@ -226,7 +225,7 @@ void TestTwo()
 	PrintDListForward(test1);
 
 
-	DListDestroy(multifind_test);
+	
 	
 	DListDestroy(test1);
 	DListDestroy(test2);
@@ -235,7 +234,7 @@ void TestTwo()
 
 void TestFind(dlist_iter_t from, dlist_iter_t to, match_func_t is_match, void *data)
 {
-	if (DListFind(from, to, is_match, data))
+	if (DListFind(from, to, is_match, data) != to )
 	{
 		printf("Found it!\n");
 	}

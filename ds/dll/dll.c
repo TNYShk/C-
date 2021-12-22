@@ -19,13 +19,16 @@ enum stats
 	SUCCESS,
 	FOUND
 };
-
+/* can be done by forward definition
+typedef struct dlist_node dlist_node_t;
+*/
 
 struct dlist
 {
 	struct dlist_node *head;
 	struct dlist_node *tail;
 };
+
 
 typedef struct dlist_node
 {
@@ -60,6 +63,14 @@ static dlist_iter_t RetrieveTail(dlist_iter_t iter)
 	}
 	return iter;
 }
+
+static void ConnectNodes(dlist_iter_t from, dlist_iter_t to)
+{
+
+    from->prev->next = to;
+    to->prev = DListPrev(from);
+}
+
 /***************End Service Funcs ******************************/
 
 	
@@ -70,22 +81,26 @@ dlist_t *DListCreate(void)
     dlist_node_t *dummy_tail = NULL;
 	
 	dll =  (dlist_t *)malloc(sizeof(dlist_t));
-   	
+   	if (NULL == dll)
+   	{
+   		return NULL;
+   	}
+
     dummy_head = (dlist_node_t *)malloc(sizeof(dlist_node_t));
     dummy_tail = (dlist_node_t *)malloc(sizeof(dlist_node_t));
     
-    if (NULL == dll || NULL == dummy_head || NULL == dummy_tail)
+    if (NULL == dummy_head || NULL == dummy_tail)
      {
      	free(dll);
      	dll = NULL;
      	free(dummy_head);
      	dummy_head = NULL;
      	free(dummy_tail);
+
      	dummy_tail = NULL;
-     	
      	return NULL;
- 	
      }
+
    	dll->head = dummy_head;
 	dll->tail = dummy_tail;
 	
@@ -100,7 +115,7 @@ dlist_t *DListCreate(void)
     return dll;
 }
 
-
+/*code re use, remove nodes */
 void DListDestroy(dlist_t *dll)
 {
    	dlist_node_t *current_node = dll->head;
@@ -120,12 +135,12 @@ void DListDestroy(dlist_t *dll)
 	dll = NULL;
 }
 
-
+/* re use code!! */
 int DListIsEmpty(const dlist_t *dll)
 {
     assert(NULL != dll);
 
-    return (dll->head->next == dll->tail);
+    return (DListBegin(dll) == DListEnd(dll));
 }
 
 
@@ -271,7 +286,6 @@ void *DListGetData(dlist_iter_t iter)
     return iter->data;
 }
 
-
 int DListIsEqual(dlist_iter_t iter1, dlist_iter_t iter2)
 {
     
@@ -282,6 +296,26 @@ int DListIsEqual(dlist_iter_t iter1, dlist_iter_t iter2)
 }
 
 
+int DListForEach(dlist_iter_t from, dlist_iter_t to, action_func_t action_func, void *param)
+{
+
+    int status = FAIL;
+    dlist_iter_t current = NULL;
+
+    assert ( NULL != from);
+    assert (NULL != to);
+  
+    current = from;
+    while (!DListIsEqual(current, to))
+    {
+        status = action_func(current->data, param);
+        current = DListNext(current);
+    }
+    
+    return status;
+}
+
+/* if not found,  return 'to'*/
 dlist_iter_t DListFind(dlist_iter_t from, dlist_iter_t to, match_func_t is_match, void *param)
 {
 	
@@ -298,51 +332,33 @@ dlist_iter_t DListFind(dlist_iter_t from, dlist_iter_t to, match_func_t is_match
 		from = DListNext(from);
 	}
 	
-	return NULL;
+	return to;
 }
 
-
-int DListForEach(dlist_iter_t from, dlist_iter_t to, action_func_t action_func, void *param)
-{
-
-    int status = FAIL;
-    dlist_iter_t current = NULL;
-
-    assert( NULL != from);
-    assert( NULL != to);
-  
-    current = from;
-    while (!DListIsEqual(current, to))
-    {
-        status = action_func(current->data, param);
-        current = DListNext(current);
-    }
-    
-    return status;
-}
-
-
+/* re use Find here*/
 int DListMultiFind(dlist_iter_t from, dlist_iter_t to, match_func_t is_match, void *param, dlist_t *result_list)
 {
+	dlist_node_t *current_node = NULL;
+	int result = FAIL;
+
 	assert( NULL != from);
     assert( NULL != to);
 
+
 	while(from != to)
 	{
-		if(is_match(from->data, param))
+		current_node = DListFind(from, to, is_match, param);
+		if (current_node == from)
 		{
-			if(DListEnd(result_list) == DListPushBack(result_list, from))
-			{
-				return FOUND;
-			}
+			current_node = DListPushBack(result_list, from);
+			result = SUCCESS;
 		}
-
-		from = DListNext(from);
+		
+	from = DListNext(from);
 	}
 
-	return SUCCESS;
+	return result;
 }
-
 
 void DListSplice(dlist_iter_t where, dlist_iter_t from, dlist_iter_t to)
 {
@@ -354,19 +370,19 @@ void DListSplice(dlist_iter_t where, dlist_iter_t from, dlist_iter_t to)
  
     splice_node = DListPrev(to);
     
-    from->prev->next = to;
-    to->prev = DListPrev(from);
-    
-    where->prev->next = from;
-    from->prev = DListPrev(where);
-    
+    ConnectNodes(from,to);
+   
+    ConnectNodes(where,from);
+  
     splice_node->next = where;
     where->prev = splice_node;
 }
 
 
 
-/*test fir each and find funcs */
+
+
+/*test for each and find funcs */
 int MatchNum(const void *data, void *param)
 {	
 	assert(NULL != param);
