@@ -10,6 +10,7 @@
 #include <assert.h> /* assert */
 #include <stddef.h> /* offsetof*/
 #include <stdio.h> /* printf for internal Print Func */
+#include <string.h> /* memset*/
 
 #include "cir_buffer.h"
 
@@ -55,7 +56,9 @@ cbuffer_t *CBuffCreate(size_t capacity)
 
 void CBuffDestroy(cbuffer_t *buffer)
 {
+	memset(buffer, 0, sizeof(offsetof(cbuffer_t, buffy)));
 	free(buffer);
+
 	buffer = NULL;
 }
 
@@ -73,7 +76,6 @@ ssize_t CBuffWrite(cbuffer_t *buffer,const void *src, size_t count)
 	assert(NULL != buffer);
 	assert(0 < count);
 
-	
 	if (START == CBuffFreeSpace(buffer))
 	{
 		return NOT;
