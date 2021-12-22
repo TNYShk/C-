@@ -25,11 +25,9 @@ int AddNum(void *data, void *param);
 int MatchNums(const void *data, void *param);
 static void PrintSListForward(const sort_list_t *slist);
 int PrintListData(void *data, void *param);
+
 void TestOne();
 void TestTwo();
-
-
-
 
 
 
@@ -58,7 +56,7 @@ static void PrintSListForward(const sort_list_t *slist)
 int main (void)
 {
     
-    /*TestOne();*/
+    TestOne();
     TestTwo();
     return 0;
 }
