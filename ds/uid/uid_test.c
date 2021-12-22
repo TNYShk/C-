@@ -1,6 +1,15 @@
-#include <sys/types.h> 
-#include <unistd.h>
-#include <stdio.h>
+/**********************************************
+ * UID - Source Code                          *
+ * Developer: Tanya                   		  *
+ * 2021-12-22                        		  *
+ *                                            *
+ *                     					 	  *
+**********************************************/
+#include <stddef.h> /* NULL declerations */
+#include <sys/types.h> /* size_t, time_t, pid_t */
+#include <unistd.h> /* size_t, pid_t */
+#include <time.h> /*  time_t */
+#include <stdio.h> /* print*/
 
 #include "uid.h"
 
@@ -8,8 +17,8 @@ int main(void)
 {
 	ilrd_uid_t new;
 	ilrd_uid_t new1;
-	printf("new pid %d\n", new.p_id);
-	printf("new1 pid %d\n", new.p_id);
+	printf("new pid %u\n", new.p_id);
+	printf("new1 pid %u \n", new.p_id);
 	printf("new uid %ld\n", new.u_id);
 	printf("new uid %ld\n", new.u_id);
 	printf("new time %ld\n", new.t_id);

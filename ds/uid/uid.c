@@ -1,7 +1,15 @@
-#include <sys/types.h> 
-#include <unistd.h>
-#include <time.h>
-#include <assert.h>
+/**********************************************
+ * UID - Source Code                          *
+ * Developer: Tanya                   		  *
+ * 2021-12-22                        		  *
+ *                                            *
+ *                     					 	  *
+**********************************************/
+#include <stddef.h> /* NULL declerations */
+#include <sys/types.h> /* size_t, time_t, pid_t */
+#include <unistd.h> /* size_t, pid_t */
+#include <time.h> /*  time_t */
+
 
 #include "uid.h"
 
@@ -10,28 +18,26 @@ const ilrd_uid_t UIDBadUID ={0,0,0};
 
 
 
-
-
 ilrd_uid_t UIDCreate(void)
 {
 	 static size_t uid = 0;
+
 	 ilrd_uid_t ucontainer = {0};
 
-	 time_t times = time(NULL);
-	 pid_t pid = getpid();
 
 	 ucontainer.u_id = ++uid;
-	 ucontainer.t_id = times;
-	 ucontainer.p_id = pid;
+	 ucontainer.t_id = time(NULL);
+	 ucontainer.p_id = getpid();
 
-	 if( (ucontainer.t_id == -1) || (ucontainer.p_id == -1) )
+
+	 if( ((time_t)ucontainer.t_id == -1) || ((time_t)ucontainer.p_id == -1) )
 	 {
 	 	ucontainer = UIDBadUID;
 	 }
-	
 
 	 return ucontainer;
 }
+
 
 int UIDIsSame(const ilrd_uid_t uid1, const ilrd_uid_t uid2)
 {
