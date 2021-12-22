@@ -3,7 +3,7 @@
  * Developer: Tanya                   		  *
  * 2021-12-22                        		  *
  *                                            *
- *                     					 	  *
+ *      Reviewed by David       	 	  	  *
 **********************************************/
 #include <sys/types.h> /* size_t, time_t, pid_t */
 #include <unistd.h> /* size_t, pid_t */
@@ -39,6 +39,8 @@ int main(void)
 	printf("\n\t----------------TIME of UID-------------\n");
 	TestUIDTime(new);
 	TestUIDTime(new1);
+	TestUIDTime(new2);
+
 	
 	printf("\n\t----------------Compare to BADUID-------------\n");
 	ComparetoBadUID(new);
@@ -78,3 +80,5 @@ void ComparetoBadUID(ilrd_uid_t uid)
 {
 	CompareUIDs(uid, UIDBadUID);
 }
+
+

@@ -3,7 +3,7 @@
  * Developer: Tanya                   		  *
  * 2021-12-22                        		  *
  *                                            *
- *                     					 	  *
+ *      Reviewed by David       	 	  	  *
 **********************************************/
 #include <unistd.h> /* size_t, pid_t */
 #include <time.h>  /*  time_t       */
@@ -17,22 +17,22 @@ const ilrd_uid_t UIDBadUID ={0,0,0};
 
 ilrd_uid_t UIDCreate(void)
 {
-	 static size_t uid = 0;
+	static size_t uid = 0;
 
-	 ilrd_uid_t ucontainer = {0};
+	ilrd_uid_t ucontainer = {0};
 
-	 time_t ttime = time(NULL);
-	 ucontainer.u_id = ++uid;
-	 ucontainer.t_id = ttime;
-	 ucontainer.p_id = getpid();
+	time_t ttime = time(NULL);
+	ucontainer.u_id = ++uid;
+	ucontainer.t_id = ttime;
+	ucontainer.p_id = getpid();
 
 
-	 if( (FAIL == (time_t)ucontainer.t_id) || (FAIL == (time_t)ucontainer.p_id) )
-	 {
-	 	ucontainer = UIDBadUID;
-	 }
+	if( ((time_t)FAIL == ucontainer.t_id) || (FAIL == ucontainer.p_id) )
+	{
+		ucontainer = UIDBadUID;
+	}
 
-	 return ucontainer;
+	return ucontainer;
 }
 
 
