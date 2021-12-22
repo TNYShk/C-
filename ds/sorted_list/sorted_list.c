@@ -37,14 +37,19 @@ sort_list_t *SortListCreate(cmp_func_t sort_func)
     assert(NULL != sort_func);
 
     sortl = (sort_list_t *)malloc(sizeof(sort_list_t));
-    sortl->dll = DListCreate();
+    if(NULL == sortl)
+    {
+        return NULL;
+    }
 
-    if(NULL == sortl || NULL == sortl->dll)
+    sortl->dll = DListCreate();
+    if(NULL == sortl->dll)
     {
         free(sortl->dll);
         free(sortl);
         return NULL;
     }
+
     sortl->sort_func = sort_func;
 
     return sortl;
@@ -84,7 +89,8 @@ sort_list_iter_t SortListInsert(sort_list_t *slist, void *data)
     
     runner.diter = DListBegin(slist->dll);
 
-    while(!DListIsEqual(runner.diter, DListEnd(slist->dll)) &&  (0 <  slist->sort_func(data, DListGetData(runner.diter))))
+    while(!DListIsEqual(runner.diter, DListEnd(slist->dll)) && 
+         (0 < slist->sort_func(data, DListGetData(runner.diter))) )
     { 
         runner.diter = DListNext(runner.diter);
     }
@@ -165,7 +171,7 @@ sort_list_iter_t SortListPrev(sort_list_iter_t iter)
 int SortListForEach(sort_list_iter_t from, sort_list_iter_t to, action_func_t action_func, void *param)
 {
     int ans = DListForEach(from.diter, to.diter, action_func, param);
-     #ifdef DEBUG
+    #ifdef DEBUG
         assert(from.slist == to.slist);
     #endif
 
@@ -183,43 +189,53 @@ sort_list_iter_t SortListFindIf(sort_list_iter_t from, sort_list_iter_t to, matc
 
 void SortListMerge(sort_list_t *dest, sort_list_t *src)
 {
+    sort_list_iter_t where_dest = {0};
+    sort_list_iter_t from_src = {0};
+    sort_list_iter_t src_end = {0};
+  
     assert(NULL != dest);
     assert(NULL != src);
-
-    while(!SortListIsEmpty(src))
+       
+    where_dest = SortListBegin(dest);
+    from_src =  SortListBegin(src);
+    src_end = SortListEnd(src);
+   
+    while(where_dest.diter !=  SortListEnd(dest).diter)
+    {
+        while ( (from_src.diter != src_end.diter ) &&
+           ( 0 < dest->sort_func(SortListGetData(where_dest), SortListGetData(from_src))) )
+        {
+            from_src = SortListNext(from_src);
+        }
+        if(from_src.diter != SortListBegin(src).diter)
+        {
+            DListSplice(where_dest.diter, SortListBegin(src).diter, from_src.diter);
+        }
+        where_dest = SortListNext(where_dest);
+    } 
+      if(!SortListIsEmpty(src))
     {
         SortListInsert(dest, SortListPopBack(src));
-        SortListInsert(dest, SortListPopFront(src));
     }
-    /*
-    sort_list_iter_t run_dest = {0};
-    sort_list_iter_t run_src = {0};
-    
-    sort_list_iter_t to = {0};
-    sort_list_iter_t where = {0};
-    
-    
-
-    run_dest = SortListBegin(dest);
-    run_src = SortListBegin(src);
-    where = run_dest;
-    to = run_src;
-    while(!SortListIterIsEqual(SortListBegin(dest), SortListEnd(dest)) && !SortListIterIsEqual(SortListBegin(src), SortListEnd(src)))
+   /** O(n*m) ****
+    while(!SortListIsEmpty(src))
     {
-        while (0 > dest->sort_func(SortListGetData(run_src),SortListGetData(run_dest)))
-        {
-            run_src = SortListNext(run_src);
-        }
-        DListSplice(run_dest.diter, run_src.diter, run_src.diter);
-        run_dest = SortListNext(run_dest);
-    } 
-    */
+        sort_list_iter_t run_dest = {0};
+        sort_list_iter_t run_src = {0};
+        run_dest = SortListBegin(dest);
+        run_src = SortListBegin(src);
+
+        SortListInsert(dest, SortListPopBack(src));
+        SortListInsert(dest, SortListPopFront(src));
+   */
 }
+
 
 sort_list_iter_t SortListFind(sort_list_t *slist, sort_list_iter_t from, sort_list_iter_t to, const void *data)
 {
     
     assert(NULL != slist);
+
     while(!SortListIterIsEqual(from, to))
     {
         if (0 == slist->sort_func(SortListGetData(from), data))
@@ -228,6 +244,7 @@ sort_list_iter_t SortListFind(sort_list_t *slist, sort_list_iter_t from, sort_li
         }
         from = SortListNext(from);
     }
+
     return to;
 }
 
@@ -235,9 +252,7 @@ sort_list_iter_t SortListFind(sort_list_t *slist, sort_list_iter_t from, sort_li
 /**** Action, Match Funcs ****/
 int AddNum(void *data, void *param)
 {
-    assert( NULL != param);
-
-    *(size_t *)data += *(size_t *)param ;
+    *(size_t *)data += *(size_t *)param;
     
     return SUCCESS;
 }
@@ -249,8 +264,6 @@ int CompareData(const void *left, const void *right)
 
 int MatchNums(const void *data, void *param)
 {   
-    assert(NULL != param);
-
     return (*(size_t *)data == *(size_t *)param);
 }
 
