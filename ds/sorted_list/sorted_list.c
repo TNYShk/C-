@@ -213,6 +213,7 @@ void SortListMerge(sort_list_t *dest, sort_list_t *src)
         }
         where_dest = SortListNext(where_dest);
     } 
+    /* if something overlooked, pop one by one */
       if(!SortListIsEmpty(src))
     {
         SortListInsert(dest, SortListPopBack(src));
@@ -249,23 +250,7 @@ sort_list_iter_t SortListFind(sort_list_t *slist, sort_list_iter_t from, sort_li
 }
 
 
-/**** Action, Match Funcs ****/
-int AddNum(void *data, void *param)
-{
-    *(size_t *)data += *(size_t *)param;
-    
-    return SUCCESS;
-}
 
-int CompareData(const void *left, const void *right)
-{
-    return (*(size_t *)left - *(size_t *)right);
-}
-
-int MatchNums(const void *data, void *param)
-{   
-    return (*(size_t *)data == *(size_t *)param);
-}
 
 
  

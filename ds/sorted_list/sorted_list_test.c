@@ -24,6 +24,7 @@ int CompareData(const void *left, const void *right);
 int AddNum(void *data, void *param);
 int MatchNums(const void *data, void *param);
 static void PrintSListForward(const sort_list_t *slist);
+int PrintListData(void *data, void *param);
 void TestOne();
 void TestTwo();
 
@@ -118,7 +119,7 @@ void TestTwo()
     
     sort_list_t *test = NULL;
     sort_list_t *test2 = NULL;
-    sort_list_iter_t iter1, iter2, iter3, iter4;
+    sort_list_iter_t iter1, iter2, iter3;
     test = SortListCreate(CompareData);
     test2 = SortListCreate(CompareData);
   
@@ -155,22 +156,48 @@ void TestTwo()
     printf("\t****insert to list1 src ***********\n");
     iter1 = SortListInsert(test, &y);
     iter3 = SortListInsert(test, &y);
+
     PrintSListForward(test);
     printf("\t****insert to list2 dest ***********\n");
-    iter2 = SortListInsert(test, &x);
-    
+    iter2 = SortListInsert(test2, &x);
     PrintSListForward(test2);
-    printf("\n\t**************  Test SortListForEach add 1 to list1********************************\n");
-    SortListForEach(iter3, iter1, AddNum, &uno);
+    printf("\n\t**************  List1 Before SortListForEach test********************************\n");
+    PrintSListForward(test);
+    printf("\n\t**************  List1 Post SortListForEach, add 1********************************\n");
+    SortListForEach(iter3, iter1, &AddNum, &uno);
     PrintSListForward(test);
     
-    printf("\n\t**************  Test SortListFindIf search for zero********************************\n");
-    iter4 = SortListFindIf(iter3, iter1,&MatchNums, &ans);
+    printf("\n\t************** List1 SortListFindIf, search for zero********************************\n");
+    iter2 = SortListFindIf(iter3, iter1,&MatchNums, &ans);
+    (SortListGetData(iter2) == SortListGetData(iter1))? printf("Zero wasnt found\n"): printf("fount zero");
     
     SortListDestroy(test);
     SortListDestroy(test2);
 
+}
+/**** Action, Match Funcs ****/
+int PrintListData(void *data, void *param)
+{
+    (void) param;
+    printf("Value: %ld\n", *(size_t *)data);
     
+    return 0;
+}
+
+int AddNum(void *data, void *param)
+{
+    *(size_t *)data += *(size_t *)param;
+    
+    return 0;
+}
+
+int CompareData(const void *left, const void *right)
+{
+    return (*(size_t *)left - *(size_t *)right);
+}
 
 
+int MatchNums(const void *data, void *param)
+{   
+    return (*(size_t *)data == *(size_t *)param);
 }
