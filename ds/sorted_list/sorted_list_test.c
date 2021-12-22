@@ -24,7 +24,7 @@ int CompareData(const void *left, const void *right);
 int AddNum(void *data, void *param);
 int MatchNums(const void *data, void *param);
 static void PrintSListForward(const sort_list_t *slist);
-
+int PrintListData(void *data, void *param);
 void TestOne();
 void TestTwo();
 
@@ -116,10 +116,10 @@ void TestTwo()
     size_t s = 77;
     size_t ans = 0;
     size_t uno = 1;
-    
+    void *ptr = NULL;
     sort_list_t *test = NULL;
     sort_list_t *test2 = NULL;
-    sort_list_iter_t iter1, iter2, iter3;
+    sort_list_iter_t iter1, iter2, iter3, iter4;
     test = SortListCreate(CompareData);
     test2 = SortListCreate(CompareData);
   
@@ -170,13 +170,27 @@ void TestTwo()
     printf("\n\t************** List1 SortListFindIf, search for zero********************************\n");
     iter2 = SortListFindIf(iter3, iter1,&MatchNums, &ans);
     (SortListGetData(iter2) == SortListGetData(iter1))? printf("Zero wasnt found\n"): printf("fount zero");
-    
+    printf("\n\t************** List2 SortListFind, search for 60 otherwise return last node********************************\n");
+    iter4 = SortListFind(test2, SortListBegin(test2),SortListEnd(test2),&x);
+    ptr = SortListGetData(iter4);
+    printf("here's the data in the node returned: %ld\n", *(size_t*)ptr);
+    PrintSListForward(test2);
+    printf("\n\t************** List2 SortListFind, search for 1 otherwise return last node********************************\n");
+    iter4 = SortListFind(test2, SortListBegin(test2),SortListEnd(test2),&uno);
+    ptr = SortListGetData(iter4);
+    printf("here's the data in the node returned: %ld\n", *(size_t*)ptr);
     SortListDestroy(test);
     SortListDestroy(test2);
 
 }
 /**** Action, Match Funcs ****/
-
+int PrintListData(void *data, void *param)
+{
+    (void) param;
+    printf("Value: %ld\n", *(size_t *)data);
+    
+    return 0;
+}
 
 int AddNum(void *data, void *param)
 {
