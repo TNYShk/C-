@@ -7,36 +7,37 @@
 
 #include "arrays_ptrs.h"
 
-#define COL 3
-#define ROW 3
-#define MAXLEN 150
-#define MAXP 12
+#define COLUMN (3)
+#define ROW (3)
+#define MAXLEN (150)
+#define MAXP (12)
+#define FAIL (-1)
 
-void MatrixSum(int matrix[][COL],int ans[ROW])
+void MatrixSum(int matrix[][COLUMN],int ans[ROW])
 {
-	int line,col,sum=0;
+	int line = 0,col = 0, sum = 0;
 
-	for(line=0;line<ROW;line++)
+	for(line = 0;line < ROW; ++line)
 	{
-		for(col=0;col<COL;col++)
+		for(col = 0; col < COLUMN; ++col)
 		{
-			sum+=matrix[line][col];
+			sum += matrix[line][col];
 				
 		}
 	printf("sum is %d",sum);
-	ans[line]=sum;
-	sum=0;
+	ans[line] = sum;
+	sum = 0;
 	printf("\n");
 	}
 
 }
 
-void PrintMatrix(int mat[][COL])
+void PrintMatrix(int mat[][COLUMN])
 {
-	int line,col;
-	for(line=0;line<ROW;line++)
+	int line = 0, col = 0;
+	for(line = 0; line < ROW; ++line)
 	{
-		for(col=0;col<COL;col++)
+		for(col = 0; col < COLUMN; ++col)
 		{
 			printf("%d ",mat[line][col]);
 		}
@@ -68,70 +69,79 @@ void PrintTypes()
 /*this works only if # of soldiers is less than 2^MAXP */
 int JosephusChoice(int soldiers)
 {
-	int ans=1;
-	int index=0;
-	int *win=(int*)malloc(soldiers*sizeof(int));
-	assert (NULL != win);
+	int ans = 1;
+	int index = 0;
+	int *win = (int*)malloc(soldiers * sizeof(int));
 	
-	while(++index<MAXP){
-		win[index]=(int)pow(2.0, index);
+	if (NULL == win)
+	{
+		return FAIL;
+	}
+	
+	while(++index < MAXP)
+	{
+		win[index] = (int)pow(2.0, index);
 		
-		if(soldiers<win[index])
+		if(soldiers < win[index])
 		{
-			ans=(((soldiers-win[index-1])*2));
+			ans = (((soldiers - win[index - 1]) * 2));
+
 			free(win);
-			win= NULL;
+			win = NULL;
+
 			return ans;
 		}
 	}
-	return -1;
+	return FAIL;
 }
 
-/* another version */
+
 void InitiateCircle(size_t * circle, size_t soldier)
 {
-	int index=0;
-	for(index=0; index<(int)soldier; index++)
+	int index = 0;
+	for(index = 0; index < (int)soldier; ++index)
 	{
 		circle[index] = (index +1) % soldier;
 	}
 
 }
 
-int Josephus( size_t soldiers)
+int Josephus(size_t soldiers)
 {
 	size_t *circle = NULL;
 	int index = 0;
 	int next2die = 0;
 	
-	circle= (size_t*)malloc(soldiers*sizeof(size_t));
+	circle = (size_t*)malloc(soldiers * sizeof(size_t));
 	if (NULL == circle)
 	{
 		printf("allocation failed\n");
-		return -1;
+		return FAIL;
 	}
 	
 	InitiateCircle(circle, soldiers);
 	
-	while ( index !=(int) circle[index])
+	while ( index != (int)circle[index])
 	{
 		next2die = circle[circle[index]];
 		circle[circle[index]] = 0;
 		circle[index] = next2die;
 		index = next2die;
 	}
+
 	free(circle);
-	circle=NULL;
-return index;
+	circle = NULL;
+
+	return index;
 }
 
 
 
 
-char * StrnCpy2Lower(char *dest, const char *src, size_t n)
+char *StrnCpy2Lower(char *dest, const char *src, size_t n)
 {
-	char * ptr_dest= dest+n;
-	char * ptr_s= dest;
+	char *ptr_dest = dest + n;
+	char *ptr_s = dest;
 	while (dest < ptr_dest) 
 	{
 		if ('=' != *src)
@@ -150,33 +160,35 @@ char * StrnCpy2Lower(char *dest, const char *src, size_t n)
 }
 
 /* creates a truncated version array, later prints up to = */
-char* StrDup(const char *s)
+char *StrDup(const char *s)
 {
 	size_t length = 0;
-	char *dup=NULL;
-	length=MAXLEN;
-	dup=(char*)calloc(length,sizeof(char)+1);
+	char *dup = NULL;
+	length = MAXLEN;
+	
+	dup = (char*)calloc(length,sizeof(char) + 1);
 	if (NULL == dup)
 	{
 		return NULL;
 	}
 
-	dup= StrnCpy2Lower(dup,s,length);
+	dup = StrnCpy2Lower(dup,s,length);
 
 	return dup;
 }
 
 void CopyEnvP(char **buf, char **envp)
 {
-	char *temp_b=NULL;
+	char *temp_b = NULL;
 	
 	while(*envp)
 	{
-		*buf=StrDup(*envp);
+		*buf = StrDup(*envp);
 		printf("*buffer: %s\n", *buf);
 		temp_b = *buf;
-		buf++;
-		envp++;
+		++buf;
+		++envp;
+		
 		free(temp_b);
 	}
 	
