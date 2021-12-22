@@ -15,8 +15,8 @@
 
 int main(void)
 {
-	ilrd_uid_t new;
-	ilrd_uid_t new1;
+	ilrd_uid_t new = UIDCreate();
+	ilrd_uid_t new1= UIDCreate();
 	printf("new pid %u\n", new.p_id);
 	printf("new1 pid %u \n", new.p_id);
 	printf("new uid %ld\n", new.u_id);

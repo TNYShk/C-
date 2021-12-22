@@ -23,9 +23,9 @@ ilrd_uid_t UIDCreate(void)
 
 	 ilrd_uid_t ucontainer = {0};
 
-
+	 time_t ttime = time(NULL);
 	 ucontainer.u_id = ++uid;
-	 ucontainer.t_id = time(NULL);
+	 ucontainer.t_id = ttime;
 	 ucontainer.p_id = getpid();
 
 
