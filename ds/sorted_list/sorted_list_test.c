@@ -2,9 +2,9 @@
  * Sorted Linked List WS		   *
  *           	                   *
  * by Tanya					       *
- *   		In Progress	           *
+ *   		Dec 22, 2021	       *
  *                                 *
- * Reviewer:                       *
+ * Reviewer: Amit                  *
  ***********************************/
 
 #include <stdio.h>  /* printf, size_t      */
