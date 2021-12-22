@@ -77,7 +77,7 @@ int SortListIsEmpty(const sort_list_t *slist)
 
 sort_list_iter_t SortListInsert(sort_list_t *slist, void *data)
 {
-
+    
     sort_list_iter_t runner = {0};
 
     assert(NULL != slist);
@@ -88,7 +88,6 @@ sort_list_iter_t SortListInsert(sort_list_t *slist, void *data)
     { 
         runner.diter = DListNext(runner.diter);
     }
-
     runner.diter = DListInsert(runner.diter, data);
     return runner;
 }
@@ -184,19 +183,28 @@ sort_list_iter_t SortListFindIf(sort_list_iter_t from, sort_list_iter_t to, matc
 
 void SortListMerge(sort_list_t *dest, sort_list_t *src)
 {
-    sort_list_iter_t run_dest = {0};
-    sort_list_iter_t run_src = {0};
-   /* sort_list_iter_t run_src1 = {0};
-    sort_list_iter_t run_dest1 = {0};
-    */
     assert(NULL != dest);
     assert(NULL != src);
 
+    while(!SortListIsEmpty(src))
+    {
+        SortListInsert(dest, SortListPopBack(src));
+        SortListInsert(dest, SortListPopFront(src));
+    }
+    /*
+    sort_list_iter_t run_dest = {0};
+    sort_list_iter_t run_src = {0};
+    
+    sort_list_iter_t to = {0};
+    sort_list_iter_t where = {0};
+    
+    
+
     run_dest = SortListBegin(dest);
     run_src = SortListBegin(src);
-    /*run_dest1 = run_dest;
-    run_src1 = run_src;*/
-    while(!SortListIterIsEqual(run_dest, SortListEnd(dest)) && !SortListIterIsEqual(run_src, SortListEnd(src)))
+    where = run_dest;
+    to = run_src;
+    while(!SortListIterIsEqual(SortListBegin(dest), SortListEnd(dest)) && !SortListIterIsEqual(SortListBegin(src), SortListEnd(src)))
     {
         while (0 > dest->sort_func(SortListGetData(run_src),SortListGetData(run_dest)))
         {
@@ -205,10 +213,7 @@ void SortListMerge(sort_list_t *dest, sort_list_t *src)
         DListSplice(run_dest.diter, run_src.diter, run_src.diter);
         run_dest = SortListNext(run_dest);
     } 
-    while(!SortListIsEmpty(src))
-    {
-        SortListInsert(dest, SortListPopBack(src));
-    }
+    */
 }
 
 sort_list_iter_t SortListFind(sort_list_t *slist, sort_list_iter_t from, sort_list_iter_t to, const void *data)

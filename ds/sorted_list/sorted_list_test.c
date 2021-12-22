@@ -57,7 +57,7 @@ static void PrintSListForward(const sort_list_t *slist)
 int main (void)
 {
     
-    TestOne();
+    /*TestOne();*/
     TestTwo();
     return 0;
 }
