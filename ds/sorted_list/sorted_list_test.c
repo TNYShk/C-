@@ -24,7 +24,7 @@ int CompareData(const void *left, const void *right);
 int AddNum(void *data, void *param);
 int MatchNums(const void *data, void *param);
 static void PrintSListForward(const sort_list_t *slist);
-int PrintListData(void *data, void *param);
+
 void TestOne();
 void TestTwo();
 
@@ -176,13 +176,7 @@ void TestTwo()
 
 }
 /**** Action, Match Funcs ****/
-int PrintListData(void *data, void *param)
-{
-    (void) param;
-    printf("Value: %ld\n", *(size_t *)data);
-    
-    return 0;
-}
+
 
 int AddNum(void *data, void *param)
 {
