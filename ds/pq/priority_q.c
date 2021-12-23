@@ -48,7 +48,6 @@ pq_t *PQCreate(cmp_func_t comp_func)
 		free(priorq);
 		priorq = NULL;
 	}
-
 	return priorq;
 }
 
@@ -113,8 +112,8 @@ int PQErase(pq_t *pq, match_func_t match_func, void *param)
 {
 	sort_list_iter_t from = {0};
 	sort_list_iter_t to = {0};
-	sort_list_iter_t find;
-	int statos = FAIL;
+	
+	int status = FAIL;
 
 	assert (NULL != pq);
 	assert (NULL != match_func);
@@ -124,20 +123,19 @@ int PQErase(pq_t *pq, match_func_t match_func, void *param)
 
 	while (!SortListIterIsEqual(from,to))
 	{
-		find = SortListFindIf(from, to, match_func, param);
-		statos = SUCCESS;
+		sort_list_iter_t find = SortListFindIf(from, to, match_func, param);
 		
 		if(!SortListIterIsEqual(find,to))
 		{
 			from = SortListRemove(find);
+			status = SUCCESS;
 		}
 		else
 		{
 			from = SortListNext(from);
 		}
 	}
-
-	return statos;
+	return status;
 }
 
 
