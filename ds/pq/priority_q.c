@@ -6,21 +6,14 @@
  * Reviewer:  Ori Marom             		  *
  **********************************************/
 
-#include <stdio.h>  /* printf, size_t      */
+
 #include <stdlib.h> /* memory allocation  */
-#include <assert.h> /* assert()          */
-#include <string.h> /*memset            */
+#include <assert.h>  /* assert()         */
+#include <string.h>   /* memset         */
 
 
 #include "sorted_list.h"
 #include "priority_queue.h"
-
-
-enum stats
-{
-    FAIL = -1,
-    SUCCESS
-};
 
 
 struct pqueue
