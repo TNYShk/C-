@@ -79,9 +79,31 @@ int PQEnqueue(pq_t *pq, void *data)
 	assert (NULL != pq);
 	SortListInsert(pq->sortl, data);
 
-	return (PQIsEmpty(pq));
-
+	return (PQSize(pq));
 }
+
+void *PQDequeue(pq_t *pq)
+{
+	assert (NULL != pq);
+	return (SortListPopFront(pq->sortl));
+}
+
+void *PQPeek(const pq_t *pq)
+{
+	assert (NULL != pq);
+	return SortListGetData(SortListBegin(pq->sortl));
+}
+
+void PQClear(pq_t *pq)
+{
+	assert (NULL != pq);
+
+	while(!PQIsEmpty(pq))
+	{
+		PQDequeue(pq);
+	}
+}
+
 
 
 

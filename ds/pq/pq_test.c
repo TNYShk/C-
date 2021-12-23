@@ -48,9 +48,18 @@ int main(void)
 void TestOne()
 {
         pq_t *test = NULL;
-
+        size_t one = 1;
+        size_t hund = 100;
+        int ans = 0;
         test = PQCreate(CompareData);
-
+        (PQIsEmpty(test) == 0) ? printf("not empty\n") : printf("empty\n");
+        ans = PQEnqueue(test, &one);
+        (PQIsEmpty(test) == 0) ? printf("not empty\n") : printf("empty\n");
+        assert(PQSize(test) == 1);
+        printf("size is %d\n", ans);
+        ans = PQEnqueue(test, &hund);
+        assert(PQSize(test) == 2);
+        printf("size is %d\n", ans);
         PQDestroy(test);
 }
 
