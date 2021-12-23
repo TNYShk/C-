@@ -11,7 +11,7 @@
 #include <assert.h> /* assert()          */
 #include <string.h> /*memset            */
 
-#include "dll.h"
+
 #include "sorted_list.h"
 #include "priority_queue.h"
 
