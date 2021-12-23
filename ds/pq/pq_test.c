@@ -15,7 +15,7 @@
 
 
 int CompareData(const void *left, const void *right);
-int MatchData(const void *data, void *param);
+int MatchData(const void *data, const void *param);
 void TestOne();
 void TestTwo();
 
@@ -79,6 +79,7 @@ void TestTwo()
         size_t huns = 101;
         void *ptr = NULL;
         int ans = 0;
+        pq_match_func_t foo = &MatchData;
         test = PQCreate(CompareData);
         printf("\n\n\t-----------------------------Test 2-------------------------------\n");
         (PQIsEmpty(test) == 0) ? printf("PQ Not empty\n\n") : printf("Empty PQ\n\n");
@@ -111,14 +112,15 @@ void TestTwo()
         printf("post ENQ: size is %ld\n", PQSize(test));
         
         printf("\t--------------PQErase test remove 101--------------------\n");
-        ans = PQErase(test,&MatchData, &huns);
+        ans = PQErase(test,foo, &huns);
         printf("post erase ans is %d, zero is SUCCESS\n", ans);
         printf("post PQErase: size is %ld\n", PQSize(test));
         printf("\t--------------Peek in PQ--------------------\n");
         ptr = PQPeek(test);
         printf("Peek into whats left in PQ: %ld\n", *(size_t*)ptr);
         printf("\t--------------PQErase test remove 100--------------------\n");
-        ans = PQErase(test,&MatchData, &hund);
+
+        ans = PQErase(test,foo, &hund);
          printf("post erase ans is %d, zero is SUCCESS\n", ans);
         printf("post PQErase: size is %ld\n", PQSize(test));
         printf("\t--------------EnQ PQ 1 ------------------------------------\n");
@@ -126,7 +128,7 @@ void TestTwo()
         ptr = PQPeek(test);
         printf("Peek into PQ: %ld\n", *(size_t*)ptr);
         printf("\t--------------PQErase test remove 100 (no there)--------------------\n");
-        ans = PQErase(test,&MatchData, &hund);
+        ans = PQErase(test,foo, &hund);
          printf("post erase ans is %d, zero is SUCCESS\n", ans);
         printf("post PQErase: size is %ld\n", PQSize(test));
 
@@ -141,7 +143,7 @@ int CompareData(const void *left, const void *right)
     return (*(size_t *)left - *(size_t *)right);
 }
 
-int MatchData(const void *data, void *param)
+int MatchData(const void *data, const void *param)
 {   
     return (*(size_t *)data == *(size_t *)param);
 }

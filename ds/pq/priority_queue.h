@@ -5,10 +5,10 @@
 
 typedef struct pqueue pq_t;
 
-#ifndef __SORTED_LIST_H__
-typedef int (*cmp_func_t)(const void *left, const void *right);
-typedef int (*match_func_t)(const void *data, const void *param);
-#endif /* __SORTED_LIST_H__ */
+
+typedef int (*pq_cmp_func_t)(const void *left, const void *right);
+typedef int (*pq_match_func_t)(const void *data, const void *param);
+
 /*
  * DESCRIPTION: 
  * Creates a new Priority Queue (PQ)
@@ -19,7 +19,7 @@ typedef int (*match_func_t)(const void *data, const void *param);
  * 
  * RETURN: Pointer to the newly created Priority Queue, otherwise NULL
  * Complexity: O(1) time, O(1) memory. */
-pq_t *PQCreate(cmp_func_t cmp_func);
+pq_t *PQCreate(pq_cmp_func_t cmp_func);
 
 /*
  * DESCRIPTION: 
@@ -110,6 +110,6 @@ void PQClear(pq_t *pq);
  * 
  * RETURN: integer
  * Complexity: O(n) time, O(1) memory. */
-int PQErase(pq_t *pq, match_func_t match_func, void *param);
+int PQErase(pq_t *pq, pq_match_func_t match_func, void *param);
 
 #endif /* __PRIORITY_QUEUE_H__ */

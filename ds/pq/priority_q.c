@@ -30,7 +30,7 @@ struct pqueue
 };
 
 
-pq_t *PQCreate(cmp_func_t comp_func)
+pq_t *PQCreate(pq_cmp_func_t comp_func)
 {
 	pq_t *priorq = NULL;
 
@@ -108,7 +108,7 @@ void PQClear(pq_t *pq)
 	}
 }
 
-int PQErase(pq_t *pq, match_func_t match_func, void *param)
+int PQErase(pq_t *pq, pq_match_func_t match_func, void *param)
 {
 	sort_list_iter_t from = {0};
 	sort_list_iter_t to = {0};
@@ -123,7 +123,7 @@ int PQErase(pq_t *pq, match_func_t match_func, void *param)
 
 	while (!SortListIterIsEqual(from,to))
 	{
-		sort_list_iter_t find = SortListFindIf(from, to, match_func, param);
+		sort_list_iter_t find = SortListFindIf(from, to, (match_func_t)match_func, param);
 		
 		if(!SortListIterIsEqual(find,to))
 		{
