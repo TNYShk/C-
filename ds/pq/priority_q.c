@@ -47,7 +47,6 @@ pq_t *PQCreate(cmp_func_t comp_func)
 
 	if(NULL == priorq->sortl)
 	{
-		SortListDestroy(priorq->sortl);
 		free(priorq);
 		return NULL;
 	}
@@ -83,10 +82,15 @@ size_t PQSize(const pq_t *pq)
 
 int PQEnqueue(pq_t *pq, void *data)
 {
+	size_t size = 0;
+
 	assert (NULL != pq);
+
+	size = PQSize(pq);
+
 	SortListInsert(pq->sortl, data);
 
-	return (PQSize(pq));
+	return !(PQSize(pq) > size);
 }
 
 void *PQDequeue(pq_t *pq)

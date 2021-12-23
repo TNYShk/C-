@@ -7,11 +7,8 @@
  **********************************************/
 
 #include <stdio.h>  /* printf, size_t      */
-#include <stdlib.h> /* memory allocation  */
 #include <assert.h> /* assert()          */
-#include <string.h> /* printf           */
 
-#include "dll.h"
 #include "sorted_list.h"
 #include "priority_queue.h"
 
@@ -47,8 +44,9 @@ void TestOne()
         ans = PQEnqueue(test, &one);
         (PQIsEmpty(test) == 0) ? printf("PQ Not empty\n") : printf("Empty PQ\n");
         assert(PQSize(test) == 1);
-        printf("size is %d\n", ans);
+        printf("PQ ENQ ans  is %d\n", ans);
         ans = PQEnqueue(test, &hund);
+        printf("PQ ENQ ans  is %d\n", ans);
         assert(PQSize(test) == 2);
         printf("size is %ld\n", PQSize(test));
         printf("\t--------------inserting 2 more--------------------\n");
