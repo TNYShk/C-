@@ -102,14 +102,14 @@ void PQClear(pq_t *pq);
 
 /*
  * DESCRIPTION: 
- * remove data from the elements of PQ, based on desired param
- * 
+ * removes the first instance of an element that has data matching the param
+ * if not found return the last element of the list aka NULL
  * 
  *
- * PARAMS: Pointer to the PQ, the matching func and para,eter to remove
+ * PARAMS: Pointer to the PQ, the matching func and param to remove
  * 
- * RETURN: integer
+ * RETURN: the data stored in the now removed element, or NULL if not found!
  * Complexity: O(n) time, O(1) memory. */
-int PQErase(pq_t *pq, pq_match_func_t match_func, void *param);
+void *PQErase(pq_t *pq, pq_match_func_t match_func, void *param);
 
 #endif /* __PRIORITY_QUEUE_H__ */

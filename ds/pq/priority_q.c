@@ -108,12 +108,12 @@ void PQClear(pq_t *pq)
 	}
 }
 
-int PQErase(pq_t *pq, pq_match_func_t match_func, void *param)
+void *PQErase(pq_t *pq, pq_match_func_t match_func, void *param)
 {
 	sort_list_iter_t from = {0};
 	sort_list_iter_t to = {0};
-	
-	int status = FAIL;
+	sort_list_iter_t find = {0};
+	void *data = NULL;
 
 	assert (NULL != pq);
 	assert (NULL != match_func);
@@ -121,23 +121,18 @@ int PQErase(pq_t *pq, pq_match_func_t match_func, void *param)
 	from = SortListBegin(pq->sortl);
 	to = SortListEnd(pq->sortl);
 
-	while (!SortListIterIsEqual(from,to))
-	{
-		sort_list_iter_t find = SortListFindIf(from, to, (match_func_t)match_func, param);
+	find = SortListFindIf(from, to, (match_func_t)match_func, param);
 		
 		if(!SortListIterIsEqual(find,to))
 		{
-			from = SortListRemove(find);
-			status = SUCCESS;
+			data = SortListGetData(find);
+			SortListRemove(find);
 		}
-		else
-		{
-			from = SortListNext(from);
-		}
-	}
-	return status;
-}
+		
 
+	return data;
+
+}
 
 
 

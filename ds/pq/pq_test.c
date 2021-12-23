@@ -112,24 +112,24 @@ void TestTwo()
         printf("post ENQ: size is %ld\n", PQSize(test));
         
         printf("\t--------------PQErase test remove 101--------------------\n");
-        ans = PQErase(test,foo, &huns);
-        printf("post erase ans is %d, zero is SUCCESS\n", ans);
+        ptr = PQErase(test,foo, &huns);
+        printf("Removed data is: %ld\n", *(size_t*)ptr);
         printf("post PQErase: size is %ld\n", PQSize(test));
         printf("\t--------------Peek in PQ--------------------\n");
         ptr = PQPeek(test);
-        printf("Peek into whats left in PQ: %ld\n", *(size_t*)ptr);
-        printf("\t--------------PQErase test remove 100--------------------\n");
+        printf("Peek into PQ: %ld\n", *(size_t*)ptr);
+        printf("\t--------------PQErase test remove 101 not there--------------------\n");
 
-        ans = PQErase(test,foo, &hund);
-         printf("post erase ans is %d, zero is SUCCESS\n", ans);
+        ptr = PQErase(test,foo, &huns);
         printf("post PQErase: size is %ld\n", PQSize(test));
         printf("\t--------------EnQ PQ 1 ------------------------------------\n");
         PQEnqueue(test, &one);
+        printf("post ENQ, size is: %ld\n", PQSize(test));
         ptr = PQPeek(test);
-        printf("Peek into PQ: %ld\n", *(size_t*)ptr);
-        printf("\t--------------PQErase test remove 100 (no there)--------------------\n");
-        ans = PQErase(test,foo, &hund);
-         printf("post erase ans is %d, zero is SUCCESS\n", ans);
+        printf("Peek into PQ, value is: %ld\n", *(size_t*)ptr);
+        printf("\t--------------PQErase test remove 100 --------------------\n");
+        ptr = PQErase(test,foo, &hund);
+        printf("Removed data is: %ld\n", *(size_t*)ptr);
         printf("post PQErase: size is %ld\n", PQSize(test));
 
         PQDestroy(test);
