@@ -37,8 +37,6 @@ void PQDestroy(pq_t *pq);
  * DESCRIPTION: 
  * Checks wether the PQ is Empty
  * 
- * 
- *
  * PARAMS: the PQ to check
  * 
  * RETURN: Bookean, 1 Empty, otherwise 0
@@ -49,8 +47,6 @@ int PQIsEmpty(const pq_t *pq);
  * DESCRIPTION: 
  * Calculates number of elements int the PQ
  * 
- * 
- *
  * PARAMS: pointer to the PQ 
  * 
  * RETURN: return number of elements in the PQ
@@ -60,13 +56,13 @@ size_t PQSize(const pq_t *pq);
 /*
  * DESCRIPTION: 
  * Inserts new element to the PQ
- * insertion based on its priority- decided be the sort func, 
+ * insertion based on its priority- decided by the sort func, 
  * adding NULL data possible but causes undefined bahvior
  * 
  *
- * PARAMS: Pointer to the PQ, the data to insert
+ * PARAMS: Pointer to the PQ, data to insert
  * 
- * RETURN: Pointer to the newly created sorted list, otherwise NULL
+ * RETURN: 0 for SUCCESS, any other num is FAIL
  * Complexity: O(n) time, O(1) memory. */
 int PQEnqueue(pq_t *pq, void *data);
 
@@ -74,8 +70,6 @@ int PQEnqueue(pq_t *pq, void *data);
  * DESCRIPTION: 
  * Remove the top element from the PQ
  * 
- * 
- *
  * PARAMS: Pointer to the PQ
  * 
  * RETURN: Data of the removed element
