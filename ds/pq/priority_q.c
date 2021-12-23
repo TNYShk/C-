@@ -10,10 +10,18 @@
 #include <stdlib.h> /* memory allocation  */
 #include <assert.h> /* assert()          */
 #include <string.h> /*memset            */
+
 #include "dll.h"
 #include "sorted_list.h"
 #include "priority_queue.h"
 
+
+enum stats
+{
+    FAIL = -1,
+    SUCCESS,
+    FOUND
+};
 
 
 
@@ -102,6 +110,38 @@ void PQClear(pq_t *pq)
 	{
 		PQDequeue(pq);
 	}
+}
+
+int PQErase(pq_t *pq, match_func_t match_func, void *param)
+{
+	sort_list_iter_t from = {0};
+	sort_list_iter_t to = {0};
+	sort_list_iter_t find;
+	int statos = FAIL;
+
+	assert (NULL != pq);
+	assert (NULL != match_func);
+
+	from = SortListBegin(pq->sortl);
+	to = SortListEnd(pq->sortl);
+
+	while (!SortListIterIsEqual(from,to))
+	{
+		find = SortListFindIf(from, to, match_func, param);
+		statos = SUCCESS;
+		
+		if(!SortListIterIsEqual(find,to))
+		{
+			statos = FOUND;
+			from = SortListRemove(find);
+		}
+		else
+		{
+			from = SortListNext(from);
+		}
+	}
+
+	return statos;
 }
 
 

@@ -5,7 +5,10 @@
 
 typedef struct pqueue pq_t;
 
-
+#ifndef __SORTED_LIST_H__
+typedef int (*cmp_func_t)(const void *left, const void *right);
+typedef int (*match_func_t)(const void *data, const void *param);
+#endif /* __SORTED_LIST_H__ */
 /*
  * DESCRIPTION: 
  * Creates a new Priority Queue (PQ)
@@ -57,7 +60,7 @@ size_t PQSize(const pq_t *pq);
 /*
  * DESCRIPTION: 
  * Inserts new element to the PQ
- * inswertion based on its priority- decided be the sort func, 
+ * insertion based on its priority- decided be the sort func, 
  * adding NULL data possible but causes undefined bahvior
  * 
  *
