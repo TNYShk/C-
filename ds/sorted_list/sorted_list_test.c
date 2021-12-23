@@ -15,9 +15,6 @@
 #include "dll.h"
 #include "sorted_list.h"
 
-#define PRINT_NODE(node) (printf("node at address %p has int %d, prev is %p, next is %p\n", \
-        (void *)node, *(int *)DListGetData(node), (void *)DListPrev(node), (void *)DListNext(node)));
-
 
 
 int CompareData(const void *left, const void *right);

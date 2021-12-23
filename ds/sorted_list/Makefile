@@ -2,6 +2,7 @@ CC := gcc
 CFLAGS := -ansi -pedantic-errors -Wall -Wextra -g
 LDFLAGS := -g
 
+
 SRCS := $(wildcard *.c)
 OBJS := $(SRCS:.c=.o) dll.o
 

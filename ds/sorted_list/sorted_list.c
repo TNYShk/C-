@@ -183,8 +183,12 @@ sort_list_iter_t SortListFindIf(sort_list_iter_t from, sort_list_iter_t to, matc
     assert(NULL != match_func);
 
     iter.diter = DListFind(from.diter, to.diter, match_func, (void *)param);
+    
     return iter;
 }
+
+
+
 /* will sit on this on the weekend, write new pseudo */
 void SortListMerge(sort_list_t *dest, sort_list_t *src)
 {

@@ -7,8 +7,7 @@
 #include "sorted_list.h"
 #include "priority_queue.h"
 
-#define PRINT_NODE(node) (printf("node at address %p has int %d, prev is %p, next is %p\n", \
-        (void *)node, *(int *)DListGetData(node), (void *)DListPrev(node), (void *)DListNext(node)));
+
 
 int CompareData(const void *left, const void *right);
 int MatchData(const void *data, void *param);
@@ -17,26 +16,6 @@ void TestTwo();
 
 
 
-/*
-static void PrintSListForward(const pq_t *slist)
-{
-    sort_list_iter_t runner;
-    
-    assert(NULL != slist);
-    
-    runner = SortListBegin(slist);
-    
-    printf("\n-------List is:------\n");
-    
-    while (!SortListIterIsEqual(runner, SortListEnd(slist)))
-    {
-        printf("%d ", *(int *)SortListGetData(runner));
-        runner = SortListNext(runner);
-    }
-    printf("\n\nSize of list is: %lu. List %s.\n", SortListSize(slist), SortListIsEmpty(slist) ? "is empty" : "is not empty");
-    printf("-------list ends------\n");
-}
-*/
 
 int main(void)
 {
@@ -122,10 +101,20 @@ void TestTwo()
         PQEnqueue(test, &huns);
         printf("post ENQ: size is %ld\n", PQSize(test));
         
-        printf("\t--------------PQErase test--------------------\n");
+        printf("\t--------------PQErase test remove 101--------------------\n");
+        ans = PQErase(test,&MatchData, &huns);
+        printf("post erase ans is %d\n", ans);
+        printf("post PQErase: size is %ld\n", PQSize(test));
+        printf("\t--------------Peek in PQ--------------------\n");
+        ptr = PQPeek(test);
+        printf("Peek into whats left in PQ: %ld\n", *(size_t*)ptr);
+        printf("\t--------------PQErase test remove 100--------------------\n");
         ans = PQErase(test,&MatchData, &hund);
         printf("post PQErase: size is %ld\n", PQSize(test));
-
+        printf("\t--------------EnQ PQ ------------------------------------\n");
+        PQEnqueue(test, &one);
+        ptr = PQPeek(test);
+        printf("Peek into PQ: %ld\n", *(size_t*)ptr);
         PQDestroy(test);
 }  
 

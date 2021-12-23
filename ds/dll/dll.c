@@ -133,7 +133,7 @@ void DListDestroy(dlist_t *dll)
 	dll = NULL;
 }
 
-/* re use code!! */
+
 int DListIsEmpty(const dlist_t *dll)
 {
     assert(NULL != dll);
