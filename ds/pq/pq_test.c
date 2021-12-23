@@ -1,3 +1,11 @@
+/**********************************************
+ * Priority Q test file- WS                   *
+ * Developer: Tanya                           *
+ * Written: 2021-12-23                        *
+ *                                            *
+ * Reviewer:  Ori Marom                       *
+ **********************************************/
+
 #include <stdio.h>  /* printf, size_t      */
 #include <stdlib.h> /* memory allocation  */
 #include <assert.h> /* assert()          */
@@ -19,7 +27,7 @@ void TestTwo();
 
 int main(void)
 {
-    /*TestOne(); */
+    TestOne(); 
     TestTwo();
 
     return 0;
@@ -34,6 +42,7 @@ void TestOne()
         void *ptr = NULL;
         int ans = 0;
         test = PQCreate(CompareData);
+        printf("\n\n\t-----------------------------Test 1-------------------------------\n");
         (PQIsEmpty(test) == 0) ? printf("PQ Not empty\n") : printf("Empty PQ\n");
         ans = PQEnqueue(test, &one);
         (PQIsEmpty(test) == 0) ? printf("PQ Not empty\n") : printf("Empty PQ\n");
@@ -73,10 +82,11 @@ void TestTwo()
         void *ptr = NULL;
         int ans = 0;
         test = PQCreate(CompareData);
-        (PQIsEmpty(test) == 0) ? printf("PQ Not empty\n") : printf("Empty PQ\n");
+        printf("\n\n\t-----------------------------Test 2-------------------------------\n");
+        (PQIsEmpty(test) == 0) ? printf("PQ Not empty\n\n") : printf("Empty PQ\n\n");
         printf("\t--------------PQ EnQ 1--------------------\n");
         ans = PQEnqueue(test, &one);
-        (PQIsEmpty(test) == 0) ? printf("PQ Not empty\n") : printf("Empty PQ\n");
+        (PQIsEmpty(test) == 0) ? printf("PQ Not empty\n\n") : printf("Empty PQ\n\n");
         assert(PQSize(test) == 1);
         printf("size is %d\n", ans);
         ans = PQEnqueue(test, &hund);
@@ -86,8 +96,9 @@ void TestTwo()
         PQEnqueue(test, &hund);
         PQEnqueue(test, &huns);
         PQEnqueue(test, &hund);
-        printf("\t--------------Peek in PQ--------------------\n");
         printf("size is %ld\n", PQSize(test));
+        printf("\t--------------Peek in PQ--------------------\n");
+        
         ptr = PQPeek(test);
         printf("Peek into PQ: %ld\n", *(size_t*)ptr);
         printf("post peek size unchanged? %ld\n", PQSize(test));

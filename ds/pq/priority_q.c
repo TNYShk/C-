@@ -1,9 +1,9 @@
 /**********************************************
- * Sort List File - WS              		  *
+ * Priority Q - WS		              		  *
  * Developer: Tanya                     	  *
- * Written: 2021-12                       	  *
+ * Written: 2021-12-23                   	  *
  *                                            *
- * Reviewer:                         		  *
+ * Reviewer:  Ori Marom             		  *
  **********************************************/
 
 #include <stdio.h>  /* printf, size_t      */
@@ -22,7 +22,6 @@ enum stats
     SUCCESS,
     FOUND
 };
-
 
 
 struct pqueue
