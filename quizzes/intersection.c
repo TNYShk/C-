@@ -12,7 +12,6 @@ typedef struct node
 static size_t countElements(node_t *head);
 static node_t *MoveHead(node_t *head, size_t bymuch);
 int VerifyIntersectionSLL(node_t *head_1, node_t *head_2);
-int HasLoop(const node_t *head);
 int SeparateIntersectionSLL(node_t *head_1, node_t *head_2);
 
 int main()
@@ -25,9 +24,9 @@ int main()
 	int w = 4;
 	int t = 26;
 	int tt = 265;
+	
 	node_t *head = NULL;
 	node_t *head2 = NULL;
-	node_t *temp = NULL;
 	
 	
 	
@@ -59,12 +58,14 @@ int main()
 	head = &one;
 	head2 = &onew;
 	
-	
+	printf("head1 is %ld, head2 is %ld\n", countElements(head),countElements(head2) );
+
 	answer = VerifyIntersectionSLL(head, head2);
 	(answer == 0)? printf("no intersection\n") : printf("intersection %d node from end \n",answer);
-
+	
 	answer = SeparateIntersectionSLL(head, head2);
-	(answer == 0)? printf("no intersection\n") : printf("intersection at %d \n",answer);
+	(answer == 0)? printf("no intersection\n") : printf("intersection %d node from end \n",answer);
+	printf("post separation head1 is %ld, head2 is %ld\n", countElements(head),countElements(head2) );
 
 	return 0;
 }
@@ -135,28 +136,11 @@ static node_t *MoveHead(node_t *head, size_t delta)
 	return head;
 }
 
-int HasLoop(const node_t *head)
-{
-	const node_t *turtois = head;
-	const node_t *rabit = head;
 
-	assert (NULL != head);
-
-	do
-	{
-		turtois = turtois->next;
-		rabit = rabit->next->next;
-	}
-	while ((turtois != rabit) && (NULL != rabit));
-
-	return (turtois == rabit);
-
-}
 
 int SeparateIntersectionSLL(node_t *head_1, node_t *head_2)
 {
-	node_t *runner1 = head_1;
-	node_t *runner2 = head_2;
+	
 	node_t *disconnector = head_2;
 	int intersection = 0;
 	int delta = 0;
