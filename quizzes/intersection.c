@@ -10,10 +10,10 @@ typedef struct node
 }node_t;
 
 static size_t countElements(node_t *head);
-static void MoveHead(node_t *head, size_t bymuch);
-int VerifyIntersection(node_t *head_1, node_t *head_2);
+static node_t *MoveHead(node_t *head, size_t bymuch);
+int VerifyIntersectionSLL(node_t *head_1, node_t *head_2);
 int HasLoop(const node_t *head);
-
+int SeparateIntersectionSLL(node_t *head_1, node_t *head_2);
 
 int main()
 {
@@ -54,17 +54,17 @@ int main()
 	onew.data = &t;
 	onew.next = &twow;
 	twow.data = &w;
-	twow.next = &three;
+	twow.next = &two;
 	
 	head = &one;
 	head2 = &onew;
 	
-
-
 	
-	
-	answer = VerifyIntersection(head, head2);
-	(answer == 0)? printf("no intersection\n") : printf("intersection at %d\n",answer);
+	answer = VerifyIntersectionSLL(head, head2);
+	(answer == 0)? printf("no intersection\n") : printf("intersection %d node from end \n",answer);
+
+	answer = SeparateIntersectionSLL(head, head2);
+	(answer == 0)? printf("no intersection\n") : printf("intersection at %d \n",answer);
 
 	return 0;
 }
@@ -72,7 +72,7 @@ int main()
 
 
 
-int VerifyIntersection(node_t *head_1, node_t *head_2)
+int VerifyIntersectionSLL(node_t *head_1, node_t *head_2)
 {
 	node_t *run1 = head_1;
 	node_t *run2 = head_2;
@@ -85,31 +85,29 @@ int VerifyIntersection(node_t *head_1, node_t *head_2)
 	assert (NULL != head_1);
 	assert (NULL != head_2);
 	
-	count1 = countElements(run1);
-	count2 = countElements(run2);
+	count1 = countElements(head_1);
+	count2 = countElements(head_2);
 
+	
 	delta = count1 - count2;
 
 	if (0 > delta)
 	{
 		delta = -delta;
-		MoveHead(run2, delta);
+		run2 = MoveHead(run2, delta);
 	}
 	else
 	{
-		MoveHead(run1, delta);
+		run1 = MoveHead(run1, delta);
 	}
 	count1 = countElements(run1);
-	count2 = countElements(run2);
-
-	while( (run1 != run2) && (run1->next != NULL) && (run2->next != NULL))
+	while((run1 != run2) && run1 != NULL)
 	{
+		++answer;
 		run1 = run1->next;
 		run2 = run2->next;
-		++answer;
 	}
-	
-	return count2 - answer;
+	return count1 - answer;
 }
 
 
@@ -119,7 +117,7 @@ static size_t countElements(node_t *head2check)
 
 	assert(NULL != head2check);
 
-	while (NULL != head2check->next)
+	while (NULL != head2check)
 	{
 		++counter;
 		head2check = head2check->next;
@@ -127,13 +125,14 @@ static size_t countElements(node_t *head2check)
 	return counter;
 }
 
-static void MoveHead(node_t *head, size_t delta)	
+static node_t *MoveHead(node_t *head, size_t delta)	
 {
 	while(delta)
 	{
 		head = head->next;
 		--delta;
 	}
+	return head;
 }
 
 int HasLoop(const node_t *head)
@@ -151,5 +150,34 @@ int HasLoop(const node_t *head)
 	while ((turtois != rabit) && (NULL != rabit));
 
 	return (turtois == rabit);
+
+}
+
+int SeparateIntersectionSLL(node_t *head_1, node_t *head_2)
+{
+	node_t *runner1 = head_1;
+	node_t *runner2 = head_2;
+	node_t *disconnector = head_2;
+	int intersection = 0;
+	int delta = 0;
+	assert(NULL != head_1);
+	assert(NULL != head_2);
+
+	intersection = VerifyIntersectionSLL(head_1, head_2);
+
+	delta = countElements(head_1) - intersection;
+	disconnector = MoveHead(head_2, delta);
+
+	disconnector->next = NULL;
+
+	return VerifyIntersectionSLL(head_1, head_2);
+
+
+return 0;
+
+
+
+
+
 
 }
