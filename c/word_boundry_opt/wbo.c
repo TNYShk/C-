@@ -11,10 +11,12 @@ void *MemSet(void *s, int c, size_t n)
 {
 	size_t word = c;
 	char *byte_ptr = NULL;
+	
 	size_t toalign = ((size_t)byte_ptr % WORD_SIZE);
 	size_t wordalign = n / WORD_SIZE;
 	
 	assert(NULL != s);
+
 	byte_ptr = (char *)s;
 	word *= 0x0101010101010101;
 	
@@ -24,7 +26,7 @@ void *MemSet(void *s, int c, size_t n)
 		if ((wordalign > 0) && (0 == toalign))
 		{
 			*(size_t *)byte_ptr = word;
-			++*((size_t **)&byte_ptr);
+			++(*(size_t **)&byte_ptr);
 			--wordalign;
 			n -= WORD_SIZE;
 		}
@@ -55,6 +57,7 @@ void *MemCpy(void *dest, const void *src, size_t n)
 		*(*(size_t **)&runner) = *(size_t *)src;
 		++(*(size_t **)&runner);
 		++(*(size_t **)&src);
+		
 		n -= WORD_SIZE;
 		--num_words;	
 	}
