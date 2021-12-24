@@ -1,6 +1,4 @@
-#include <stdlib.h> /* size_t, dyncamic memory allocation  */
 #include <assert.h> /* asserts */
-#include <string.h> /* memcpy*/
 #include <stdio.h> /* printf */
 
 /* ********reviewed by Nurit *************/
@@ -27,7 +25,7 @@ int main()
 	int z = 333;
 	int w = 4;
 	int t = 26;
-	int ans = -1;
+
 
 	node_t *head = NULL;
 	node_t *head2 = NULL;
@@ -58,30 +56,29 @@ int main()
 	
 	
 
-	printf("\n\t--------------------------2 lists, check for loop--------------------------------\n");
+	printf("\n\t--------------------------2 lists, check for loop---------------------------\n");
 	head = &one;
-	ans = HasLoop(head);
-	printf("list 1 is there a loop? zero for no: %d\n", ans);
-
+	
+	( (0 == HasLoop(head)) ? printf("List1 No Loop here\n") : printf("List1 Found Loop\n") );
+	
 	onew.data = &t;
 	onew.next = &twow;
 	twow.data = &w;
 	twow.next = &onew;
 
 	head2 = &onew;
-	ans = HasLoop(head2);
-
-	printf("list 2 is there a loop? zero for no: %d\n", ans);
+	( (0 == HasLoop(head2)) ? printf("List2 No Loop here\n") : printf("List2 Found Loop\n") );
+	
 	printf("\n\t--------------------------find intersection--------------------------------\n");
 	twow.next = &three;
 	temp = FindIntersection(head,head2);
-	printf("check for intersection node, its value is: %d\n", *(int*)temp->data);
+	printf("\ncheck for intersection node, its value is: %d\n", *(int *)temp->data);
 
-	printf("\n\t--------------------------flip--------------------------------------\n");
-	printf("data in three.next->data is %d\n", *(int*)three.next->data);
+	printf("\n\t----------------------------flip-------------------------------------------\n");
+	printf("data in three.next->data is %d\n", *(int *)three.next->data);
 	Flip(head);
-	printf("post flip data in two.next->data is %d\n", *(int*)two.next->data);
-	printf("post flip data in three.next->data is %d\n", *(int*)three.next->data);
+	printf("post flip data in two.next->data is %d\n", *(int *)two.next->data);
+	printf("post flip data in three.next->data is %d\n", *(int *)three.next->data);
 
 
 
@@ -126,11 +123,11 @@ int HasLoop(const node_t *head)
 		turtois = turtois->next;
 		rabit = rabit->next->next;
 	}
-	while ((turtois != rabit) && (NULL != rabit));
+	while ( (turtois != rabit) && (NULL != rabit) );
 
 	return (turtois == rabit);
-
 }
+
 
 node_t *FindIntersection(node_t *head_1, node_t *head_2)
 {
@@ -143,7 +140,10 @@ node_t *FindIntersection(node_t *head_1, node_t *head_2)
 
 	assert (NULL != head_1);
 	assert (NULL != head_2);
+	count1 = countElements(head_1);
+	count2 = countElements(head_2);
 	
+
 	count1 = countElements(run1);
 	run1 = head_1;
 
@@ -161,7 +161,7 @@ node_t *FindIntersection(node_t *head_1, node_t *head_2)
 	{
 		MoveHead(run1, delta);
 	}
-
+	
 	while( (run1->next != NULL) || (run2->next != NULL) )
 	{
 		if(run1->next == run2->next)
@@ -196,4 +196,4 @@ static void MoveHead(node_t *head, size_t delta)
 		head = head->next;
 		--delta;
 	}
-}
+	}
