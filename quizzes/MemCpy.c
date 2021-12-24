@@ -7,6 +7,7 @@
 
 void TestOne();
 void TestTwo();
+void TestThree();
 void *Mem_Cpy(void *dest, const void *src, size_t nbytes);
 
 
@@ -15,6 +16,7 @@ int main (void)
 	
 	TestOne();
 	TestTwo();
+	TestThree();
 
 	return 0;
 }
@@ -23,9 +25,9 @@ void TestOne()
 {
 	char *string = "Hello there!";
 	char destin[] = "one two three four five";
+	printf("\n\t**********************Test One ***************************\n");
 	Mem_Cpy(destin, string, 9);
 	printf("%s\n", destin);
-
 }
 
 void TestTwo()
@@ -35,23 +37,42 @@ void TestTwo()
 	
 	char *str_dest = NULL;
 	str_dest = (char *)calloc(strlen(destin) + 1 , 1);
-
-	Mem_Cpy(str_dest, destin, 8);
+	assert(NULL != str_dest);
+	printf("\n\t**********************Test Two ***************************\n");
+	
+	Mem_Cpy(str_dest, destin, 11);
 	printf("%s\n", str_dest);
+
 	Mem_Cpy(destin, string, 7);
 	printf("%s\n", destin);
 
 	free(str_dest);
 	str_dest = NULL;
+}
 
+void TestThree()
+{
+	
+	char *string = "Hello there!";
+	char destin[] = "one two three four five";
+	char *str_dest = (char *)calloc(strlen(destin) + 1 , 1);
+	assert(NULL != str_dest);
+	printf("\n\t**********************compare to memcpy:***************************\n");
+	
+	memcpy(str_dest, destin, 11);
+	printf("memcpy:\n%s\n", str_dest);
 
+	memcpy(destin, string, 9);
+	printf("memcpy:\n%s\n", destin);
+
+	free(str_dest);
+	str_dest = NULL;
 }
 
 
 
 void *Mem_Cpy(void *dest, const void *src, size_t nbytes)
 {
-	const void *src_runner = src;
 	void *dest_runner = dest;
 	size_t words = nbytes / WORD_SIZE;
 
@@ -59,17 +80,17 @@ void *Mem_Cpy(void *dest, const void *src, size_t nbytes)
 
 	while(words)
 	{
-		*(*(size_t **)&dest_runner) = *(*(size_t **)&src_runner);
+		*(*(size_t **)&dest_runner) = *(size_t *)src;
 		++(*(size_t **)&dest_runner);
-		++(*(size_t **)&src_runner);
+		++(*(size_t **)&src);
 		nbytes -= WORD_SIZE;
 		--words;
 	}
 	while(nbytes)
 	{
-		*(*(char **)&dest_runner) = *(*(char **)&src_runner);
+		*(*(char **)&dest_runner) = *(char *)src;
 		++(*(char **)&dest_runner);
-		++(*(char **)&src_runner);
+		++(*(char **)&src);
 		--nbytes;
 	}
 
