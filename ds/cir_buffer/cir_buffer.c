@@ -98,13 +98,13 @@ ssize_t CBuffWrite(cbuffer_t *buffer,const void *src, size_t count)
 			buffer->tail += WORD_SIZE; 
 			--words;            
 			counter += WORD_SIZE;
-		
+			printf("written word size!\n");
 		}
 
 		else
 		{
 			buffer->buffy[buffer->tail] = *(*(const char **)&src);
-			++(*(const char **)&src);
+			++(*( char **)&src);
 			++buffer->tail;             
 			++counter;
 		}

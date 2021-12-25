@@ -44,7 +44,9 @@ void Testone()
 	ans = CBuffWrite(cyc_buff,string,8);
 	printf("written %ld bytes\n", ans);
 	printf("struct free space = %ld\n\n", CBuffFreeSpace(cyc_buff));
-	
+	printf("\n**************** writing 2 to buffer**************************\n");
+	ans = CBuffWrite(cyc_buff,string,2);
+	printf("written %ld bytes\n", ans);
 
 	printf("\n\n");
 	CBuffDestroy(cyc_buff);
@@ -139,7 +141,7 @@ void TestThree()
 	
 	printf("struct free space = %ld\n\n", CBuffFreeSpace(cyc_buff));
 	printf("\n-------------------writing 8 more -------------------------------\n");
-	ans = CBuffWrite(cyc_buff,string,7);
+	ans = CBuffWrite(cyc_buff,string,8);
 	printf("written %ld bytes\n", ans);
 	printf("is Empty? %d\n", CBuffIsEmpty(cyc_buff));
 	
