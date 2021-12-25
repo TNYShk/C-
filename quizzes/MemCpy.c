@@ -43,7 +43,7 @@ void TestTwo()
 	Mem_Cpy(str_dest, destin, 11);
 	printf("%s\n", str_dest);
 
-	Mem_Cpy(destin, string, 7);
+	Mem_Cpy(destin, string, 5);
 	printf("%s\n", destin);
 
 	free(str_dest);
@@ -74,10 +74,19 @@ void TestThree()
 void *Mem_Cpy(void *dest, const void *src, size_t nbytes)
 {
 	void *dest_runner = dest;
+	size_t unaligned_dest = ((size_t)( char *)dest % WORD_SIZE);
 	size_t words = nbytes / WORD_SIZE;
-
+	
 	assert (NULL != dest);
 
+	while (unaligned_dest)
+	{
+		*(*(char **)&dest_runner) = *(char *)src;
+		++(*(char **)&dest_runner);
+		++(*(char **)&src);
+		-- unaligned_dest;
+		--nbytes;
+	}
 	while(words)
 	{
 		*(*(size_t **)&dest_runner) = *(size_t *)src;
@@ -93,9 +102,6 @@ void *Mem_Cpy(void *dest, const void *src, size_t nbytes)
 		++(*(char **)&src);
 		--nbytes;
 	}
-
-	
-
 	
 	return dest;
 
