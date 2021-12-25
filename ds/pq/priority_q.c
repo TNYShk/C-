@@ -121,10 +121,7 @@ void *PQErase(pq_t *pq, pq_match_func_t match_func, void *param)
 			data = SortListGetData(find);
 			SortListRemove(find);
 		}
-		
-
 	return data;
-
 }
 
 
