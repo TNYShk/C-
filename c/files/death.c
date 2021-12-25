@@ -2,26 +2,8 @@
 #include <stdlib.h> /*size_t */
 #include <string.h> /* strcmp */
 #include <assert.h> /*assert */
-#define MAX (4000)
+#define MAXLENG (4096)
 
-/* PSEUDOCODE
-get filename as input from user
-./a.out filename
-create a FILE with according name
-create structures,
-create array of sctrucs 
-initialize structs
-
-while (! exit){
-	get string input from user
-	compare to structure headers
-	if users string == one the headers{
-	fo to the action function of the structure
-	}
-	else
-	write string to file
-
-*/
 
 
 typedef int (*foo)(const char *,const char *s);
@@ -62,7 +44,7 @@ int main(int argc, char *argv[])
 {
 	
 	int isRunning = 1;
-	static char sentence[MAX];
+	static char sentence[MAXLENG];
 	static death_t array[FIVE];
 	
 	char *filename = NULL;
@@ -78,7 +60,7 @@ int main(int argc, char *argv[])
 	while(isRunning)
 	{ 
 		int i;
-		fgets (sentence,MAX,stdin);
+		fgets (sentence,MAXLENG,stdin);
 		
 		for(i = 0;i<FIVE;i++)
 		{ 
@@ -111,6 +93,7 @@ int DoExit(char *str, char *file){
 	
 	(void)str;
 	(void)file;
+
 	return Exit;
 }
 
@@ -120,7 +103,8 @@ int DoRemove(char *str, char *file)
 	int ans;
 	(void)str;
 	ans = remove(file);
-	return (0 == ans);
+
+	return (Exit == ans);
 }
 
 
@@ -128,7 +112,8 @@ int DoNothing(const char *str,const char *file)
 {
 	(void)str;
 	(void)file;
-	return 0;
+	
+	return Exit;
 }
 
 
@@ -190,7 +175,7 @@ int AppendtoStart(char*string,char*file)
 
 int fCopy(FILE * fsrc,FILE *fdest)
 {
-	char buffer[MAX];
+	char buffer[MAXLENG];
 	size_t len;
 	while((len = fread(buffer,sizeof(char), sizeof(buffer),fsrc)) >0)
 	{
