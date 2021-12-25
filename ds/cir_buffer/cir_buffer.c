@@ -14,6 +14,7 @@
 
 #include "cir_buffer.h"
 
+#define WORD_SIZE (sizeof(size_t))
 
 enum options
 {
@@ -73,6 +74,8 @@ ssize_t CBuffWrite(cbuffer_t *buffer,const void *src, size_t count)
 {
 	ssize_t counter = START;
 
+	size_t words = count/ WORD_SIZE;
+	
 	assert(NULL != buffer);
 	assert(0 < count);
 
@@ -80,6 +83,7 @@ ssize_t CBuffWrite(cbuffer_t *buffer,const void *src, size_t count)
 	{
 		return NOT;
 	}
+
 	
 	while ((size_t)counter < count && CBuffFreeSpace(buffer) > START)
 	{
@@ -87,11 +91,24 @@ ssize_t CBuffWrite(cbuffer_t *buffer,const void *src, size_t count)
 		{
 			buffer->tail = START;
 		}
+		if(words && (CBuffFreeSpace(buffer) >= WORD_SIZE))
+		{
+			buffer->buffy[buffer->tail] = *(*(size_t **)&src);
+			++(*(size_t **)&src);
+			buffer->tail += WORD_SIZE; 
+			--words;            
+			counter += WORD_SIZE;
+		
+		}
 
-		buffer->buffy[buffer->tail] = *(*(const char **)&src);
-		++(*(const char **)&src);
-		++buffer->tail;             
-		++counter;
+		else
+		{
+			buffer->buffy[buffer->tail] = *(*(const char **)&src);
+			++(*(const char **)&src);
+			++buffer->tail;             
+			++counter;
+		}
+		
 	}
 	
 	return (counter);
@@ -116,6 +133,7 @@ ssize_t CBuffRead(cbuffer_t *buffer, void *dest, size_t count)
 		{
 			buffer->head = START; 
 		}
+
 		*(*(char **)&dest) = buffer->buffy[buffer->head];
 		++(*(char **)&dest);
 		++buffer->head;
