@@ -11,7 +11,7 @@ void *MemSet(void *s, int c, size_t n)
 {
 	size_t word = c;
 	char *byte_ptr = NULL;
-	
+
 	size_t toalign = ((size_t)byte_ptr % WORD_SIZE);
 	size_t wordalign = n / WORD_SIZE;
 	
@@ -65,9 +65,9 @@ void *MemCpy(void *dest, const void *src, size_t n)
 	
 	while(n)
 	{
-		*(*(char**)&runner) = *(char*)src;
-		++(*(char**)&runner);
-		++(*(char**)&src);
+		*(*(char **)&runner) = *(char *)src;
+		++(*(char **)&runner);
+		++(*(char **)&src);
 		--n;
 	}
 
