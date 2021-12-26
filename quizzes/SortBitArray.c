@@ -3,7 +3,7 @@
 
 void SortBitArray(int *array, size_t length);
 void SortZeroOneArray(int *array, size_t length);
-void PrintArr(int *arr, size_t length);
+static void PrintArr(int *arr, size_t length);
 
 
 int main(void)
@@ -13,6 +13,7 @@ int main(void)
 	PrintArr(array, length);
 	SortZeroOneArray(array, length);
 	
+
 	SortBitArray(array, length);
 	PrintArr(array, length);
 	return 0;
@@ -43,7 +44,7 @@ void SortBitArray(int *array, size_t length)
 	}
 }
 
-void PrintArr(int *arr, size_t length)
+static void PrintArr(int *arr, size_t length)
 {
 	int i = 0;
 
@@ -61,7 +62,7 @@ void SortZeroOneArray(int *array, size_t length)
 	int *sort_ar = (int *)calloc(length, sizeof(int));
 
 	size_t i = 0;
-	int *right = &sort_ar[length -1];
+	int *right = &sort_ar[length - 1];
 
 	for(i = 0; i < length; ++i)
 	{
@@ -70,13 +71,12 @@ void SortZeroOneArray(int *array, size_t length)
 			*right = 1;
 			--right;
 		}
+	
 	}
-	for (i = 0; i< length; ++i)
-	{
-		printf("%d ", sort_ar[i]);
-	}
-	printf("\n");
+	PrintArr(sort_ar, length);
+
 	printf("\n");
 	free(sort_ar);
 	sort_ar = NULL;
+
 }
