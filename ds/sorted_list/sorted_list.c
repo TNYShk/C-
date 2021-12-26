@@ -216,17 +216,18 @@ void SortListMerge(sort_list_t *dest, sort_list_t *src)
         }
         where_dest = SortListNext(where_dest);
     } 
-    /* if something overlooked, pop one by one */
-      if(!SortListIsEmpty(src))
+    if (!SortListIsEmpty(src))
+    {
+         DListSplice(where_dest.diter, from_src.diter, SortListEnd(src).diter);
+    }
+ 
+/*
+    if(!SortListIsEmpty(src))
     {
         SortListInsert(dest, SortListPopBack(src));
     }
-   /** O(n*m) ****
-    while(!SortListIsEmpty(src))
-    {
-        SortListInsert(dest, SortListPopBack(src));
-        SortListInsert(dest, SortListPopFront(src));
-   */
+*/
+   
 }
 
 
