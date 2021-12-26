@@ -1,7 +1,7 @@
 #ifndef __SCHEDULER_H__
 #define __SCHEDULER_H__
 
-#include "task.h" 
+#include "../task/task.h" 
 
 typedef struct scheduler scheduler_t;
 

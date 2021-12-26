@@ -12,7 +12,7 @@
 
 #include "task.h"
 
-
+#define FAIL (-1)
 
 
 struct task
@@ -30,8 +30,9 @@ task_t *TaskCreate(task_func_t task_func, void *task_args, cleanup_func_t cleanu
 {
 	task_t *new_task = NULL;
 
-	assert (task_func != NULL);
-	assert (cleanup_func != NULL);
+	assert (NULL != task_func);
+	assert (NULL != cleanup_func );
+	assert ((time_t)FAIL != time_to_run);
 
 	new_task = (task_t *)malloc(sizeof(task_t));
 	if(NULL ==new_task)
@@ -82,7 +83,7 @@ time_t TaskGetTimeToRun(const task_t *task)
 ilrd_uid_t TaskGetUID(const task_t *task)
 {
 	assert(NULL != task);
-	
+
 	return task->uid;
 }
 
