@@ -92,7 +92,18 @@ int StrCaseCmp(const char *str1, const char *str2)
 char *StrChr(const char *str, int ch2find)
 {
 	assert(NULL != str);
-	
+
+	do
+	{
+		if(ch2find == *str)
+			return (char *)str;
+
+	} while ('\0' != *str++);
+	return NULL;
+}
+
+char *Str_Chr(const char *str, int ch2find)
+{
 	while('\0' != *str && *str != ch2find)
 	{
 		++str; 
@@ -105,7 +116,6 @@ char *StrChr(const char *str, int ch2find)
 
 size_t StrSpn(const char *s, const char *accept)
 {
-	
 	size_t counter = 0;
 
 	assert (NULL != s);
