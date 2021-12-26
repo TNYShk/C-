@@ -1,7 +1,7 @@
 /**********************************************
  * Task - Source Code                         *
  * Developer: Tanya                   		  *
- * 2021-12-                       		  	  *
+ * 2021-12-  26                     		  *
  *                                            *
  *      Reviewed by    	 	  	 			  *
 **********************************************/
@@ -72,18 +72,17 @@ void TaskSetTimeToRun(task_t *task, time_t time_to_run)
 }
 
 
-/* add conversion to hh:mm using struct tm?*/
 time_t TaskGetTimeToRun(const task_t *task)
 {
 	assert(NULL != task);
-	/*struct tm *tmp = gmtime(&task->time_to_run);
-	return tmp->tm_hour;*/
+
 	return task->time_to_run;
 }
 
 ilrd_uid_t TaskGetUID(const task_t *task)
 {
 	assert(NULL != task);
+	
 	return task->uid;
 }
 
@@ -93,7 +92,7 @@ int TasksCompare(const void *task_1, const void *task_2)
 	assert(NULL != task_1);
 	assert(NULL != task_2);
 
-	return (TaskGetTimeToRun(task_1) - TaskGetTimeToRun(task_2));
+	return (TaskGetTimeToRun((task_t*)task_1) - TaskGetTimeToRun((task_t*)task_2));
 
 }
 
@@ -110,5 +109,6 @@ int TaskIsMatch(const task_t *task, ilrd_uid_t uid)
 int TaskRun(task_t *task)
 {
 	assert(NULL != task);
+
 	return task->tsk_func(task->task_args);
 } 
