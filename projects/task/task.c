@@ -31,7 +31,6 @@ task_t *TaskCreate(task_func_t task_func, void *task_args, cleanup_func_t cleanu
 	task_t *new_task = NULL;
 
 	assert (NULL != task_func);
-	assert (NULL != cleanup_func );
 	assert ((time_t)FAIL != time_to_run);
 
 	new_task = (task_t *)malloc(sizeof(task_t));
@@ -58,7 +57,10 @@ task_t *TaskCreate(task_func_t task_func, void *task_args, cleanup_func_t cleanu
 void TaskDestroy(task_t *task)
 {
 	assert(NULL != task);
-	task->clean_func(task->cleanup_args);
+	if(NULL != task->clean_func)
+	{
+		task->clean_func(task->cleanup_args);
+	}
 	memset(task, 0, sizeof(task_t));
 	
 	free(task);
@@ -76,7 +78,7 @@ void TaskSetTimeToRun(task_t *task, time_t time_to_run)
 time_t TaskGetTimeToRun(const task_t *task)
 {
 	assert(NULL != task);
-
+	
 	return task->time_to_run;
 }
 

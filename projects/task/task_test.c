@@ -85,7 +85,7 @@ void TestTwo()
 	float y = -5.1;
 	task_t *test = NULL;
 	task_t *test2 = NULL;
-	time_t now = time(NULL);
+	const time_t now = time(NULL);
 	time_t task_time;
 
 	struct tm *tmp;
@@ -103,11 +103,12 @@ void TestTwo()
 	task_time = TaskGetTimeToRun(test);
 	tmp = localtime(&task_time);
 	printf("task1: %s\n", asctime(tmp));
-	
-	printf("\t****Compare time tasks***********\n");
+
+	TaskSetTimeToRun(test2, now + 611);
 	task_time = TaskGetTimeToRun(test2);
 	tmp = localtime(&task_time);
 	printf("task2 : %s\n", asctime(tmp));
+	printf("\t****Compare time tasks***********\n");
 	printf("compare: %d sec difference\n",TasksCompare(test, test2));
 
 	printf("\n\t****Compare UID***********\n");
