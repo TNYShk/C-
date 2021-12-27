@@ -9,7 +9,7 @@
 #include <stdio.h>  /* printf, size_t      */
 #include <assert.h> /* assert()          */
 
-#include "sorted_list.h"
+
 #include "priority_queue.h"
 
 

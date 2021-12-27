@@ -19,7 +19,7 @@
 struct pqueue
 {
 	sort_list_t *sortl;
-	cmp_func_t comp_func;
+	
 };
 
 
