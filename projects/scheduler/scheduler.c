@@ -29,8 +29,8 @@ struct scheduler
 	pq_t *pq;
 };
 
-static int TaskMatchs(const void *task, const void *uid);
 
+static int TaskMatchs(const void *task, const void *uid);
 
 
 
@@ -131,39 +131,39 @@ void SchedClear(scheduler_t *sched)
 
 int SchedRun(scheduler_t *sched)
 {
-    int status = OK;
-    time_t now = time(NULL);
+    int status = FAIL;
+    time_t now = time(0);
     task_t *temp = NULL;
     assert(NULL != sched);
 
-    while(1 != SchedIsEmpty(sched) && (status == OK))
+    while(!SchedIsEmpty(sched))
     {
         task_t *running = PQPeek(sched->pq);
-        if (now > TaskGetTimeToRun(running))
+        if (now < TaskGetTimeToRun(running))
         {
             sleep(TaskGetTimeToRun(running) - now);
         }
-
-       status = TaskRun(running);
-       temp = PQDequeue(sched->pq);
-       printf("in while: status is %d\n",status);
-
-    }
-       if(OK > status)
-       {
-         printf("0 > status remove task\n");
-         status = SchedRemoveTask(sched,TaskGetUID(temp));
-
-       }
+        
+        temp = PQDequeue(sched->pq);
+        status = TaskRun(running);
+      
+        if(OK >= status)
+        {
+            TaskDestroy(temp);
+            temp = NULL;
+            printf("what status is %d\n", status);
+        }
+    
        else
        {
-        printf("0 < status, return task\n");
+        printf("else status is %d\n", status);
+        TaskSetTimeToRun(temp, TaskGetTimeToRun(temp) + status);
         status = PQEnqueue(sched->pq, temp);
+      
        }
-
-    return status;
     }
-
+       return status;
+}
     
 
 /* wrapper func*/

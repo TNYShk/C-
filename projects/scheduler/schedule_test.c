@@ -15,7 +15,7 @@ void TestThree();
 int Action(void *task_args)
 {
 	void *ptr = task_args;
-	printf("int arg is %d\n", *(int *)ptr);
+	printf("Zero Action %d\n", *(int *)ptr);
 	
 	return 0;
 }
@@ -23,22 +23,32 @@ int Action(void *task_args)
 int FAction(void *task_args)
 {
 	void *ptr = task_args;
-	printf("failed action, %d\n", *(int *)ptr);
+	printf("Failed action, %d\n", *(int *)ptr);
 	return -1;
 }
 
 int RAction(void *task_args)
 {
 	void *ptr = task_args;
-	printf("repeat action, %d\n", *(int *)ptr);
+	printf("Repeat action, %d\n", *(int *)ptr);
 	return 1;
 }
 
 void CleanT(void *cleanup_args)
 {
-	(void)cleanup_args;
+	void *ptr = cleanup_args;
+	printf("CleanupPrint, %d\n", *(int *)ptr);
 
 }
+
+void RemoveTask(void *cleanup_args)
+{
+	/* the args are the UID to remove*/
+
+	TaskDestroy(TaskGetUID(cleanup_args));
+}
+
+
 
 int main(void)
 {
@@ -123,7 +133,7 @@ void TestTwo()
 	printf("scheduler clear test, size is %ld\n", SchedSize(new_sched));
 	assert(0 == UIDIsSame(test_uid, test2_uid));
 
-	test3_uid = SchedAddTask(new_sched, &Action, &y, NULL, NULL, time(NULL) + 6001);
+	test3_uid = SchedAddTask(new_sched, &Action, &y, &CleanT, &x, time(NULL) + 6001);
 	printf("added task to cleared sched, size is %ld\n", SchedSize(new_sched));
 	assert(0 == UIDIsSame(test2_uid, test3_uid));
 
@@ -134,21 +144,19 @@ void TestThree()
 {
 	int x = 3000;
 	int y = 160;
-
 	ilrd_uid_t test_uid;
-	ilrd_uid_t test2_uid;
-	ilrd_uid_t test3_uid;
+	
 
 	scheduler_t *new_sched = SchedCreate();
 	assert (NULL != new_sched);
 	assert(1 == SchedIsEmpty(new_sched));
 
 	printf("\n\t------------------------------Test3---------------------------\n");
-	test_uid = SchedAddTask(new_sched, &Action, &x, NULL, NULL, time(NULL));
+	SchedAddTask(new_sched, &Action, &x, NULL, NULL, time(NULL));
 	printf("added task to sched, size is %ld\n", SchedSize(new_sched));
-	test2_uid = SchedAddTask(new_sched, &RAction, &y, NULL, NULL, time(NULL) + 10);
+	SchedAddTask(new_sched, &FAction, &y, NULL, NULL, time(NULL) + 10);
 	printf("added task to sched, size is %ld\n", SchedSize(new_sched));
-	test3_uid = SchedAddTask(new_sched, &FAction, &y, NULL, NULL, time(NULL)  + 30);
+	test_uid = SchedAddTask(new_sched, &Action, &y, &RemoveTask, &test_uid, time(NULL) +1);
 	printf("added task to sched, size is %ld\n", SchedSize(new_sched));
 
 	SchedRun(new_sched);

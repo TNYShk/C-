@@ -103,7 +103,6 @@ int TaskIsMatch(const task_t *task, ilrd_uid_t uid)
 {
 	assert(NULL != task);
 	
-
 	return UIDIsSame(TaskGetUID(task), uid);
 } 
 
