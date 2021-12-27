@@ -14,7 +14,7 @@ typedef struct task task_t;
 
 /*
  * DESCRIPTION: 
- * creates a new task based on provided params, task & cleanup funcs are given by user, and their responsibility to free (if) allocated memory in them!
+ * creates a new task based on provided params, task & cleanup funcs are given by user, and their responsibility to free (if) allocated memory!
  * 
  * 
  *
@@ -25,30 +25,29 @@ task_t *TaskCreate(task_func_t task_func, void *task_args, cleanup_func_t cleanu
 
 /*
  * DESCRIPTION: 
- * Destroys the task
+ * Destroys the task module
  * 
  * !don't forget to free allocated memory!
  *
  * PARAMS: the task to destroy
  * 
- * RETURN: None*/
+ * RETURN: None    */
 void TaskDestroy(task_t *task);
 
 /*
  * DESCRIPTION: 
- * set desired start time for the task
+ * enables setting the time fot the task to run, will be the absolute time of running
  * 
- * 
- *
  * PARAMS: task to edit, and the desired new time;
  * 
- * RETURN: Pointer to the newly created dll, otherwise NULL*/
+ * RETURN: None    */
 void TaskSetTimeToRun(task_t *task, time_t time_to_run); 
-/*will be the absolute time of running (as per the previous time/new time of performance[APOCH])*/
+
 
 /*
  * DESCRIPTION: 
  * time that the task is expected to run, in seconds
+ * will be the absolute time of running
  * 
  * 
  *
@@ -59,13 +58,13 @@ time_t TaskGetTimeToRun(const task_t *task);
 
 /*
  * DESCRIPTION: 
- * each tasks, has a UID, this func returns its details
+ * each tasks, has a UID, this func returns it
  * 
  * 
  *
- * PARAMS: task
+ * PARAMS: task to get it's UID
  * 
- * RETURN: UID struct of the task*/
+ * RETURN: UID of the task     */
 ilrd_uid_t TaskGetUID(const task_t *task);
 
 
@@ -73,8 +72,6 @@ ilrd_uid_t TaskGetUID(const task_t *task);
  * DESCRIPTION: 
  * compares given tasks based on (priority) the set time to run.
  * 
- * 
- *
  * PARAMS: tasks to compare
  * 
  * RETURN: zero- both tasks have same priority, positive number - task2 has higher prioruty. negative number - task1 is prior*/
@@ -87,15 +84,13 @@ int TasksCompare(const void *task_1, const void *task_2);
  * 
  * PARAMS: task and UID to compare
  * 
- * RETURN: 1 if the UID's match, otherwise 0*/
+ * RETURN: 1 if the UID's match, otherwise 0        */
 int TaskIsMatch(const task_t *task, ilrd_uid_t uid); 
 
 /*
  * DESCRIPTION: 
  * Run Task
  * 
- * 
- *
  * PARAMS: task to run
  * 
  * RETURN: -1 if failed. 0 SUCCESS */

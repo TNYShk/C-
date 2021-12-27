@@ -17,6 +17,7 @@
 
 
 #define FAIL (-1)
+#define OK (0)
 
 struct scheduler
 {
@@ -71,7 +72,7 @@ ilrd_uid_t SchedAddTask(scheduler_t *sched, task_func_t task_func, void *task_ar
         return UIDBadUID;
     }
 
-    if(0 < PQEnqueue(sched->pq, new_task))
+    if(OK < PQEnqueue(sched->pq, new_task))
         {
         
             TaskDestroy(new_task);
@@ -82,10 +83,7 @@ ilrd_uid_t SchedAddTask(scheduler_t *sched, task_func_t task_func, void *task_ar
 
 }
 
-static int TaskMatchs(const void *task, const void *uid)
-{
-    return TaskIsMatch((const task_t *)task, *((ilrd_uid_t *)uid));
-}
+
 
 int SchedRemoveTask(scheduler_t *sched, ilrd_uid_t uid)
 {
@@ -103,10 +101,7 @@ int SchedRemoveTask(scheduler_t *sched, ilrd_uid_t uid)
    }
  
    return (NULL == to_remove);
-   
 }
-
-
 
 size_t SchedSize(const scheduler_t *sched)
 {
@@ -131,4 +126,18 @@ void SchedClear(scheduler_t *sched)
     {
         TaskDestroy(PQDequeue(sched->pq));
     }
+}
+
+int SchedRun(scheduler_t *sched)
+{
+    int status = FAIL;
+    assert(NULL != sched);
+    return status;
+
+}
+
+/* wrapper func*/
+static int TaskMatchs(const void *task, const void *uid)
+{
+    return TaskIsMatch((const task_t *)task, *((ilrd_uid_t *)uid));
 }
