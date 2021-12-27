@@ -5,19 +5,24 @@
 *                                             *
 *      Reviewed by    	 	  	 			  *
 **********************************************/
-#include <time.h>   /*time_t */
-#include <stdlib.h> /* memory allocation  */
-#include <assert.h> /* assert()         */
+#include <time.h>   /*time_t             */
+#include <stdlib.h> /* memory allocation*/
+#include <assert.h> /* assert          */
 #include <string.h> /* memset         */
-
+#include <unistd.h> /* sleep         */
+#include <stdio.h>
 
 #include "task.h"
 #include "scheduler.h" 
 #include "priority_queue.h"
 
+enum status
+{
+    FAIL = -1,
+    OK,
+    NEXT
+};
 
-#define FAIL (-1)
-#define OK (0)
 
 struct scheduler
 {
@@ -47,6 +52,7 @@ scheduler_t *SchedCreate(void)
 
 void SchedDestroy(scheduler_t *sched)
 {
+    SchedClear(sched);
     PQDestroy(sched->pq);
 
     memset(sched, 0, sizeof(scheduler_t));
@@ -68,21 +74,17 @@ ilrd_uid_t SchedAddTask(scheduler_t *sched, task_func_t task_func, void *task_ar
     
     if(NULL == new_task)
     {
- 
         return UIDBadUID;
     }
 
     if(OK < PQEnqueue(sched->pq, new_task))
-        {
-        
-            TaskDestroy(new_task);
-            new_task = NULL;
-        }
+    {
+        TaskDestroy(new_task);
+        new_task = NULL;
+    }
 
     return TaskGetUID(new_task);
-
 }
-
 
 
 int SchedRemoveTask(scheduler_t *sched, ilrd_uid_t uid)
@@ -91,23 +93,22 @@ int SchedRemoveTask(scheduler_t *sched, ilrd_uid_t uid)
 
     assert(NULL != sched);
     assert(!UIDIsSame(UIDBadUID, uid));
-   
-   to_remove = PQErase(sched->pq, &TaskMatchs, &uid);
+
+    to_remove = PQErase(sched->pq, &TaskMatchs, &uid);
     
-   if(NULL != to_remove)
-   {
-       
+    if(NULL != to_remove)
+    {
         TaskDestroy(to_remove);
-   }
+    }
  
    return (NULL == to_remove);
 }
 
 size_t SchedSize(const scheduler_t *sched)
 {
-     assert(NULL != sched);
+    assert(NULL != sched);
 
-     return PQSize(sched->pq);
+    return PQSize(sched->pq);
 }
 
 
@@ -130,11 +131,40 @@ void SchedClear(scheduler_t *sched)
 
 int SchedRun(scheduler_t *sched)
 {
-    int status = FAIL;
+    int status = OK;
+    time_t now = time(NULL);
+    task_t *temp = NULL;
     assert(NULL != sched);
-    return status;
 
-}
+    while(1 != SchedIsEmpty(sched) && (status == OK))
+    {
+        task_t *running = PQPeek(sched->pq);
+        if (now > TaskGetTimeToRun(running))
+        {
+            sleep(TaskGetTimeToRun(running) - now);
+        }
+
+       status = TaskRun(running);
+       temp = PQDequeue(sched->pq);
+       printf("in while: status is %d\n",status);
+
+    }
+       if(OK > status)
+       {
+         printf("0 > status remove task\n");
+         status = SchedRemoveTask(sched,TaskGetUID(temp));
+
+       }
+       else
+       {
+        printf("0 < status, return task\n");
+        status = PQEnqueue(sched->pq, temp);
+       }
+
+    return status;
+    }
+
+    
 
 /* wrapper func*/
 static int TaskMatchs(const void *task, const void *uid)

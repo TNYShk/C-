@@ -1,11 +1,11 @@
 /**********************************************
  * Task - Source Code                         *
  * Developer: Tanya                   		  *
- * 2021-12-  26                     		  *
+ * 2021-12-  27                     		  *
  *                                            *
- *      Reviewed by    	 	  	 			  *
+ *      Reviewed by   Erez  	 			  *
 **********************************************/
-#include <time.h> /*time_t */
+#include <time.h>   /*time_t               */
 #include <stdlib.h> /* memory allocation  */
 #include <assert.h> /* assert()         */
 #include <string.h> /* memset         */
@@ -90,7 +90,6 @@ ilrd_uid_t TaskGetUID(const task_t *task)
 	return task->uid;
 }
 
-
 int TasksCompare(const void *task_1, const void *task_2)
 {
 	assert(NULL != task_1);
@@ -100,15 +99,13 @@ int TasksCompare(const void *task_1, const void *task_2)
 
 }
 
-
 int TaskIsMatch(const task_t *task, ilrd_uid_t uid)
 {
 	assert(NULL != task);
-	assert(!UIDIsSame(uid,UIDBadUID));
+	
 
 	return UIDIsSame(TaskGetUID(task), uid);
 } 
-
 
 int TaskRun(task_t *task)
 {
