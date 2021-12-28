@@ -2,11 +2,9 @@
 #include <stdio.h> /*printf */
 #include <assert.h> /* assert() */
 
-
-#include "task.h"
-#include "scheduler.h" 
-#include "priority_queue.h"
-
+#include "task.h" /*task related header  */
+#include "scheduler.h" /*scheduler header  */
+#include "priority_queue.h" /* for the scheduler */
 
 
 typedef struct remove
