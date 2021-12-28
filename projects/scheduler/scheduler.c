@@ -12,9 +12,9 @@
 #include <unistd.h> /* sleep         */
 
 
-#include "task.h"
-#include "scheduler.h" 
-#include "priority_queue.h"
+#include "task.h" /*task related header  */
+#include "scheduler.h" /*scheduler header  */
+#include "priority_queue.h" /* for the scheduler */
 
 enum status
 {
@@ -30,9 +30,9 @@ struct scheduler
     int run_flag;
 };
 
-
+/*wrapper func */
 static int TaskMatchs(const void *task, const void *uid);
-
+/************* */
 
 
 scheduler_t *SchedCreate(void)
@@ -40,7 +40,6 @@ scheduler_t *SchedCreate(void)
     scheduler_t *new_sched = NULL;
 
     new_sched = (scheduler_t *)malloc(sizeof(scheduler_t));
-
     new_sched->pq = PQCreate(&TasksCompare);
 
     if (NULL == new_sched || NULL == new_sched->pq)
@@ -54,9 +53,8 @@ scheduler_t *SchedCreate(void)
     }
     else
     {
-         new_sched->run_flag = OK;
+        new_sched->run_flag = OK;
     }
-   
     return new_sched;
 }
 
@@ -86,13 +84,11 @@ ilrd_uid_t SchedAddTask(scheduler_t *sched, task_func_t task_func, void *task_ar
     {
         return UIDBadUID;
     }
-
-    if(OK < PQEnqueue(sched->pq, new_task))
+    if(OK != PQEnqueue(sched->pq, new_task))
     {
         TaskDestroy(new_task);
         new_task = NULL;
     }
-
     return TaskGetUID(new_task);
 }
 
@@ -111,7 +107,6 @@ int SchedRemoveTask(scheduler_t *sched, ilrd_uid_t uid)
         TaskDestroy(to_remove);
         to_remove = NULL;
     }
-
    return (NULL == to_remove);
 }
 
@@ -165,22 +160,20 @@ int SchedRun(scheduler_t *sched)
         {
             TaskDestroy(temp);
             temp = NULL;
-           
-           sched->run_flag == OK;
+            sched->run_flag == OK;
         }
         else if (OK == status)
         {
             TaskDestroy(temp);
             temp = NULL; 
         }
-       else
-       {
+        else
+        {
             TaskSetTimeToRun(temp, TaskGetTimeToRun(temp) + status);
             status = PQEnqueue(sched->pq, temp);
-
-       }
+        }
     }   
-       return status;
+    return status;
 }
     
 void SchedStop(scheduler_t *sched)
