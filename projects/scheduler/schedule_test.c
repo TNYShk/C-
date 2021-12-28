@@ -9,12 +9,12 @@
 
 
 
-typedef struct help
+typedef struct remove
 {
 	scheduler_t *sched;
 	ilrd_uid_t uid;
 
-}help_t;
+}remove_t;
 
 
 void TestOne();
@@ -27,6 +27,7 @@ void TestSix();
 int Action(void *task_args);
 int FAction(void *task_args);
 int RAction(void *task_args);
+int RemoveTaskAction(void *task_args);
 static int StopAction(void *task_args);
 static int CreateAction(void *task_args);
 static void StopVoid(void *cleanup_args);
@@ -79,6 +80,15 @@ static int StopAction(void *task_args)
 	return (1);
 }
 
+int RemoveTaskAction(void *task_args)
+{
+	SchedRemoveTask( ((remove_t *)task_args)->sched, ((remove_t *)task_args)->uid );
+	printf("got here\n");
+
+	return 0;
+}
+
+
 void CleanT(void *cleanup_args)
 {
 	void *ptr = cleanup_args;
@@ -102,15 +112,19 @@ static void StopVoid(void *cleanup_args)
 
 int main(void)
 {
-	TestFour();
 
+	TestSix();
+
+	
 	/*
-		TestFive();
-
-	TestTwo();
-	TestOne();
+	TestFour();
+	TestFive();
 	TestThree();
+	TestOne();
+	TestTwo();
 	*/
+	
+	
 
 	return 0;
 }
@@ -267,7 +281,7 @@ void TestFive()
 	printf("\n\t------------------------------Test5---------------------------\n");
 	printf("\tcheck: Creates Scheduler, Action: tasks that adds another \n");
 	SchedAddTask(new_sched, &Action, &x, &CleanT, &y, time(NULL) );
-	SchedAddTask(new_sched, &CreateAction, (void *)new_sched , &CleanT, &y, time(0));
+	SchedAddTask(new_sched, &CreateAction, (void *)new_sched , &CleanT, &y, time(0)+1);
 	printf("\nadded task that will add another and stop , before run size is %ld\n", SchedSize(new_sched));
 	
 	SchedRun(new_sched);
@@ -287,18 +301,30 @@ void TestSix()
 	int y = 666;
 	
 	scheduler_t *new_sched = SchedCreate();
+	remove_t removetask  = {0};
+	ilrd_uid_t test_uid;
 	assert (NULL != new_sched);
+
 	assert(1 == SchedIsEmpty(new_sched));
 
 	printf("\n\t------------------------------Test6---------------------------\n");
 	printf("\tcheck: Creates Scheduler, Action: tasks that removes another \n");
-	SchedAddTask(new_sched, &Action, &x, &CleanT, &y, time(NULL) );
+	SchedAddTask(new_sched, &Action, &y, NULL, NULL, time(NULL) );
 
-	SchedAddTask(new_sched, &CreateAction, (void *)new_sched , &CleanT, &y, time(0));
-	printf("\nadded task that will add another and stop , before run size is %ld\n", SchedSize(new_sched));
+	test_uid = SchedAddTask(new_sched, &Action, &x, &CleanT, &y, time(NULL) );
 	
+	
+	removetask.sched = new_sched;
+	removetask.uid = test_uid;
+
+	printf("\nadded tasks size is %ld\n", SchedSize(new_sched));
+
+	SchedAddTask(new_sched, &RemoveTaskAction, &removetask, NULL, NULL, time(NULL) );
+	
+	printf("\nadded task that removes, size is %ld\n", SchedSize(new_sched));
+
 	SchedRun(new_sched);
-	printf("Finished Running, size is %ld\n", SchedSize(new_sched));
+	printf("Post Run, size is %ld\n", SchedSize(new_sched));
 
 	SchedClear(new_sched);
 	printf("Post Clear, size is %ld\n", SchedSize(new_sched));

@@ -27,9 +27,10 @@ enum status
 struct scheduler
 {
 	pq_t *pq;
+    int run_flag;
 };
 
-static int run_flag = NEXT;
+/*static int run_flag = NEXT;*/
 
 static int TaskMatchs(const void *task, const void *uid);
 
@@ -47,7 +48,7 @@ scheduler_t *SchedCreate(void)
         free(new_sched);
         new_sched = NULL;
     }
-
+    new_sched->run_flag = OK;
     return new_sched;
 }
 
@@ -137,8 +138,8 @@ int SchedRun(scheduler_t *sched)
     task_t *temp = NULL;
     assert(NULL != sched);
 
-    run_flag == NEXT;
-    while(!SchedIsEmpty(sched) && (run_flag != OK))
+    sched->run_flag == NEXT;
+    while(!SchedIsEmpty(sched) && (!sched->run_flag))
     {
         task_t *running = PQPeek(sched->pq);
         if (now < TaskGetTimeToRun(running))
@@ -154,17 +155,17 @@ int SchedRun(scheduler_t *sched)
             TaskDestroy(temp);
             temp = NULL;
            
-           run_flag == OK;
+           sched->run_flag == OK;
         }
         else if (OK == status)
         {
-           TaskDestroy(temp);
+            TaskDestroy(temp);
             temp = NULL; 
         }
        else
        {
-        TaskSetTimeToRun(temp, TaskGetTimeToRun(temp) + status);
-        status = PQEnqueue(sched->pq, temp);
+            TaskSetTimeToRun(temp, TaskGetTimeToRun(temp) + status);
+            status = PQEnqueue(sched->pq, temp);
 
        }
     }   
@@ -176,7 +177,7 @@ void SchedStop(scheduler_t *sched)
 {
     assert(NULL != sched);
     
-    run_flag = OK;
+    sched->run_flag = NEXT;
 }
 
 
