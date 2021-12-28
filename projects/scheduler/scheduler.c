@@ -137,7 +137,8 @@ int SchedRun(scheduler_t *sched)
     task_t *temp = NULL;
     assert(NULL != sched);
 
-    while(!SchedIsEmpty(sched))
+    run_flag == NEXT;
+    while(!SchedIsEmpty(sched) && (run_flag != OK))
     {
         task_t *running = PQPeek(sched->pq);
         if (now < TaskGetTimeToRun(running))
@@ -152,8 +153,8 @@ int SchedRun(scheduler_t *sched)
         {
             TaskDestroy(temp);
             temp = NULL;
-            printf("less that status %d\n", status);
-            SchedStop(sched);
+           
+           run_flag == OK;
         }
         else if (OK == status)
         {
@@ -162,12 +163,12 @@ int SchedRun(scheduler_t *sched)
         }
        else
        {
-        printf("else status is %d\n", status);
         TaskSetTimeToRun(temp, TaskGetTimeToRun(temp) + status);
         status = PQEnqueue(sched->pq, temp);
 
        }
-    }
+    }   
+    
        return status;
 }
     

@@ -29,8 +29,11 @@ int FAction(void *task_args)
 
 int RAction(void *task_args)
 {
-	static int status = -1;
-	return ++status;
+	static int status = 3;
+	void *ptr = task_args;
+	printf("Repeat action, %d\n", *(int *)ptr);
+	
+	return --status;
 }
 
 void CleanT(void *cleanup_args)
@@ -38,6 +41,17 @@ void CleanT(void *cleanup_args)
 	void *ptr = cleanup_args;
 	printf("CleanupPrint, %d\n", *(int *)ptr);
 
+}
+static int StopAction(void *task_args)
+{
+	FILE *stop = fopen("stop", "r");
+	if (NULL != stop)
+	{
+		SchedStop((scheduler_t *)task_args);
+		printf("stop action\n");
+	}
+	
+	return (1);
 }
 
 
@@ -146,11 +160,12 @@ void TestThree()
 	printf("\n\t------------------------------Test3---------------------------\n");
 	SchedAddTask(new_sched, &Action, &x, NULL, NULL, time(NULL));
 	printf("added task to sched, size is %ld\n", SchedSize(new_sched));
-	SchedAddTask(new_sched, &FAction, &y, NULL, NULL, time(NULL) + 10);
+	SchedAddTask(new_sched, &FAction, &y, NULL, NULL, time(NULL) + 1);
 	printf("added task to sched, size is %ld\n", SchedSize(new_sched));
 	test_uid = SchedAddTask(new_sched, &RAction, &y, NULL, NULL, time(NULL) +1);
 	printf("added task to sched, size is %ld\n", SchedSize(new_sched));
-
+	SchedAddTask(new_sched, &StopAction, &x, NULL, NULL, time(NULL) + 10);
+	printf("added task to sched, size is %ld\n", SchedSize(new_sched) );
 	SchedRun(new_sched);
 	printf("Post Run, size is %ld\n", SchedSize(new_sched));
 	SchedClear(new_sched);
