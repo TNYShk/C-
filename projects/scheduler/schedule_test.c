@@ -28,9 +28,19 @@ int Action(void *task_args);
 int FAction(void *task_args);
 int RAction(void *task_args);
 int RemoveTaskAction(void *task_args);
-static int StopAction(void *task_args);
+
+/*static int StopAction(void *task_args);*/
+static int StopAction4(void *task_args);
+static int StopAction3(void *task_args);
+static int StopAction6(void *task_args);
+
 static int CreateAction(void *task_args);
+
 static void StopVoid(void *cleanup_args);
+static void StopVoid4(void *cleanup_args);
+static void StopVoid3(void *cleanup_args);
+
+
 void CleanT(void *cleanup_args);
 
 
@@ -61,13 +71,38 @@ static int CreateAction(void *task_args)
 {
 	time_t new = time(0) + 5;
 	printf("\tcreate task\n");
-	SchedAddTask((scheduler_t *)task_args, &StopAction, task_args, NULL,NULL, (time_t)new);
+	SchedAddTask((scheduler_t *)task_args, &StopAction6, task_args, NULL,NULL, (time_t)new);
 
 	return (0);
 }
 
 
-static int StopAction(void *task_args)
+static int StopAction3(void *task_args)
+{
+	FILE *stop = fopen("stop", "r");
+	if (NULL != stop)
+	{
+		
+		SchedStop((scheduler_t *)task_args);
+		printf("stop action\n");
+	}
+	fclose(stop);
+	return (1);
+}
+static int StopAction4(void *task_args)
+{
+	FILE *stop = fopen("stop", "r");
+	if (NULL != stop)
+	{
+		
+		SchedStop((scheduler_t *)task_args);
+		printf("stop action\n");
+	}
+	fclose(stop);
+	return (1);
+}
+
+static int StopAction6(void *task_args)
 {
 	FILE *stop = fopen("stop", "r");
 	if (NULL != stop)
@@ -93,7 +128,6 @@ void CleanT(void *cleanup_args)
 {
 	void *ptr = cleanup_args;
 	printf("VoidPrint, %d\n", *(int *)ptr);
-
 }
 
 
@@ -109,12 +143,40 @@ static void StopVoid(void *cleanup_args)
 	fclose(stop);	
 }
 
+static void StopVoid3(void *cleanup_args)
+{
+	FILE *stop = fopen("stop", "r");
+	if (NULL != stop)
+	{
+		SchedStop((scheduler_t *)cleanup_args);
+		printf("stop void\n");
+	}
+	fclose(stop);	
+}
+static void StopVoid4(void *cleanup_args)
+{
+	FILE *stop = fopen("stop", "r");
+	if (NULL != stop)
+	{
+		SchedStop((scheduler_t *)cleanup_args);
+		printf("stop void\n");
+	}
+	fclose(stop);	
+}
+
+
 
 int main(void)
 {
-
+	TestOne();
+	TestTwo();
+	TestThree();
+	TestFour();
+	
+	
+	TestFive();
 	TestSix();
-
+	
 	
 	/*
 	TestFour();
@@ -223,11 +285,11 @@ void TestThree()
 	printf("added task to sched, size is %ld\n", SchedSize(new_sched));
 	SchedAddTask(new_sched, &FAction, &y, NULL, NULL, time(NULL) );
 	printf("added task to sched, size is %ld\n", SchedSize(new_sched));
-	SchedAddTask(new_sched, &RAction, &y, &StopVoid, (void *)new_sched, time(NULL) + 3);
+	SchedAddTask(new_sched, &RAction, &y, &StopVoid3, (void *)new_sched, time(NULL) + 3);
 	printf("added task to sched, size is %ld\n", SchedSize(new_sched));
 	SchedRun(new_sched);
 	printf("Post Run, size is %ld\n", SchedSize(new_sched));
-	SchedAddTask(new_sched, &StopAction, &x, &CleanT, &x, time(NULL));
+	SchedAddTask(new_sched, &StopAction3, &x, &CleanT, &x, time(NULL));
 	printf("added task to sched, size is %ld\n", SchedSize(new_sched) );
 	
 	SchedStop(new_sched);
@@ -253,10 +315,10 @@ void TestFour()
 	printf("\n\t------------------------------Test4---------------------------\n");
 	printf("\tcheck: Creates Scheduler, Actions: Stop Action, Void Stop \n");
 	SchedAddTask(new_sched, &Action, &x, &CleanT, &y, time(NULL) + 1);
-	SchedAddTask(new_sched, &Action, &y,&StopVoid, (void *)new_sched, time(NULL) + 2);
+	SchedAddTask(new_sched, &Action, &y,&StopVoid4, (void *)new_sched, time(NULL) + 2);
 	SchedAddTask(new_sched, &RAction, &y, NULL,NULL, time(NULL) );
 	SchedAddTask(new_sched, &Action, &x, &CleanT, &y, time(NULL)+ 1);
-	SchedAddTask(new_sched, &StopAction, (void *)new_sched, NULL, NULL, time(NULL) + 3 );
+	SchedAddTask(new_sched, &StopAction4, (void *)new_sched, NULL, NULL, time(NULL) + 3 );
 	printf("added tasks to sched, 2 should remain , current size is %ld\n", SchedSize(new_sched));
 	
 	SchedRun(new_sched);

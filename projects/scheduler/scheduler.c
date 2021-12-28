@@ -10,7 +10,7 @@
 #include <assert.h> /* assert          */
 #include <string.h> /* memset         */
 #include <unistd.h> /* sleep         */
-#include <stdio.h>
+
 
 #include "task.h"
 #include "scheduler.h" 
@@ -30,7 +30,6 @@ struct scheduler
     int run_flag;
 };
 
-/*static int run_flag = NEXT;*/
 
 static int TaskMatchs(const void *task, const void *uid);
 
@@ -54,9 +53,10 @@ scheduler_t *SchedCreate(void)
 
 void SchedDestroy(scheduler_t *sched)
 {
+    assert(NULL != sched);
+
     SchedClear(sched);
     PQDestroy(sched->pq);
-
     memset(sched, 0, sizeof(scheduler_t));
     
     free(sched);
@@ -136,9 +136,11 @@ int SchedRun(scheduler_t *sched)
     int status = FAIL;
     time_t now = time(0);
     task_t *temp = NULL;
+
     assert(NULL != sched);
 
     sched->run_flag == NEXT;
+
     while(!SchedIsEmpty(sched) && (!sched->run_flag))
     {
         task_t *running = PQPeek(sched->pq);
@@ -169,7 +171,6 @@ int SchedRun(scheduler_t *sched)
 
        }
     }   
-
        return status;
 }
     
@@ -179,10 +180,6 @@ void SchedStop(scheduler_t *sched)
     
     sched->run_flag = NEXT;
 }
-
-
-
-
 
 
 /* wrapper func*/
