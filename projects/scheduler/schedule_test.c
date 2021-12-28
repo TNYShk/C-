@@ -29,9 +29,8 @@ int FAction(void *task_args)
 
 int RAction(void *task_args)
 {
-	void *ptr = task_args;
-	printf("Repeat action, %d\n", *(int *)ptr);
-	return 1;
+	static int status = -1;
+	return ++status;
 }
 
 void CleanT(void *cleanup_args)
@@ -39,13 +38,6 @@ void CleanT(void *cleanup_args)
 	void *ptr = cleanup_args;
 	printf("CleanupPrint, %d\n", *(int *)ptr);
 
-}
-
-void RemoveTask(void *cleanup_args)
-{
-	/* the args are the UID to remove*/
-
-	TaskDestroy(TaskGetUID(cleanup_args));
 }
 
 
@@ -156,7 +148,7 @@ void TestThree()
 	printf("added task to sched, size is %ld\n", SchedSize(new_sched));
 	SchedAddTask(new_sched, &FAction, &y, NULL, NULL, time(NULL) + 10);
 	printf("added task to sched, size is %ld\n", SchedSize(new_sched));
-	test_uid = SchedAddTask(new_sched, &Action, &y, &RemoveTask, &test_uid, time(NULL) +1);
+	test_uid = SchedAddTask(new_sched, &RAction, &y, NULL, NULL, time(NULL) +1);
 	printf("added task to sched, size is %ld\n", SchedSize(new_sched));
 
 	SchedRun(new_sched);

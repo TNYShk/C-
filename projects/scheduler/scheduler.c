@@ -29,6 +29,7 @@ struct scheduler
 	pq_t *pq;
 };
 
+static int run_flag = NEXT;
 
 static int TaskMatchs(const void *task, const void *uid);
 
@@ -147,24 +148,40 @@ int SchedRun(scheduler_t *sched)
         temp = PQDequeue(sched->pq);
         status = TaskRun(running);
       
-        if(OK >= status)
+        if(OK > status)
         {
             TaskDestroy(temp);
             temp = NULL;
-            printf("what status is %d\n", status);
+            printf("less that status %d\n", status);
+            SchedStop(sched);
         }
-    
+        else if (OK == status)
+        {
+           TaskDestroy(temp);
+            temp = NULL; 
+        }
        else
        {
         printf("else status is %d\n", status);
         TaskSetTimeToRun(temp, TaskGetTimeToRun(temp) + status);
         status = PQEnqueue(sched->pq, temp);
-      
+
        }
     }
        return status;
 }
     
+void SchedStop(scheduler_t *sched)
+{
+    assert(NULL != sched);
+    
+    run_flag = OK;
+}
+
+
+
+
+
 
 /* wrapper func*/
 static int TaskMatchs(const void *task, const void *uid)
