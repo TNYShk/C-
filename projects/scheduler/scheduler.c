@@ -148,7 +148,8 @@ int SchedRun(scheduler_t *sched)
     while(!SchedIsEmpty(sched) && (!sched->run_flag))
     {
         task_t *running = PQPeek(sched->pq);
-        if (now < TaskGetTimeToRun(running))
+
+        if (TaskGetTimeToRun(running) > now)
         {
             sleep(TaskGetTimeToRun(running) - now);
         }
@@ -175,13 +176,8 @@ int SchedRun(scheduler_t *sched)
     }   
     return status;
 }
-    
-void SchedStop(scheduler_t *sched)
-{
-    assert(NULL != sched);
-    
-    sched->run_flag = NEXT;
-}
+
+
 
 
 /* wrapper func*/

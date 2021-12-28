@@ -1,12 +1,25 @@
+/********************************************
+ * Task - Source Code                       *
+ * Developer: Tanya                   		*
+ * 2021-12-  27                     		*
+ *                                          *
+ *      Reviewed by  Erez  	 	  	 		*
+*********************************************/
+
+
 #include <time.h> /*time_t */
 #include <stdio.h> /*printf */
-#include <assert.h> /* assert()         */
-#include <stdlib.h>
+#include <assert.h> /* assert() */
+#include <stdlib.h> /*free() */
 
 #include "task.h"
 
 void TestOne();
 void TestTwo();
+void Clean(void *cleanup_args);
+int TaskAction(void *task_args);
+int FloatAction(void *task_args);
+void CleanMalloc(void *cleanup_args);
 
 int TaskAction(void *task_args)
 {
@@ -26,14 +39,14 @@ int FloatAction(void *task_args)
 
 void Clean(void *cleanup_args)
 {
-	cleanup_args = NULL;
+	(void)cleanup_args;
 
 }
 
 void CleanMalloc(void *cleanup_args)
 {
 	void *ptr = cleanup_args;
-	free (cleanup_args);
+	free (ptr);
 }
 
 

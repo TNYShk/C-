@@ -1,11 +1,12 @@
-/**********************************************
- * Task - Source Code                         *
- * Developer: Tanya                   		  *
- * 2021-12-  26                     		  *
- *                                            *
- *      Reviewed by    	 	  	 			  *
-**********************************************/
-#include <time.h> /*time_t */
+/********************************************
+ * Task - Source Code                       *
+ * Developer: Tanya                   		*
+ * 2021-12-  27                     		*
+ *                                          *
+ *      Reviewed by  Erez  	 	  	 		*
+*********************************************/
+
+#include <time.h>   /*time_t */
 #include <stdlib.h> /* memory allocation  */
 #include <assert.h> /* assert()         */
 #include <string.h> /* memset         */
@@ -57,6 +58,7 @@ task_t *TaskCreate(task_func_t task_func, void *task_args, cleanup_func_t cleanu
 void TaskDestroy(task_t *task)
 {
 	assert(NULL != task);
+
 	if(NULL != task->clean_func)
 	{
 		task->clean_func(task->cleanup_args);
@@ -103,7 +105,7 @@ int TasksCompare(const void *task_1, const void *task_2)
 int TaskIsMatch(const task_t *task, ilrd_uid_t uid)
 {
 	assert(NULL != task);
-	assert(!UIDIsSame(uid,UIDBadUID));
+	
 
 	return UIDIsSame(TaskGetUID(task), uid);
 } 
