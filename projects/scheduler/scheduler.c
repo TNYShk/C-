@@ -40,14 +40,23 @@ scheduler_t *SchedCreate(void)
     scheduler_t *new_sched = NULL;
 
     new_sched = (scheduler_t *)malloc(sizeof(scheduler_t));
+
     new_sched->pq = PQCreate(&TasksCompare);
 
     if (NULL == new_sched || NULL == new_sched->pq)
     {
+        memset(new_sched, 0, sizeof(scheduler_t));
         free(new_sched);
+        free(new_sched->pq);
+
         new_sched = NULL;
+        new_sched->pq = NULL;  
     }
-    new_sched->run_flag = OK;
+    else
+    {
+         new_sched->run_flag = OK;
+    }
+   
     return new_sched;
 }
 
@@ -70,7 +79,6 @@ ilrd_uid_t SchedAddTask(scheduler_t *sched, task_func_t task_func, void *task_ar
 
     assert(NULL != sched);
     assert(NULL != task_func);
-    assert((time_t)FAIL != time_to_run);
 
     new_task = TaskCreate(task_func, task_args, cleanup_func, cleanup_args, time_to_run);
     
@@ -101,8 +109,9 @@ int SchedRemoveTask(scheduler_t *sched, ilrd_uid_t uid)
     if(NULL != to_remove)
     {
         TaskDestroy(to_remove);
+        to_remove = NULL;
     }
- 
+
    return (NULL == to_remove);
 }
 
