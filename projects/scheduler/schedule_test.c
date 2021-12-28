@@ -22,6 +22,7 @@ void TestTwo();
 void TestThree();
 void TestFour();
 void TestFive();
+void TestSix();
 
 int Action(void *task_args);
 int FAction(void *task_args);
@@ -101,10 +102,11 @@ static void StopVoid(void *cleanup_args)
 
 int main(void)
 {
-	
-	TestFive();
+	TestFour();
+
 	/*
-TestFour();
+		TestFive();
+
 	TestTwo();
 	TestOne();
 	TestThree();
@@ -161,6 +163,7 @@ void TestTwo()
 	assert (NULL != new_sched);
 	assert(1 == SchedIsEmpty(new_sched));
 	printf("\n\t------------------------------Test2---------------------------\n");
+	printf("\tcheck: Creates Scheduler, Add & Remove task, size, clear \n");
 	printf("created Scheduler, size is %ld\n", SchedSize(new_sched));
 
 	test_uid = SchedAddTask(new_sched, &Action, &x, &CleanT, &x, time(NULL));
@@ -170,7 +173,7 @@ void TestTwo()
 
 	assert(0 == SchedIsEmpty(new_sched));
 
-	test2_uid = SchedAddTask(new_sched, &Action, &y, &StopVoid, &new_sched, time(NULL) + 6001);
+	test2_uid = SchedAddTask(new_sched, &Action, &y, &StopVoid, (void *)new_sched, time(NULL) + 6001);
 	SchedAddTask(new_sched, &Action, &y, &CleanT, &x, time(NULL) + 601);
 	SchedAddTask(new_sched, &Action, &y, NULL, NULL, time(NULL) + 601);
 
@@ -193,7 +196,7 @@ void TestTwo()
 void TestThree()
 {
 	int x = 3000;
-	int y = 160;
+	int y = 360;
 	
 
 	scheduler_t *new_sched = SchedCreate();
@@ -201,20 +204,21 @@ void TestThree()
 	assert(1 == SchedIsEmpty(new_sched));
 
 	printf("\n\t------------------------------Test3---------------------------\n");
+	printf("\tcheck: Creates Scheduler, Actions: repeat, fail and done, Run & Stop Scheduler \n");
 	SchedAddTask(new_sched, &Action, &x, &CleanT, &x, time(NULL) + 1);
 	printf("added task to sched, size is %ld\n", SchedSize(new_sched));
 	SchedAddTask(new_sched, &FAction, &y, NULL, NULL, time(NULL) );
 	printf("added task to sched, size is %ld\n", SchedSize(new_sched));
-	SchedAddTask(new_sched, &RAction, &y, &StopVoid, &new_sched, time(NULL) + 3);
+	SchedAddTask(new_sched, &RAction, &y, &StopVoid, (void *)new_sched, time(NULL) + 3);
 	printf("added task to sched, size is %ld\n", SchedSize(new_sched));
 	SchedRun(new_sched);
 	printf("Post Run, size is %ld\n", SchedSize(new_sched));
 	SchedAddTask(new_sched, &StopAction, &x, &CleanT, &x, time(NULL));
 	printf("added task to sched, size is %ld\n", SchedSize(new_sched) );
+	
 	SchedStop(new_sched);
 	printf("Post Stop, size is %ld\n", SchedSize(new_sched));
 	
-
 	SchedAddTask(new_sched, &RAction, &x, NULL, NULL, time(NULL) + 1);
 	SchedAddTask(new_sched, &Action, &x, &CleanT, &x, time(NULL) );
 	printf("added tasks , size is %ld\n", SchedSize(new_sched));
@@ -233,26 +237,19 @@ void TestFour()
 	assert(1 == SchedIsEmpty(new_sched));
 
 	printf("\n\t------------------------------Test4---------------------------\n");
+	printf("\tcheck: Creates Scheduler, Actions: Stop Action, Void Stop \n");
 	SchedAddTask(new_sched, &Action, &x, &CleanT, &y, time(NULL) + 1);
-	SchedAddTask(new_sched, &Action, &y,&StopVoid, &new_sched, time(NULL) + 2);
+	SchedAddTask(new_sched, &Action, &y,&StopVoid, (void *)new_sched, time(NULL) + 2);
 	SchedAddTask(new_sched, &RAction, &y, NULL,NULL, time(NULL) );
 	SchedAddTask(new_sched, &Action, &x, &CleanT, &y, time(NULL)+ 1);
-	SchedAddTask(new_sched, &StopAction, &new_sched, NULL, NULL, time(NULL) + 3 );
+	SchedAddTask(new_sched, &StopAction, (void *)new_sched, NULL, NULL, time(NULL) + 3 );
 	printf("added tasks to sched, 2 should remain , current size is %ld\n", SchedSize(new_sched));
-	/*printf("\nRun and add tasks\n");*/
 	
 	SchedRun(new_sched);
 	printf("Finished Running, size is %ld\n", SchedSize(new_sched));
 
 	SchedClear(new_sched);
 	printf("Post Clear, size is %ld\n", SchedSize(new_sched));
-
-	
-	SchedAddTask(new_sched, &CreateAction, (void *)new_sched , NULL, NULL, time(0));
-	printf("added task that will add another? , before run size is %ld\n", SchedSize(new_sched));
-	SchedRun(new_sched);
-	printf("Finished Running, size is %ld\n", SchedSize(new_sched));
-	
 
 	SchedDestroy(new_sched);
 
@@ -268,9 +265,10 @@ void TestFive()
 	assert(1 == SchedIsEmpty(new_sched));
 
 	printf("\n\t------------------------------Test5---------------------------\n");
+	printf("\tcheck: Creates Scheduler, Action: tasks that adds another \n");
 	SchedAddTask(new_sched, &Action, &x, &CleanT, &y, time(NULL) );
 	SchedAddTask(new_sched, &CreateAction, (void *)new_sched , &CleanT, &y, time(0));
-	printf("added task that will add another and stop , before run size is %ld\n", SchedSize(new_sched));
+	printf("\nadded task that will add another and stop , before run size is %ld\n", SchedSize(new_sched));
 	
 	SchedRun(new_sched);
 	printf("Finished Running, size is %ld\n", SchedSize(new_sched));
@@ -279,7 +277,32 @@ void TestFive()
 	printf("Post Clear, size is %ld\n", SchedSize(new_sched));
 
 
+	SchedDestroy(new_sched);
+
+}
+
+void TestSix()
+{
+	int x = 6000;
+	int y = 666;
 	
+	scheduler_t *new_sched = SchedCreate();
+	assert (NULL != new_sched);
+	assert(1 == SchedIsEmpty(new_sched));
+
+	printf("\n\t------------------------------Test6---------------------------\n");
+	printf("\tcheck: Creates Scheduler, Action: tasks that removes another \n");
+	SchedAddTask(new_sched, &Action, &x, &CleanT, &y, time(NULL) );
+
+	SchedAddTask(new_sched, &CreateAction, (void *)new_sched , &CleanT, &y, time(0));
+	printf("\nadded task that will add another and stop , before run size is %ld\n", SchedSize(new_sched));
+	
+	SchedRun(new_sched);
+	printf("Finished Running, size is %ld\n", SchedSize(new_sched));
+
+	SchedClear(new_sched);
+	printf("Post Clear, size is %ld\n", SchedSize(new_sched));
+
 
 	SchedDestroy(new_sched);
 
