@@ -1,7 +1,7 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <assert.h>
+#include <stdlib.h> /* memory allocation */
+#include <stdio.h> /*print */
+
+#include <assert.h> /* assert*/
 
 
 #include "stack.h"
@@ -56,16 +56,17 @@ static void PushArray(spstack_t *stack, int *array, size_t length)
 	}
 
 }
-void GetMin(spstack_t *stack)
+void *GetMin(spstack_t *stack)
 {
 	void *minval = NULL;
 	assert(!StackIsEmpty(stack->stack));
 
 	minval = StackPeek(stack->min);
-
-	printf("min value is %d\n", *(int *)minval);
+	
 	StackPop(stack->stack);
 	StackPop(stack->min);
+
+	return minval;
 }
 
 
@@ -73,8 +74,8 @@ int main(void)
 {
 
 spstack_t *minis = NULL;
-
-int array[] = {18, 20, 17, 16, 40};
+void *val = NULL;
+int array[] = {18, 20, 17, 16, 40, 1 };
 size_t length = sizeof(array)/ sizeof(array[0]);
 
 minis = (spstack_t *)calloc(2,sizeof(spstack_t));
@@ -82,11 +83,17 @@ assert(NULL!= minis);
 InitStack(minis, array[0], length);
 
 PushArray(minis, array, length);
-GetMin(minis);
-GetMin(minis);
-GetMin(minis);
 
-
+val = GetMin(minis);
+printf("min value is %d\n", *(int *)val);
+val = GetMin(minis);
+printf("min value is %d\n", *(int *)val);
+val = GetMin(minis);
+printf("min value is %d\n", *(int *)val);
+val = GetMin(minis);
+printf("min value is %d\n", *(int *)val);
+val = GetMin(minis);
+printf("min value is %d\n", *(int *)val);
 Destroy(minis);
 
 
