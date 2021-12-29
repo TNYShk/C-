@@ -139,44 +139,49 @@ int SchedRun(scheduler_t *sched)
 {
     int status = FAIL;
     time_t now = time(0);
-    task_t *temp = NULL;
+    
 
     assert(NULL != sched);
-
-    sched->run_flag == NEXT;
 
     while(!SchedIsEmpty(sched) && (!sched->run_flag))
     {
         task_t *running = PQPeek(sched->pq);
+        task_t *temp = PQDequeue(sched->pq);
 
         if (TaskGetTimeToRun(running) > now)
         {
             sleep(TaskGetTimeToRun(running) - now);
         }
         
-        temp = PQDequeue(sched->pq);
+       
         status = TaskRun(running);
       
         if(OK > status)
         {
             TaskDestroy(temp);
             temp = NULL;
-            sched->run_flag == OK;
+            sched->run_flag = OK;
         }
         else if (OK == status)
         {
             TaskDestroy(temp);
-            temp = NULL; 
         }
         else
         {
             TaskSetTimeToRun(temp, TaskGetTimeToRun(temp) + status);
             status = PQEnqueue(sched->pq, temp);
+
         }
     }   
     return status;
 }
 
+void SchedStop(scheduler_t *sched)
+{
+    assert(NULL != sched);
+    
+    sched->run_flag = NEXT;
+}
 
 
 
