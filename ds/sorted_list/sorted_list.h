@@ -3,6 +3,7 @@
 
 #include "dll.h"  /* dlist_iter_t */
 
+/*go to insert */
 typedef int (*cmp_func_t)(const void *left, const void *right);
 
 typedef struct sort_list sort_list_t;
@@ -63,7 +64,7 @@ int SortListIsEmpty(const sort_list_t *slist);
 /*
  * DESCRIPTION: 
  * Inserts and sorts element to the correct location
- * 
+ * based on return value of compare_func, inserts the element
  * PARAMS: Destination element, void data to insert
  * 
  * RETURN: Inserted Element, in case of FAIL, returns the last element of the dll 
@@ -85,7 +86,7 @@ sort_list_iter_t SortListRemove(sort_list_iter_t iter);
  * Returns the Top/first element of the list
  * 
  * PARAMS: Pointer to the dll
- * 
+ *  
  * RETURN: The first element of the list
  * Complexity: O(1) time, O(1) memory. */
 sort_list_iter_t SortListBegin(const sort_list_t *slist);
@@ -114,7 +115,7 @@ sort_list_iter_t SortListNext(sort_list_iter_t iter);
 /*
  * DESCRIPTION: 
  * Returns the previous element
- * 
+ * undefined behavior if prev of head is request
  * PARAMS: Iterator - Element 
  * 
  * RETURN: Element before Iterator received 

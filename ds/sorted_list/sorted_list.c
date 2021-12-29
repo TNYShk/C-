@@ -13,7 +13,7 @@
 #include <string.h> /*memset            */
 
 #include "dll.h" /*  double linked list funcs */
-#include "sorted_list.h"
+#include "sorted_list.h" /* current */
 
 
 
@@ -81,9 +81,9 @@ int SortListIsEmpty(const sort_list_t *slist)
     return DListIsEmpty(slist->dll);
 }
 
+/*use another func to find where to isert */
 sort_list_iter_t SortListInsert(sort_list_t *slist, void *data)
 {
-    
     sort_list_iter_t runner = {0};
 
     assert(NULL != slist);
@@ -189,7 +189,7 @@ sort_list_iter_t SortListFindIf(sort_list_iter_t from, sort_list_iter_t to, matc
 
 
 
-/* will sit on this on the weekend, write new pseudo */
+
 void SortListMerge(sort_list_t *dest, sort_list_t *src)
 {
     sort_list_iter_t where_dest = {0};
@@ -221,12 +221,6 @@ void SortListMerge(sort_list_t *dest, sort_list_t *src)
          DListSplice(where_dest.diter, from_src.diter, SortListEnd(src).diter);
     }
  
-/*
-    if(!SortListIsEmpty(src))
-    {
-        SortListInsert(dest, SortListPopBack(src));
-    }
-*/
    
 }
 
@@ -237,16 +231,13 @@ sort_list_iter_t SortListFind(sort_list_t *slist, sort_list_iter_t from, sort_li
     
     assert(NULL != slist);
 
-    while(!SortListIterIsEqual(from, to))
+    while( (!SortListIterIsEqual(from, to)) && (0 != slist->sort_func(SortListGetData(from), data)) )
     {
-        if (0 == slist->sort_func(SortListGetData(from), data))
-        {
-            return from;
-        }
+        
         from = SortListNext(from);
     }
 
-    return to;
+    return from;
 }
 
 

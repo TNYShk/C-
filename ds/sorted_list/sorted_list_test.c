@@ -165,7 +165,7 @@ void TestTwo()
     
     printf("\n\t************** List1 SortListFindIf, search for zero********************************\n");
     iter2 = SortListFindIf(iter3, iter1,&MatchNums, &ans);
-    (SortListGetData(iter2) == SortListGetData(iter1))? printf("Zero wasnt found\n"): printf("fount zero");
+    (SortListGetData(iter2) == SortListGetData(iter1))? printf("Zero wasnt found\n"): printf("found zero");
 
     printf("\n\t************** List2 SortListFind, search for 60 otherwise return last node********************************\n");
     iter4 = SortListFind(test2, SortListBegin(test2),SortListEnd(test2),&x);
