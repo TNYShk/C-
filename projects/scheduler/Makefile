@@ -3,7 +3,7 @@ CFLAGS := -ansi -pedantic-errors -Wall -Wextra -g
 LDFLAGS := -g
 
 SRCS := $(wildcard *.c)
-OBJS := $(SRCS:.c=.o)
+OBJS := $(SRCS:.c=.o) ../../ds/sorted_list/sorted_list.o ../../ds/dll/dll.o ../../ds/pq/priority_q.o ../task/task.o ../../ds/uid/uid.o
 
 TARGET := a.out
 
