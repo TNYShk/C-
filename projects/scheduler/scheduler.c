@@ -11,10 +11,10 @@
 #include <string.h> /* memset         */
 #include <unistd.h> /* sleep         */
 
-
 #include "task.h" /*task related header  */
 #include "scheduler.h" /*scheduler header  */
 #include "priority_queue.h" /* for the scheduler */
+
 
 enum status
 {
@@ -23,12 +23,12 @@ enum status
     NEXT
 };
 
-
 struct scheduler
 {
 	pq_t *pq;
     int run_flag;
 };
+
 
 /*wrapper func */
 static int TaskMatchs(const void *task, const void *uid);
@@ -105,7 +105,6 @@ int SchedRemoveTask(scheduler_t *sched, ilrd_uid_t uid)
     if(NULL != to_remove)
     {
         TaskDestroy(to_remove);
-        to_remove = NULL;
     }
    return (NULL == to_remove);
 }
@@ -140,7 +139,6 @@ int SchedRun(scheduler_t *sched)
     int status = FAIL;
     time_t now = time(0);
     
-
     assert(NULL != sched);
 
     while(!SchedIsEmpty(sched) && (!sched->run_flag))
@@ -152,8 +150,6 @@ int SchedRun(scheduler_t *sched)
         {
             sleep(TaskGetTimeToRun(running) - now);
         }
-        
-       
         status = TaskRun(running);
       
         if(OK > status)
@@ -170,9 +166,9 @@ int SchedRun(scheduler_t *sched)
         {
             TaskSetTimeToRun(temp, TaskGetTimeToRun(temp) + status);
             status = PQEnqueue(sched->pq, temp);
-
         }
-    }   
+    } 
+
     return status;
 }
 
@@ -182,7 +178,6 @@ void SchedStop(scheduler_t *sched)
     
     sched->run_flag = NEXT;
 }
-
 
 
 /* wrapper func*/
