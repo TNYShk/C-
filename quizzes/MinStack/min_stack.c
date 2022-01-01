@@ -1,6 +1,5 @@
 #include <stdlib.h> /* memory allocation */
 #include <stdio.h> /*print */
-
 #include <assert.h> /* assert*/
 
 
