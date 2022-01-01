@@ -63,7 +63,7 @@ int main()
 	printf("data in three.next->data (four) is %d\n", *(int *)three.next->data);
 	printf("data in four.next->data (five) is %d\n", *(int *)four.next->data);
 	temp = head;
-	FlipGetElem(temp, 3);
+	FlipGetElem(temp, 0);
 	/*printf("nth element from the end hods val: %d\n",  *(int *)temp->data);
 	printf("nth element from the end hods val: %d\n",  *(int *)head->data);
 	
@@ -98,13 +98,13 @@ node_t *FlipGetElem(node_t *head, int n)
 	}
 	head->next = NULL;
 
-	while (n && (temp != NULL) )
+	while (n && (temp->next != NULL) )
 	{
 		--n;
 		temp = temp->next;
-		
+		printf("%dth element from the end holds val: %d\n",n,  *(int *)temp->data);
 	}
-	printf("nth element from the end hods val: %d\n",  *(int *)temp->data);
+	printf("nth element from the end holds val: %d\n",  *(int *)temp->data);
 	return temp;
 }
 
