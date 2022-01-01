@@ -22,7 +22,7 @@ static void *MemSetZero(void *s, size_t n);
 
 size_t FSASuggestSize(size_t num_of_blocks, size_t block_size)
 {
-	return(sizeof(fsa_t) + (ALIGN(block_size) * num_of_blocks))
+	return(sizeof(fsa_t) + (ALIGN(block_size) * num_of_blocks));
 }
 
 /*initialize the FSA, eager initialization of all blocks? */
@@ -30,6 +30,9 @@ fsa_t *FSAInit(void *memory, size_t mem_size, size_t block_size)
 {
 	fsa_t *fsa = NULL;
 	
+	assert(ZERO < mem_size);
+	assert(ZERO < block_size);
+
 	block_size = WORD_SIZE + ALIGN(block_size);
 	memory = MemSetZero(memory, mem_size * block_size);
 
@@ -42,7 +45,10 @@ fsa_t *FSAInit(void *memory, size_t mem_size, size_t block_size)
 void *FSAAlloc(fsa_t *pool)
 {
 	void *ptr = NULL;
-	ptr = pool->pool;
+
+	assert(NULL != pool);
+
+	ptr = *(size_t **)&pool->pool;
 	pool->pool -=WORD_SIZE;
 
 	return ptr;
@@ -51,6 +57,8 @@ void *FSAAlloc(fsa_t *pool)
 
 size_t FSACountFree(const fsa_t *pool)
 {
+	assert(NULL != pool);
+
 	return pool->pool / WORD_SIZE;
 }
 
