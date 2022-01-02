@@ -8,14 +8,14 @@
 
 #define ALIGNDOWN(adrs) (adrs- ((adrs + WORD_SIZE)&(WORD_SIZE - 1)))
 
-#define ALIGNUP(a) (a + WORD_SIZE - 1) & -(WORD_SIZE)
+#define ALIGNUP(a) ((a + WORD_SIZE - 1) & (-WORD_SIZE))
 
 #define ZERO (0ul)
 
 
 struct fsa
 {
-	size_t start;
+	long start;
 	
 };
 
@@ -36,25 +36,29 @@ size_t FSASuggestSize(size_t num_of_blocks, size_t block_size)
 
 fsa_t *FSAInit(void *memory, size_t mem_size, size_t block_size)
 {
-	fsa_t *fsa = NULL;
-	size_t num_of_blocks = 0;
 	char *runner = NULL;
-
-	fsa = (fsa_t*)memory + sizeof(fsa);
-	
-
-	runner = fsa->start + (char *)memory;
+	char *rear = NULL;
+	size_t index =1;
+	assert(0 < mem_size);
+	assert(NULL != memory);
 
 	block_size = ALIGNUP(block_size);
-	num_of_blocks = (mem_size- sizeof(fsa)) / block_size;
 
-	while(num_of_blocks)
-	{
-	 runner += block_size;
-	 --num_of_blocks;
-	}
+	((fsa_t*)memory)->start = sizeof(fsa_t);
 	
-	return fsa;
+	runner = ((fsa_t*)memory)->start + (char *)memory;
+	rear = (char *)memory + mem_size - block_size;
+	
+	while(runner < rear)
+	{
+	 *(long *)runner = index * block_size;
+	 runner += block_size;
+	 ++index;
+	 
+	}
+	*(long *)runner = (long)memory - (long)runner;
+
+	return (fsa_t*)memory;
 
 }
 
@@ -64,8 +68,12 @@ void *FSAAlloc(fsa_t *pool)
 
 	assert(NULL != pool);
 
-	ptr = (char *)pool + pool->start;
-	pool->start += *(size_t*)ptr;
+	if (pool->start > 0)
+	{
+		ptr = (char *)pool + pool->start;
+		pool->start += *(long *)ptr;
+	}
+	
 	
 	return ptr;
 }
@@ -73,35 +81,37 @@ void *FSAAlloc(fsa_t *pool)
 
 size_t FSACountFree(const fsa_t *pool)
 {
+	const char *runner = (const char *)pool;
 	size_t counter = 0;
-	assert(NULL != pool);
-	char *runner = pool->start;
 
-	while(runner != (pool->start * pool->block_size))
+	assert(NULL != pool);
+	
+
+	while(runner != ((char *)pool + pool->start ))
 	{
 		++counter;
-		runner += pool->block_size;
-
+		runner += pool->start;
 	}
 return counter;
 }
 
 
+
 void FSAFree(fsa_t *pool, void *ptr)
 {
+  
     assert(NULL != pool);
     assert(NULL != ptr);
 
-    *(size_t *)ptr = pool->start + pool->block_size - (size_t)ptr;
-
-    pool->top = (size_t)ptr - (size_t)pool;
+    *(long *)ptr = (char *)pool + pool->start - (char *)ptr;
+    pool->start = (long)ptr - (long)pool;
 }
 
 
 
 
 
-
+/*
 static void *MemSetZero(void *s, size_t n)
 {
 	size_t word = ZERO;
@@ -134,3 +144,4 @@ static void *MemSetZero(void *s, size_t n)
 	}
 	return s;
 }
+*/
