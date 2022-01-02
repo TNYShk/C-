@@ -6,15 +6,21 @@
 #include "fsa.h"
 
 #define WORD_SIZE (sizeof(size_t))
+#define NUM_BLOCKS (100UL)
+#define BLOCK_SIZE (100UL)
+
 
 static void UnitTestInit();
 static void SuggestSizeTest();
+static void UseCaseTest();
+void FSATestAlloc(size_t block_size);
 
 int main(void)
 {
-    SuggestSizeTest();
-    /*
     UnitTestInit();
+    /*
+    
+    SuggestSizeTest();
 */
 
     return 0;
@@ -24,6 +30,29 @@ int main(void)
 
 
 
+
+
+
+static void SuggestSizeTest()
+{
+    size_t num_of_blocks = 5;
+    size_t block_size = 19;
+    size_t mem_size = 0;
+
+    mem_size = FSASuggestSize(num_of_blocks, block_size);
+    printf("given user's wishes for block size %ld * %ld, \n",block_size, num_of_blocks);
+    printf("total memory allocated should be %ld bytes\n", mem_size );
+    assert(mem_size = 128);
+    num_of_blocks = 10;
+    block_size = 13;
+
+    mem_size = FSASuggestSize(num_of_blocks, block_size);
+    printf("given user's wishes for block size %ld * %ld, \n",block_size, num_of_blocks);
+    printf("total memory allocated should be %ld bytes\n", mem_size );
+    assert(mem_size = 168);
+
+    printf("asserts are good test passed" );
+}
 
 static void UnitTestInit(void)
 {
@@ -56,27 +85,10 @@ static void UnitTestInit(void)
     next_offset = 0;
     printf("Test result for next index in block 4: %d\n", next_offset ==
                                                 *((size_t *)(*((char **)&test) + 104)));
+    printf("size is %ld\n", FSACountFree(test));
     
+
     free(pool);
 }
 
-static void SuggestSizeTest()
-{
-    size_t num_of_blocks = 5;
-    size_t block_size = 19;
-    size_t mem_size = 0;
 
-    mem_size = FSASuggestSize(num_of_blocks, block_size);
-    printf("given user's wishes for block size %ld * %ld, \n",block_size, num_of_blocks);
-    printf("total memory allocated should be %ld bytes\n", mem_size );
-    assert(mem_size = 128);
-    num_of_blocks = 10;
-    block_size = 13;
-
-    mem_size = FSASuggestSize(num_of_blocks, block_size);
-    printf("given user's wishes for block size %ld * %ld, \n",block_size, num_of_blocks);
-    printf("total memory allocated should be %ld bytes\n", mem_size );
-    assert(mem_size = 168);
-
-    printf("asserts are good test passed" );
-}

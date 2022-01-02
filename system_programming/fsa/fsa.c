@@ -8,9 +8,9 @@
 
 #define ALIGNDOWN(adrs) (adrs- ((adrs + WORD_SIZE)&(WORD_SIZE - 1)))
 
-#define ALIGNUP(a) ((a + WORD_SIZE - 1) & (-WORD_SIZE))
+#define ALIGNUP(a) ((a + WORD_SIZE - 1) & -(WORD_SIZE))
 
-#define ZERO (0ul)
+#define ZERO (0l)
 
 
 struct fsa
@@ -30,7 +30,7 @@ size_t FSASuggestSize(size_t num_of_blocks, size_t block_size)
 
 size_t FSASuggestSize(size_t num_of_blocks, size_t block_size)
 {
-	return(sizeof(fsa_t) + (ALIGNUP(block_size) * num_of_blocks));
+	return (sizeof(fsa_t) + (ALIGNUP(block_size) * num_of_blocks));
 }
 
 
@@ -38,8 +38,9 @@ fsa_t *FSAInit(void *memory, size_t mem_size, size_t block_size)
 {
 	char *runner = NULL;
 	char *rear = NULL;
-	size_t index =1;
-	assert(0 < mem_size);
+	size_t index = 1;
+
+	
 	assert(NULL != memory);
 
 	block_size = ALIGNUP(block_size);
@@ -53,11 +54,12 @@ fsa_t *FSAInit(void *memory, size_t mem_size, size_t block_size)
 	{
 	 *(long *)runner = index * block_size;
 	 runner += block_size;
-	 ++index;
+	 /* ++index*/
 	 
 	}
-	*(long *)runner = (long)memory - (long)runner;
-
+	 *(long *)runner = (long)memory - (long)runner;
+	
+	
 	return (fsa_t*)memory;
 
 }
@@ -68,15 +70,22 @@ void *FSAAlloc(fsa_t *pool)
 
 	assert(NULL != pool);
 
-	if (pool->start > 0)
+	if (pool->start != ZERO)
 	{
 		ptr = (char *)pool + pool->start;
 		pool->start += *(long *)ptr;
 	}
 	
-	
 	return ptr;
 }
+
+
+
+
+
+
+
+
 
 
 size_t FSACountFree(const fsa_t *pool)
@@ -87,15 +96,33 @@ size_t FSACountFree(const fsa_t *pool)
 	assert(NULL != pool);
 	
 
-	while(runner != ((char *)pool + pool->start ))
+	while( (long)pool != (long)(runner += *(long *)runner) )
 	{
 		++counter;
-		runner += pool->start;
 	}
 return counter;
 }
 
 
+/*
+size_t FSACountFree(const fsa_t *pool)
+{
+	
+	size_t runner =  *(long *)pool->start;
+	size_t counter = 0;
+
+	assert(NULL != pool);
+	
+
+	while(runner != ZERO)
+	{
+		++counter;
+		runner = *((long *)((long)pool + sizeof(fsa_t) + runner));
+	}
+return counter;
+}
+
+*/
 
 void FSAFree(fsa_t *pool, void *ptr)
 {
@@ -103,7 +130,7 @@ void FSAFree(fsa_t *pool, void *ptr)
     assert(NULL != pool);
     assert(NULL != ptr);
 
-    *(long *)ptr = (char *)pool + pool->start - (char *)ptr;
+    *(long *)ptr = (long)pool + pool->start - (long)ptr;
     pool->start = (long)ptr - (long)pool;
 }
 
@@ -111,7 +138,7 @@ void FSAFree(fsa_t *pool, void *ptr)
 
 
 
-/*
+
 static void *MemSetZero(void *s, size_t n)
 {
 	size_t word = ZERO;
@@ -144,4 +171,3 @@ static void *MemSetZero(void *s, size_t n)
 	}
 	return s;
 }
-*/
