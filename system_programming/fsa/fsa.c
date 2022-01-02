@@ -15,7 +15,6 @@
 
 struct fsa
 {
-	size_t block_size;
 	size_t start;
 	
 };
@@ -41,31 +40,33 @@ fsa_t *FSAInit(void *memory, size_t mem_size, size_t block_size)
 	size_t num_of_blocks = 0;
 	char *runner = NULL;
 
-	fsa = (fsa_t*)memory;
-	fsa->start = sizeof(fsa); 
+	fsa = (fsa_t*)memory + sizeof(fsa);
+	
+
 	runner = fsa->start + (char *)memory;
 
-	fsa->block_size = ALIGNUP(block_size);
-	num_of_blocks = memory / fsa->block_size;
+	block_size = ALIGNUP(block_size);
+	num_of_blocks = (mem_size- sizeof(fsa)) / block_size;
 
 	while(num_of_blocks)
 	{
-	 runner += fsa->block_size;
-	 --num_of_blocks
+	 runner += block_size;
+	 --num_of_blocks;
 	}
 	
-	return memory;
+	return fsa;
 
 }
 
 void *FSAAlloc(fsa_t *pool)
 {
-	void *ptr = NULL;
+	char *ptr = NULL;
 
 	assert(NULL != pool);
 
-	ptr += pool->block_size;
-
+	ptr = (char *)pool + pool->start;
+	pool->start += *(size_t*)ptr;
+	
 	return ptr;
 }
 
