@@ -60,8 +60,10 @@ static void UnitTestInit(void)
     size_t number_of_blocks = 5;
     size_t block_size = 20;
     size_t next_offset = 0;
-    fsa_t *test = NULL;
     
+    fsa_t *test = NULL;
+    void *test_ptr = NULL;
+
     memset(pool, 0, 128);
     test = FSAInit(pool, number_of_blocks * (block_size + 4) + WORD_SIZE, block_size);
     
@@ -73,7 +75,7 @@ static void UnitTestInit(void)
     next_offset += 24 - WORD_SIZE;
     printf("Test result for next index in block 0: %d\n", next_offset ==
                                                 *((size_t *)(*((char **)&test) + 8)));
-    next_offset += 24 ;
+    next_offset -= WORD_SIZE;
     printf("Test result for next index in block 1: %d\n", next_offset ==
                                                 *((size_t *)(*((char **)&test) + 32)));
     next_offset += 24;
@@ -86,8 +88,11 @@ static void UnitTestInit(void)
     printf("Test result for next index in block 4: %d\n", next_offset ==
                                                 *((size_t *)(*((char **)&test) + 104)));
     printf("size is %ld\n", FSACountFree(test));
-    
 
+    test_ptr = FSAAlloc(test);
+    printf("allocated one, size is %ld\n", FSACountFree(test));
+    FSAFree(test, test_ptr);
+    printf("freed one, size is back to %ld\n", FSACountFree(test));
     free(pool);
 }
 
