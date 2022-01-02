@@ -6,38 +6,54 @@
 
 #define WORD_SIZE (sizeof(size_t))
 
-#define ALIGN(adrs_size) (adrs_size - ((adrs_size + WORD_SIZE)&(WORD_SIZE - 1)))
+#define ALIGNDOWN(adrs) (adrs- ((adrs + WORD_SIZE)&(WORD_SIZE - 1)))
+
+#define ALIGNUP(a) (a + WORD_SIZE - 1) & -(WORD_SIZE)
 
 #define ZERO (0ul)
 
 
 struct fsa
 {
-	size_t pool;
+	size_t block_size;
+	size_t start;
+	
 };
 
 /* eager initialization */
 static void *MemSetZero(void *s, size_t n);
 
+/*
+size_t FSASuggestSize(size_t num_of_blocks, size_t block_size)
+{
+	return(sizeof(fsa_t) + WORD_SIZE + (ALIGNDOWN(block_size) * num_of_blocks));
+}*/
 
 size_t FSASuggestSize(size_t num_of_blocks, size_t block_size)
 {
-	return(sizeof(fsa_t) + (ALIGN(block_size) * num_of_blocks));
+	return(sizeof(fsa_t) + (ALIGNUP(block_size) * num_of_blocks));
 }
 
-/*initialize the FSA, eager initialization of all blocks? */
+
 fsa_t *FSAInit(void *memory, size_t mem_size, size_t block_size)
 {
 	fsa_t *fsa = NULL;
+	size_t num_of_blocks = 0;
+	char *runner = NULL;
+
+	fsa = (fsa_t*)memory;
+	fsa->start = sizeof(fsa); 
+	runner = fsa->start + (char *)memory;
+
+	fsa->block_size = ALIGNUP(block_size);
+	num_of_blocks = memory / fsa->block_size;
+
+	while(num_of_blocks)
+	{
+	 runner += fsa->block_size;
+	 --num_of_blocks
+	}
 	
-	assert(ZERO < mem_size);
-	assert(ZERO < block_size);
-
-	block_size = WORD_SIZE + ALIGN(block_size);
-	memory = MemSetZero(memory, mem_size * block_size);
-
-	fsa->pool = (size_t)memory;
-
 	return memory;
 
 }
@@ -48,8 +64,7 @@ void *FSAAlloc(fsa_t *pool)
 
 	assert(NULL != pool);
 
-	ptr = *(size_t **)&pool->pool;
-	pool->pool -=WORD_SIZE;
+	ptr += pool->block_size;
 
 	return ptr;
 }
@@ -57,10 +72,30 @@ void *FSAAlloc(fsa_t *pool)
 
 size_t FSACountFree(const fsa_t *pool)
 {
+	size_t counter = 0;
 	assert(NULL != pool);
+	char *runner = pool->start;
 
-	return pool->pool / WORD_SIZE;
+	while(runner != (pool->start * pool->block_size))
+	{
+		++counter;
+		runner += pool->block_size;
+
+	}
+return counter;
 }
+
+
+void FSAFree(fsa_t *pool, void *ptr)
+{
+    assert(NULL != pool);
+    assert(NULL != ptr);
+
+    *(size_t *)ptr = pool->start + pool->block_size - (size_t)ptr;
+
+    pool->top = (size_t)ptr - (size_t)pool;
+}
+
 
 
 
