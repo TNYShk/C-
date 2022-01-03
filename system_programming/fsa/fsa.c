@@ -74,19 +74,20 @@ void *FSAAlloc(fsa_t *pool)
 
 size_t FSACountFree(const fsa_t *pool)
 {
-	const char *runner = (const char *)pool;
-	size_t counter = 0;
-
-	assert(NULL != pool);
-
-	while( (long)pool != (long)(runner += *(long *)runner) )
-	{
-		++counter;
-	}
 	
-	return counter;
-}
+	const char *runner = (const char *)pool + pool->start;
+    size_t counter = 0;
 
+    assert(NULL != pool);
+
+    while((long)pool != (long)runner)
+    {
+        ++counter;
+        runner += *(long *)runner;
+    }
+
+    return counter;
+}
 
 
 void FSAFree(fsa_t *pool, void *block)
@@ -137,7 +138,7 @@ static void *MemSetZero(void *s, size_t n)
 	return s;
 }
 
-/*
+/* ver1
 size_t FSACountFree(const fsa_t *pool)
 {
 	
@@ -153,6 +154,23 @@ size_t FSACountFree(const fsa_t *pool)
 		runner = *((long *)((long)pool + sizeof(fsa_t) + runner));
 	}
 return counter;
+}
+
+
+ver2
+size_t FSACountFree(const fsa_t *pool)
+{
+	const char *runner = (const char *)pool;
+	size_t counter = 0;
+
+	assert(NULL != pool);
+
+	while( (long)pool != (long)(runner += *(long *)runner) )
+	{
+		++counter;
+	}
+	
+	return counter;
 }
 
 */
