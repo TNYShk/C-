@@ -17,13 +17,18 @@
 
 int main(void)
 {
-    size_t ss = 0;
-    void *aloc_ptr = malloc(120 + sizeof(vsa_t*));
+    size_t ss = 124;
+    void *aloc_ptr = malloc(124);
     vsa_t *test = NULL;
-    
-    ss = ALIGNUP(120);
+    printf("adrs of aloc_ptr id %p \n", aloc_ptr);
+    ss = ALIGNUP(124);
+    printf("aligned up is %ld\n", ss);
     test = VSAInit(aloc_ptr, ss); 
-   
+
+    printf("post init: adrs of aloc_ptr id %p \n", aloc_ptr);
+    printf("post init: adrs of vsa test id %p \n", test);
+    ss = VSALargestFreeChunck(test);
+     printf("largest chunk is %ld\n", ss);
     free(aloc_ptr);
     return 0;
 }

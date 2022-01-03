@@ -7,7 +7,6 @@
  **********************************************/
 #include <stdlib.h> /* size_t  */
 #include <assert.h> /* asserts */
-
 #include "vsa.h" /* header file */
 
 
@@ -22,6 +21,7 @@ struct vsa
 {
 	long start;
 };
+
 
 
 
@@ -47,9 +47,10 @@ vsa_t *VSAInit(void *pool, size_t mem_size)
 	*(long *)runner = mem_size - sizeof(vsa_t);
 	runner += mem_size;
 	*(long *)runner = ZERO;
-
+	
 	return (vsa_t *)pool;
 }
+
 
 
 /*access given block BH, verify its negative (been used) and turn to positive */
@@ -91,23 +92,21 @@ static int DefragPool(vsa_t *pool);
 /*
 PSEUDO
 create temp value
-store first found BH value in it
 move through pool until block guard reached
 check BH value, if *BH > temp value, replace values
 return temp value
  */
 size_t VSALargestFreeChunck(vsa_t *pool)
 {
-	size_t chunk = *(long *)pool->start;
-	char *runner = (char *)pool + pool->start;
-	
-	while (*runner != 0)
+	size_t chunk = 0;
+	while (ZERO != pool->start)
 	{
-		if (*(long*)runner > (long)chunk)
+		if(pool->start > (long)chunk )
 		{
-			chunk = *(long*)runner;
+			chunk = pool->start;
 		}
-		runner +=(long)runner;
+		  pool = (vsa_t *)((char *)pool + pool->start);
 	}
+
 	return chunk;
 }
