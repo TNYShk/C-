@@ -12,10 +12,9 @@ typedef struct node
 
 
 node_t *FlipGetElem(node_t *head, int);
-
 node_t *GetNthfrmBack( node_t *head, size_t n);
 
-static size_t countElements(node_t *head);
+
 
 
 int main()
@@ -40,11 +39,8 @@ int main()
 	node_t five; 	
 
 	
-	
-
 	one.data = &x;
 	one.next = &two;
-
 	two.data = &y;
 	two.next = &three;
 	three.data = &z;
@@ -57,9 +53,6 @@ int main()
 	head = &one;
 
 
-	
-	
-	
 	printf("before flip data in one.next->data is %d\n", *(int *)one.next->data);
 	printf("before flip data in two.next->data is %d\n", *(int *)two.next->data);
 	printf("data in three.next->data (four) is %d\n", *(int *)three.next->data);
@@ -69,13 +62,6 @@ int main()
 	printf("\n\t-------------------------flipnget-------------------------------\n");
 	temp = head;
 	FlipGetElem(temp, 0);
-	/*printf("nth element from the end hods val: %d\n",  *(int *)temp->data);
-	printf("nth element from the end hods val: %d\n",  *(int *)head->data);
-	
-	printf("post flip data in two.next->data is %d\n", *(int *)two.next->data);
-	printf("post flip data in three.next->data is %d\n", *(int *)three.next->data);
-	printf("post flip data in four.next->data is %d\n", *(int *)four.next->data);
-	*/
 
 return 0;
 	
@@ -134,17 +120,4 @@ node_t *GetNthfrmBack(node_t *head, size_t nth)
 }
 
 
-static size_t countElements(node_t *head2check)
-{
-	size_t counter = 0;
-
-	assert(NULL != head2check);
-
-	while (NULL != head2check->next)
-	{
-		++counter;
-		head2check = head2check->next;
-	}
-	return counter;
-}
 
