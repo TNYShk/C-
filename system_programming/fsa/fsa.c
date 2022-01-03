@@ -1,25 +1,30 @@
+/********************************
+* FSA - Source Code             *
+* Developer: Tanya              *
+* 2022-01- 03                   *
+*                               *
+*      Reviewed by Erez  	 	*
+*********************************/
+
+
 #include <stdlib.h> /* size_t  */
-#include <stdio.h> /* printf */
 #include <assert.h> /* asserts */
 
-#include "fsa.h"
+#include "fsa.h" /* header file */
 
 #define WORD_SIZE (sizeof(size_t))
 
-#define ALIGNDOWN(adrs) (adrs- ((adrs + WORD_SIZE)&(WORD_SIZE - 1)))
-
+#define ALIGNDOWN(a) (a - ((a + WORD_SIZE) & (WORD_SIZE - 1)))
 #define ALIGNUP(a) ((a + WORD_SIZE - 1) & -(WORD_SIZE))
-
 #define ZERO (0l)
 
 
 struct fsa
 {
 	long start;
-	
 };
 
-/* eager initialization */
+/* eager initialization not used */
 static void *MemSetZero(void *s, size_t n);
 
 
@@ -70,6 +75,7 @@ void *FSAAlloc(fsa_t *pool)
 		pool->start += *(long *)ptr;
 	}
 	*(long *)ptr = ZERO;
+	
 	return ptr;
 }
 
