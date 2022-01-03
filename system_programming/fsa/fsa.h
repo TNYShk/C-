@@ -2,7 +2,7 @@
 #define __FSA_H__
 
 #include <unistd.h>
-#include <sys/mman.h> 
+
 
 typedef struct fsa fsa_t;
 
