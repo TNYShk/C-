@@ -1,7 +1,14 @@
+/********************************
+* FSA - Source Code             *
+* Developer: Tanya              *
+* 2022-01-03                    *
+*                               *
+*      Reviewed by Erez         *
+*********************************/
 #include <stdlib.h> /* size_t  */
 #include <stdio.h> /* printf */
 #include <assert.h> /* asserts */
-#include <string.h>
+#include <string.h> /* memset */
 
 #include "fsa.h"
 
@@ -12,7 +19,6 @@ static void UnitTestInit();
 static void SuggestSizeTest();
 
 
-
 int main(void)
 {
     
@@ -21,12 +27,6 @@ int main(void)
 
     return 0;
 }
-
-
-
-
-
-
 
 
 static void SuggestSizeTest()
@@ -50,6 +50,7 @@ static void SuggestSizeTest()
     printf("asserts are good test passed\n" );
 }
 
+
 static void UnitTestInit(void)
 {
     void *pool = malloc(120 + WORD_SIZE);
@@ -68,9 +69,7 @@ static void UnitTestInit(void)
     next_offset = WORD_SIZE;
     printf("Test result for initialized pool %d\n", (size_t)next_offset == 
                                                 *((size_t *)test));
-
     printf("Available blocks: %ld\n\n", FSACountFree(test));
-
     test_ptr = FSAAlloc(test);
     printf("allocated one, size is %ld\n", FSACountFree(test));
     test_ptr = FSAAlloc(test);
