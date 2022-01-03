@@ -104,39 +104,9 @@ void FSAFree(fsa_t *pool, void *block)
 
 
 
-/* no in use*/
-static void *MemSetZero(void *s, size_t n)
-{
-	size_t word = ZERO;
-	char *byte_ptr = NULL;
 
-	size_t toalign = ((size_t)byte_ptr % WORD_SIZE);
-	size_t wordalign = n / WORD_SIZE;
-	
-	assert(NULL != s);
 
-	byte_ptr = s;
-	word *= 0x0101010101010101;
-	
-	while (n)
-	{
 
-		if ((wordalign > 0) && (0 == toalign))
-		{
-			*(size_t *)byte_ptr = word;
-			++(*(size_t **)&byte_ptr);
-			--wordalign;
-			n -= WORD_SIZE;
-		}
-		else 
-		{
-			*byte_ptr = (unsigned char)ZERO;
-			++byte_ptr;
-			--n;
-		}
-	}
-	return s;
-}
 
 /* ver1
 size_t FSACountFree(const fsa_t *pool)
