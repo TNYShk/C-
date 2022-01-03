@@ -22,11 +22,7 @@ struct fsa
 /* eager initialization */
 static void *MemSetZero(void *s, size_t n);
 
-/*
-size_t FSASuggestSize(size_t num_of_blocks, size_t block_size)
-{
-	return(sizeof(fsa_t) + WORD_SIZE + (ALIGNDOWN(block_size) * num_of_blocks));
-}*/
+
 
 size_t FSASuggestSize(size_t num_of_blocks, size_t block_size)
 {
@@ -40,10 +36,9 @@ fsa_t *FSAInit(void *memory, size_t mem_size, size_t block_size)
 	char *rear = NULL;
 	size_t index = 1;
 
-	
 	assert(NULL != memory);
 
-	block_size = ALIGNUP(block_size);
+	block_size = WORD_SIZE + ALIGNDOWN(block_size);
 
 	((fsa_t*)memory)->start = sizeof(fsa_t);
 	
@@ -58,7 +53,6 @@ fsa_t *FSAInit(void *memory, size_t mem_size, size_t block_size)
 	 
 	}
 	 *(long *)runner = (long)memory - (long)runner;
-	
 	
 	return (fsa_t*)memory;
 
@@ -75,15 +69,9 @@ void *FSAAlloc(fsa_t *pool)
 		ptr = (char *)pool + pool->start;
 		pool->start += *(long *)ptr;
 	}
-	
+	*(long *)ptr = ZERO;
 	return ptr;
 }
-
-
-
-
-
-
 
 
 
@@ -95,34 +83,15 @@ size_t FSACountFree(const fsa_t *pool)
 
 	assert(NULL != pool);
 	
-
 	while( (long)pool != (long)(runner += *(long *)runner) )
 	{
 		++counter;
 	}
-return counter;
+
+	return counter;
 }
 
 
-/*
-size_t FSACountFree(const fsa_t *pool)
-{
-	
-	size_t runner =  *(long *)pool->start;
-	size_t counter = 0;
-
-	assert(NULL != pool);
-	
-
-	while(runner != ZERO)
-	{
-		++counter;
-		runner = *((long *)((long)pool + sizeof(fsa_t) + runner));
-	}
-return counter;
-}
-
-*/
 
 void FSAFree(fsa_t *pool, void *ptr)
 {
@@ -138,7 +107,7 @@ void FSAFree(fsa_t *pool, void *ptr)
 
 
 
-
+/* no in use*/
 static void *MemSetZero(void *s, size_t n)
 {
 	size_t word = ZERO;
@@ -171,3 +140,23 @@ static void *MemSetZero(void *s, size_t n)
 	}
 	return s;
 }
+
+/*
+size_t FSACountFree(const fsa_t *pool)
+{
+	
+	size_t runner =  *(long *)pool->start;
+	size_t counter = 0;
+
+	assert(NULL != pool);
+	
+
+	while(runner != ZERO)
+	{
+		++counter;
+		runner = *((long *)((long)pool + sizeof(fsa_t) + runner));
+	}
+return counter;
+}
+
+*/

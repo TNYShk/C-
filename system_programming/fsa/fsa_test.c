@@ -6,22 +6,18 @@
 #include "fsa.h"
 
 #define WORD_SIZE (sizeof(size_t))
-#define NUM_BLOCKS (100UL)
-#define BLOCK_SIZE (100UL)
 
 
 static void UnitTestInit();
 static void SuggestSizeTest();
-static void UseCaseTest();
-void FSATestAlloc(size_t block_size);
+
+
 
 int main(void)
 {
-    UnitTestInit();
-    /*
     
     SuggestSizeTest();
-*/
+    UnitTestInit();
 
     return 0;
 }
@@ -51,7 +47,7 @@ static void SuggestSizeTest()
     printf("total memory allocated should be %ld bytes\n", mem_size );
     assert(mem_size = 168);
 
-    printf("asserts are good test passed" );
+    printf("asserts are good test passed\n" );
 }
 
 static void UnitTestInit(void)
@@ -63,36 +59,36 @@ static void UnitTestInit(void)
     
     fsa_t *test = NULL;
     void *test_ptr = NULL;
-
+    void *test2 = NULL;
     memset(pool, 0, 128);
     test = FSAInit(pool, number_of_blocks * (block_size + 4) + WORD_SIZE, block_size);
     
     printf("\nInitializing pool\n");
     
     next_offset = WORD_SIZE;
-    printf("Test result for initializing start_offset member: %d\n", (size_t)next_offset == 
+    printf("Test result for initialized pool %d\n", (size_t)next_offset == 
                                                 *((size_t *)test));
-    next_offset += 24 - WORD_SIZE;
-    printf("Test result for next index in block 0: %d\n", next_offset ==
-                                                *((size_t *)(*((char **)&test) + 8)));
-    next_offset -= WORD_SIZE;
-    printf("Test result for next index in block 1: %d\n", next_offset ==
-                                                *((size_t *)(*((char **)&test) + 32)));
-    next_offset += 24;
-    printf("Test result for next index in block 2: %d\n", next_offset ==
-                                                *((size_t *)(*((char **)&test) + 56)));
-    next_offset += 24;
-    printf("Test result for next index in block 3: %d\n", next_offset ==
-                                                *((size_t *)(*((char **)&test) + 80)));
-    next_offset = 0;
-    printf("Test result for next index in block 4: %d\n", next_offset ==
-                                                *((size_t *)(*((char **)&test) + 104)));
-    printf("size is %ld\n", FSACountFree(test));
+
+    printf("Available blocks: %ld\n\n", FSACountFree(test));
 
     test_ptr = FSAAlloc(test);
     printf("allocated one, size is %ld\n", FSACountFree(test));
+    test_ptr = FSAAlloc(test);
+    printf("allocated one, size is %ld\n", FSACountFree(test));
+    test2 = FSAAlloc(test);
+    printf("allocated one, size is %ld\n", FSACountFree(test));
+    test_ptr = FSAAlloc(test);
+    printf("allocated one, size is %ld\n", FSACountFree(test));
+    test_ptr = FSAAlloc(test);
+    printf("allocated one, size is %ld\n", FSACountFree(test));
+    printf("Available blocks: %ld\n", FSACountFree(test));
+    assert(0 == FSACountFree(test));
     FSAFree(test, test_ptr);
-    printf("freed one, size is back to %ld\n", FSACountFree(test));
+    printf("freed a block, size is  %ld\n", FSACountFree(test));
+    FSAFree(test, test2);
+    printf("freed a block, size is  %ld\n", FSACountFree(test));
+    assert(0 != FSACountFree(test));
+    printf("asserts are good test passed\n" );
     free(pool);
 }
 
