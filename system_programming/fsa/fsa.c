@@ -1,12 +1,10 @@
 /********************************
 * FSA - Source Code             *
 * Developer: Tanya              *
-* 2022-01- 03                   *
+* 2022-01-03                    *
 *                               *
 *      Reviewed by Erez  	 	*
 *********************************/
-
-
 #include <stdlib.h> /* size_t  */
 #include <assert.h> /* asserts */
 

@@ -16,7 +16,7 @@ typedef struct fsa fsa_t;
  * block_size in bytes
  * 
  * RETURN:
- * the minimum number of bytes that can be allocated.
+ * the total number of bytes that need to be allocated by user.
  * 
  * Complexity: time: O(1), space: O(1)*/
 size_t FSASuggestSize(size_t num_of_blocks, size_t block_size); 
@@ -33,7 +33,7 @@ size_t FSASuggestSize(size_t num_of_blocks, size_t block_size);
  * RETURN:
  * pointer to the initialized FSA
  * 
-Complexity: time: O(n), space: O(1)*/
+ * Complexity: time: O(n), space: O(1)*/
 fsa_t *FSAInit(void *memory, size_t mem_size, size_t block_size); 
 
 /* 
@@ -60,7 +60,7 @@ void *FSAAlloc(fsa_t *pool);
  * 
  * RETURN: 
  * None
- * pointer to the allocated blockComplexity: time: O(1), space: O(1)*/
+ * Complexity: time: O(1), space: O(1)*/
 void FSAFree(fsa_t *pool, void *block); 
 
 /* 
@@ -73,7 +73,7 @@ void FSAFree(fsa_t *pool, void *block);
  * 
  * RETURN: 
  * amount of blocks that can be allocated to user
-time: O(n), space: O(1)*/
+ * Complexity:time: O(n), space: O(1)*/
 size_t FSACountFree(const fsa_t *pool); 
 
 #endif /* __FSA_H__ */
