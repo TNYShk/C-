@@ -7,6 +7,8 @@
  **********************************************/
 #include <stdlib.h> /* size_t  */
 #include <assert.h> /* asserts */
+#include <stdio.h>
+
 #include "vsa.h" /* header file */
 
 
@@ -16,6 +18,12 @@
 #define ALIGNUP(a) ((a + WORD_SIZE - 1) & -(WORD_SIZE))
 #define ZERO (0l)
 
+enum status
+{
+	FAIL = -1,
+	END,
+	SUCCESS
+};
 
 struct vsa
 {
@@ -46,7 +54,7 @@ vsa_t *VSAInit(void *pool, size_t mem_size)
 	
 	*(long *)runner = mem_size - sizeof(vsa_t);
 	runner += mem_size;
-	*(long *)runner = ZERO;
+	*(long *)runner = END;
 	
 	return (vsa_t *)pool;
 }
@@ -64,8 +72,8 @@ void VSAFree(void *block)
 }
 
 /*PSEUDO
-	run defrag func
-	run biggest chunk func
+	
+	run biggest chunk func (has defrag in it)
 	align alloc_size
 	verify that alloc_size < biggest chunk
 	run from pool start until *BH = 0 (end) or BH > alloc_size
@@ -81,17 +89,38 @@ void *VSAAlloc(vsa_t *pool, size_t alloc_size);
 
 /*
 PSEUDO
-run from start and until BH guard
+run from start and until BH guard, using slow & fast runners
 	check for positive value in each BH
 		if found check next BH, if both are positive:
 		perform merge- update first BH to be old value + next BH + 8
  */
-static int DefragPool(vsa_t *pool);
+static int DefragPool(vsa_t *pool)
+{
+	vsa_t *fast_runner = (vsa_t *)((char *)pool + pool->start);
+	vsa_t *slow_runner = ((vsa_t *)(char *)pool);
+	printf("fast runner is %ld \n", *(long *)fast_runner);
+	printf("slow runner is %ld \n", *(long *)slow_runner);
+	while (*(long *)fast_runner != END)
+	{
+		
+		if ((*(long *)slow_runner > ZERO) && (*(long *)fast_runner > WORD_SIZE))
+		{
+			slow_runner->start += fast_runner->start ;
+			return SUCCESS;
+		}
+
+		fast_runner += pool->start;
+		slow_runner += pool->start;
+		
+	}
+	return END;
+}
 
 
 /*
 PSEUDO
-create temp value
+run defrag
+create temp value, 
 move through pool until block guard reached
 check BH value, if *BH > temp value, replace values
 return temp value
@@ -99,6 +128,7 @@ return temp value
 size_t VSALargestFreeChunck(vsa_t *pool)
 {
 	size_t chunk = 0;
+	(DefragPool(pool) == 1) ? (printf("defraged!\n")) : (printf("nope!\n"));
 	while (ZERO != pool->start)
 	{
 		if(pool->start > (long)chunk )
@@ -107,6 +137,6 @@ size_t VSALargestFreeChunck(vsa_t *pool)
 		}
 		  pool = (vsa_t *)((char *)pool + pool->start);
 	}
-
+	  
 	return chunk;
 }

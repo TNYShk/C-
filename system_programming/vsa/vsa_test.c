@@ -27,8 +27,11 @@ int main(void)
 
     printf("post init: adrs of aloc_ptr id %p \n", aloc_ptr);
     printf("post init: adrs of vsa test id %p \n", test);
+    
     ss = VSALargestFreeChunck(test);
-     printf("largest chunk is %ld\n", ss);
+    printf("largest chunk is %ld\n", ss);
+  
+
     free(aloc_ptr);
     return 0;
 }
