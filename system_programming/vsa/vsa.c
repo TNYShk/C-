@@ -81,39 +81,44 @@ void VSAFree(void *block)
 
 /*PSEUDO
 	
-	run biggest chunk func (has defrag in it)
+	
 	align alloc_size
+	run biggest chunk func (has defrag in it)
 	verify that alloc_size < biggest chunk
 	run from pool start until *BH = 0 (end) or BH > alloc_size
 	perform allocation- save current BH value in temp var,
 	update found BH to -alloc_size
 	move +alloc_size and create a new BH,
-	 its value is the remainder of memory left (previous temp var - alloc_size)
+	 
 	 return temp var adrs
  */
 void *VSAAlloc(vsa_t *pool, size_t alloc_size)
 {
-	vsa_t *slow_runner = ((vsa_t *)(char *)pool);
+	vsa_t *allocated = ((vsa_t *)(char *)pool);
 	
 	assert(NULL != pool);
 	assert(ZERO < alloc_size);
 
-	alloc_size = ALIGNDOWN(alloc_size) + WORD_SIZE;
+	alloc_size = ALIGNUP(alloc_size);
 	
 	if (alloc_size < VSALargestFreeChunck(pool))
 	{
-		while((END != pool->start) && ( pool->start < (long)alloc_size) )
+		while( (END != ((vsa_t *)allocated)->start ) && ( ((vsa_t *)allocated)->start < (long)alloc_size) )
 		{
-		
-			*((char **)&pool) += labs(pool->start);
-			slow_runner += labs(pool->start);
+			*((char **)&allocated) += labs(((vsa_t *)allocated)->start);
 		}
-		pool->start -= alloc_size; 
-		printf("VSAAlloc: pool->start is %ld \n", pool->start);
-		*(long *)slow_runner = -alloc_size;
+		
+		
 
+	*(long *)(((char **)&allocated) + sizeof(vsa_t)) -=  alloc_size;
+
+		*(long *)allocated = -1 * (long)alloc_size;
+					printf("VSAAlloc: allocated %ld \n", *(long*)allocated);						
+		
+						printf("VSAAlloc: allocated->start is %ld \n", allocated->start);	
 	}
-	return slow_runner;	
+	
+	return allocated;	
 }
 
 
@@ -183,7 +188,8 @@ return temp value
 size_t VSALargestFreeChunck(vsa_t *pool)
 {
 	size_t chunk = ZERO;
-	
+	printf("CHUNK: pool is %ld \n", *(long *)pool);
+	printf("CHUNK: pool->start is %ld \n", pool->start);
 	while (END != pool->start)
 	{
 		if(ZERO < pool->start)
