@@ -5,7 +5,7 @@
  * Reviewer: __________                       *
  *                                            *
  **********************************************/
-#include <stdlib.h> /* size_t  */
+#include <stdlib.h> /* size_t, labs  */
 #include <assert.h> /* asserts */
 #include <stdio.h>
 
@@ -13,10 +13,12 @@
 
 
 #define WORD_SIZE (sizeof(size_t))
+#define LONG_SIZE ((long)sizeof(long))
 
 #define ALIGNDOWN(a) (a - ((a + WORD_SIZE) & (WORD_SIZE - 1)))
 #define ALIGNUP(a) ((a + WORD_SIZE - 1) & -(WORD_SIZE))
 #define ZERO (0l)
+#define MAGIC (0x666AAA666AAA6666l)
 
 enum status
 {
@@ -28,6 +30,11 @@ enum status
 struct vsa
 {
 	long start;
+
+#ifdef DEBUG
+	long magic;
+#endif
+
 };
 
 
@@ -47,28 +54,29 @@ vsa_t *VSAInit(void *pool, size_t mem_size)
 	char *runner = NULL;
 	
 	assert (NULL != pool);
+	assert (mem_size > WORD_SIZE * WORD_SIZE);
 
 	mem_size -=sizeof(vsa_t);
-	((vsa_t *)pool)->start = sizeof(vsa_t);
+	
+	((vsa_t*)pool)->start = mem_size - sizeof(vsa_t);
+
 	runner = ((vsa_t*)pool)->start + (char *)pool;
 	
-	*(long *)runner = mem_size - sizeof(vsa_t);
-	runner += mem_size;
 	*(long *)runner = END;
-	
+
 	return (vsa_t *)pool;
 }
 
 
 
-/*access given block BH, verify its negative (been used) and turn to positive */
+/*access given block (-sizeof to access its BH), verify its negative (been used) and turn to positive */
 void VSAFree(void *block)
 {
-	if (*(long *)block < ZERO)
+	if (NULL != block)
 	{
-		*(long *)block *= -1;
+		assert( (((vsa_t *)((char *)block - sizeof(vsa_t)))->start ) < ZERO);
+		( ((vsa_t *)((char *)block - sizeof(vsa_t)))->start ) *= -1;
 	}
-
 }
 
 /*PSEUDO
@@ -83,60 +91,122 @@ void VSAFree(void *block)
 	 its value is the remainder of memory left (previous temp var - alloc_size)
 	 return temp var adrs
  */
-void *VSAAlloc(vsa_t *pool, size_t alloc_size);
+void *VSAAlloc(vsa_t *pool, size_t alloc_size)
+{
+	vsa_t *slow_runner = ((vsa_t *)(char *)pool);
+	
+	assert(NULL != pool);
+	assert(ZERO < alloc_size);
+
+	alloc_size = ALIGNDOWN(alloc_size) + WORD_SIZE;
+	
+	if (alloc_size < VSALargestFreeChunck(pool))
+	{
+		while((END != pool->start) && ( pool->start < (long)alloc_size) )
+		{
+		
+			*((char **)&pool) += labs(pool->start);
+			slow_runner += labs(pool->start);
+		}
+		pool->start -= alloc_size; 
+		printf("VSAAlloc: pool->start is %ld \n", pool->start);
+		*(long *)slow_runner = -alloc_size;
+
+	}
+	return slow_runner;	
+}
+
+
+
+	/*
+	if(VSALargestFreeChunck(pool) > alloc_size)
+	{
+		printf("VSAAlloc: before slow runner is %ld \n", *(long *)slow_runner);
+			printf("VSAAlloc: before, pool->start is %ld \n", pool->start);
+		while ( (ZERO != pool->start) && ( (*(long *)slow_runner) < (long)alloc_size ) )
+		{
+			long temp = labs(*(long *)slow_runner);
+			slow_runner += temp;
+			pool = (vsa_t *)((char *)pool + temp);
+			printf("temp is %ld\n", temp);
+		}
+		pool->start -= alloc_size; 
+		printf("VSAAlloc: pool->start is %ld \n", pool->start);
+		*(long *)slow_runner = -alloc_size;
+		printf("VSAAlloc:  slow runner is %ld \n", *(long *)slow_runner);
+	}
+		printf("VSAAlloc: post pool->start is %ld \n", pool->start);
+		printf("VSAAlloc: post slow runner is %ld \n", *(long *)slow_runner);
+	return slow_runner;
+	*/
+
+	
+
 
 
 
 /*
 PSEUDO
-run from start and until BH guard, using slow & fast runners
-	check for positive value in each BH
-		if found check next BH, if both are positive:
-		perform merge- update first BH to be old value + next BH + 8
+ using slow & fast runners check for positive value in each BH
+		perform merge- update first BH to be old value + next BH
  */
+
+
+
+
+
 static int DefragPool(vsa_t *pool)
 {
 	vsa_t *fast_runner = (vsa_t *)((char *)pool + pool->start);
-	vsa_t *slow_runner = ((vsa_t *)(char *)pool);
-	printf("fast runner is %ld \n", *(long *)fast_runner);
-	printf("slow runner is %ld \n", *(long *)slow_runner);
-	while (*(long *)fast_runner != END)
-	{
-		
-		if ((*(long *)slow_runner > ZERO) && (*(long *)fast_runner > WORD_SIZE))
+
+	printf("defrag before while: fast runner is %ld \n", *(long *)fast_runner);
+
+		if (fast_runner->start > ZERO)
 		{
-			slow_runner->start += fast_runner->start ;
+			pool->start += fast_runner->start;
+
 			return SUCCESS;
 		}
 
-		fast_runner += pool->start;
-		slow_runner += pool->start;
-		
-	}
 	return END;
 }
 
 
 /*
 PSEUDO
-run defrag
-create temp value, 
-move through pool until block guard reached
-check BH value, if *BH > temp value, replace values
+run on pool until end
+if current BH is positive- send to defrag
+then check wether pool is bigger then chunk, if yes, replace values
+
 return temp value
  */
 size_t VSALargestFreeChunck(vsa_t *pool)
 {
-	size_t chunk = 0;
-	(DefragPool(pool) == 1) ? (printf("defraged!\n")) : (printf("nope!\n"));
-	while (ZERO != pool->start)
+	size_t chunk = ZERO;
+	
+	while (END != pool->start)
 	{
-		if(pool->start > (long)chunk )
+		if(ZERO < pool->start)
 		{
-			chunk = pool->start;
+			DefragPool(pool);	
+	
+			if(pool->start >= (long)chunk )
+			{
+				chunk = pool->start;
+			}	
 		}
-		  pool = (vsa_t *)((char *)pool + pool->start);
+
+		*((char **)&pool) += labs(pool->start);				
 	}
-	  
+
 	return chunk;
 }
+	  
+	
+
+
+
+
+
+
+	
