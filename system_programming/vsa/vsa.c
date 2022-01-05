@@ -25,7 +25,6 @@
 
 enum status
 {
-	FAIL = -1,
 	END,
 	SUCCESS
 };
@@ -41,14 +40,13 @@ struct vsa
 };
 
 
-/*Service funcs */
+/*** Service funcs ***/
 static int DefragPool(vsa_t *pool);
 static vsa_t *GetNext(vsa_t *pool);
 
 
 vsa_t *VSAInit(void *pool, size_t mem_size)
 {
-	
 	char *runner = NULL;
 
 	assert (NULL != pool);
@@ -68,20 +66,19 @@ vsa_t *VSAInit(void *pool, size_t mem_size)
 }
 
 
-
-
 void VSAFree(void *block)
 {
-	
-	if (NULL != block)
+
+	if (NULL != block) 
 	{
-		*(long *)((char *)block - sizeof(vsa_t)) *= NEG_CONVERT;
-	}
 
 #ifdef DEBUG
-    assert(*(long *)((char *)block - sizeof(vsa_t) + WORD_SIZE) == MAGIC);    
+		assert(*((long *)((char *)block)->magic  == MAGIC));    
 #endif
+		assert(*(long *)((char *)block - sizeof(vsa_t)) < ZERO);
 
+		*(long *)((char *)block - sizeof(vsa_t)) *= NEG_CONVERT;
+	}
 }
 
 
@@ -89,13 +86,11 @@ void *VSAAlloc(vsa_t *pool, size_t alloc_size)
 {
 	vsa_t *allocated = pool;
 	
-	
 	assert(NULL != pool);
 	assert(WORD_SIZE < alloc_size);
 	
 	alloc_size = ALIGNUP(alloc_size) + sizeof(vsa_t);
 
-	
 	while (allocated->start != STOP)
 	{
 		if (allocated->start > ZERO)
@@ -162,6 +157,7 @@ static int DefragPool(vsa_t *pool)
 	{
 		slow->start += fast->start + sizeof(vsa_t);
 		pool = slow;
+
 		return SUCCESS;
 	}
 					

@@ -28,7 +28,6 @@ int main(void)
     void *alloc_test = NULL;
   
    
-    
     test = VSAInit(aloc_ptr, 128); 
     VSAPrint(test);
     alloc_test = VSAAlloc(test, 33);
@@ -36,22 +35,32 @@ int main(void)
     printf("largest chunk is %ld\n", ss);
     VSAPrint(test);
 
-    another = VSAAlloc(test, 33);
+    another = VSAAlloc(test, 32);
     VSAPrint(test);
    
     printf("post free\n");
     ss = VSALargestFreeChunck(test);
     printf("largest chunk is %ld\n", ss);
+    
     VSAFree(another);
-    printf("another free\n");
     VSAPrint(test);
+   
+   VSAPrint(test);
     ss = VSALargestFreeChunck(test);
     printf("largest chunk is %ld\n", ss); 
     VSAFree(alloc_test); 
+
     ss = VSALargestFreeChunck(test);
-    printf("largest chunk is %ld\n", ss); 
+    printf("post another free largest chunk is %ld\n", ss); 
+   
     VSAPrint(test);
- 
+    
+    another = VSAAlloc(test, 16);
+    VSAPrint(test);
+    /* test double free, uses assert WORKS :)
+    VSAFree(alloc_test); 
+    */
+   
     free(aloc_ptr);
     return 0;
 }
