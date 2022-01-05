@@ -96,23 +96,22 @@ void *VSAAlloc(vsa_t *pool, size_t alloc_size)
 	alloc_size = ALIGNUP(alloc_size) + sizeof(vsa_t);
 
 	
-	while(  allocated->start != STOP  )
+	while (allocated->start != STOP)
 	{
-		if (allocated->start > ZERO )
+		if (allocated->start > ZERO)
 		{
-			while (((size_t)allocated->start < alloc_size) && DefragPool(allocated) );
+			while ( ((size_t)allocated->start < alloc_size) && DefragPool(allocated) );
 		
 			if ((size_t)allocated->start >= alloc_size)
 			{
-				long temp = allocated->start;
+				long size = allocated->start;
 
 				allocated->start = NEG_CONVERT * ((long)alloc_size - sizeof(vsa_t));
-				*(long *)((char *)allocated + alloc_size ) = temp - alloc_size;
+				*(long *)((char *)allocated + alloc_size ) = size - alloc_size;
 				*(char **)&allocated += sizeof(vsa_t);
 #ifdef DEBUG
 	allocated->magic = MAGIC;
 #endif
-
 				return allocated;
 			}
 		}
@@ -153,14 +152,15 @@ static vsa_t *GetNext(vsa_t *pool)
 	return pool;
 }
 
+
 static int DefragPool(vsa_t *pool)
 {
 	vsa_t *slow = pool;
 	vsa_t *fast = GetNext(slow);
 	
-	if ( (slow->start > ZERO) && (fast->start > ZERO))
+	if ( (slow->start >= ZERO) && (fast->start >= ZERO) )
 	{
-		slow->start += fast->start;
+		slow->start += fast->start + sizeof(vsa_t);
 		pool = slow;
 		return SUCCESS;
 	}

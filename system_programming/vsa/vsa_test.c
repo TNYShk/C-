@@ -38,15 +38,19 @@ int main(void)
 
     another = VSAAlloc(test, 33);
     VSAPrint(test);
-    VSAFree(alloc_test);
+   
     printf("post free\n");
     ss = VSALargestFreeChunck(test);
     printf("largest chunk is %ld\n", ss);
     VSAFree(another);
     printf("another free\n");
     VSAPrint(test);
-       
-     
+    ss = VSALargestFreeChunck(test);
+    printf("largest chunk is %ld\n", ss); 
+    VSAFree(alloc_test); 
+    ss = VSALargestFreeChunck(test);
+    printf("largest chunk is %ld\n", ss); 
+    VSAPrint(test);
  
     free(aloc_ptr);
     return 0;
