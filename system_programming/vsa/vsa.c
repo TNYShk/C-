@@ -1,8 +1,8 @@
 /**********************************************
  * Variable-Size Allocator - Source File      *
  * Developer:  Tanya                          *
- * Written:   04/01/2022                      *
- * Reviewer: __________                       *
+ * Written:   05/01/2022                      *
+ * Reviewer: Nurit                            *
  *                                            *
  **********************************************/
 #include <stdlib.h> /* size_t, labs  */
@@ -24,7 +24,7 @@
 enum status
 {
 	END,
-	SUCCESS
+	CONTINUE
 };
 
 struct vsa
@@ -53,14 +53,14 @@ vsa_t *VSAInit(void *pool, size_t mem_size)
 	mem_size -= sizeof(vsa_t);
 	runner = (char *)pool + mem_size;
 	
-	((vsa_t*)runner)->start = STOP;
-	((vsa_t*)pool)->start = mem_size - sizeof(vsa_t);
+	((vsa_t *)runner)->start = STOP;
+	((vsa_t *)pool)->start = mem_size - sizeof(vsa_t);
 	
 #ifdef DEBUG
 	pool->magic = MAGIC;
 #endif
 
-	return (vsa_t*)pool;
+	return (vsa_t *)pool;
 }
 
 
@@ -102,7 +102,7 @@ void *VSAAlloc(vsa_t *pool, size_t alloc_size)
 				allocated->start = NEG_CONVERT * ((long)alloc_size - sizeof(vsa_t));
 
 				*(long *)((char *)allocated + alloc_size ) = size - alloc_size;
-				
+
 				*(char **)&allocated += sizeof(vsa_t);
 #ifdef DEBUG
 	allocated->magic = MAGIC;
@@ -157,7 +157,7 @@ static int DefragPool(vsa_t *pool)
 		slow->start += fast->start + sizeof(vsa_t);
 		pool = slow;
 
-		return SUCCESS;
+		return CONTINUE;
 	}
 					
 	return END;

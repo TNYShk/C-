@@ -1,8 +1,8 @@
 /**********************************************
  * Variable-Size Allocator - Header File      *
- * Developer:                                 *
+ * Developer:  Tanya                          *
  * Written:   05/01/2022                      *
- * Reviewer: __________                       *
+ * Reviewer: Nurit                            *
  *                                            *
  **********************************************/
 #ifndef __VSA_H__
@@ -16,7 +16,7 @@ typedef struct vsa vsa_t;
 /* 
  * DESCRIPTION:
  * Initialize VSA based on users request, 
- * given memory size must be atlseat 2x WORD_SIZE 
+ * given memory size must be atlseat 64 bytes
  * 
  * PARAMETERS:
  * void *pool - pointer to the allocated memory
@@ -33,13 +33,14 @@ vsa_t *VSAInit(void *pool, size_t mem_size);
  * DESCRIPTION: 
  * Allocated block of memory based
  * Memory block shall be ALIGNED to word size, algorithm is First Fit.
- * Implementation should represent malloc(), meaning overhead
+ * [Implementation should represent malloc(), meaning overhead]
  * 
- * to minimize NULL returns, FreeChunky function should be ran periodically
+ * 
+ * to minimize NULL returns, FreeChunk function should be ran periodically
  *
  * PARAMETERS:
  * vsa pointer to the pool
- * alloc_size - desired block size
+ * alloc_size - desired block size, must be bigger than ZERO. otherwise undefined behavior
  *
  * RETURN:
  * pointer to the allocated memory. 
@@ -53,11 +54,11 @@ void *VSAAlloc(vsa_t *pool, size_t alloc_size);
  * returns used block back to memory pool
  * if given block not allocated: 
  * production- undefined behavior ; debug- assert that block was allocated.
- * Functionality - as stdlib free().
+ * [Functionality - as stdlib free().]
  * Allowed to free NULL - does nothing.
  
  * PARAMETERS:
- * pointer to the used block to free
+ * pointer to the used block to free.
  *
  * RETURN:
  * None
