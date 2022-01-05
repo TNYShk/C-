@@ -54,21 +54,17 @@ vsa_t *VSAInit(void *pool, size_t mem_size)
 	assert (NULL != pool);
 	assert (mem_size >= WORD_SIZE * WORD_SIZE);
 	
-
-
 	mem_size -= sizeof(vsa_t);
 	runner = (char *)pool + mem_size;
 	
 	((vsa_t*)runner)->start = STOP;
 	((vsa_t*)pool)->start = mem_size - sizeof(vsa_t);
 	
-
 #ifdef DEBUG
 	pool->magic = MAGIC;
 #endif
 
 	return (vsa_t*)pool;
-
 }
 
 
@@ -82,9 +78,9 @@ void VSAFree(void *block)
 		*(long *)((char *)block - sizeof(vsa_t)) *= NEG_CONVERT;
 	}
 
-    #ifdef DEBUG
-        assert(*(long *)((char *)block - sizeof(vsa_t) + WORD_SIZE) == MAGIC);    
-    #endif
+#ifdef DEBUG
+    assert(*(long *)((char *)block - sizeof(vsa_t) + WORD_SIZE) == MAGIC);    
+#endif
 
 }
 
@@ -137,7 +133,7 @@ size_t VSALargestFreeChunck(vsa_t *pool)
 	{
 		DefragPool(pool);
 
-		if(pool->start >= chunk )
+		if(pool->start >= chunk)
 		{
 			chunk = pool->start;
 		}	
