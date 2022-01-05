@@ -45,7 +45,7 @@ int main(void)
     ss = VSALargestFreeChunck(test);
     printf("\tAllocated another block, largest Chunk available is %ld\n", ss);
     
-    printf("\tFreed block\n");
+    printf("Freed block\n");
     VSAFree(another);
     VSAPrint(test);
    
@@ -62,7 +62,12 @@ int main(void)
     ss = VSALargestFreeChunck(test);
     printf("\tAllocated again, now largest chunk is %ld\n", ss); 
     VSAPrint(test);
-    
+
+    printf("Freed block\n");
+    VSAFree(another);
+    ss = VSALargestFreeChunck(test);
+    printf("\tPost Free, largest chunk available is %ld\n", ss); 
+    VSAPrint(test);
     /*
     test double free, uses assert WORKS :)
     VSAFree(alloc_test); 
