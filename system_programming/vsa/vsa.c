@@ -87,15 +87,14 @@ void *VSAAlloc(vsa_t *pool, size_t alloc_size)
 {
 	vsa_t *allocated = pool;
 	long temp = allocated->start;
-	printf("temp is %ld\n",temp );
+	
 	assert(NULL != pool);
 	assert(WORD_SIZE < alloc_size);
 	
 	alloc_size = ALIGNUP(alloc_size) + sizeof(vsa_t);
-/*
+
 	if (alloc_size < VSALargestFreeChunck(pool))
 	{
-		*/
 		while( allocated->start < ( (long)(alloc_size )) )
 		{
 			allocated = GetNext(allocated);
@@ -106,11 +105,10 @@ void *VSAAlloc(vsa_t *pool, size_t alloc_size)
 
 		*(long *)((char *)allocated + alloc_size ) = temp - alloc_size ;
 
-		
-
-	return allocated;	
+		return allocated;	
+	}
 	
-	
+	return NULL;	
 }
 
 
