@@ -15,7 +15,7 @@ int AtoI(const char *string);
 
 int main(void)
 {
-	char *test = "  -650";
+	char *test = "6f0";
 
 	printf("%s converted to int is %d\n", test,AtoI(test));
 	
@@ -25,7 +25,6 @@ int main(void)
 int AtoI(const char *string)
 {
 	int answer = 1;
-	int i = 0;
 	int sign = 1;
 
 	assert(NULL != string);
@@ -48,12 +47,13 @@ int AtoI(const char *string)
 			answer += *string - ZERO;
 
 		}
-		else if (toupper(string[i]))
+		else
 		{
 			answer *= DECIMAL;
-			answer += *string - CAP_LETTER + DECIMAL;
+			answer += toupper(*string) - CAP_LETTER + DECIMAL;
 		}
 		++string;
 	}
-	return sign * answer;
+	
+	return sign * answer ;
 }
