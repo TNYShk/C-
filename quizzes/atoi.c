@@ -15,7 +15,7 @@ int AtoI(const char *string);
 
 int main(void)
 {
-	char *test = "650";
+	char *test = "  -650";
 
 	printf("%s converted to int is %d\n", test,AtoI(test));
 	
@@ -30,29 +30,30 @@ int AtoI(const char *string)
 
 	assert(NULL != string);
 
-	while(isspace(string[i]))
+	while(isspace(*string))
 	{
-		++i;
+		++string;
 	}
 	
-	if (string[i] == '-')
+	if (*string == '-')
 	{
 		sign = CONVERT_NEG;
-		++i;
+		++string;
 	}
-	while (isalnum(string[i]))
+	while (isalnum(*string))
 	{
-		if(isdigit(string[i]))
+		if(isdigit(*string))
 		{
 			answer *= DECIMAL;
-			answer += (string[i] - ZERO);
+			answer += *string - ZERO;
+
 		}
 		else if (toupper(string[i]))
 		{
-			/*answer *= DECIMAL;*/
-			answer += (string[i] - CAP_LETTER + DECIMAL);
+			answer *= DECIMAL;
+			answer += *string - CAP_LETTER + DECIMAL;
 		}
-		++i;
+		++string;
 	}
 	return sign * answer;
 }
