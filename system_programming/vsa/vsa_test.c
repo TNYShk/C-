@@ -16,12 +16,15 @@
 #define ALIGNUP(a) ((a + WORD_SIZE - 1) & -(WORD_SIZE))
 #define MAGIC (0x666AAA666AAA6666l)
 #define STOP (LONG_MIN)
+#define NEG_CONVERT (-1)
 
 void VSAPrint(vsa_t *vsa);
 
+
 int main(void)
 {
-   size_t ss = 0;
+   
+    size_t ss = 0;
     void *aloc_ptr = malloc(128);
     vsa_t *test = NULL;
     void *another = NULL;
@@ -32,40 +35,50 @@ int main(void)
     VSAPrint(test);
     alloc_test = VSAAlloc(test, 33);
     ss = VSALargestFreeChunck(test);
-    printf("largest chunk is %ld\n", ss);
+    printf("\tAllocated block, largest chunk available is %ld\n", ss);
     VSAPrint(test);
 
     another = VSAAlloc(test, 32);
     VSAPrint(test);
    
-    printf("post free\n");
-    ss = VSALargestFreeChunck(test);
-    printf("largest chunk is %ld\n", ss);
     
+    ss = VSALargestFreeChunck(test);
+    printf("\tAllocated another block, largest Chunk available is %ld\n", ss);
+    
+    printf("\tFreed block\n");
     VSAFree(another);
     VSAPrint(test);
    
-   VSAPrint(test);
+    
     ss = VSALargestFreeChunck(test);
-    printf("largest chunk is %ld\n", ss); 
+    printf("\tPost Free, largest chunk available is %ld\n", ss); 
     VSAFree(alloc_test); 
 
     ss = VSALargestFreeChunck(test);
-    printf("post another free largest chunk is %ld\n", ss); 
+    printf("\tPost another free, largest Chunky Monkey is %ld\n", ss); 
    
     VSAPrint(test);
     
-    another = VSAAlloc(test, 16);
+    another = VSAAlloc(test, 100);
     ss = VSALargestFreeChunck(test);
-    printf("allocated block, now largest chunk is %ld\n", ss); 
+    printf("\tAllocated again, now largest chunk is %ld\n", ss); 
     VSAPrint(test);
-    /* test double free, uses assert WORKS :)
+    /*
+    test double free, uses assert WORKS :)
     VSAFree(alloc_test); 
     */
    
     free(aloc_ptr);
+    
     return 0;
 }
+
+
+
+
+
+
+
 
 
 
@@ -80,7 +93,7 @@ void VSAPrint(vsa_t *vsa)
     while (STOP != *(long *)runner)
     {
         ++counter;
-        printf("%lu. Address of header is %p, Size of block is %ld\n", counter, (void *)runner, *(long *)runner);
+        printf("%lu. Address of BlockHeader is %p, it contains %ld\n", counter, (void *)runner, *(long *)runner);
 
         if (*(long *)runner == 0)
         {
@@ -88,7 +101,7 @@ void VSAPrint(vsa_t *vsa)
         }
         else if (*(long *)runner < 0)
         {
-            runner = (void *)((char *)runner + *(long *)runner * (-1) + sizeof(size_t));
+            runner = (void *)((char *)runner + *(long *)runner * NEG_CONVERT + sizeof(size_t));
         }
         else
         {
