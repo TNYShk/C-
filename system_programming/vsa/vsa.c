@@ -21,6 +21,7 @@
 #define ZERO (0l)
 #define MAGIC (0x666AAA666AAA6666l)
 #define STOP (LONG_MIN)
+#define NEG_CONVERT (-1)
 
 enum status
 {
@@ -35,23 +36,16 @@ struct vsa
 
 #ifdef DEBUG
 	long magic;
-	
 #endif
 
 };
 
 
-
+/*Service funcs */
 static int DefragPool(vsa_t *pool);
 static vsa_t *GetNext(vsa_t *pool);
 
-/*pseudo
-	using a runner, create a block guard at the end of the space 
-	(runner = mem_size- sizeof(vsa), and put zero value in it *(long*)runner = 0;
-	this marks the end.
-	now create a Block Header at the start of the pool, 
-	its value- is the remaining free space (memsize - 2*sizeof(vsa_t))
-*/
+
 vsa_t *VSAInit(void *pool, size_t mem_size)
 {
 	
@@ -60,30 +54,37 @@ vsa_t *VSAInit(void *pool, size_t mem_size)
 	assert (NULL != pool);
 	assert (mem_size >= WORD_SIZE * WORD_SIZE);
 	
+
+
 	mem_size -= sizeof(vsa_t);
 	runner = (char *)pool + mem_size;
 	
 	((vsa_t*)runner)->start = STOP;
 	((vsa_t*)pool)->start = mem_size - sizeof(vsa_t);
 	
+
+#ifdef DEBUG
+	pool->magic = MAGIC;
+#endif
+
 	return (vsa_t*)pool;
 
 }
 
 
 
-/*access given block (-sizeof to access its BH), verify its negative (been used) and turn to positive */
+
 void VSAFree(void *block)
 {
-	char *runner = NULL;
-	runner = (char *)block;
 	
 	if (NULL != block)
+	{
+		*(long *)((char *)block - sizeof(vsa_t)) *= NEG_CONVERT;
+	}
 
-		if( ((vsa_t*)runner)->start < ZERO)
-		{
-			((vsa_t*)runner)->start *= -1;
-		}
+    #ifdef DEBUG
+        assert(*(long *)((char *)block - sizeof(vsa_t) + WORD_SIZE) == MAGIC);    
+    #endif
 
 }
 
@@ -91,32 +92,70 @@ void VSAFree(void *block)
 void *VSAAlloc(vsa_t *pool, size_t alloc_size)
 {
 	vsa_t *allocated = pool;
-	long temp = allocated->start;
+	
 	
 	assert(NULL != pool);
 	assert(WORD_SIZE < alloc_size);
 	
 	alloc_size = ALIGNUP(alloc_size) + sizeof(vsa_t);
 
-	if (alloc_size < VSALargestFreeChunck(pool))
+	
+	while(  allocated->start != STOP  )
 	{
-		while( allocated->start < ( (long)(alloc_size )) )
+		if (allocated->start > ZERO )
 		{
-			allocated = GetNext(allocated);
-			printf("Alloc_size is %ld\n",alloc_size );
+			while (((size_t)allocated->start < alloc_size) && DefragPool(allocated) );
+		
+			if ((size_t)allocated->start >= alloc_size)
+			{
+				long temp = allocated->start;
+
+				allocated->start = NEG_CONVERT * ((long)alloc_size - sizeof(vsa_t));
+				*(long *)((char *)allocated + alloc_size ) = temp - alloc_size;
+				*(char **)&allocated += sizeof(vsa_t);
+#ifdef DEBUG
+	allocated->magic = MAGIC;
+#endif
+
+				return allocated;
+			}
 		}
 
-		allocated->start = -1 * ((long)alloc_size - sizeof(vsa_t));
-
-		*(long *)((char *)allocated + alloc_size ) = temp - alloc_size;
-
-		return allocated;	
+		allocated = GetNext(allocated);		
 	}
 
 	return NULL;	
 }
 
 
+
+size_t VSALargestFreeChunck(vsa_t *pool)
+{
+	long chunk = ZERO;
+
+	while (pool->start != STOP)
+	{
+		DefragPool(pool);
+
+		if(pool->start >= chunk )
+		{
+			chunk = pool->start;
+		}	
+
+		pool = GetNext(pool);
+			
+	}
+
+	return chunk;
+}
+	  
+	
+static vsa_t *GetNext(vsa_t *pool)
+{
+	*(char **)&pool += labs(pool->start) + sizeof(vsa_t);
+	
+	return pool;
+}
 
 static int DefragPool(vsa_t *pool)
 {
@@ -126,44 +165,12 @@ static int DefragPool(vsa_t *pool)
 	if ( (slow->start > ZERO) && (fast->start > ZERO))
 	{
 		slow->start += fast->start;
-
 		pool = slow;
 		return SUCCESS;
 	}
 					
 	return END;
 }
-
-
-size_t VSALargestFreeChunck(vsa_t *pool)
-{
-	long chunk = ZERO;
-
-	while (pool->start != STOP)
-	{
-		DefragPool(pool);	
-		if(pool->start >= chunk )
-		{
-			chunk = pool->start;
-		}	
-
-	pool = GetNext(pool);
-			
-	}
-
-	return chunk;
-}
-	  
-	
-
-static vsa_t *GetNext(vsa_t *pool)
-{
-	*(char **)&pool += labs(pool->start) + sizeof(vsa_t);
-	
-	return pool;
-}
-
-
 
 
 

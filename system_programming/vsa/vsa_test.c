@@ -26,43 +26,34 @@ int main(void)
     vsa_t *test = NULL;
     void *another = NULL;
     void *alloc_test = NULL;
-   /* printf("adrs of aloc_ptr id %p \n", aloc_ptr);*/
+  
    
     
     test = VSAInit(aloc_ptr, 128); 
     VSAPrint(test);
-     alloc_test = VSAAlloc(test, 33);
-     ss = VSALargestFreeChunck(test);
-      printf("largest chunk is %ld\n", ss);
-       VSAPrint(test);
-       printf("alloc test adrs %p\n",alloc_test);
-
-       VSAFree(alloc_test);
-        VSAPrint(test);
-
-        another = VSAAlloc(test, 33);
-        VSAPrint(test);
-    /*
-     alloc_test = VSAAlloc(test, 33);
-    printf("adrs %ld\n",*((long*)test) );
-
-     printf("adrs %ld\n",*((long*)((char*)test + 120)) );
-    VSAPrint(test);
-   
-    ss = VSALargestFreeChunck(test);
-    printf("largest chunk is %ld\n", ss);
-    
     alloc_test = VSAAlloc(test, 33);
-   
-   /*
     ss = VSALargestFreeChunck(test);
     printf("largest chunk is %ld\n", ss);
-    */
-  
+    VSAPrint(test);
+
+    another = VSAAlloc(test, 33);
+    VSAPrint(test);
+    VSAFree(alloc_test);
+    printf("post free\n");
+    ss = VSALargestFreeChunck(test);
+    printf("largest chunk is %ld\n", ss);
+    VSAFree(another);
+    printf("another free\n");
+    VSAPrint(test);
+       
+     
  
     free(aloc_ptr);
     return 0;
 }
+
+
+
 
 void VSAPrint(vsa_t *vsa)
 {
