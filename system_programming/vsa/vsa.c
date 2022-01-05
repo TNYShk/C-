@@ -54,7 +54,7 @@ vsa_t *VSAInit(void *pool, size_t mem_size)
 	char *runner = NULL;
 	
 	assert (NULL != pool);
-	assert (mem_size > WORD_SIZE * WORD_SIZE);
+	assert (mem_size >= WORD_SIZE * WORD_SIZE);
 
 	mem_size -=sizeof(vsa_t);
 	
@@ -163,46 +163,64 @@ PSEUDO
 static int DefragPool(vsa_t *pool)
 {
 	vsa_t *fast_runner = (vsa_t *)((char *)pool + pool->start);
+	vsa_t *slow_runner = ((vsa_t *)(char *)pool);
+	
+	
+	while (*(long *)fast_runner != END)
+	{
+		printf("defrag:fast runner is %ld \n", *(long *)fast_runner);
+		printf("defrag:slow runner is %ld \n", *(long *)slow_runner);
+		if ((*(long *)slow_runner > ZERO) && (*(long *)fast_runner > ZERO))
+		{
+			*((char **)&slow_runner) += fast_runner->start ;
+			return SUCCESS;
+		}
+		
+		*((char **)&fast_runner) += labs(fast_runner->start);
+		*((char **)&slow_runner) += labs(slow_runner->start);
+	
+	}
+	return END;
+
+
+	/*vsa_t *fast_runner = (vsa_t *)((char *)pool) ;
 
 	printf("defrag before while: fast runner is %ld \n", *(long *)fast_runner);
 
-		if (fast_runner->start > ZERO)
+		if (ZERO < fast_runner->start)
 		{
-			pool->start += fast_runner->start;
-
+			printf("defrag:fast runner->start is %ld \n", fast_runner->start);
+			printf("defrag before fast runner is %ld \n", *(long *)fast_runner);
+			fast_runner += labs(fast_runner->start);
+			printf("defrag:fast runner->start is %ld \n", fast_runner->start);
+			printf("defrag: fast runner is %ld \n", *(long *)fast_runner);
 			return SUCCESS;
 		}
 
-	return END;
+	return END;*/
 }
 
 
-/*
-PSEUDO
-run on pool until end
-if current BH is positive- send to defrag
-then check wether pool is bigger then chunk, if yes, replace values
-
-return temp value
- */
 size_t VSALargestFreeChunck(vsa_t *pool)
 {
 	size_t chunk = ZERO;
-	printf("CHUNK: pool is %ld \n", *(long *)pool);
-	printf("CHUNK: pool->start is %ld \n", pool->start);
-	while (END != pool->start)
-	{
-		if(ZERO < pool->start)
-		{
-			DefragPool(pool);	
+	vsa_t *chunk_runner = ((vsa_t *)(char *)pool);
 	
-			if(pool->start >= (long)chunk )
+	printf("CHUNK: chunk->start is %ld \n", chunk_runner->start);
+	while (END != chunk_runner->start)
+	{
+		if(ZERO < chunk_runner->start)
+		{
+			DefragPool(chunk_runner);	
+
+			if(chunk_runner->start >= (long)chunk )
 			{
-				chunk = pool->start;
+				chunk = chunk_runner->start;
 			}	
 		}
-
-		*((char **)&pool) += labs(pool->start);				
+		printf("CHUNK:  is %ld \n", chunk);
+	*((char **)&chunk_runner) += labs(chunk_runner->start);
+			
 	}
 
 	return chunk;
