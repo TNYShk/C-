@@ -18,6 +18,7 @@ int main(void)
 	char *test = "6f0";
 
 	printf("%s converted to int is %d\n", test,AtoI(test));
+	printf("%c is %c\n", 'c', toupper('c'));
 	
 	return 0;
 }
@@ -43,17 +44,15 @@ int AtoI(const char *string)
 	{
 		if(isdigit(*string))
 		{
-			answer *= DECIMAL;
-			answer += *string - ZERO;
-
+			
+			answer = (answer * DECIMAL) + *string - ZERO;
 		}
 		else
 		{
-			answer *= DECIMAL;
-			answer += toupper(*string) - CAP_LETTER + DECIMAL;
+			answer = (answer * DECIMAL) + toupper(*string) - CAP_LETTER + DECIMAL;
 		}
 		++string;
 	}
 	
-	return sign * answer ;
+	return sign * answer;
 }
