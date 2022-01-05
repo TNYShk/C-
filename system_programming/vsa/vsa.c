@@ -20,7 +20,7 @@
 #define ALIGNUP(a) ((a + WORD_SIZE - 1) & -(WORD_SIZE))
 #define ZERO (0l)
 #define MAGIC (0x666AAA666AAA6666l)
-#define STOP (3)
+#define STOP (LONG_MIN)
 
 enum status
 {
@@ -122,9 +122,12 @@ static int DefragPool(vsa_t *pool)
 {
 	vsa_t *slow = pool;
 	vsa_t *fast = GetNext(slow);
+	
 	if ( (slow->start > ZERO) && (fast->start > ZERO))
 	{
-		pool = GetNext(pool);
+		slow->start += fast->start;
+
+		pool = slow;
 		return SUCCESS;
 	}
 					

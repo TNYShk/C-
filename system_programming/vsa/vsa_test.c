@@ -15,7 +15,7 @@
 #define WORD_SIZE (sizeof(size_t))
 #define ALIGNUP(a) ((a + WORD_SIZE - 1) & -(WORD_SIZE))
 #define MAGIC (0x666AAA666AAA6666l)
-#define STOP (3)
+#define STOP (LONG_MIN)
 
 void VSAPrint(vsa_t *vsa);
 
@@ -24,7 +24,7 @@ int main(void)
    size_t ss = 0;
     void *aloc_ptr = malloc(128);
     vsa_t *test = NULL;
-
+    void *another = NULL;
     void *alloc_test = NULL;
    /* printf("adrs of aloc_ptr id %p \n", aloc_ptr);*/
    
@@ -38,6 +38,9 @@ int main(void)
        printf("alloc test adrs %p\n",alloc_test);
 
        VSAFree(alloc_test);
+        VSAPrint(test);
+
+        another = VSAAlloc(test, 33);
         VSAPrint(test);
     /*
      alloc_test = VSAAlloc(test, 33);
