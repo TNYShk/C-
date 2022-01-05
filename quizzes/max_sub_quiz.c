@@ -48,7 +48,7 @@ int maxLocalSum(int *array, int length)
 			
 			if(*start < *runner)
 			{
-			start = runner;
+				start = runner;
 			}
 			
 		}
