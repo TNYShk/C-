@@ -75,11 +75,16 @@ vsa_t *VSAInit(void *pool, size_t mem_size)
 /*access given block (-sizeof to access its BH), verify its negative (been used) and turn to positive */
 void VSAFree(void *block)
 {
+	char *runner = NULL;
+	runner = (char *)block;
+	
 	if (NULL != block)
-	{
-		assert( (((vsa_t *)((char *)block - sizeof(vsa_t)))->start ) < ZERO);
-		( ((vsa_t *)((char *)block - sizeof(vsa_t)))->start ) *= -1;
-	}
+
+		if( ((vsa_t*)runner)->start < ZERO)
+		{
+			((vsa_t*)runner)->start *= -1;
+		}
+
 }
 
 
@@ -103,18 +108,13 @@ void *VSAAlloc(vsa_t *pool, size_t alloc_size)
 
 		allocated->start = -1 * ((long)alloc_size - sizeof(vsa_t));
 
-		*(long *)((char *)allocated + alloc_size ) = temp - alloc_size ;
+		*(long *)((char *)allocated + alloc_size ) = temp - alloc_size;
 
 		return allocated;	
 	}
-	
+
 	return NULL;	
 }
-
-
-
-
-	
 
 
 

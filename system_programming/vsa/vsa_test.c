@@ -31,10 +31,14 @@ int main(void)
     
     test = VSAInit(aloc_ptr, 128); 
     VSAPrint(test);
-     alloc_test = VSAAlloc(test, 32);
+     alloc_test = VSAAlloc(test, 33);
      ss = VSALargestFreeChunck(test);
       printf("largest chunk is %ld\n", ss);
        VSAPrint(test);
+       printf("alloc test adrs %p\n",alloc_test);
+
+       VSAFree(alloc_test);
+        VSAPrint(test);
     /*
      alloc_test = VSAAlloc(test, 33);
     printf("adrs %ld\n",*((long*)test) );
