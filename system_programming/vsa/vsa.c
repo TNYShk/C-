@@ -7,21 +7,19 @@
  **********************************************/
 #include <stdlib.h> /* size_t, labs  */
 #include <assert.h> /* asserts */
-#include <stdio.h>
-#include <limits.h> /* for LONG_MAX, LONG_MIN */
+#include <limits.h> /* LONG_MIN */
 
 #include "vsa.h" /* header file */
 
 
-#define WORD_SIZE (sizeof(size_t))
-#define LONG_SIZE ((long)sizeof(long))
-
 #define ALIGNDOWN(a) (a - ((a + WORD_SIZE) & (WORD_SIZE - 1)))
 #define ALIGNUP(a) ((a + WORD_SIZE - 1) & -(WORD_SIZE))
-#define ZERO (0l)
+#define WORD_SIZE (sizeof(size_t))
+
 #define MAGIC (0x666AAA666AAA6666l)
 #define STOP (LONG_MIN)
 #define NEG_CONVERT (-1)
+#define ZERO (0l)
 
 enum status
 {
@@ -87,7 +85,7 @@ void *VSAAlloc(vsa_t *pool, size_t alloc_size)
 	vsa_t *allocated = pool;
 	
 	assert(NULL != pool);
-	assert(WORD_SIZE < alloc_size);
+	assert(ZERO < alloc_size);
 	
 	alloc_size = ALIGNUP(alloc_size) + sizeof(vsa_t);
 
@@ -97,12 +95,14 @@ void *VSAAlloc(vsa_t *pool, size_t alloc_size)
 		{
 			while ( ((size_t)allocated->start < alloc_size) && DefragPool(allocated) );
 		
-			if ((size_t)allocated->start >= alloc_size)
+			if ( (size_t)allocated->start >= alloc_size )
 			{
 				long size = allocated->start;
 
 				allocated->start = NEG_CONVERT * ((long)alloc_size - sizeof(vsa_t));
+
 				*(long *)((char *)allocated + alloc_size ) = size - alloc_size;
+				
 				*(char **)&allocated += sizeof(vsa_t);
 #ifdef DEBUG
 	allocated->magic = MAGIC;
@@ -146,7 +146,6 @@ static vsa_t *GetNext(vsa_t *pool)
 	
 	return pool;
 }
-
 
 static int DefragPool(vsa_t *pool)
 {

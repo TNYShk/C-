@@ -56,6 +56,8 @@ int main(void)
     VSAPrint(test);
     
     another = VSAAlloc(test, 16);
+    ss = VSALargestFreeChunck(test);
+    printf("allocated block, now largest chunk is %ld\n", ss); 
     VSAPrint(test);
     /* test double free, uses assert WORKS :)
     VSAFree(alloc_test); 

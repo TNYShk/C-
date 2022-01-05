@@ -1,7 +1,7 @@
 /**********************************************
  * Variable-Size Allocator - Header File      *
  * Developer:                                 *
- * Written:   03/01/2022                      *
+ * Written:   05/01/2022                      *
  * Reviewer: __________                       *
  *                                            *
  **********************************************/
@@ -10,20 +10,17 @@
 
 #include <stddef.h> /* size_t */
 
-/**********************************************
-* In C File:
-* static void VSADeFrag(vsa_t *pool) 
-* header struct for blocks - contains long offset to end of block (+ anything else needed?)
- **********************************************/
+
 typedef struct vsa vsa_t;
 
 /* 
  * DESCRIPTION:
- * Initialize VSA based on users request
+ * Initialize VSA based on users request, 
+ * given memory size must be atlseat 2x WORD_SIZE 
  * 
  * PARAMETERS:
  * void *pool - pointer to the allocated memory
- * mem_size - total mempry allocated
+ * mem_size - total memory to be managed
  * 
  * RETURN:
  * pointer to the created VSA
@@ -33,25 +30,54 @@ typedef struct vsa vsa_t;
 vsa_t *VSAInit(void *pool, size_t mem_size);
 
 /**
+ * DESCRIPTION: 
+ * Allocated block of memory based
+ * Memory block shall be ALIGNED to word size, algorithm is First Fit.
+ * Implementation should represent malloc(), meaning overhead
+ * 
+ * to minimize NULL returns, FreeChunky function should be ran periodically
+ *
+ * PARAMETERS:
+ * vsa pointer to the pool
+ * alloc_size - desired block size
+ *
+ * RETURN:
+ * pointer to the allocated memory. 
+ * If space is insufficient, NULL is returned.
  * Complexity: Time O(n), Space O(1). 
- * Algorithm- first fit + aligned to word size.
- * Implementation should represent malloc().
- */
+ **/
 void *VSAAlloc(vsa_t *pool, size_t alloc_size);
 
 /**
- * Complexity: Time O(1), Space O(1). 
+ * DESCRIPTION:
+ * returns used block back to memory pool
  * if given block not allocated: 
  * production- undefined behavior ; debug- assert that block was allocated.
  * Functionality - as stdlib free().
  * Allowed to free NULL - does nothing.
- */
+ 
+ * PARAMETERS:
+ * pointer to the used block to free
+ *
+ * RETURN:
+ * None
+ * Complexity: Time O(1), Space O(1). 
+ **/
 void VSAFree(void *block);
 
-/**
- *  Complexity: Time O(n), Space O(1).
- *  + Merges free blocks.
- */
+/** 
+ * DESCRIPTION:
+ * Checks for current largest available chunk of memory
+ * Merges sequential free blocks
+ *
+ * PARAMETERS:
+ * pointer to the VSA to scan.
+ *
+ * RETURN:
+ * size_t of the largest chunk available for allocation, in bytes.
+ *
+ * Complexity: Time O(n), Space O(1). 
+ **/
 size_t VSALargestFreeChunck(vsa_t *pool);
 
 #endif /* __VSA_H__ */
