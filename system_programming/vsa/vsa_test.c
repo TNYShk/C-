@@ -8,12 +8,15 @@
 #include <stdlib.h> /* size_t  */
 #include <assert.h> /* asserts */
 #include <stdio.h> /* printf */
-#include <limits.h> /* for LONG_MAX, LONG_MIN */
+#include <limits.h> /* LONG_MIN */
+
 #include "vsa.h" /* header file */
 
 
 #define WORD_SIZE (sizeof(size_t))
 #define ALIGNUP(a) ((a + WORD_SIZE - 1) & -(WORD_SIZE))
+
+#define ALIGN(a) ( (a - 1) + (WORD_SIZE) - ((a - 1) & (WORD_SIZE - 1)) )
 #define MAGIC (0x666AAA666AAA6666l)
 #define STOP (LONG_MIN)
 #define NEG_CONVERT (-1)
@@ -29,8 +32,9 @@ int main(void)
     vsa_t *test = NULL;
     void *another = NULL;
     void *alloc_test = NULL;
-  
-   
+    void *chunk = NULL;
+    
+    
     test = VSAInit(aloc_ptr, 128); 
     VSAPrint(test);
 
@@ -40,31 +44,37 @@ int main(void)
     VSAPrint(test);
 
     another = VSAAlloc(test, 32);
-    VSAPrint(test);
+    
    
     ss = VSALargestFreeChunck(test);
     printf("\tAllocated another block, largest Chunk available is %ld\n", ss);
-    
+    VSAPrint(test);
+    chunk = VSAAlloc(test, 8);
+    ss = VSALargestFreeChunck(test);
+    printf("\tAllocated another block, largest Chunk available is %ld\n", ss);
+    VSAPrint(test);
     printf("Freed block\n");
     VSAFree(another);
     VSAPrint(test);
    
-    
+    VSAFree(alloc_test); 
     ss = VSALargestFreeChunck(test);
     printf("\tPost Free, largest chunk available is %ld\n", ss); 
-    VSAFree(alloc_test); 
 
-    ss = VSALargestFreeChunck(test);
-    printf("\tPost another free, largest Chunky Monkey is %ld\n", ss); 
-    VSAPrint(test);
-    
-    another = VSAAlloc(test, 100);
-    ss = VSALargestFreeChunck(test);
-    printf("\tAllocated again, now largest chunk is %ld\n", ss); 
+    VSALargestFreeChunck(test);
     VSAPrint(test);
 
-    printf("Freed block\n");
+    another = VSAAlloc(test, 72);
+    VSALargestFreeChunck(test);
+    ss = VSALargestFreeChunck(test);
+    printf("\tAllocated, Post Allocation, largest chunk is %ld\n", ss); 
+    VSAPrint(test);
+
+    printf("Freed blocks\n");
+    VSAFree(chunk);
+    VSALargestFreeChunck(test);
     VSAFree(another);
+    VSALargestFreeChunck(test);
     ss = VSALargestFreeChunck(test);
     printf("\tPost Free, largest chunk available is %ld\n", ss); 
     VSAPrint(test);
