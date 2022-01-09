@@ -17,7 +17,7 @@ int main(void)
 {
 	char *test = "6f0";
 	char *test1 = "666";
-	printf("%s converted to int is %d\n", test,AtoI(test,16));
+	printf("%s (16)converted to int is %d\n", test,AtoI(test,16));
 	printf("%c is %c\n", 'c', toupper('c'));
 
 	printf("%s converted to int base 10 is %d\n", test1,AToI(test1));

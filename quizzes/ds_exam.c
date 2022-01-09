@@ -7,9 +7,11 @@
 #define ZERO (0)
 #define COL (7)
 #define LIN (6)
+
 int FindMissingNum(int *arr, int length);
 static void PrintMap(int (*matrix)[7]);
 int IsInsideShape(int (*matrix)[7], int x, int y);
+
 int main(void)
 {
 	int array[1025] = {0};
@@ -26,7 +28,7 @@ int main(void)
 	array[26] = 0;
 	printf("missing num is %d\n", FindMissingNum(array, length));
 	
-	/*BitMap initialize*/
+	/*BitMap initialize shape*/
 	bitmap[1][3] = 1;
 	bitmap[2][2] = 1;
 	bitmap[2][4] = 1;
@@ -55,7 +57,7 @@ int main(void)
 static void PrintMap(int (*matrix)[COL])
 {
 	int i = 0, j = 0;
-	printf("Two Dimensional array elements:\n");
+	printf("Bitmap 2D array elements:\n");
 
 	for(i=0; i < LIN; ++i) 
 	{
