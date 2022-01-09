@@ -7,7 +7,6 @@
 **********************************************/
 #include <unistd.h> /* size_t, pid_t */
 #include <time.h>  /*  time_t       */
-
 #include "uid.h"
 
 #define FAIL (-1)
@@ -26,11 +25,12 @@ ilrd_uid_t UIDCreate(void)
 	ucontainer.t_id = ttime;
 	ucontainer.p_id = getpid();
 
-
+	/* which one failed? add cases */
 	if( ((time_t)FAIL == ucontainer.t_id) || (FAIL == ucontainer.p_id) )
 	{
 		ucontainer = UIDBadUID;
 	}
+
 
 	return ucontainer;
 }

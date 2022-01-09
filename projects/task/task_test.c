@@ -112,7 +112,7 @@ void TestTwo()
 	TaskRun(test2);
 
     printf("\n\t****Get & Set time***********\n");
-	TaskSetTimeToRun(test, now - 1812);
+	TaskSetTimeToRun(test, now + 1812);
 	task_time = TaskGetTimeToRun(test);
 	tmp = localtime(&task_time);
 	printf("task1: %s\n", asctime(tmp));
@@ -122,7 +122,7 @@ void TestTwo()
 	tmp = localtime(&task_time);
 	printf("task2 : %s\n", asctime(tmp));
 	printf("\t****Compare time tasks***********\n");
-	printf("compare: %d sec difference\n",TasksCompare(test, test2));
+	printf("compare: %f minute difference\n",TasksCompare(test, test2)/60.0);
 
 	printf("\n\t****Compare UID***********\n");
 	printf("isMatch?  %d\n",TaskIsMatch(test, TaskGetUID(test2)));

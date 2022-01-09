@@ -35,7 +35,7 @@ typedef struct task task_t;
  * void *cleanup_args - pointer to the above needed arguments
  * time_to_run - absolutr timr (in seconds), for task to start at.
  * 
- * RETURN: Pointer to the newly created task   */
+ * RETURN: Pointer to the newly created task, NULL if failed   */
 task_t *TaskCreate(task_func_t task_func, void *task_args, cleanup_func_t cleanup_func, void *cleanup_args, time_t time_to_run);
 
 /*

@@ -18,11 +18,11 @@
 
 struct task
 {
+	ilrd_uid_t uid;
 	task_func_t tsk_func;
 	void *task_args;
 	cleanup_func_t clean_func;
 	void *cleanup_args;
-	ilrd_uid_t uid;
 	time_t time_to_run;
 };
 
@@ -35,7 +35,7 @@ task_t *TaskCreate(task_func_t task_func, void *task_args, cleanup_func_t cleanu
 	assert ((time_t)FAIL != time_to_run);
 
 	new_task = (task_t *)malloc(sizeof(task_t));
-	if(NULL ==new_task)
+	if(NULL == new_task)
 	{
 		return NULL;
 	}
@@ -72,7 +72,7 @@ void TaskDestroy(task_t *task)
 void TaskSetTimeToRun(task_t *task, time_t time_to_run)
 {
 	assert(NULL != task);
-
+	assert ((time_t)FAIL != time_to_run);
 	task->time_to_run = time_to_run;
 }
 
