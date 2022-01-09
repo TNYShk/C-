@@ -129,7 +129,6 @@ int AtoiStrToIntBase(const char *nptr, unsigned int base)
 
 	while (isalnum(nptr[i]))
 	{
-		
 		if (isdigit(nptr[i]))
 		{
 			num *=  base;
@@ -139,8 +138,8 @@ int AtoiStrToIntBase(const char *nptr, unsigned int base)
 		{
 			num = (num * base) + toupper(nptr[i]) - CAP_LETTER + DECIM;
 		}
-	++i;
 
+		++i;
 	} 
 	
 	return sign * num;		
@@ -151,15 +150,16 @@ int AtoiStrToIntBase(const char *nptr, unsigned int base)
 int AtoiStrToInt(const char *nptr)
 {
 	assert(NULL != nptr);
+
 	return (AtoiStrToIntBase(nptr,10));  
 
 }
 
 
-
 char *ItoaIntToStr(int value, char *str)
 {
 	assert(NULL != str);
+	
 	return ItoaIntToStrBase(value, str, 10);
 	
 }

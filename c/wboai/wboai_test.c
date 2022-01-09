@@ -94,8 +94,9 @@ void TestAtoiBase()
 	char *str2 = "123aB";
 	char *str3 = "-1712";
 	char *str4 = " 123A";
-	
+	char *str5 = " 12";
 	printf("str: 11 (2)  %d\n", AtoiStrToIntBase(str, 2));
+	printf("str: 12 (3)  %d\n", AtoiStrToIntBase(str5, 3));
 	printf("str:123aB (16) %d\n", AtoiStrToIntBase(str2, 16));
 	printf("str: -1712 (10) %d\n", AtoiStrToIntBase(str3, 10));
 	printf("str: 123A (36) %d\n", AtoiStrToIntBase(str4, 36));
