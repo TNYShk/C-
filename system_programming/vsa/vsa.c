@@ -134,7 +134,7 @@ size_t VSALargestFreeChunck(vsa_t *pool)
 			
 	}
 
-	return chunk;
+	return chunk - sizeof(vsa_t);
 }
 	  
 	
