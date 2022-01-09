@@ -19,9 +19,9 @@
 struct pqueue
 {
 	sort_list_t *sortl;
-	
 };
 
+typedef sort_list_iter_t pq_iter_t;
 
 pq_t *PQCreate(pq_cmp_func_t comp_func)
 {
@@ -47,6 +47,7 @@ pq_t *PQCreate(pq_cmp_func_t comp_func)
 void PQDestroy(pq_t *pq)
 {
 	SortListDestroy(pq->sortl);
+	pq->sortl = NULL;
 	memset(pq, 0, sizeof(pq_t));
 
 	free(pq);
@@ -103,9 +104,10 @@ void PQClear(pq_t *pq)
 
 void *PQErase(pq_t *pq, pq_match_func_t match_func, void *param)
 {
-	sort_list_iter_t from = {0};
-	sort_list_iter_t to = {0};
-	sort_list_iter_t find = {0};
+	pq_iter_t from = {0};
+	pq_iter_t to = {0};
+	pq_iter_t find = {0};
+	
 	void *data = NULL;
 
 	assert (NULL != pq);
