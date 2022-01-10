@@ -1,7 +1,7 @@
 #include <stdio.h> /* printf, size_t  */
 #include <stdlib.h> /* memory allocation  */
 #include <assert.h> /* assert() */
-#include "dll.h"
+#include "../include/dll.h"
 
 #define PRINT_NODE(node) (printf("node at address %p has int %d, prev is %p, next is %p\n", \
         (void *)node, *(int *)DListGetData(node), (void *)DListPrev(node), (void *)DListNext(node)));
