@@ -1,32 +1,17 @@
-CC := gcc
-CFLAGS := -ansi -pedantic-errors -Wall -Wextra -g
-LDFLAGS := -g
+CC = gcc
+.PHONY := clean
 
-SRCS := $(wildcard *.c)
-OBJS := $(SRCS:.c=.o)
+TARGET:= test
 
-TARGET := a.out
+$(TARGET) : dll_test.c libdll.so
+	gcc -L. -Wl,-rpath=. -Wall -o $@ dll_test.c -ldll
 
-.DEFAULT_GOAL := $(TARGET)
-.PHONY := valg push clean
+libdll.so : dll.o
+	gcc -shared -o $@ dll.o 
 
-%.c: | %.h
-	sed 's/^#.*//g ; 3i #include "$|"' $| > $@
-	sed -i 's/^typedef.*//g ; s/);/)\n{\n    \n}/g' $@ 
-	sed -i '/./{H;$!d} ; x ; s/\/\*.*\*\///g' $@
+dll.o : dll.c
+	gcc -c -Wall -Werror -fpic $<
 
-%.d: %.c
-	$(CC) -MM $< > $@~
-	sed 's/\($*\.o\):/\1 $@:/g' $@~ > $@
-	rm -f $@~
-
-
-$(TARGET): $(OBJS)
-	$(LINK.o) $^ -o $@
-
-valg: $(TARGET)
-	valgrind --leak-check=yes --track-origins=yes ./$<
 
 clean:
-	rm -rf $(TARGET) *~ *.o
-	
+	rm -rf test *.o *.so
