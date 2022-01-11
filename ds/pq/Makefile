@@ -16,12 +16,17 @@ OBJS := $(SRCS:.c=.o)
 CLEAN_SRC := $(filter-out $(wildcard *_test.c), $(SRCS))
 CLEAN_OBJ :=  $(CLEAN_SRC:.c=.o)
 
+DEPS := $(addsuffix .so, $(addprefix lib,$(LDEPS)))
+LDEPS := sorted_list dll
 
 LIBS := $(addsuffix .so, $(addprefix lib,$(notdir $(CURDIR))))
 DS := $(notdir $(CURDIR))
 
-$(TARGET) : $(filter *_test.c,$(SRCS)) ../libs/debug/$(LIBS) libuid.so libdll.so libsorted_list.so
-	$(CC) $(CPPFLAGS) -L ../libs/debug -Wl,-rpath=../libs/debug -Wall -o $@ $(DS)_test.c -l$(DS) -lsorted_list -luid -ldll $(DEBUG)
+$(TARGET) : $(filter *_test.c,$(SRCS)) ../libs/debug/$(LIBS) $(DEPS)
+	$(CC) $(CPPFLAGS) -L ../libs/debug -Wl,-rpath=../libs/debug $(CFLAGS) -o $@ $(DS)_test.c -l$(DS) $(addprefix -l,$(LDEPS)) $(DEBUG)
+
+$(DEPS) : lib%.so :
+	$(MAKE) -C ../ds/$* all
 
 ../libs/debug/$(LIBS) : $(CLEAN_OBJ) 
 	$(CC) $(LINKN) $(DEBUG) -o $@ $^ 
@@ -29,15 +34,6 @@ $(TARGET) : $(filter *_test.c,$(SRCS)) ../libs/debug/$(LIBS) libuid.so libdll.so
 $(CLEAN_OBJ) : $(CLEAN_SRC) 
 	$(CC) $(CPPFLAGS) -c $(CFLAGS) $(PIC) $^
 
-
-libsorted_list.so:
-	$(MAKE) -C /home/tanya/git/ds/sorted_list test
-
-libdll.so:
-	$(MAKE) -C /home/tanya/git/ds/dll test
-
-libuid.so:
-	$(MAKE) -C /home/tanya/git/ds/uid test
 
 release: ../libs/release/$(LIBS)
 

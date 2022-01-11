@@ -13,7 +13,7 @@
 
 #include "task.h" /*task related header  */
 #include "scheduler.h" /*scheduler header  */
-#include "priority_queue.h" /* for the scheduler */
+#include "pq.h" /* for the scheduler */
 
 
 enum status

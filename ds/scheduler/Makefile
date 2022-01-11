@@ -1,6 +1,4 @@
 
-
-
 CC := gcc
 
 .PHONY := clean test release debug all
@@ -8,7 +6,7 @@ CC := gcc
 RLS := -O3 -DNDBUG
 CFLAGS := -ansi -pedantic-errors -Wall -Wextra 
 PIC := -fPIC
-CPPFLAGS := -MM -MT
+CPPFLAGS := -I ../include
 LINKN := -shared
 TARGET:= a.out
 DEBUG := -g
@@ -18,26 +16,24 @@ OBJS := $(SRCS:.c=.o)
 CLEAN_SRC := $(filter-out $(wildcard *_test.c), $(SRCS))
 CLEAN_OBJ :=  $(CLEAN_SRC:.c=.o)
 
-NEEDED = $(CC) $(CPPFLAGS) $(CLEAN_SRC)
+DEPS := $(addsuffix .so, $(addprefix lib,$(LDEPS)))
+LDEPS :=  uid task pq sorted_list dll
 
 LIBS := $(addsuffix .so, $(addprefix lib,$(notdir $(CURDIR))))
 DS := $(notdir $(CURDIR))
 
-$(TARGET) : $(filter *_test.c,$(SRCS)) ../libs/debug/$(LIBS) libuid.so 
-	$(CC) -L../libs/debug -Wl,-rpath=../libs/debug -Wall -o $@ $(DS)_test.c -l$(DS) $(DEBUG)
+$(TARGET) : $(filter *_test.c,$(SRCS)) ../libs/debug/$(LIBS) $(DEPS)
+	$(CC) $(CPPFLAGS) -L ../libs/debug -Wl,-rpath=../libs/debug $(CFLAGS) -o $@ $(DS)_test.c -l$(DS) $(addprefix -l,$(LDEPS)) $(DEBUG)
+
+$(DEPS) : lib%.so :
+	$(MAKE) -C ../ds/$* all
 
 ../libs/debug/$(LIBS) : $(CLEAN_OBJ) 
 	$(CC) $(LINKN) $(DEBUG) -o $@ $^ 
 
 $(CLEAN_OBJ) : $(CLEAN_SRC) 
-	$(CC) -c $(CFLAGS) $(PIC) $^
+	$(CC) $(CPPFLAGS) -c $(CFLAGS) $(PIC) $^
 
-
-
-
-
-libuid.so:
-	$(MAKE) -C /home/tanya/git/ds/uid test
 
 release: ../libs/release/$(LIBS)
 
@@ -50,7 +46,7 @@ debug: ../libs/debug/$(LIBS)
 all: release debug
 
 clean:
-	rm -rf $(TARGET) *~ *.o *.d
+	rm -rf $(TARGET) *~ *.o
 
 test: $(TARGET)
 	./a.out
