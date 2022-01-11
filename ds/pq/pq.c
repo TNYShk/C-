@@ -13,7 +13,7 @@
 
 
 #include "sorted_list.h"
-#include "priority_queue.h"
+#include "pq.h"
 
 
 struct pqueue

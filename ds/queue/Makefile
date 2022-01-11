@@ -15,7 +15,7 @@ TARGET := a.out
 	sed -i 's/^typedef.*//g ; s/);/)\n{\n    \n}/g' $@ 
 	sed -i '/./{H;$!d} ; x ; s/\/\*.*\*\///g' $@
 
-sll.o: ../sll/sll.c ../sll/sll.h | ../sll
+sll.o: ../sll/sll.c ../include/sll.h | ../sll
 	$(COMPILE.c) $< -o $@
 
 $(TARGET): $(OBJS)

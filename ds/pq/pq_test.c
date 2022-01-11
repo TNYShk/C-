@@ -10,8 +10,8 @@
 #include <assert.h> /* assert()          */
 
 
-#include "priority_queue.h"
-
+#include "pq.h"
+#include "sorted_list.h"
 
 
 int CompareData(const void *left, const void *right);

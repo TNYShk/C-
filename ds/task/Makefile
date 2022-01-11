@@ -20,8 +20,8 @@ CLEAN_OBJ :=  $(CLEAN_SRC:.c=.o)
 LIBS := $(addsuffix .so, $(addprefix lib,$(notdir $(CURDIR))))
 DS := $(notdir $(CURDIR))
 
-$(TARGET) : $(filter *_test.c,$(SRCS)) ../libs/debug/$(LIBS) libuid.so libdll.so libsorted_list.so
-	$(CC) $(CPPFLAGS) -L ../libs/debug -Wl,-rpath=../libs/debug -Wall -o $@ $(DS)_test.c -l$(DS) -lsorted_list -luid -ldll $(DEBUG)
+$(TARGET) : $(filter *_test.c,$(SRCS)) ../libs/debug/$(LIBS) libuid.so 
+	$(CC) $(CPPFLAGS) -L../libs/debug -Wl,-rpath=../libs/debug -Wall -o $@ $(DS)_test.c -l$(DS) -luid $(DEBUG)
 
 ../libs/debug/$(LIBS) : $(CLEAN_OBJ) 
 	$(CC) $(LINKN) $(DEBUG) -o $@ $^ 
@@ -30,11 +30,8 @@ $(CLEAN_OBJ) : $(CLEAN_SRC)
 	$(CC) $(CPPFLAGS) -c $(CFLAGS) $(PIC) $^
 
 
-libsorted_list.so:
-	$(MAKE) -C /home/tanya/git/ds/sorted_list test
 
-libdll.so:
-	$(MAKE) -C /home/tanya/git/ds/dll test
+
 
 libuid.so:
 	$(MAKE) -C /home/tanya/git/ds/uid test

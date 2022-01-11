@@ -11,7 +11,7 @@
  * Reviewer: Erez                  *
  ***********************************/
 
-#include "../include/dll.h"
+#include "dll.h"
 
 enum stats
 {

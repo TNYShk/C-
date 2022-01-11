@@ -1,30 +1,55 @@
+
+
+
 CC := gcc
-CFLAGS := -ansi -pedantic-errors -Wall -Wextra -g
-LDFLAGS := -g
 
+.PHONY := clean test release debug all
 
+RLS := -O3 -DNDBUG
+CFLAGS := -ansi -pedantic-errors -Wall -Wextra 
+PIC := -fPIC
+CPPFLAGS := -I ../include
+LINKN := -shared
+TARGET:= a.out
+DEBUG := -g
+DEPS =: libdll.so
 SRCS := $(wildcard *.c)
-OBJS := $(SRCS:.c=.o) dll.o
+OBJS := $(SRCS:.c=.o)
+CLEAN_SRC := $(filter-out $(wildcard *_test.c), $(SRCS))
+CLEAN_OBJ :=  $(CLEAN_SRC:.c=.o)
 
-TARGET := a.out
 
-.DEFAULT_GOAL := $(TARGET)
-.PHONY := valg push clean
 
-%.c: | %.h
-	sed 's/^#.*//g ; 3i #include "$|"' $| > $@
-	sed -i 's/^typedef.*//g ; s/);/)\n{\n    \n}/g' $@ 
-	sed -i '/./{H;$!d} ; x ; s/\/\*.*\*\///g' $@
+LIBS := $(addsuffix .so, $(addprefix lib,$(notdir $(CURDIR))))
+DS := $(notdir $(CURDIR))
 
-dll.o: ../dll/dll.c ../dll/dll.h | ../dll
-	$(COMPILE.c) $< -o $@
+$(TARGET) : $(filter *_test.c,$(SRCS)) ../libs/debug/$(LIBS) libdll.so
+	$(CC) $(CPPFLAGS) -L../libs/debug -Wl,-rpath=../libs/debug -Wall -o $@ $(DS)_test.c -l$(DS) -ldll $(DEBUG)
 
-$(TARGET): $(OBJS)
-	$(LINK.o) $^ -o $@
+../libs/debug/$(LIBS) : $(CLEAN_OBJ) 
+	$(CC) $(LINKN) $(DEBUG) -o $@ $^ 
 
-valg: $(TARGET)
-	valgrind --leak-check=yes --track-origins=yes ./$<
+$(CLEAN_OBJ) : $(CLEAN_SRC) 
+	$(CC) $(CPPFLAGS) -c $(CFLAGS) $(PIC) $^
+
+
+
+libdll.so:
+	$(MAKE) -C /home/tanya/git/ds/dll test
+
+release: ../libs/release/$(LIBS)
+
+../libs/release/$(LIBS): $(CLEAN_OBJ)
+	$(CC) $(LINKN) $(RLS) -o $@ $^
+
+
+debug: ../libs/debug/$(LIBS)
+
+all: release debug
 
 clean:
-	rm -rf $(TARGET) *~ *.o
-	
+	rm -rf $(TARGET) *~ *.o *.d
+
+test: $(TARGET)
+	./a.out
+
