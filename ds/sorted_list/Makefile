@@ -1,6 +1,4 @@
 
-
-
 CC := gcc
 
 .PHONY := clean test release debug all
@@ -12,19 +10,23 @@ CPPFLAGS := -I ../include
 LINKN := -shared
 TARGET:= a.out
 DEBUG := -g
-DEPS =: libdll.so
+
 SRCS := $(wildcard *.c)
 OBJS := $(SRCS:.c=.o)
 CLEAN_SRC := $(filter-out $(wildcard *_test.c), $(SRCS))
 CLEAN_OBJ :=  $(CLEAN_SRC:.c=.o)
 
-
+DEPLIST := $(addsuffix .so, $(addprefix lib,$(DEPS)))
+DEPS := dll
 
 LIBS := $(addsuffix .so, $(addprefix lib,$(notdir $(CURDIR))))
 DS := $(notdir $(CURDIR))
 
-$(TARGET) : $(filter *_test.c,$(SRCS)) ../libs/debug/$(LIBS) libdll.so
-	$(CC) $(CPPFLAGS) -L../libs/debug -Wl,-rpath=../libs/debug -Wall -o $@ $(DS)_test.c -l$(DS) -ldll $(DEBUG)
+$(TARGET) : $(filter *_test.c,$(SRCS)) ../libs/debug/$(LIBS) $(DEPLIST)
+	$(CC) $(CPPFLAGS) -L ../libs/debug -Wl,-rpath=../libs/debug $(CFLAGS) -o $@ $(DS)_test.c -l$(DS) $(addprefix -l,$(DEPS)) $(DEBUG)
+
+$(DEPLIST) : lib%.so :
+	$(MAKE) -C ../ds/$* all
 
 ../libs/debug/$(LIBS) : $(CLEAN_OBJ) 
 	$(CC) $(LINKN) $(DEBUG) -o $@ $^ 
@@ -32,10 +34,6 @@ $(TARGET) : $(filter *_test.c,$(SRCS)) ../libs/debug/$(LIBS) libdll.so
 $(CLEAN_OBJ) : $(CLEAN_SRC) 
 	$(CC) $(CPPFLAGS) -c $(CFLAGS) $(PIC) $^
 
-
-
-libdll.so:
-	$(MAKE) -C /home/tanya/git/ds/dll test
 
 release: ../libs/release/$(LIBS)
 
@@ -48,7 +46,7 @@ debug: ../libs/debug/$(LIBS)
 all: release debug
 
 clean:
-	rm -rf $(TARGET) *~ *.o *.d
+	rm -rf $(TARGET) *~ *.o
 
 test: $(TARGET)
 	./a.out

@@ -17,7 +17,7 @@ CLEAN_SRC := $(filter-out $(wildcard *_test.c), $(SRCS))
 CLEAN_OBJ :=  $(CLEAN_SRC:.c=.o)
 
 DEPLIB := $(addsuffix .so, $(addprefix lib,$(DEPS)))
-DEPS :=  uid task pq sorted_list dll
+DEPS :=  
 
 LIBS := $(addsuffix .so, $(addprefix lib,$(notdir $(CURDIR))))
 DS := $(notdir $(CURDIR))
@@ -26,7 +26,7 @@ $(TARGET) : $(filter *_test.c,$(SRCS)) ../libs/debug/$(LIBS) $(DEPLIB)
 	$(CC) $(CPPFLAGS) -L ../libs/debug -Wl,-rpath=../libs/debug $(CFLAGS) -o $@ $(DS)_test.c -l$(DS) $(addprefix -l,$(DEPS)) $(DEBUG)
 
 $(DEPLIB) : lib%.so :
-	$(MAKE) -C ../ds/$* all
+	$(MAKE) -C ../$* all
 
 ../libs/debug/$(LIBS) : $(CLEAN_OBJ) 
 	$(CC) $(LINKN) $(DEBUG) -o $@ $^ 

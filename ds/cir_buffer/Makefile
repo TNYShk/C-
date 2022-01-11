@@ -1,32 +1,53 @@
+
 CC := gcc
-CFLAGS := -ansi -pedantic-errors -Wall -Wextra -g
-LDFLAGS := -g
+
+.PHONY := clean test release debug all
+
+RLS := -O3 -DNDBUG
+CFLAGS := -ansi -pedantic-errors -Wall -Wextra 
+PIC := -fPIC
+CPPFLAGS := -I ../include
+LINKN := -shared
+TARGET:= a.out
+DEBUG := -g
 
 SRCS := $(wildcard *.c)
 OBJS := $(SRCS:.c=.o)
+CLEAN_SRC := $(filter-out $(wildcard *_test.c), $(SRCS))
+CLEAN_OBJ :=  $(CLEAN_SRC:.c=.o)
 
-TARGET := a.out
+DEPLIB := $(addsuffix .so, $(addprefix lib,$(DEPS)))
+DEPS :=  cir_buffer
 
-.DEFAULT_GOAL := $(TARGET)
-.PHONY := valg push clean
+LIBS := $(addsuffix .so, $(addprefix lib,$(notdir $(CURDIR))))
+DS := $(notdir $(CURDIR))
 
-%.c: | %.h
-	sed 's/^#.*//g ; 3i #include "$|"' $| > $@
-	sed -i 's/^typedef.*//g ; s/);/)\n{\n    \n}/g' $@ 
-	sed -i '/./{H;$!d} ; x ; s/\/\*.*\*\///g' $@
+$(TARGET) : $(filter *_test.c,$(SRCS)) ../libs/debug/$(LIBS) $(DEPLIB)
+	$(CC) $(CPPFLAGS) -L ../libs/debug -Wl,-rpath=../libs/debug $(CFLAGS) -o $@ $(DS)_test.c -l$(DS) $(addprefix -l,$(DEPS)) $(DEBUG)
 
-%.d: %.c
-	$(CC) -MM $< > $@~
-	sed 's/\($*\.o\):/\1 $@:/g' $@~ > $@
-	rm -f $@~
+$(DEPLIB) : lib%.so :
+	$(MAKE) -C ../$* all
+
+../libs/debug/$(LIBS) : $(CLEAN_OBJ) 
+	$(CC) $(LINKN) $(DEBUG) -o $@ $^ 
+
+$(CLEAN_OBJ) : $(CLEAN_SRC) 
+	$(CC) $(CPPFLAGS) -c $(CFLAGS) $(PIC) $^
 
 
-$(TARGET): $(OBJS)
-	$(LINK.o) $^ -o $@
+release: ../libs/release/$(LIBS)
 
-valg: $(TARGET)
-	valgrind --leak-check=yes --track-origins=yes ./$<
+../libs/release/$(LIBS): $(CLEAN_OBJ)
+	$(CC) $(LINKN) $(RLS) -o $@ $^
+
+
+debug: ../libs/debug/$(LIBS)
+
+all: release debug
 
 clean:
 	rm -rf $(TARGET) *~ *.o
-	
+
+test: $(TARGET)
+	./a.out
+
