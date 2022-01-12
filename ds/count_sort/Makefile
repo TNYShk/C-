@@ -16,17 +16,17 @@ OBJS := $(SRCS:.c=.o)
 CLEAN_SRC := $(filter-out $(wildcard *_test.c), $(SRCS))
 CLEAN_OBJ :=  $(CLEAN_SRC:.c=.o)
 
-DEPS := sorted_list dll
-DEPLIST := $(addsuffix .so, $(addprefix lib,$(DEPS)))
+DEPS :=  
+DEPLIB := $(addsuffix .so, $(addprefix lib,$(DEPS)))
 
 
 LIBS := $(addsuffix .so, $(addprefix lib,$(notdir $(CURDIR))))
 DS := $(notdir $(CURDIR))
 
-$(TARGET) : $(filter *_test.c,$(SRCS)) ../libs/debug/$(LIBS) $(DEPLIST)
+$(TARGET) : $(filter *_test.c,$(SRCS)) ../libs/debug/$(LIBS) $(DEPLIB)
 	$(CC) $(CPPFLAGS) -L ../libs/debug -Wl,-rpath=../libs/debug $(CFLAGS) -o $@ $(DS)_test.c -l$(DS) $(addprefix -l,$(DEPS)) $(DEBUG)
 
-$(DEPLIST) : lib%.so :
+$(DEPLIB) : lib%.so :
 	$(MAKE) -C ../$* all clean
 
 ../libs/debug/$(LIBS) : $(CLEAN_OBJ) 

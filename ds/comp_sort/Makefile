@@ -33,7 +33,7 @@ $(DEPLIB) : lib%.so :
 	$(CC) $(LINKN) $(DEBUG) -o $@ $^ 
 
 $(CLEAN_OBJ) : $(CLEAN_SRC) 
-	$(CC) $(CPPFLAGS) -c $(CFLAGS) $(PIC) $^
+	$(CC) $(CPPFLAGS)  -c $(CFLAGS) $(PIC) $^ $(DEBUG)
 
 
 release: ../libs/release/$(LIBS)

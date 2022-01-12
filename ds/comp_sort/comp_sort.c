@@ -1,7 +1,7 @@
 /**********************************************
  * Comp_Sort - Source File                    *
  * Developer: Tanya			                  *
- * Written: 2022-1-12                         *
+ *          Jan 12, 2022                      *
  *                                            *
  * Reviewer:Amit Shlomo	                      *
  **********************************************/
@@ -61,9 +61,9 @@ void SelectionSort(int *arr, size_t arr_size)
 
 void InsertionSort(int *arr, size_t arr_size)
 {
-	size_t i = 0;
+	size_t i = 1;
 
-	for (i = 1; i < arr_size ; ++i)
+	for (; i < arr_size ; ++i)
 	{
 		size_t j = i;
 
