@@ -13,7 +13,7 @@ static void PrintArr(int *arr, size_t length);
 void InitArr(int *ar, size_t len);
 void InitArrOne(int *ar, size_t len);
 int cmpfunc(const void * a, const void * b);
-
+int IsSorted(int *arr, size_t length);
 
 
 int main (void)
@@ -29,8 +29,6 @@ int main (void)
 	int fivek[FIVEK] = {1};
 
 
-
-
 	printf("\n\t--------------------Arrays Before Sort--------------------\n");
 	PrintArr(arr,6);
 	PrintArr(arr2,6);
@@ -44,13 +42,20 @@ int main (void)
 
 	InitArr(fifty, 50);
 	BubbleSort(fifty,50);
-	printf("--------------------Buble Sort 50 elements --------------\n");
-	PrintArr(fifty, 50);
+
+	assert(1 == IsSorted(fifty,50));
+	
+	printf("--------------------Buble Sort 5k elements --------------\n");
+	/*PrintArr(fifty, 50);*/
 	
 	InitArrOne(fivek,FIVEK);
 	start = clock();
 	BubbleSort(fivek,FIVEK);
 	end = clock();
+	
+	assert(1 == IsSorted(fivek,FIVEK));
+	
+	printf("5K BubbleSort tested!\n");
 	printf("5K -Bubble sort took %ld m.sec to run \n", end - start);
 	/*PrintArr(fivek, FIVEK);*/
 
@@ -60,13 +65,18 @@ int main (void)
 
 	InitArr(fifty, 50);
 	SelectionSort(fifty,50);
-	printf("--------------------Selection Sort 50 elements --------------\n");
-	PrintArr(fifty, 50);
-
+	assert(1 == IsSorted(fifty,50));
+	
+	/*PrintArr(fifty, 50);*/
+	printf("--------------------Selection Sort 5k elements --------------\n");
 	InitArrOne(fivek,FIVEK);
 	start = clock();
 	SelectionSort(fivek,FIVEK);
 	end = clock();
+	
+	assert(1 == IsSorted(fivek,FIVEK));
+	
+	printf("5K SelectionSort tested!\n");
 	printf("5K- Selection sort took %ld m.sec to run \n", end - start);
 	/*PrintArr(fivek, FIVEK);*/
 
@@ -76,13 +86,18 @@ int main (void)
 
 	InitArr(fifty, 50);
 	InsertionSort(fifty,50);
-	printf("--------------------Insertion Sort 50 elements --------------\n");
-	PrintArr(fifty, 50);
-
+	assert(1 == IsSorted(fifty,50));
+	
+	/*PrintArr(fifty, 50);*/
+	printf("--------------------Insertion Sort 5K elements --------------\n");
 	InitArrOne(fivek,FIVEK);
 	start = clock();
 	InsertionSort(fivek,FIVEK);
 	end = clock();
+	
+	assert(1 == IsSorted(fivek,FIVEK));
+	
+	printf("5K InsertionSort tested!\n");
 	printf("5K - Insertion sort took %ld m.sec to run \n", end - start);
 	/*PrintArr(fivek, FIVEK);*/
 
@@ -91,6 +106,10 @@ int main (void)
 	start = clock();
 	qsort(fivek,FIVEK, sizeof(int), cmpfunc);
 	end = clock();
+	
+	assert(1 == IsSorted(fivek,FIVEK));
+
+	printf("5K qsort tested!\n");
 	printf("5K - qsort took %ld m.sec to run \n", end - start);
 	
 	return 0;
@@ -153,4 +172,17 @@ static void PrintArr(int *arr, size_t length)
 int cmpfunc(const void *a, const void *b) 
 {
    return ( *(int *)a - *(int *)b );
+}
+
+int IsSorted(int *arr, size_t length)
+{
+	int i = 1;
+	int flag = 1;
+
+	while(flag && length)
+	{
+		--length;
+		flag = (arr[i - 1] < arr[i]);
+	}
+	return flag;
 }

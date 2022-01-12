@@ -5,21 +5,22 @@
 
 /* Service func */
 static void Swap(int *arr , int i, int j);
-
+static void PSwap(int *i , int *j);
 
 void BubbleSort(int *arr, size_t arr_size)
 {
 	size_t swapped = 0;
 	size_t i = 0;
+
 	assert (NULL != arr);
 
 	while(swapped < arr_size)
 	{
-		for(i = 1; i < arr_size ; ++i)
+		for(i = 1; i < arr_size - swapped ; ++i)
 		{
-			if (arr[i-1] > arr[i])
+			if (arr[i - 1] > arr[i])
 			{
-				Swap(arr, i, i - 1);
+				PSwap(&arr[i], &arr[i - 1]);
 			}
 		}
 
@@ -48,10 +49,8 @@ void SelectionSort(int *arr, size_t arr_size)
             }
         }
 
-        if (i != min) 
-        {
-        	Swap(arr ,i ,min);
-        }
+        Swap(arr ,i ,min);
+        
     }
 }	
 
@@ -80,6 +79,12 @@ static void Swap(int *arr , int i , int j)
 	arr[i] =  holder;
 }
 
+static void PSwap(int *i , int *j)
+{
+	int holder = *j;
+	*j = *i;
+	*i =  holder;
+}
 
 
 
