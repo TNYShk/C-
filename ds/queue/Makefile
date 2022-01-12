@@ -26,7 +26,7 @@ $(TARGET) : $(filter *_test.c,$(SRCS)) ../libs/debug/$(LIBS) $(DEPLIB)
 	$(CC) $(CPPFLAGS) -L ../libs/debug -Wl,-rpath=../libs/debug $(CFLAGS) -o $@ $(DS)_test.c -l$(DS) $(addprefix -l,$(DEPS)) $(DEBUG)
 
 $(DEPLIB) : lib%.so :
-	$(MAKE) -C ../ds/$* all
+	$(MAKE) -C ../$* all
 
 ../libs/debug/$(LIBS) : $(CLEAN_OBJ) 
 	$(CC) $(LINKN) $(DEBUG) -o $@ $^ 
