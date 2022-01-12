@@ -1,13 +1,20 @@
-#include <stddef.h>
-#include <assert.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
+/**********************************************
+ * Comp_Sort - Source File                    *
+ * Developer: Tanya			                  *
+ * Written: 2022-1-12                         *
+ *                                            *
+ * Reviewer:Amit Shlomo	                      *
+ **********************************************/
+#include <assert.h> /*assert */
+#include <stdio.h> /*print */
+#include <stdlib.h> /* qsort*/
+#include <time.h> /* clock, time_t*/
 
 #include "comp_sort.h"
 
 
 #define FIVEK (5000)
+
 
 static void PrintArr(int *arr, size_t length);
 void InitArr(int *ar, size_t len);
