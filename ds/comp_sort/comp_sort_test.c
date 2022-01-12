@@ -41,6 +41,7 @@ int main (void)
 	PrintArr(arr,6);
 
 	InitArr(fifty, 50);
+	assert(0 == IsSorted(fifty,50));
 	BubbleSort(fifty,50);
 
 	assert(1 == IsSorted(fifty,50));
@@ -49,6 +50,7 @@ int main (void)
 	/*PrintArr(fifty, 50);*/
 	
 	InitArrOne(fivek,FIVEK);
+	assert(0 == IsSorted(fivek,FIVEK));
 	start = clock();
 	BubbleSort(fivek,FIVEK);
 	end = clock();
@@ -70,6 +72,7 @@ int main (void)
 	/*PrintArr(fifty, 50);*/
 	printf("--------------------Selection Sort 5k elements --------------\n");
 	InitArrOne(fivek,FIVEK);
+	assert(0 == IsSorted(fivek,FIVEK));
 	start = clock();
 	SelectionSort(fivek,FIVEK);
 	end = clock();
@@ -103,6 +106,7 @@ int main (void)
 
 	printf("\n\t--------------------qsort function --------------------\n");
 	InitArrOne(fivek,FIVEK);
+	assert(0 == IsSorted(fivek,FIVEK));
 	start = clock();
 	qsort(fivek,FIVEK, sizeof(int), cmpfunc);
 	end = clock();

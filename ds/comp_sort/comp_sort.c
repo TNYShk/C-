@@ -25,7 +25,7 @@ void BubbleSort(int *arr, size_t arr_size)
 		}
 
 		++swapped;
-		i = 1;
+		
 	}
 }
 
@@ -48,9 +48,8 @@ void SelectionSort(int *arr, size_t arr_size)
                 min = j;
             }
         }
-
-        Swap(arr ,i ,min);
         
+        Swap(arr ,i ,min);
     }
 }	
 
