@@ -47,7 +47,7 @@ debug: ../libs/debug/$(LIBS)
 all: release debug
 
 clean:
-	rm -rf $(TARGET) *~ *.o *.d
+	rm -rf $(TARGET) *~ *.o 
 
 test: $(TARGET)
 	./a.out
