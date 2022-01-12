@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <assert.h>
 #include <stdlib.h>
-#include <string.h>
-#include <limits.h>
+
+
 
 int *Multiplied(int *arr, int *results, size_t length);
 static void PrintArr(int *arr, size_t length);
