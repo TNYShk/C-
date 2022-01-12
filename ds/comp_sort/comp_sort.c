@@ -1,11 +1,19 @@
-#include <stddef.h>
-#include <assert.h>
+/**********************************************
+ * Comp_Sort - Source File                    *
+ * Developer: Tanya			                  *
+ * Written: 2022-1-12                         *
+ *                                            *
+ * Reviewer:Amit Shlomo	                      *
+ **********************************************/
+#include <stddef.h> /* size_t*/
+#include <assert.h> /* assert*/
 
 #include "comp_sort.h"
 
 /* Service func */
-static void Swap(int *arr , int i, int j);
 static void PSwap(int *i , int *j);
+
+
 
 void BubbleSort(int *arr, size_t arr_size)
 {
@@ -23,9 +31,7 @@ void BubbleSort(int *arr, size_t arr_size)
 				PSwap(&arr[i], &arr[i - 1]);
 			}
 		}
-
 		++swapped;
-		
 	}
 }
 
@@ -48,8 +54,7 @@ void SelectionSort(int *arr, size_t arr_size)
                 min = j;
             }
         }
-        
-        Swap(arr ,i ,min);
+        PSwap(&arr[i], &arr[min]);
     }
 }	
 
@@ -64,23 +69,20 @@ void InsertionSort(int *arr, size_t arr_size)
 
 		while( j > 0 && arr[j - 1] > arr[j])
 		{
-			Swap(arr, j, j - 1);
+			PSwap(&arr[j], &arr[j - 1]);
 			--j;
 		}
 	}
 }
 
 
-static void Swap(int *arr , int i , int j)
-{
-	int holder = arr[j];
-	arr[j] = arr[i];
-	arr[i] =  holder;
-}
 
 static void PSwap(int *i , int *j)
 {
 	int holder = *j;
+
+	assert (&i != &j);
+
 	*j = *i;
 	*i =  holder;
 }
