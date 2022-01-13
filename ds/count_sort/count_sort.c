@@ -8,11 +8,11 @@
 #include <stddef.h> /* size_t*/
 #include <assert.h> /* assert*/
 #include <stdlib.h> /* calloc*/
-#include <stdio.h> /*print */
+
 
 #include "count_sort.h"
 
-#define MAX_EL (100)
+
 
 static int FindMin(int *arr, size_t len);
 static int FindMax(int *arr, size_t len);
@@ -29,38 +29,40 @@ void CountingSort(int *arr, size_t length)
 	int *output = NULL;
 
 	assert(NULL != arr);
+	
 
 	max = FindMax(arr, length);
 
 	count_arr = (int *)calloc((max + 1) ,sizeof(int));
 	output = (int *)calloc(length,sizeof(int));
 
-
-	while(index < length)
+	if((count_arr != NULL) && (output != NULL))
 	{
-		++count_arr[arr[index]];
-		++index;
+
+		while(index < length)
+		{
+			++count_arr[arr[index++]];
+		
+		}
+
+		for(index = 1; index < max + 1; ++index)
+		{
+			count_arr[index] += count_arr[index - 1];
+		}
+		
+		for(i = length -1; i >= 0; --i)
+		{
+			--count_arr[arr[i]];
+			output[count_arr[arr[i]]] = arr[i];
+		}
+		
+		CopyArrs(arr, output, length);
+
+		free(count_arr);
+		count_arr = NULL;
+		free(output);
+		output = NULL;
 	}
-
-	for(index = 1; index < max + 1; ++index)
-	{
-		count_arr[index] += count_arr[index - 1];
-	}
-	
-	for(i = length -1; i >= 0; --i)
-	{
-		--count_arr[arr[i]];
-		output[count_arr[arr[i]]] = arr[i];
-	}
-	
-	CopyArrs(arr, output, length);
-
-	free(count_arr);
-	count_arr = NULL;
-	free(output);
-	output = NULL;
-
-
 }
 
 static int FindMin(int *arr, size_t len)
@@ -69,8 +71,7 @@ static int FindMin(int *arr, size_t len)
 	int *end = arr + len -1;
 	int min = *arr;
 	
-
-	while(left != end)
+	while(left < end)
 	{
 		if(*left < min)
 		{
@@ -79,7 +80,6 @@ static int FindMin(int *arr, size_t len)
 		++left;
 		
 	}
-	printf("min? %d\n", min);
 	return min;
 }
 
@@ -87,8 +87,8 @@ static int FindMax(int *arr, size_t len)
 {
 	int *left = arr;
 	int *right = arr + len -1;
-
 	int max = *arr;
+
 	while(left < right)
 	{
 		if(*left > max)

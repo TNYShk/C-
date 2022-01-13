@@ -44,6 +44,7 @@ void SmallScale()
     size_t length = sizeof(arr)/ sizeof(arr[0]);
     printf("\t******Small Scale Test******\n");
     InitArr(arr, length);
+
     PrintArr(arr,length);
     
     start = clock();
@@ -68,7 +69,7 @@ void FiveKScale()
 
     printf("\n\t****************5K Scale Test***************************\n");
     InitArr(fivek, FIVEK);
-    /*assert(0 == IsSorted(fivek,FIVEK));*/
+   
 
     start = clock();
     CountingSort(fivek, FIVEK);
@@ -114,13 +115,13 @@ static void PrintArr(int *arr, size_t length)
 
 int IsSorted(int *arr, size_t length)
 {
-    int i = 1;
+    size_t i = 1;
     int flag = 1;
 
-    while(flag && length)
+    while(flag && (i < length))
     {
-        --length;
         flag = (arr[i - 1] <= arr[i]);
+        ++i;
     }
     return flag;
 }
