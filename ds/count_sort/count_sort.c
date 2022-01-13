@@ -29,7 +29,7 @@ void CountingSort(int *arr, size_t length)
 	int *output = NULL;
 
 	assert(NULL != arr);
-	
+	assert( 0 != FindMin(arr,length));
 
 	max = FindMax(arr, length);
 
@@ -42,7 +42,6 @@ void CountingSort(int *arr, size_t length)
 		while(index < length)
 		{
 			++count_arr[arr[index++]];
-		
 		}
 
 		for(index = 1; index < max + 1; ++index)

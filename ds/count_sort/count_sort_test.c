@@ -12,7 +12,7 @@
 #include <stdio.h> /*print */
 
 #define FIVEK (5000)
-#define MAX_EL (100)
+#define MAX_EL (99)
 #define TEN (10)
 
 #include "count_sort.h"
@@ -90,7 +90,7 @@ static void InitArr(int *arr, size_t size)
 
     while(size)
     {
-        arr[size -1] = rand()% MAX_EL;
+        arr[size -1] = 1 + rand()% MAX_EL;
         --size;
     }
 }

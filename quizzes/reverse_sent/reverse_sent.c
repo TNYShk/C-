@@ -12,7 +12,7 @@ typedef struct stackw
 
 }stackw_t; 
 
-void ReverseSentance(stackw_t *stackword, char *sentance, char *rev);
+void ReverseSentance(stackw_t *stackword, char *sentence, char *rev);
 static void InitSTack(stackw_t *stackword, size_t len);
 void Destroy(stackw_t *stackword);
 
@@ -23,14 +23,18 @@ void Destroy(stackw_t *stackword);
 int main(void)
 {
 	stackw_t *words = NULL;
-	char sent[] = "one two three";
+	char sent[] = "corona? sick am i";
+
 	char *rev = NULL;
+	
 	words = (stackw_t *)calloc(strlen(sent),sizeof(stackw_t));
 	rev = (char *)calloc(strlen(sent),100);
+	
 	InitSTack(words,strlen(sent));
-
 	ReverseSentance(words,sent, rev);
+
 	printf("reveresed: \t%s\n", rev);
+	
 	Destroy(words);
 	free(rev);
 	rev = NULL;
@@ -48,20 +52,20 @@ void Destroy(stackw_t *stackword)
 }
 
 
-void ReverseSentance(stackw_t *stackword, char *sentance, char *rev)
+void ReverseSentance(stackw_t *stackword, char *sentence, char *rev)
 {
 	char *token = NULL;
 	char *reversed = NULL;
 
-	reversed = (char *)malloc(strlen(sentance)*100);
+	reversed = (char *)malloc(strlen(sentence));
 	
-	printf("before: %s\n",sentance );
-	token = strtok(sentance, " ");
+	printf("before: %s\n",sentence );
+	token = strtok(sentence, " ");
 
 	while( token != NULL ) 
 	{
       StackPush(stackword->stack, token);
-      
+      StackPush(stackword->stack, " ");
       token = strtok(NULL, " ");
    	}
    
