@@ -12,7 +12,7 @@
 #include <stdio.h> /*print */
 
 #define FIVEK (5000)
-#define MAX_EL (666)
+#define MAX_EL (100)
 #define TEN (10)
 
 #include "count_sort.h"
@@ -30,7 +30,7 @@ int main (void)
     
 
     SmallScale();
-    FiveKScale();
+   FiveKScale();
     
     return 0;
 }
@@ -40,19 +40,18 @@ void SmallScale()
     clock_t start = 0;
     clock_t end = 0;
     int arr[TEN] = {1};
-    int output[TEN] = {1};
-
+   
     size_t length = sizeof(arr)/ sizeof(arr[0]);
     printf("\t******Small Scale Test******\n");
     InitArr(arr, length);
     PrintArr(arr,length);
     
     start = clock();
-    CountingSort(arr,output,length,MAX_EL);
+    CountingSort(arr,length);
     end = clock();
     printf("post Counting Sort:\n");
-    PrintArr(output,length);
-    assert(1 == IsSorted(output,length));
+    PrintArr(arr,length);
+    assert(1 == IsSorted(arr,length));
     printf("Passed assert Test!\n");
     printf("Counting Sort took %ld m.sec to run \n", end - start);
     
@@ -65,16 +64,16 @@ void FiveKScale()
     clock_t end = 0;
 
     int fivek[FIVEK] = {1};
-    int a_out[FIVEK] = {1};
+   
 
     printf("\n\t****************5K Scale Test***************************\n");
     InitArr(fivek, FIVEK);
-    assert(0 == IsSorted(a_out,FIVEK));
+    assert(0 == IsSorted(fivek,FIVEK));
 
     start = clock();
-    CountingSort(fivek, a_out, FIVEK, MAX_EL);
+    CountingSort(fivek, FIVEK);
     end = clock();
-    assert(1 == IsSorted(a_out,FIVEK));
+    assert(1 == IsSorted(fivek,FIVEK));
     printf("Passed assert Test!\n");
     printf("Counting Sort of 5K elements took %ld m.sec to run \n", end - start);
 }

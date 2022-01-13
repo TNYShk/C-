@@ -7,12 +7,12 @@
  **********************************************/
 #include <stddef.h> /* size_t*/
 #include <assert.h> /* assert*/
-
+#include <stdio.h>
 #include "comp_sort.h"
 
 /* Service func */
 static void PSwap(int *i , int *j);
-
+static int FindMin(int *arr, size_t len);
 
 
 void BubbleSort(int *arr, size_t arr_size)
@@ -35,12 +35,13 @@ void BubbleSort(int *arr, size_t arr_size)
 	}
 }
 
-
+/*
 void SelectionSort(int *arr, size_t arr_size)
 {
 	int i = 0;
 
 	assert(NULL != arr);
+	FindMin(arr,arr_size);
 
    for (i = 0; i < (int)arr_size - 1; ++i) 
    {
@@ -56,16 +57,32 @@ void SelectionSort(int *arr, size_t arr_size)
         }
         PSwap(&arr[i], &arr[min]);
     }
-}	
+}*/
+
+void SelectionSort(int *arr, size_t arr_size)
+{
+	int i = 0;
+	size_t len = arr_size;
+	assert(NULL != arr);
+
+	while(i < arr_size)
+	{
+		int min = FindMin(arr,len);
+		 PSwap(&arr[i], &arr[min]);
+		 ++arr;
+		 --len;
+		++i;
+	}
+}		
 
 
 void InsertionSort(int *arr, size_t arr_size)
 {
-	size_t i = 1;
+	size_t index = 1;
 
-	for (; i < arr_size ; ++i)
+	for (; index < arr_size ; ++index)
 	{
-		size_t j = i;
+		size_t j = index;
 
 		while( j > 0 && arr[j - 1] > arr[j])
 		{
@@ -87,6 +104,23 @@ static void PSwap(int *i , int *j)
 	*i =  holder;
 }
 
+static int FindMin(int *arr, size_t len)
+{
+	int min = *arr;
+	int *end = arr + len;
+
+	while(arr != end)
+	{
+		if(*arr < min)
+		{
+			min = *arr;
+		}
+		++arr;
+		--len;
+	}
+	printf("min? %d\n", min);
+	return min;
+}
 
 
 

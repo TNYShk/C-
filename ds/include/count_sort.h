@@ -13,7 +13,7 @@
  * 
  * RETURN: None
  *complexity: time: O(n + k) space: O(n)*/
-void CountingSort(int *arr, int *out, size_t arr_size, size_t max_val);
+void CountingSort(int *arr, size_t arr_size);
 
 /*
  * DESCRIPTION: 
