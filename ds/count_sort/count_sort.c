@@ -32,7 +32,7 @@ void CountingSort(int *arr, size_t length)
 
 	max = FindMax(arr, length);
 
-	count_arr = (int *)calloc(max ,sizeof(int));
+	count_arr = (int *)calloc((max + 1) ,sizeof(int));
 	output = (int *)calloc(length,sizeof(int));
 
 
@@ -111,7 +111,6 @@ static void CopyArrs(int *dest, int *src, size_t len)
 
 	dest_run = dest;
 	src_run = src;
-	
 	while(len)
 	{
 		*dest_run = *src_run;

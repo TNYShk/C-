@@ -68,7 +68,7 @@ void FiveKScale()
 
     printf("\n\t****************5K Scale Test***************************\n");
     InitArr(fivek, FIVEK);
-    assert(0 == IsSorted(fivek,FIVEK));
+    /*assert(0 == IsSorted(fivek,FIVEK));*/
 
     start = clock();
     CountingSort(fivek, FIVEK);
