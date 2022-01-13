@@ -42,7 +42,7 @@ int main (void)
 	PrintArr(arr3,6);
 	printf("5K and 50 element arrays will not be printed here.\n They are initialized, specifially 5K is somewhat random\n");
 	
-	/*
+
 	printf("\n--------------------Bubble Sort--------------------\n");
 	BubbleSort(arr,6);
 	PrintArr(arr,6);
@@ -66,18 +66,18 @@ int main (void)
 	
 	printf("5K BubbleSort tested!\n");
 	printf("5K -Bubble sort took %ld m.sec to run \n", end - start);
-	*/
+	
 
 	printf("\n--------------------Selection Sort--------------------\n");
 	SelectionSort(arr2,6);
 	PrintArr(arr2,6);
-/*
+
 	InitArr(fifty, 50);
 	SelectionSort(fifty,50);
 	assert(1 == IsSorted(fifty,50));
 	
 	/*PrintArr(fifty, 50);*/
-	/*
+	
 	printf("--------------------Selection Sort 5k elements --------------\n");
 	InitArrOne(fivek,FIVEK);
 	assert(0 == IsSorted(fivek,FIVEK));
@@ -90,7 +90,7 @@ int main (void)
 	printf("5K SelectionSort tested!\n");
 	printf("5K- Selection sort took %ld m.sec to run \n", end - start);
 	/*PrintArr(fivek, FIVEK);*/
-	/*
+	
 	printf("\n--------------------Insertion Sort--------------------\n");
 	InsertionSort(arr3,6);
 	PrintArr(arr3,6);
@@ -100,7 +100,7 @@ int main (void)
 	assert(1 == IsSorted(fifty,50));
 	
 	/*PrintArr(fifty, 50);*/
-	/*
+	
 	printf("--------------------Insertion Sort 5K elements --------------\n");
 	InitArrOne(fivek,FIVEK);
 	start = clock();
@@ -189,13 +189,13 @@ int cmpfunc(const void *a, const void *b)
 
 int IsSorted(int *arr, size_t length)
 {
-	int i = 1;
-	int flag = 1;
+    size_t i = 1;
+    int flag = 1;
 
-	while(flag && length)
-	{
-		--length;
-		flag = (arr[i - 1] < arr[i]);
-	}
-	return flag;
+    while(flag && (i < length))
+    {
+        flag = (arr[i - 1] <= arr[i]);
+        ++i;
+    }
+    return flag;
 }

@@ -35,13 +35,13 @@ void BubbleSort(int *arr, size_t arr_size)
 	}
 }
 
-/*
+
 void SelectionSort(int *arr, size_t arr_size)
 {
 	int i = 0;
 
 	assert(NULL != arr);
-	FindMin(arr,arr_size);
+	
 
    for (i = 0; i < (int)arr_size - 1; ++i) 
    {
@@ -57,8 +57,8 @@ void SelectionSort(int *arr, size_t arr_size)
         }
         PSwap(&arr[i], &arr[min]);
     }
-}*/
-
+}
+/*
 void SelectionSort(int *arr, size_t arr_size)
 {
 	int i = 0;
@@ -74,7 +74,7 @@ void SelectionSort(int *arr, size_t arr_size)
 		++i;
 	}
 }		
-
+*/
 
 void InsertionSort(int *arr, size_t arr_size)
 {
