@@ -93,7 +93,7 @@ void RadixSort(int *arr, size_t len, int chunk)
 	radix = PawPatrol(chunk);
    	
 	temp_arr = (int *)calloc(len , sizeof(int));
-	bucket = (int *)calloc(radix + 1, sizeof(int));
+	bucket = (int *)calloc(radix, sizeof(int));
      
     if ((NULL != temp_arr) && (NULL != bucket))
     {
