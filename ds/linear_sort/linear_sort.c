@@ -45,10 +45,10 @@ void CountingSort(int *arr, size_t length)
 		size_t index = 0; 
 		int i = 0;
 
-		while(index < length)
+		
+		for(index = 0; index<length; ++index)
 		{
-			++count_arr[arr[index++]];
-			
+			FillBucket(count_arr,arr[index]);
 		}
 
 		SumBucket(count_arr, max +1);
