@@ -8,7 +8,8 @@
 #include <stddef.h> /* size_t*/
 #include <assert.h> /* assert*/
 #include <stdlib.h> /* calloc*/
-
+#include <string.h> /* memset*/
+#include <stdio.h> /*print */
 
 #include "count_sort.h"
 
@@ -17,6 +18,15 @@
 static int FindMin(int *arr, size_t len);
 static int FindMax(int *arr, size_t len);
 static void CopyArrs(int *dest, int *src, size_t len);
+static int PawPatrol(size_t radix);
+static void EmptyBucket(int *arr, size_t len);
+static void FillBucket(int *bucket, int holder);
+static int MaxDigits(int max);
+static void SumBucket(int *bucket, size_t len);
+
+static void PrintArr(int *arr, size_t length);
+
+
 
 
 void CountingSort(int *arr, size_t length)
@@ -36,12 +46,14 @@ void CountingSort(int *arr, size_t length)
 	count_arr = (int *)calloc((max + 1) ,sizeof(int));
 	output = (int *)calloc(length,sizeof(int));
 
+	
 	if((count_arr != NULL) && (output != NULL))
 	{
 
 		while(index < length)
 		{
 			++count_arr[arr[index++]];
+			
 		}
 
 		for(index = 1; index < max + 1; ++index)
@@ -56,13 +68,123 @@ void CountingSort(int *arr, size_t length)
 		}
 		
 		CopyArrs(arr, output, length);
-
+	
+		
 		free(count_arr);
 		count_arr = NULL;
 		free(output);
 		output = NULL;
 	}
 }
+
+
+void RadixSort(int *arr, size_t len, int chunk)
+{
+   
+    int radix = 1;
+    int *temp_arr = NULL;
+	int *bucket = NULL;
+	int i = 0;
+	int max = 0;
+
+	radix = PawPatrol(chunk);
+   	max = FindMax(arr, len);
+   	
+	temp_arr = (int *)calloc(len , sizeof(int));
+	bucket = (int *)calloc(radix + 1, sizeof(int));
+    
+	max = MaxDigits(max);
+	max /= chunk;
+
+    if ((NULL != temp_arr) && (NULL != bucket))
+    {
+    	
+    	for(i = 0; i < (int)len; ++i)
+    	{
+    		int holder = arr[i] % radix;
+    		FillBucket(bucket, holder);
+    	}
+
+    	SumBucket(bucket, radix);
+    	
+
+    	for(i = len -1; i >= 0; --i)
+    	{
+    		int holder = arr[i] % radix;
+    		temp_arr[bucket[holder] - 1] = arr[i];
+    		bucket[holder] -= 1;
+    	}
+    	
+    	
+    	EmptyBucket(bucket, radix);
+    	
+    	for(i = 0; i < len; ++i)
+    	{
+    		int holder = (temp_arr[i] / radix) % radix;
+    		
+    		FillBucket(bucket, holder);
+    	}
+    	
+    	SumBucket(bucket, radix);
+    	
+    	for(i = len -1; i >= 0; --i)
+    	{
+    		int holder = (temp_arr[i] / radix) % radix;
+    		
+    		arr[bucket[holder] - 1] = temp_arr[i];
+    		
+    		bucket[holder] -= 1;
+    	}
+    	
+    	free(temp_arr);
+    	temp_arr = NULL;
+    	EmptyBucket(bucket, radix);
+    	free(bucket);
+
+    
+    }
+
+    
+  
+
+
+}
+
+static void FillBucket(int *bucket, int holder)
+{
+	bucket[holder] += 1;
+}
+
+static void SumBucket(int *bucket, size_t len)
+{
+	size_t i = 0;
+
+	/* problematic point?*/
+	for(i = 1; i < len ; ++i)
+	{
+		bucket[i] += bucket[i - 1];
+	}
+}
+
+
+static void PrintArr(int *arr, size_t length)
+{
+    size_t i = 0;
+    printf("Array:\n");
+    assert(NULL != arr);
+    while (i < length)
+    {
+        printf("%d, ",arr[i]);
+        ++i;
+
+        if (i % 10 == 0)
+        {
+            printf("\n");
+        }
+    }
+    printf("\n");
+}
+
 
 static int FindMin(int *arr, size_t len)
 {
@@ -99,25 +221,61 @@ static int FindMax(int *arr, size_t len)
 	return max;
 }
 
+static int MaxDigits(int max)
+{
+	int counter = 0;
+	assert(max > 0);
+
+	while(max)
+	{
+		++counter;
+		max /= 10;
+	}
+	return counter;
+}
+
+
 static void CopyArrs(int *dest, int *src, size_t len)
 {
 	
-	int *dest_run = NULL;
-	int *src_run = NULL;
-
 	assert(NULL != dest);
 	assert(NULL != src);
 
-	dest_run = dest;
-	src_run = src;
-	while(len)
+	memcpy(dest, src, sizeof(int)* len);
+	/*while(len)
 	{
 		*dest_run = *src_run;
 		++dest_run;
 		++src_run;
 		--len;
-
-	}
-
+	}*/
 
 }
+
+static int PawPatrol(size_t radix)
+{
+    int base = 10;
+    int ans = 1;
+
+    assert(radix > 0);
+
+    while(radix)
+    {
+        ans *= base;
+        --radix;
+    }
+
+    return ans;
+}
+
+static void EmptyBucket(int *arr, size_t len)
+{
+	int i = 0;
+	assert(NULL != arr);
+
+	for(;i < len; ++i)
+	{
+		arr[i] = 0;
+	}
+
+} 
