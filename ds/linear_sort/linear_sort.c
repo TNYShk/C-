@@ -41,12 +41,12 @@ void CountingSort(int *arr, size_t length)
 	count_arr = (int *)calloc((max + 1) ,sizeof(int));
 	output = (int *)calloc(length + 1,sizeof(int));
 
-	if((count_arr != NULL) && (output != NULL))
+	if((NULL != count_arr) && (NULL != output))
 	{
 		size_t index = 0; 
 		int i = 0;
 		
-		for(index = 0; index<length; ++index)
+		for(index = 0; index < length; ++index)
 		{
 			FillBucket(count_arr,arr[index]);
 		}
@@ -60,12 +60,13 @@ void CountingSort(int *arr, size_t length)
 		}
 		
 		CopyArrs(arr, output, length);
-	
+	}
+
 		free(count_arr);
 		count_arr = NULL;
 		free(output);
 		output = NULL;
-	}
+	
 }
 
 
@@ -134,16 +135,18 @@ void RadixSort(int *arr, size_t len, int chunk)
 
     		ReduceBucket(bucket,holder);
     	}
-    	
-    	free(temp_arr);
-    	temp_arr = NULL;
-
-    	EmptyBucket(bucket, radix);
-
-    	free(bucket);
-    	bucket = NULL;
     }
+
+    free(temp_arr);
+    temp_arr = NULL;
+
+    EmptyBucket(bucket, radix);
+
+    free(bucket);
+    bucket = NULL;
 }
+
+
 static int ChunkedValue(int elem, int radix)
 {
 	return ((elem / radix) % radix);

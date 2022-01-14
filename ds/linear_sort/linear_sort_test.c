@@ -16,10 +16,8 @@
 #define HUGENUM (1000000)
 #define FIVEK (5000)
 #define RANGE (99)
+#define NEWLINE (5)
 #define TEN (10)
-
-
-
 
 static void InitArr(int *arr, size_t size, int max_num);
 static void PrintArr(int *arr, size_t length);
@@ -29,6 +27,7 @@ void SmallScale();
 void FiveKScale();
 void FiveKRadix();
 void RadixChunk();
+
 int main (void)
 {
 
@@ -37,9 +36,15 @@ int main (void)
     FiveKScale();
     FiveKRadix();
     RadixChunk();
+
     printf("\n\t\tPassed All Tests!\n");
+   
     return 0;
 }
+
+
+
+
 
 void SmallScale()
 {
@@ -201,7 +206,7 @@ static void PrintArr(int *arr, size_t length)
         printf("%d, ",arr[i]);
         ++i;
 
-        if (i % 5 == 0)
+        if (i % NEWLINE == 0)
         {
             printf("\n");
         }
