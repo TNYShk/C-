@@ -1,20 +1,20 @@
 /**********************************************
  * count_sort - Source File                   *
  * Developer: Tanya			                  *
- *          Jan 12, 2022                      *
+ *          Jan 14, 2022                      *
  *                                            *
- * Reviewer:_________	                      *
+ * Reviewer: Ori		                      *
  **********************************************/
+#include <assert.h> /* assert */
+#include <stdlib.h> /* calloc */
+#include <string.h> /* memcpy */
 #include <stddef.h> /* size_t*/
-#include <assert.h> /* assert*/
-#include <stdlib.h> /* calloc*/
-#include <string.h> /* memset*/
-#include <stdio.h> /*print */
-
 #include "linear_sort.h"
 
+#define BASE (10)
 
 
+/*** Servie Funcs ***/
 static int FindMin(int *arr, size_t len);
 static int FindMax(int *arr, size_t len);
 static void CopyArrs(int *dest, int *src, size_t len);
@@ -25,14 +25,8 @@ static int MaxDigits(int max);
 static void SumBucket(int *bucket, size_t len);
 
 
-
-
-
-
 void CountingSort(int *arr, size_t length)
 {
-	size_t index = 0; 
-	int i = 0;
 	size_t max = 0;
 
 	int *count_arr = NULL;
@@ -46,9 +40,10 @@ void CountingSort(int *arr, size_t length)
 	count_arr = (int *)calloc((max + 1) ,sizeof(int));
 	output = (int *)calloc(length,sizeof(int));
 
-	
 	if((count_arr != NULL) && (output != NULL))
 	{
+		size_t index = 0; 
+		int i = 0;
 
 		while(index < length)
 		{
@@ -56,20 +51,17 @@ void CountingSort(int *arr, size_t length)
 			
 		}
 
-		for(index = 1; index < max + 1; ++index)
-		{
-			count_arr[index] += count_arr[index - 1];
-		}
+		SumBucket(count_arr, max +1);
 		
 		for(i = length -1; i >= 0; --i)
 		{
 			--count_arr[arr[i]];
+
 			output[count_arr[arr[i]]] = arr[i];
 		}
 		
 		CopyArrs(arr, output, length);
 	
-		
 		free(count_arr);
 		count_arr = NULL;
 		free(output);
@@ -80,13 +72,16 @@ void CountingSort(int *arr, size_t length)
 
 void RadixSort(int *arr, size_t len, int chunk)
 {
-   
     int radix = 1;
+    int max = 0;
+
     int *temp_arr = NULL;
 	int *bucket = NULL;
-	int i = 0;
-	int max = 0;
 	
+	assert(NULL != arr);
+	assert(0 < len);
+	assert(0 < chunk);
+
    	max = FindMax(arr, len);
 	max = MaxDigits(max);
 	
@@ -99,29 +94,28 @@ void RadixSort(int *arr, size_t len, int chunk)
    	
 	temp_arr = (int *)calloc(len , sizeof(int));
 	bucket = (int *)calloc(radix + 1, sizeof(int));
-    
-    
+     
     if ((NULL != temp_arr) && (NULL != bucket))
     {
-    	
+    	int i = 0;
 
     	for(i = 0; i < (int)len; ++i)
     	{
-
     		int holder = arr[i] % radix;
+
     		FillBucket(bucket, holder);
     	}
 
     	SumBucket(bucket, radix);
     	
-
-    	for(i = len -1; i >= 0; --i)
+    	for(i = len - 1; i >= 0; --i)
     	{
     		int holder = arr[i] % radix;
+
     		temp_arr[bucket[holder] - 1] = arr[i];
+
     		--bucket[holder];
     	}
-    	
     	
     	EmptyBucket(bucket, radix);
     	
@@ -134,7 +128,7 @@ void RadixSort(int *arr, size_t len, int chunk)
     	
     	SumBucket(bucket, radix);
     	
-    	for(i = len -1; i >= 0; --i)
+    	for(i = len - 1; i >= 0; --i)
     	{
     		int holder = (temp_arr[i] / radix) % radix;
     		
@@ -143,19 +137,22 @@ void RadixSort(int *arr, size_t len, int chunk)
     		--bucket[holder];
     	}
     	
- 
     	free(temp_arr);
     	temp_arr = NULL;
-    	EmptyBucket(bucket, radix);
-    	free(bucket);
-    }
 
+    	EmptyBucket(bucket, radix);
+
+    	free(bucket);
+    	bucket = NULL;
+    }
 }
+
 
 static void FillBucket(int *bucket, int holder)
 {
 	bucket[holder] += 1;
 }
+
 
 static void SumBucket(int *bucket, size_t len)
 {
@@ -166,9 +163,6 @@ static void SumBucket(int *bucket, size_t len)
 		bucket[i] += bucket[i - 1];
 	}
 }
-
-
-
 
 
 static int FindMin(int *arr, size_t len)
@@ -184,8 +178,8 @@ static int FindMin(int *arr, size_t len)
 			min = *left;
 		}
 		++left;
-		
 	}
+
 	return min;
 }
 
@@ -209,12 +203,13 @@ static int FindMax(int *arr, size_t len)
 static int MaxDigits(int max)
 {
 	int counter = 0;
-	assert(max > 0);
+
+	assert(0 < max);
 
 	while(max)
 	{
 		++counter;
-		max /= 10;
+		max /= BASE;
 	}
 	return counter;
 }
@@ -222,21 +217,18 @@ static int MaxDigits(int max)
 
 static void CopyArrs(int *dest, int *src, size_t len)
 {
-	
-	assert(NULL != dest);
-	assert(NULL != src);
+	assert(0 < len);
 
 	memcpy(dest, src, sizeof(int)* len);
 	
-
 }
 
 static int PawPatrol(size_t radix)
 {
-    int base = 10;
+    int base = BASE;
     int ans = 1;
 
-    assert(radix > 0);
+    assert(0 < radix);
 
     while(radix)
     {
@@ -250,11 +242,11 @@ static int PawPatrol(size_t radix)
 static void EmptyBucket(int *arr, size_t len)
 {
 	size_t i = 0;
+
 	assert(NULL != arr);
 
 	for(;i < len; ++i)
 	{
 		arr[i] = 0;
 	}
-
 } 

@@ -3,7 +3,7 @@
  * Developer: Tanya			                  *
  *          Jan 13, 2022                      *
  *                                            *
- * Reviewer:_________	                      *
+ * Reviewer: Ori    	                      *
  **********************************************/
 #include <stdlib.h> /* rand()*/
 #include <time.h> /*time_t */
@@ -17,11 +17,9 @@
 
 #include "linear_sort.h"
 
-
 static void InitArr(int *arr, size_t size, int max_num);
 static void PrintArr(int *arr, size_t length);
 int IsSorted(int *arr, size_t length);
-
 
 void SmallScale();
 void FiveKScale();
