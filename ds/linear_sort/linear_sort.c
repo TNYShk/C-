@@ -11,7 +11,7 @@
 #include <string.h> /* memset*/
 #include <stdio.h> /*print */
 
-#include "count_sort.h"
+#include "linear_sort.h"
 
 
 
@@ -95,7 +95,7 @@ void RadixSort(int *arr, size_t len, int chunk)
    		++chunk;
    	}
 
-   radix = PawPatrol(chunk);
+	radix = PawPatrol(chunk);
    	
 	temp_arr = (int *)calloc(len , sizeof(int));
 	bucket = (int *)calloc(radix + 1, sizeof(int));
@@ -143,16 +143,13 @@ void RadixSort(int *arr, size_t len, int chunk)
     		--bucket[holder];
     	}
     	
-    	
+ 
     	free(temp_arr);
     	temp_arr = NULL;
     	EmptyBucket(bucket, radix);
     	free(bucket);
-
-    
     }
 
-    
 }
 
 static void FillBucket(int *bucket, int holder)

@@ -1,7 +1,7 @@
 /**********************************************
  * count_sort - Source File                   *
  * Developer: Tanya			                  *
- *          Jan 12, 2022                      *
+ *          Jan 13, 2022                      *
  *                                            *
  * Reviewer:_________	                      *
  **********************************************/
@@ -15,7 +15,7 @@
 #define MAX_EL (99)
 #define TEN (10)
 
-#include "count_sort.h"
+#include "linear_sort.h"
 
 
 static void InitArr(int *arr, size_t size, int max_num);
