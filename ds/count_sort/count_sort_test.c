@@ -25,15 +25,23 @@ int IsSorted(int *arr, size_t length);
 
 void SmallScale();
 void FiveKScale();
-
+void FiveKRadix();
 
 int main (void)
 {
-    int rad_test[5] = {100403, 100084, 101001, 110000, 100111};
 
-    PrintArr(rad_test,5);
-    RadixSort(rad_test,5,3);
-     PrintArr(rad_test,5);
+    FiveKRadix();
+    FiveKScale();
+    /*int rad_test[6] = {1000043, 5084, 211, 11100, 1111, 1};
+     int rad[6] = {100, 99, 21, 1, 111, 1};
+
+    PrintArr(rad_test,6);
+    RadixSort(rad_test,6,4);
+     PrintArr(rad_test,6);
+
+      PrintArr(rad,6);
+    RadixSort(rad,6,2);
+     PrintArr(rad,6);
 
     /*SmallScale();
   FiveKScale();*/
@@ -85,6 +93,26 @@ void FiveKScale()
     assert(1 == IsSorted(fivek,FIVEK));
     printf("Passed assert Test!\n");
     printf("Counting Sort of 5K elements took %ld clocks to run \n", end - start);
+}
+
+void FiveKRadix()
+{
+    clock_t start = 0;
+    clock_t end = 0;
+
+    int fivek[FIVEK] = {1};
+   
+
+    printf("\n\t****************5K Radix Test***************************\n");
+    InitArr(fivek, FIVEK);
+   
+
+    start = clock();
+    RadixSort(fivek, FIVEK,2);
+    end = clock();
+    assert(1 == IsSorted(fivek,FIVEK));
+    printf("Passed assert Test!\n");
+    printf("Radix Sort of 5K elements took %ld clocks to run \n", end - start);
 }
 
 

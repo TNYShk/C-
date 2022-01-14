@@ -86,6 +86,7 @@ void RadixSort(int *arr, size_t len, int chunk)
 	int *bucket = NULL;
 	int i = 0;
 	int max = 0;
+	
 
 	radix = PawPatrol(chunk);
    	max = FindMax(arr, len);
@@ -95,12 +96,15 @@ void RadixSort(int *arr, size_t len, int chunk)
     
 	max = MaxDigits(max);
 	max /= chunk;
-
+	printf("max is %d\n", max);
+    
     if ((NULL != temp_arr) && (NULL != bucket))
     {
     	
+
     	for(i = 0; i < (int)len; ++i)
     	{
+
     		int holder = arr[i] % radix;
     		FillBucket(bucket, holder);
     	}
@@ -118,7 +122,7 @@ void RadixSort(int *arr, size_t len, int chunk)
     	
     	EmptyBucket(bucket, radix);
     	
-    	for(i = 0; i < len; ++i)
+    	for(i = 0; i < (int)len; ++i)
     	{
     		int holder = (temp_arr[i] / radix) % radix;
     		
@@ -136,6 +140,7 @@ void RadixSort(int *arr, size_t len, int chunk)
     		bucket[holder] -= 1;
     	}
     	
+    	
     	free(temp_arr);
     	temp_arr = NULL;
     	EmptyBucket(bucket, radix);
@@ -145,9 +150,6 @@ void RadixSort(int *arr, size_t len, int chunk)
     }
 
     
-  
-
-
 }
 
 static void FillBucket(int *bucket, int holder)
