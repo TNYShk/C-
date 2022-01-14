@@ -24,7 +24,7 @@ static void FillBucket(int *bucket, int holder);
 static int MaxDigits(int max);
 static void SumBucket(int *bucket, size_t len);
 
-static void PrintArr(int *arr, size_t length);
+
 
 
 
@@ -87,16 +87,19 @@ void RadixSort(int *arr, size_t len, int chunk)
 	int i = 0;
 	int max = 0;
 	
-
-	radix = PawPatrol(chunk);
    	max = FindMax(arr, len);
+	max = MaxDigits(max);
+	
+	while((max - (2 * chunk)) > 0)
+   	{
+   		++chunk;
+   	}
+
+   radix = PawPatrol(chunk);
    	
 	temp_arr = (int *)calloc(len , sizeof(int));
 	bucket = (int *)calloc(radix + 1, sizeof(int));
     
-	max = MaxDigits(max);
-	max /= chunk;
-	printf("max is %d\n", max);
     
     if ((NULL != temp_arr) && (NULL != bucket))
     {
@@ -116,7 +119,7 @@ void RadixSort(int *arr, size_t len, int chunk)
     	{
     		int holder = arr[i] % radix;
     		temp_arr[bucket[holder] - 1] = arr[i];
-    		bucket[holder] -= 1;
+    		--bucket[holder];
     	}
     	
     	
@@ -137,7 +140,7 @@ void RadixSort(int *arr, size_t len, int chunk)
     		
     		arr[bucket[holder] - 1] = temp_arr[i];
     		
-    		bucket[holder] -= 1;
+    		--bucket[holder];
     	}
     	
     	
@@ -161,7 +164,6 @@ static void SumBucket(int *bucket, size_t len)
 {
 	size_t i = 0;
 
-	/* problematic point?*/
 	for(i = 1; i < len ; ++i)
 	{
 		bucket[i] += bucket[i - 1];
@@ -169,23 +171,7 @@ static void SumBucket(int *bucket, size_t len)
 }
 
 
-static void PrintArr(int *arr, size_t length)
-{
-    size_t i = 0;
-    printf("Array:\n");
-    assert(NULL != arr);
-    while (i < length)
-    {
-        printf("%d, ",arr[i]);
-        ++i;
 
-        if (i % 10 == 0)
-        {
-            printf("\n");
-        }
-    }
-    printf("\n");
-}
 
 
 static int FindMin(int *arr, size_t len)
@@ -244,13 +230,7 @@ static void CopyArrs(int *dest, int *src, size_t len)
 	assert(NULL != src);
 
 	memcpy(dest, src, sizeof(int)* len);
-	/*while(len)
-	{
-		*dest_run = *src_run;
-		++dest_run;
-		++src_run;
-		--len;
-	}*/
+	
 
 }
 
@@ -272,7 +252,7 @@ static int PawPatrol(size_t radix)
 
 static void EmptyBucket(int *arr, size_t len)
 {
-	int i = 0;
+	size_t i = 0;
 	assert(NULL != arr);
 
 	for(;i < len; ++i)
