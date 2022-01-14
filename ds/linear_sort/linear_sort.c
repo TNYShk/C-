@@ -18,12 +18,13 @@
 static int FindMin(int *arr, size_t len);
 static int FindMax(int *arr, size_t len);
 static void CopyArrs(int *dest, int *src, size_t len);
-static int PawPatrol(size_t radix);
+static int PowerTen(size_t radix);
 static void EmptyBucket(int *arr, size_t len);
 static void FillBucket(int *bucket, int holder);
 static int MaxDigits(int max);
 static void SumBucket(int *bucket, size_t len);
-
+static void ReduceBucket(int *bucket, int holder);
+static int ChunkedValue(int elem, int radix);
 
 void CountingSort(int *arr, size_t length)
 {
@@ -38,13 +39,12 @@ void CountingSort(int *arr, size_t length)
 	max = FindMax(arr, length);
 
 	count_arr = (int *)calloc((max + 1) ,sizeof(int));
-	output = (int *)calloc(length,sizeof(int));
+	output = (int *)calloc(length + 1,sizeof(int));
 
 	if((count_arr != NULL) && (output != NULL))
 	{
 		size_t index = 0; 
 		int i = 0;
-
 		
 		for(index = 0; index<length; ++index)
 		{
@@ -55,8 +55,7 @@ void CountingSort(int *arr, size_t length)
 		
 		for(i = length -1; i >= 0; --i)
 		{
-			--count_arr[arr[i]];
-
+			ReduceBucket(count_arr,arr[i] );
 			output[count_arr[arr[i]]] = arr[i];
 		}
 		
@@ -90,7 +89,7 @@ void RadixSort(int *arr, size_t len, int chunk)
    		++chunk;
    	}
 
-	radix = PawPatrol(chunk);
+	radix = PowerTen(chunk);
    	
 	temp_arr = (int *)calloc(len , sizeof(int));
 	bucket = (int *)calloc(radix, sizeof(int));
@@ -113,15 +112,15 @@ void RadixSort(int *arr, size_t len, int chunk)
     		int holder = arr[i] % radix;
 
     		temp_arr[bucket[holder] - 1] = arr[i];
+    		ReduceBucket(bucket,holder);
 
-    		--bucket[holder];
     	}
     	
     	EmptyBucket(bucket, radix);
     	
     	for(i = 0; i < (int)len; ++i)
     	{
-    		int holder = (temp_arr[i] / radix) % radix;
+    		int holder = ChunkedValue(temp_arr[i], radix);
     		
     		FillBucket(bucket, holder);
     	}
@@ -130,11 +129,10 @@ void RadixSort(int *arr, size_t len, int chunk)
     	
     	for(i = len - 1; i >= 0; --i)
     	{
-    		int holder = (temp_arr[i] / radix) % radix;
-    		
+    		int holder = ChunkedValue(temp_arr[i], radix);
     		arr[bucket[holder] - 1] = temp_arr[i];
-    		
-    		--bucket[holder];
+
+    		ReduceBucket(bucket,holder);
     	}
     	
     	free(temp_arr);
@@ -146,11 +144,19 @@ void RadixSort(int *arr, size_t len, int chunk)
     	bucket = NULL;
     }
 }
-
+static int ChunkedValue(int elem, int radix)
+{
+	return ((elem / radix) % radix);
+}
 
 static void FillBucket(int *bucket, int holder)
 {
 	bucket[holder] += 1;
+}
+
+static void ReduceBucket(int *bucket, int holder)
+{
+	bucket[holder] -= 1;
 }
 
 
@@ -186,7 +192,7 @@ static int FindMin(int *arr, size_t len)
 static int FindMax(int *arr, size_t len)
 {
 	int *left = arr;
-	int *right = arr + len -1;
+	int *right = arr + len - 1;
 	int max = *arr;
 
 	while(left < right)
@@ -202,16 +208,16 @@ static int FindMax(int *arr, size_t len)
 
 static int MaxDigits(int max)
 {
-	int counter = 0;
+	int digit_counter = 0;
 
 	assert(0 < max);
 
 	while(max)
 	{
-		++counter;
+		++digit_counter;
 		max /= BASE;
 	}
-	return counter;
+	return digit_counter;
 }
 
 
@@ -223,7 +229,7 @@ static void CopyArrs(int *dest, int *src, size_t len)
 	
 }
 
-static int PawPatrol(size_t radix)
+static int PowerTen(size_t radix)
 {
     int base = BASE;
     int ans = 1;
