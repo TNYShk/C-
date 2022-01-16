@@ -25,6 +25,8 @@ static int MaxDigits(int max);
 static void SumBucket(int *bucket, size_t len);
 static void ReduceBucket(int *bucket, int holder);
 static int ChunkedValue(int elem, int radix);
+static void FillArray(int *arr, int where, int what);
+
 
 void CountingSort(int *arr, size_t length)
 {
@@ -34,12 +36,12 @@ void CountingSort(int *arr, size_t length)
 	int *output = NULL;
 
 	assert(NULL != arr);
-	assert( 0 != FindMin(arr,length));
+	assert( -1 < FindMin(arr,length));
 
 	max = FindMax(arr, length);
 
 	count_arr = (int *)calloc((max + 1) ,sizeof(int));
-	output = (int *)calloc(length + 1,sizeof(int));
+	output = (int *)calloc(length,sizeof(int));
 
 	if((NULL != count_arr) && (NULL != output))
 	{
@@ -56,7 +58,7 @@ void CountingSort(int *arr, size_t length)
 		for(i = length -1; i >= 0; --i)
 		{
 			ReduceBucket(count_arr,arr[i] );
-			output[count_arr[arr[i]]] = arr[i];
+			FillArray(output, count_arr[arr[i]], arr[i]);
 		}
 		
 		CopyArrs(arr, output, length);
@@ -83,8 +85,9 @@ void RadixSort(int *arr, size_t len, int chunk)
 	assert(0 < chunk);
 
    	max = FindMax(arr, len);
+
 	max = MaxDigits(max);
-	
+
 	while((max - (2 * chunk)) > 0)
    	{
    		++chunk;
@@ -102,7 +105,6 @@ void RadixSort(int *arr, size_t len, int chunk)
     	for(i = 0; i < (int)len; ++i)
     	{
     		int holder = arr[i] % radix;
-
     		FillBucket(bucket, holder);
     	}
 
@@ -111,8 +113,7 @@ void RadixSort(int *arr, size_t len, int chunk)
     	for(i = len - 1; i >= 0; --i)
     	{
     		int holder = arr[i] % radix;
-
-    		temp_arr[bucket[holder] - 1] = arr[i];
+    		FillArray(temp_arr, bucket[holder] - 1, arr[i]);
     		ReduceBucket(bucket,holder);
 
     	}
@@ -122,7 +123,6 @@ void RadixSort(int *arr, size_t len, int chunk)
     	for(i = 0; i < (int)len; ++i)
     	{
     		int holder = ChunkedValue(temp_arr[i], radix);
-    		
     		FillBucket(bucket, holder);
     	}
     	
@@ -131,8 +131,7 @@ void RadixSort(int *arr, size_t len, int chunk)
     	for(i = len - 1; i >= 0; --i)
     	{
     		int holder = ChunkedValue(temp_arr[i], radix);
-    		arr[bucket[holder] - 1] = temp_arr[i];
-
+    		FillArray(arr, bucket[holder] - 1, temp_arr[i]);
     		ReduceBucket(bucket,holder);
     	}
     }
@@ -146,10 +145,15 @@ void RadixSort(int *arr, size_t len, int chunk)
     bucket = NULL;
 }
 
-
 static int ChunkedValue(int elem, int radix)
 {
 	return ((elem / radix) % radix);
+}
+
+/*temp_arr[bucket[holder] - 1] = arr[i];arr[bucket[holder] - 1] = temp_arr[i];output[count_arr[arr[i]]] = arr[i];*/
+static void FillArray(int *arr, int where, int what)
+{
+	arr[where] = what;
 }
 
 static void FillBucket(int *bucket, int holder)
@@ -161,7 +165,6 @@ static void ReduceBucket(int *bucket, int holder)
 {
 	bucket[holder] -= 1;
 }
-
 
 static void SumBucket(int *bucket, size_t len)
 {
@@ -223,13 +226,11 @@ static int MaxDigits(int max)
 	return digit_counter;
 }
 
-
 static void CopyArrs(int *dest, int *src, size_t len)
 {
 	assert(0 < len);
 
 	memcpy(dest, src, sizeof(int)* len);
-	
 }
 
 static int PowerTen(size_t radix)
@@ -259,3 +260,16 @@ static void EmptyBucket(int *arr, size_t len)
 		arr[i] = 0;
 	}
 } 
+
+
+/*
+static void AdaptChunk(int max_num, int chunk)
+{
+	max_num = MaxDigits(max_num);
+
+	while((max_num - (2 * chunk)) > 0)
+   	{
+   		++chunk;
+   	}
+}
+*/

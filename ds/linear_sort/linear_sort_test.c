@@ -14,15 +14,16 @@
 #include "linear_sort.h"
 
 #define HUGENUM (1000000)
+#define BIGNUM (6666)
 #define FIVEK (5000)
-#define RANGE (99)
+#define RANGE (100)
 #define NEWLINE (5)
 #define TEN (10)
 
 static void InitArr(int *arr, size_t size, int max_num);
 static void PrintArr(int *arr, size_t length);
 int IsSorted(int *arr, size_t length);
-
+static void InitArrCount(int *arr, size_t size, int max_num);
 void SmallScale();
 void FiveKScale();
 void FiveKRadix();
@@ -55,7 +56,7 @@ void SmallScale()
     size_t length = sizeof(arr)/ sizeof(arr[0]);
     printf("\t******Small Scale Test******\n");
     printf("\n\t******Count Sort Test******\n");
-    InitArr(arr, length, RANGE);
+    InitArrCount(arr, length, RANGE);
 
     PrintArr(arr,length);
     
@@ -69,13 +70,14 @@ void SmallScale()
     printf("Counting Sort 10 elements, ranged 1-99, took %ld clocks to run \n", end - start);
 
     printf("\n\t******Radix Sort Test******\n");
-    InitArr(arr, length, 6666);
+    InitArr(arr, length, BIGNUM);
     PrintArr(arr,length);
     
     start = clock();
     RadixSort(arr,length,1);
     end = clock();
     assert(1 == IsSorted(arr,length));
+
     printf("post Radix Sort:\n");
     PrintArr(arr,length);
     printf("Radix Sort of 10 elements, ranged 1-6666, chunks of 1, took %ld clocks to run \n", end - start);
@@ -97,7 +99,7 @@ void FiveKScale()
 
     printf("\n\t****************5K Scale Test***************************\n");
      printf("\n\t******Count Sort Test******\n");
-    InitArr(fivek, FIVEK, RANGE);
+    InitArrCount(fivek, FIVEK, RANGE);
    
     start = clock();
     CountingSort(fivek, FIVEK);
@@ -192,6 +194,20 @@ static void InitArr(int *arr, size_t size, int max_num)
     while(size)
     {
         arr[size -1] = 1 + rand()% max_num;
+        --size;
+    }
+}
+
+static void InitArrCount(int *arr, size_t size, int max_num)
+{
+    time_t random = time(0);
+    assert(NULL != arr);
+
+    srand (time(&random));
+
+    while(size)
+    {
+        arr[size -1] = rand()% max_num;
         --size;
     }
 }
