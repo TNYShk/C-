@@ -73,6 +73,16 @@ void BSTDestroy(bst_t *tree)
     tree = NULL;
 }
 
+bst_iter_t BSTInsert(bst_t *tree, void *data)
+{
+    bst_node_t *new_n = NULL;
+
+    new_n = InitNode(tree->root_stub.children[LEFT], new_n, data);
+    
+}
+
+
+
 bst_iter_t BSTBegin(const bst_t *tree)
 {
     bst_iter_t runner = NULL;
@@ -80,7 +90,7 @@ bst_iter_t BSTBegin(const bst_t *tree)
 
     runner = tree->root_stub.children[LEFT];
     
-    while (runner != NULL)
+    while (runner->children[LEFT] != NULL)
     {
         runner = runner->children[LEFT];
 
@@ -97,12 +107,47 @@ bst_iter_t BSTEnd(const bst_t *tree)
     return (const bst_iter_t)&tree->root_stub;
 }
 
+bst_iter_t BSTNext(bst_iter_t iter)
+{
+    bst_iter_t runner = iter->parent;
+    
+    if (runner->children[LEFT] == iter)
+        return runner;
+    else
+    {
+        return iter->children[RIGHT];
+    } 
+}
+
+/*
+bst_iter_t BSTPrev(bst_iter_t iter)
+{
+     bst_iter_t runner = iter->parent;
+
+     whike(runner->children[LEFT] == iter)
+     {
+        runner = runner->parent;
+     }
+}
+*/
+
+int BSTIterIsEqual(bst_iter_t iter1, bst_iter_t iter2)
+{
+    assert(NULL != iter1);
+    assert(NULL != iter2);
+
+    return iter1 == iter2;
+
+}
+
+
+
 size_t BSTSize(const bst_t *tree)
 {
     size_t counter = 0;
 
     bst_iter_t runner = BSTBegin(tree);
-    while(runner != (bst_iter_t)tree->root_stub )
+    while(runner != BSTEnd(tree) )
     {
         runner = BSTNext(runner);
         ++counter;
@@ -124,14 +169,18 @@ static void InitNode(bst_iter_t parent, bst_iter_t new_node, void *data)
         new_node->data = data;
         new_node->parent = parent;
 
-        if(parent->data > data)
+        if(parent->data != NULL)
         {
-            parent->children[LEFT] = new_node;
+            if (parent->data < new_nede->data)
+            {
+                parent->children[RIGHT] = new_node;
+            }
+            else
+            {
+                parent->children[LEFT] = new_node;
+            } 
         }
-        else
-        {
-            parent->children[RIGHT] = new_node;
-        }
+  
     }
 }
 
@@ -149,22 +198,15 @@ int BSTIsEmpty(const bst_t *tree)
     return (tree->root_stub.children[LEFT] == NULL);
 }
 
-bst_iter_t BSTNext(bst_iter_t iter)
-{
-    bst_iter_t runner = iter->parent;
-    
-    if (runner->children[LEFT] == iter)
-        return runner;
-    else
-    {
-        return iter->children[RIGHT];
-    }
-    
-    
-}
+
 
 
 static int CompareData(const void *left, const void *right)
 {
     return (*(size_t *)left - *(size_t *)right);
+}
+
+static void LeftChild(bst_iter_t node)
+{
+    node = node->children[LEFT];
 }

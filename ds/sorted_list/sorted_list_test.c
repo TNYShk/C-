@@ -12,8 +12,8 @@
 #include <assert.h> /* assert()          */
 #include <string.h> /* printf           */
 
-#include "../include/dll.h" /*  double linked list funcs */
-#include "../include/sorted_list.h" /* current */
+#include "dll.h" /*  double linked list funcs */
+#include "sorted_list.h" /* current */
 
 
 
