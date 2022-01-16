@@ -9,12 +9,12 @@
 #include <stdlib.h> /* calloc */
 #include <string.h> /* memcpy */
 #include <stddef.h> /* size_t*/
-#include "linear_sort.h"
+#include "linear_sort.h" /* program header*/
 
 #define BASE (10)
 
 
-/****************** Servie Funcs ****************************/
+/****************** Service Funcs ****************************/
 static int FindMin(int *arr, size_t len);
 static int FindMax(int *arr, size_t len);
 static void CopyArrs(int *dest, int *src, size_t len);
@@ -26,7 +26,8 @@ static void SumBucket(int *bucket, size_t len);
 static void ReduceBucket(int *bucket, int holder);
 static int ChunkedValue(int elem, int radix);
 static void FillArray(int *arr, int where, int what);
-/****************** End Servie Funcs *************************/
+static int AdaptRadix(int max_num, int chunk);
+/****************** End Service Funcs *************************/
 
 
 void CountingSort(int *arr, size_t length)
@@ -39,37 +40,41 @@ void CountingSort(int *arr, size_t length)
 	assert(NULL != arr);
 	assert( -1 < FindMin(arr,length));
 
-	max = FindMax(arr, length);
+	max = FindMax(arr, length) + 1;
 
-	count_arr = (int *)calloc((max + 1) ,sizeof(int));
-	output = (int *)calloc(length,sizeof(int));
+	count_arr = (int *)calloc(max ,sizeof(int));
 
-	if((NULL != count_arr) && (NULL != output))
+	if(NULL != count_arr)
 	{
-		size_t index = 0; 
-		int i = 0;
-		
-		for(index = 0; index < length; ++index)
+		output = (int *)calloc(length,sizeof(int));
+
+		if (NULL != output)
 		{
-			FillBucket(count_arr,arr[index]);
+			size_t index = 0; 
+			int i = 0;
+			
+			for(index = 0; index < length; ++index)
+			{
+				FillBucket(count_arr,arr[index]);
+			}
+
+			SumBucket(count_arr, max);
+			
+			for(i = length -1; i >= 0; --i)
+			{
+				ReduceBucket(count_arr,arr[i] );
+				FillArray(output, count_arr[arr[i]], arr[i]);
+			}
+			
+			CopyArrs(arr, output, length);
 		}
 
-		SumBucket(count_arr, max +1);
-		
-		for(i = length -1; i >= 0; --i)
-		{
-			ReduceBucket(count_arr,arr[i] );
-			FillArray(output, count_arr[arr[i]], arr[i]);
-		}
-		
-		CopyArrs(arr, output, length);
+	free(count_arr);
+	count_arr = NULL;
+
+	free(output);
+	output = NULL;
 	}
-
-		free(count_arr);
-		count_arr = NULL;
-		free(output);
-		output = NULL;
-	
 }
 
 
@@ -87,63 +92,65 @@ void RadixSort(int *arr, size_t len, int chunk)
 
    	max = FindMax(arr, len);
 
-	max = MaxDigits(max);
-
-	while(0 < (max - (2 * chunk)))
-   	{
-   		++chunk;
-   	}
-
-	radix = PowerTen(chunk);
+	radix = PowerTen(AdaptRadix(max,chunk));
    	
-	temp_arr = (int *)calloc(len , sizeof(int));
 	bucket = (int *)calloc(radix, sizeof(int));
-     
-    if ((NULL != temp_arr) && (NULL != bucket))
+   
+    if (NULL != bucket )
     {
-    	int i = 0;
+    	temp_arr = (int *)calloc(len , sizeof(int));
 
-    	for(i = 0; i < (int)len; ++i)
+    	if(NULL != temp_arr)
     	{
-    		int holder = arr[i] % radix;
-    		FillBucket(bucket, holder);
+	    	int i = 0;
+
+	    	for(i = 0; i < (int)len; ++i)
+	    	{
+	    		int holder = arr[i] % radix;
+	    		FillBucket(bucket, holder);
+	    	}
+
+	    	SumBucket(bucket, radix);
+	    	
+	    	for(i = len - 1; i >= 0; --i)
+	    	{
+	    		int holder = arr[i] % radix;
+	    		FillArray(temp_arr, bucket[holder] - 1, arr[i]);
+	    		ReduceBucket(bucket,holder);
+	    	}
+	    	
+	    	EmptyBucket(bucket, radix);
+	    	
+	    	for(i = 0; i < (int)len; ++i)
+	    	{
+	    		int holder = ChunkedValue(temp_arr[i], radix);
+	    		FillBucket(bucket, holder);
+	    	}
+	    	
+	    	SumBucket(bucket, radix);
+	    	
+	    	for(i = len - 1; i >= 0; --i)
+	    	{
+	    		int holder = ChunkedValue(temp_arr[i], radix);
+	    		FillArray(arr, bucket[holder] - 1, temp_arr[i]);
+	    		ReduceBucket(bucket,holder);
+	    	}
+	    	
+	    EmptyBucket(bucket, radix);
     	}
 
-    	SumBucket(bucket, radix);
-    	
-    	for(i = len - 1; i >= 0; --i)
-    	{
-    		int holder = arr[i] % radix;
-    		FillArray(temp_arr, bucket[holder] - 1, arr[i]);
-    		ReduceBucket(bucket,holder);
+   		
+	}
 
-    	}
-    	
-    	EmptyBucket(bucket, radix);
-    	
-    	for(i = 0; i < (int)len; ++i)
-    	{
-    		int holder = ChunkedValue(temp_arr[i], radix);
-    		FillBucket(bucket, holder);
-    	}
-    	
-    	SumBucket(bucket, radix);
-    	
-    	for(i = len - 1; i >= 0; --i)
-    	{
-    		int holder = ChunkedValue(temp_arr[i], radix);
-    		FillArray(arr, bucket[holder] - 1, temp_arr[i]);
-    		ReduceBucket(bucket,holder);
-    	}
-    }
+	free(bucket);
+    bucket = NULL;
 
     free(temp_arr);
     temp_arr = NULL;
 
-    EmptyBucket(bucket, radix);
+   
 
-    free(bucket);
-    bucket = NULL;
+  
 }
 
 static int ChunkedValue(int elem, int radix)
@@ -151,7 +158,6 @@ static int ChunkedValue(int elem, int radix)
 	return ((elem / radix) % radix);
 }
 
-/*temp_arr[bucket[holder] - 1] = arr[i];arr[bucket[holder] - 1] = temp_arr[i];output[count_arr[arr[i]]] = arr[i];*/
 static void FillArray(int *arr, int where, int what)
 {
 	arr[where] = what;
@@ -229,8 +235,6 @@ static int MaxDigits(int max)
 
 static void CopyArrs(int *dest, int *src, size_t len)
 {
-	assert(0 < len);
-
 	memcpy(dest, src, sizeof(int)* len);
 }
 
@@ -263,14 +267,14 @@ static void EmptyBucket(int *arr, size_t len)
 } 
 
 
-/*
-static void AdaptChunk(int max_num, int chunk)
+
+static int AdaptRadix(int max_num, int chunk)
 {
 	max_num = MaxDigits(max_num);
 
-	while((max_num - (2 * chunk)) > 0)
+	while(0 < (max_num - (2 * chunk)))
    	{
    		++chunk;
    	}
+   	return chunk;
 }
-*/

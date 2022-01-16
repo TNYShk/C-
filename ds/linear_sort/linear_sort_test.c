@@ -11,7 +11,7 @@
 #include <assert.h> /* assert*/
 #include <stdio.h> /*print */
 
-#include "linear_sort.h"
+#include "linear_sort.h" /* program header*/
 
 #define HUGENUM (1000000)
 #define BIGNUM (6666)
@@ -32,7 +32,6 @@ void RadixChunk();
 
 int main (void)
 {
-
     SmallScale();
     FiveKScale();
     FiveKRadix();
@@ -82,16 +81,16 @@ void SmallScale()
     PrintArr(arr,length);
     
     start = clock();
-    RadixSort(arr,length,1);
+    RadixSort(arr,length,2);
     end = clock();
     assert(1 == IsSorted(arr,length));
 
     printf("post Radix Sort:\n");
     PrintArr(arr,length);
-    printf("Radix Sort of 10 elements, ranged 1-6666, chunks of 1, took %ld clocks to run \n", end - start);
+    printf("Radix Sort of 10 elements, ranged 1-6666, chunks of 2, took %ld clocks to run \n", end - start);
     printf("\nTest small array, same elements, before\n");
     PrintArr(same,5);
-    RadixSort(same,5,2);
+    RadixSort(same,5,1);
     printf("post Radix Sort:\n");
     PrintArr(same,5);
 
