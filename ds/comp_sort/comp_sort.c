@@ -7,12 +7,12 @@
  **********************************************/
 #include <stddef.h> /* size_t*/
 #include <assert.h> /* assert*/
-
+#include <stdio.h> /* print test */
 #include "comp_sort.h"
 
 /* Service func */
 static void PSwap(int *i , int *j);
-static int FindMin(int *arr, size_t len);
+static int FindMinIndex(int *arr, size_t len);
 
 
 void BubbleSort(int *arr, size_t arr_size)
@@ -33,56 +33,28 @@ void BubbleSort(int *arr, size_t arr_size)
 		}
 	--arr_size;
 	}
+	
 }
+
+
 
 void SelectionSort(int *arr, size_t arr_size)
 {
 	int i = 0;
+	int *runner = arr;
+	int *end = arr + (arr_size -1);
 
 	assert(NULL != arr);
 	
 
-   for (i = 0; i < (int)arr_size - 1; ++i) 
+   for(i = 0; runner < end; ++runner, ++i)
    {
-    	int min = i;
-    	int j = i;
-        
-        for (j = i + 1; j < (int)arr_size; ++j) 
-        {
-            if (arr[j] < arr[min]) 
-            {
-                min = j;
-            }
-        }
-        PSwap(&arr[i], &arr[min]);
-    }
+    	int min = FindMinIndex(runner, arr_size - i);
+    	
+    	PSwap(&runner[i], &runner[min + i]);  
+	}
 }
 
-
-/*
-void SelectionSort(int *arr, size_t arr_size)
-{
-	int i = 0;
-
-	assert(NULL != arr);
-	
-
-   for (i = 0; i < (int)arr_size; ++i) 
-   {
-    	int min = FindMin(arr + i, arr_size - i);
-    	int j = i;
-        
-        for (j = i + 1; j < (int)arr_size; ++j) 
-        {
-            if (arr[j] < min) 
-            {
-                min = j;
-            }
-        }
-        PSwap(&arr[i], &arr[j]);
-    }
-}
-*/
 
 void InsertionSort(int *arr, size_t arr_size)
 {
@@ -113,23 +85,47 @@ static void PSwap(int *i , int *j)
 	*i =  holder;
 }
 
-static int FindMin(int *arr, size_t len)
+static int FindMinIndex(int *arr, size_t len)
 {
-	int min = *arr;
-	int *end = arr + len -1 ;
-
-
-	while(arr != end)
+	int *start = arr;
+	int *end = arr + len -1;
+	int *lowest = start;
+	
+	
+	while(start < end)
 	{
-		if(*arr < min)
+		if(*lowest > *start)
 		{
-			min = *arr;
+			lowest = start;
+			
 		}
-		++arr;
-		--len;
+		++start;
 	}
-	return min;
+	return lowest - arr;
 }
 
+/*
+void SelectionSort(int *arr, size_t arr_size)
+{
+	int i = 0;
 
+	assert(NULL != arr);
+	
+
+   for (i = 0; i < (int)arr_size - 1; ++i) 
+   {
+    	int min = i;
+    	int j = i;
+        
+        for (j = i + 1; j < (int)arr_size; ++j) 
+        {
+            if (arr[j] < arr[min]) 
+            {
+                min = j;
+            }
+        }
+        PSwap(&arr[i], &arr[min]);
+    }
+}
+*/
 
