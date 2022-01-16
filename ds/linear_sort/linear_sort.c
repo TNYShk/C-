@@ -14,7 +14,7 @@
 #define BASE (10)
 
 
-/*** Servie Funcs ***/
+/****************** Servie Funcs ****************************/
 static int FindMin(int *arr, size_t len);
 static int FindMax(int *arr, size_t len);
 static void CopyArrs(int *dest, int *src, size_t len);
@@ -26,6 +26,7 @@ static void SumBucket(int *bucket, size_t len);
 static void ReduceBucket(int *bucket, int holder);
 static int ChunkedValue(int elem, int radix);
 static void FillArray(int *arr, int where, int what);
+/****************** End Servie Funcs *************************/
 
 
 void CountingSort(int *arr, size_t length)
@@ -88,7 +89,7 @@ void RadixSort(int *arr, size_t len, int chunk)
 
 	max = MaxDigits(max);
 
-	while((max - (2 * chunk)) > 0)
+	while(0 < (max - (2 * chunk)))
    	{
    		++chunk;
    	}

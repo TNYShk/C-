@@ -53,11 +53,19 @@ void SmallScale()
     clock_t end = 0;
     int arr[TEN] = {1};
     int same[5] = {1,60,1,2,1};
+    int countzero[TEN] = {1,0,5,6,7,3,0,8,9,0};
     size_t length = sizeof(arr)/ sizeof(arr[0]);
-    printf("\t******Small Scale Test******\n");
-    printf("\n\t******Count Sort Test******\n");
-    InitArrCount(arr, length, RANGE);
+    printf("\t********************Small Scale Test*******************\n");
+    printf("\n\t******Counting Sort Test******\n");
+    printf("\nTest small array, same elements +Zero, before\n");
+    PrintArr(countzero,TEN);
+    CountingSort(countzero,TEN);
+    printf("post Counting Sort:\n");
+    PrintArr(countzero,TEN);
+    assert(1 == IsSorted(countzero,TEN));
 
+    printf("Test2: Another Counting Sort:\n");
+    InitArrCount(arr, length, RANGE);
     PrintArr(arr,length);
     
     start = clock();
