@@ -17,9 +17,17 @@ int CompareData(const void *left, const void *right);
 int main(void)
 {
     bst_t *tree = BSTCreate(CompareData);
+   int data = 5;
+   int data1 = 6;
+    bst_iter_t root = BSTInsert(tree, &data);
+    bst_iter_t node = BSTInsert(tree, &data1);
+    assert(node == BSTNext(root));
     printf("empty? %d\n", BSTIsEmpty(tree));
     printf("size? %ld\n", BSTSize(tree));
 
+
+    free(node);
+    free(root);
     free(tree);
     tree = NULL;
     return 0;

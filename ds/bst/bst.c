@@ -12,15 +12,18 @@
 
 #include "bst.h" /* program header*/
 
+#define ROOT(tree) (tree->root_stub.children[LEFT])
+
+
 /**************  Service Funcs  *******************/
-static void InitNode(bst_iter_t parent, bst_iter_t new, void *data);
+static void InitNode(bst_iter_t parent, bst_iter_t *new, void *data);
 static int CompareData(const void *left, const void *right);
 static int HasChild(bst_iter_t iter, int side);
 static int HasParent(bst_iter_t iter);
-static bst_node_t *GetLeft(bst_iter_t iter);
-static bst_node_t *GetRight(bst_node_t *node);
-static bst_node_t *GetParent(bst_node_t *node);
-static bst_node_t *GetRoot(bst_node_t *node);
+static bst_iter_t GetLeft(bst_iter_t iter);
+static bst_iter_t GetRight(bst_iter_t node);
+static bst_iter_t GetParent(bst_iter_t node);
+
 
 enum children
 {
@@ -67,6 +70,7 @@ bst_t *BSTCreate(bst_cmp_func_t cmp_func)
 }
 
 
+/*
 void BSTDestroy(bst_t *tree)
 {
     bst_node_t *runner_next;
@@ -82,12 +86,41 @@ void BSTDestroy(bst_t *tree)
     free(tree);
     tree = NULL;
 }
-
+*/
 bst_iter_t BSTInsert(bst_t *tree, void *data)
 {
     bst_node_t *new_n = NULL;
+    bst_iter_t runner = tree->root_stub.children[LEFT];
+    bst_iter_t parent = runner;
+    int where = 0;
+    assert(NULL != tree);
 
-    new_n = InitNode(tree->root_stub.children[LEFT], new_n, data);
+     /*empty tree initialize root */
+    if (tree->root_stub.children[LEFT] == NULL)
+    {
+        InitNode(&tree->root_stub, &new_n, data);
+        tree->root_stub.children[LEFT] = new_n;
+        
+        return new_n;
+    } 
+    
+    while (runner != NULL)
+    {
+       
+       where = tree->CmpFunc(data,runner->data);
+       parent = runner;
+       assert(where != 0);
+
+       runner = runner->children[0 < where];
+    }
+
+    InitNode(parent, &new_n, data);
+
+
+    parent->children[0 < where] = new_n;
+    
+   
+ return new_n;
 
 }
 
@@ -114,36 +147,34 @@ bst_iter_t BSTEnd(const bst_t *tree)
 {
     assert(NULL != tree);
     
-    return (const bst_iter_t)&tree->root_stub;
+    return (bst_iter_t)&tree->root_stub;
 }
+
 
 bst_iter_t BSTNext(bst_iter_t iter)
 {
     bst_iter_t runner = iter;
     
-    if(GetRight(runner) != NULL)
+    if(HasChild(runner,RIGHT))
     {
-        runner = iter->children[RIGHT];
+        runner = GetRight(runner);
 
-        while(GetLeft(runner) != NULL)
+        while(HasChild(runner,LEFT))
         {
-            runner = runner->children[LEFT];
+            runner = GetLeft(runner);
         }
 
-        return runner;
+       return runner; 
     }
-
-    runner = iter->parent;
-    if(runner.children[LEFT] != iter)
+    else
     {
-        runner = runner->parent;
-        while(GetParent(runner).children[LEFT] != runner)
+        while(HasParent(runner) && GetParent(runner)->children[LEFT] != runner)
         {
-            runner = runner->parent;
+            runner = runner->parent;        
         }
+     runner = runner->parent;     
     }
     return runner;
-    
 }
 
 bst_iter_t BSTPrev(bst_iter_t iter)
@@ -154,25 +185,21 @@ bst_iter_t BSTPrev(bst_iter_t iter)
     {
         runner = iter->children[LEFT];
         
-            while(HasChild(runner,RIGHT))
-            {
-                runner = runner->children[RIGHT];
-            }
-            
-        return runner;
-    }
-
-    /*runner = iter->parent;*/
-
-    if(runner.children[RIGHT] != iter)
-    {
-        runner = runner->parent;
-        while(GetParent(runner).children[RIGHT] != runner)
+        while(HasChild(runner,RIGHT))
         {
-            runner = runner->parent
+            runner = GetRight(runner);
         }
-
     }
+
+    else
+    {
+        while(HasParent(runner) && GetParent(runner)->children[RIGHT]!= runner)
+        {
+            runner = runner->parent;        
+        }
+        runner = runner->parent;     
+     }
+
     return runner;
 }
 
@@ -187,7 +214,6 @@ int BSTIterIsEqual(bst_iter_t iter1, bst_iter_t iter2)
 }
 
 
-
 size_t BSTSize(const bst_t *tree)
 {
     size_t counter = 0;
@@ -195,8 +221,9 @@ size_t BSTSize(const bst_t *tree)
     bst_iter_t runner = BSTBegin(tree);
     while(runner != BSTEnd(tree) )
     {
-        runner = BSTNext(runner);
         ++counter;
+        runner = BSTNext(runner);
+        
     }
     return counter;
 }
@@ -216,19 +243,19 @@ int BSTIsEmpty(const bst_t *tree)
     return (tree->root_stub.children[LEFT] == NULL);
 }
 
-static void InitNode(bst_iter_t parent, bst_iter_t new_node, void *data)
+static void InitNode(bst_iter_t parent, bst_iter_t *new_node, void *data)
 {
-    new_node = (bst_node_t *)malloc(sizeof(bst_node_t));
+    *new_node = (bst_node_t *)malloc(sizeof(bst_node_t));
     
     assert(parent->data != data);
 
-    if (NULL != new_node)
+    if (NULL != *new_node)
     {
-        new_node->data = data;
-        new_node->parent = parent;
+        (*new_node)->data = data;
+        (*new_node)->parent = parent;
 
-        new_node->children[LEFT] = NULL;
-        new_node->children[RIGHT] = NULL;
+        (*new_node)->children[LEFT] = NULL;
+        (*new_node)->children[RIGHT] = NULL;
     }
 }
 
@@ -238,38 +265,46 @@ static int CompareData(const void *left, const void *right)
     return (*(size_t *)left - *(size_t *)right);
 }
 
-static bst_node_t *GetLeft(bst_iter_t iter)
+static bst_iter_t GetLeft(bst_iter_t iter)
 {
-   return node->children[LEFT];
+   return iter->children[LEFT];
 }
 
-static bst_node_t *GetRight(bst_node_t *node)
+static bst_iter_t GetRight(bst_iter_t node)
 {
     return node->children[RIGHT];
 }
 
-static bst_node_t *GetParent(bst_node_t *node)
+static bst_iter_t GetParent(bst_iter_t node)
 {
     return node->parent;
 }
 
-static bst_node_t *GetRoot(bst_node_t *node)
+
+
+
+static int HasChild(bst_iter_t node, int side)
 {
-    bst_node_t *runner = node;
-    while (runner->parent != NULL)
-    {
-        runner = GetParent(runner);
-    }
-    return runner;
+    return (node->children[side] != NULL);
 }
 
+static int HasParent(bst_iter_t node)
+{
+    return (node->parent != NULL);
+}
+
+
+
+
+
+/*
 static bst_iter_t ZigZag(bst_iter_t itter)
 {
-    bst_iter_t runner = iter;
+    bst_iter_t runner = itter;
     
     if(GetRight(runner) != NULL)
     {
-        runner = iter->children[RIGHT];
+        runner = itter->children[RIGHT];
 
         while(GetLeft(runner) != NULL)
         {
@@ -278,9 +313,20 @@ static bst_iter_t ZigZag(bst_iter_t itter)
 
         return runner;
 
-}
+}*/
 
-static int HasChild(bst_iter_t node, int side)
-{
-    return (node->children[side] != NULL);
-}
+
+
+
+
+/*
+while ( (0 > tree->CmpFunc(data,runner->data)) && (HasChild(runner,LEFT))  )
+        {
+            runner = runner->children[LEFT];
+        }
+        
+        while ( (0 < tree->CmpFunc(data,runner->data)) && (HasChild(runner,RIGHT)) ) 
+        {
+            runner = runner->children[RIGHT];
+        }
+*/
