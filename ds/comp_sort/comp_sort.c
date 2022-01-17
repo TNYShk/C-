@@ -2,15 +2,15 @@
  * Comp_Sort - Source File                    *
  * Developer: Tanya			                  *
  *          Jan 12, 2022                      *
- *                                            *
+ *          Re-written Jan 16 post CR         *
  * Reviewer:Amit Shlomo	                      *
  **********************************************/
 #include <stddef.h> /* size_t*/
 #include <assert.h> /* assert*/
-#include <stdio.h> /* print test */
-#include "comp_sort.h"
 
-/* Service func */
+#include "comp_sort.h" /* program header */
+
+/* Service funcs */
 static void PSwap(int *i , int *j);
 static int FindMinIndex(int *arr, size_t len);
 
@@ -65,7 +65,6 @@ void InsertionSort(int *arr, size_t arr_size)
 		for(inner_index = index; inner_index > 0 && arr[inner_index - 1] > arr[inner_index]; --inner_index)
 		{
 			PSwap(&arr[inner_index - 1], &arr[inner_index]);
-			
 		}
 	}
 }

@@ -2,7 +2,7 @@
  * Comp_Sort - Source File                    *
  * Developer: Tanya			                  *
  * Written: 2022-1-12                         *
- *                                            *
+ *     Re-written Jan 16 post CR              *
  * Reviewer:Amit Shlomo	                      *
  **********************************************/
 #include <assert.h> /*assert */
@@ -21,7 +21,7 @@ static void InitArr(int *ar, size_t len, int max_num);
 void InitArrOne(int *ar, size_t len);
 int cmpfunc(const void * a, const void * b);
 int IsSorted(int *arr, size_t length);
-static int FindMinIndex(int *arr, size_t len);
+
 
 
 int main (void)
@@ -130,8 +130,6 @@ printf("\n--------------------Selection Sort--------------------\n");
 	printf("5K qsort tested!\n");
 	printf("5K - qsort took %ld m.sec to run \n", end - start);
 	
-
-	
 	
 	return 0;
 }
@@ -150,26 +148,6 @@ static void InitArr(int *arr, size_t size, int max_num)
         --size;
     }
 }
-
-static int FindMinIndex(int *arr, size_t len)
-{
-	int *start = arr;
-	int *end = arr + len -1;
-	int *lowest = start;
-	
-	
-	while(start < end)
-	{
-		if(*lowest > *start)
-		{
-			lowest = start;
-			
-		}
-		++start;
-	}
-	return lowest - arr;
-}
-
 
 
 static void PrintArr(int *arr, size_t length)
