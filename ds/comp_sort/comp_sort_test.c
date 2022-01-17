@@ -42,9 +42,7 @@ int main (void)
 	PrintArr(arr2,6);
 	PrintArr(arr3,6);
 	printf("5K and 50 element arrays will not be printed here.\n They are initialized, specifially 5K is somewhat random\n");
-	printf("min val arr is %d\n", FindMinIndex(arr,6));
-	printf("min val arr2 is %d\n", FindMinIndex(arr2,6));
-	printf("min val arr3 is %d\n", FindMinIndex(arr3,6));
+	
 
 	printf("\n--------------------Bubble Sort--------------------\n");
 	BubbleSort(arr,6);
@@ -57,7 +55,7 @@ int main (void)
 
 	InitArr(fifty, 50, RANGE);
 	BubbleSort(fifty,50);
-	PrintArr(fifty,50);
+	/*PrintArr(fifty,50);*/
 	assert(1 == IsSorted(fifty,50));
 	
 	printf("--------------------Buble Sort 5k elements --------------\n");
@@ -80,6 +78,7 @@ printf("\n--------------------Selection Sort--------------------\n");
 
 	InitArr(fifty, 50, RANGE);
 	SelectionSort(fifty,50);
+	PrintArr(fifty, 50);
 	assert(1 == IsSorted(fifty,50));
 	
 	/*PrintArr(fifty, 50);*/

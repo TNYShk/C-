@@ -42,7 +42,7 @@ void SelectionSort(int *arr, size_t arr_size)
 {
 	int i = 0;
 	int *runner = arr;
-	int *end = arr + (arr_size -1);
+	int *end = arr + arr_size;
 
 	assert(NULL != arr);
 	
@@ -51,7 +51,7 @@ void SelectionSort(int *arr, size_t arr_size)
    {
     	int min = FindMinIndex(runner, arr_size - i);
     	
-    	PSwap(&runner[i], &runner[min + i]);  
+    	PSwap(runner, runner + min);  
 	}
 }
 
@@ -62,12 +62,12 @@ void InsertionSort(int *arr, size_t arr_size)
 
 	for (; index < arr_size ; ++index)
 	{
-		size_t j = index;
+		size_t inner_index = index;
 
-		while( j > 0 && arr[j - 1] > arr[j])
+		while( inner_index > 0 && arr[inner_index - 1] > arr[inner_index])
 		{
-			PSwap(&arr[j], &arr[j - 1]);
-			--j;
+			PSwap(&arr[inner_index], &arr[inner_index - 1]);
+			--inner_index;
 		}
 	}
 }
@@ -88,7 +88,7 @@ static void PSwap(int *i , int *j)
 static int FindMinIndex(int *arr, size_t len)
 {
 	int *start = arr;
-	int *end = arr + len -1;
+	int *end = arr + len;
 	int *lowest = start;
 	
 	
@@ -104,28 +104,5 @@ static int FindMinIndex(int *arr, size_t len)
 	return lowest - arr;
 }
 
-/*
-void SelectionSort(int *arr, size_t arr_size)
-{
-	int i = 0;
 
-	assert(NULL != arr);
-	
-
-   for (i = 0; i < (int)arr_size - 1; ++i) 
-   {
-    	int min = i;
-    	int j = i;
-        
-        for (j = i + 1; j < (int)arr_size; ++j) 
-        {
-            if (arr[j] < arr[min]) 
-            {
-                min = j;
-            }
-        }
-        PSwap(&arr[i], &arr[min]);
-    }
-}
-*/
 
