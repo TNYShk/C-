@@ -17,19 +17,35 @@ int CompareData(const void *left, const void *right);
 int main(void)
 {
     bst_t *tree = BSTCreate(CompareData);
-   int data = 5;
-   int data1 = 6;
+    int data = 5;
+    int data1 = 6;
+    int data2 = 2;
+    void *getdata = NULL;
     bst_iter_t root = BSTInsert(tree, &data);
     bst_iter_t node = BSTInsert(tree, &data1);
+    bst_iter_t node1 = BSTInsert(tree, &data2);
+    bst_iter_t find;
+
     assert(node == BSTNext(root));
+    assert(root == BSTPrev(node));
     printf("empty? %d\n", BSTIsEmpty(tree));
     printf("size? %ld\n", BSTSize(tree));
+    getdata = BSTGetData(root);
+    printf("root data: %d\n",*(int *)getdata);
+    
+    find = BSTFind(tree, &data1);
+    getdata = BSTGetData(find);
+    printf("found? data: %d\n",*(int *)getdata);
 
 
+
+    BSTDestroy(tree);
+
+    /*free(node1);
     free(node);
     free(root);
     free(tree);
-    tree = NULL;
+    tree = NULL;*/
     return 0;
 }
 
@@ -41,5 +57,5 @@ int main(void)
 
 int CompareData(const void *left, const void *right)
 {
-    return (*(size_t *)left - *(size_t *)right);
+    return (*(int *)left - *(int *)right);
 }
