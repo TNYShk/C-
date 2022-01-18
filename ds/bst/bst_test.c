@@ -44,6 +44,7 @@ int main(void)
     should fail assert find = BSTInsert(tree, &data);*/
 
     BSTDestroy(tree);
+    
 
     /*free(node1);
     free(node);
@@ -66,9 +67,10 @@ int CompareData(const void *left, const void *right)
 
 int PrinterFunc(void *data, void *param)
 {
-
-    int print = (*(int*)data);
-    printf("node has %d\n", print);
+   
+    printf("BST Root %d ", (*(int*)param));
+    printf("Node: %d\n", (*(int*)data));
+    
    
     return 0;
 }

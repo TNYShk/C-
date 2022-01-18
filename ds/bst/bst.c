@@ -9,7 +9,7 @@
 #include <stdlib.h> /* calloc */
 #include <string.h> /* memcpy */
 #include <stddef.h> /* size_t*/
-
+#include <stdio.h> /*printf */
 #include "bst.h" /* program header*/
 
 #define ROOT(tree) (tree->root_stub.children[LEFT])
@@ -258,7 +258,7 @@ void BSTDestroy(bst_t *tree)
     terminator = NULL;
     free(tree);
     tree = NULL;
-
+}
 void BSTDestroy(bst_t *tree)
 {
     bst_iter_t current = BSTBegin(tree);
@@ -269,73 +269,59 @@ void BSTDestroy(bst_t *tree)
     while(NULL != terminator)
     {
         memset(current, 0, sizeof(bst_iter_t));
+
         free(current);
         current = terminator;
-        terminator = BSTNext(terminator);
+        terminator = current->parent;
 
     }
     memset(tree, 0, sizeof(bst_t));
+
     free(tree);
     tree = NULL;
 }
-}*/
+*/
 void BSTDestroy(bst_t *tree)
 {
-    bst_iter_t current = NULL;
-    bst_iter_t terminator = NULL;
-    current = BSTBegin(tree);
-
+    bst_iter_t current = BSTBegin(tree);
+   
     while (!BSTIsEmpty(tree))
     {
-        if ( (!HasChild(current,LEFT)) && (!HasChild(current,RIGHT)) )
+        if ( !HasChild(current,RIGHT) && (!HasChild(current,LEFT)))
         {
             bst_iter_t terminator =  current->parent;
+                
+            if(terminator->children[RIGHT] == current)
+            {
+                terminator->children[RIGHT] = NULL;
+            }
+            else
+            {
+                terminator->children[LEFT] = NULL;
+            }
+             
             free(current);
             current = terminator;
-            
+                
         }
-       else if (HasChild(current,LEFT))
-       {
-            current = GetLeft(current);
-       }
-       else 
-       {
-            current = GetRight(current);
-       }
-    }
-
-    memset(tree, 0, sizeof(bst_t));
-    free(tree);
-    tree = NULL;
-}
-
-/*
-void BSTDestroy(bst_t *bst)
-{
-    bst_node_t *runner = NULL;
-
-    assert(NULL != bst);
-
-    runner = ROOT(bst);
-    while (!BSTIsEmpty(bst))
-    {
-        if (NULL == runner->children[LEFT] &&
-            NULL == runner->children[RIGHT])
+        else if (HasChild(current,RIGHT))
         {
-            bst_node_t *parent = runner->parent;
-            BSTRemove(runner);
-            runner = parent;
+            current = GetRight(current);
+            printf("line 310\n");
         }
         else
         {
-            runner = runner->children[WHICH_CHILD(runner)];
+            current = GetLeft(current);
         }
+          
     }
-
-    memset(bst, 0, sizeof(bst_t));
-    free(bst); bst = NULL;
+    
+    free(tree);
+    tree = NULL;
 }
-*/
+
+
+
 
 
 
