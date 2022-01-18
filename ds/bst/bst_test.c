@@ -40,11 +40,15 @@ int main(void)
     printf("BST begin data: %d\n",*(int *)getdata);
    
     BSTForEach(BSTBegin(tree),BSTEnd(tree),PrinterFunc, &data );
+    BSTRemove(node1);
+    printf("\npost removal of node:\n");
+    BSTForEach(BSTBegin(tree),BSTEnd(tree),PrinterFunc, &data );
+    printf("size? %ld\n", BSTSize(tree));
     /*
     should fail assert find = BSTInsert(tree, &data);*/
 
     BSTDestroy(tree);
-    
+
 
     /*free(node1);
     free(node);
