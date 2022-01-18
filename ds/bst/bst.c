@@ -6,10 +6,10 @@
  * Reviewer: NURIT  	                      *
  **********************************************/
 #include <assert.h> /* assert */
-#include <stdlib.h> /* calloc */
-#include <string.h> /* memcpy */
-#include <stddef.h> /* size_t*/
-#include <stdio.h> /*printf */
+#include <stdlib.h> /* malloc */
+#include <string.h> /* memmove */
+
+
 
 #include "bst.h" /* program header*/
 
@@ -72,6 +72,41 @@ bst_t *BSTCreate(bst_cmp_func_t cmp_func)
     start->CmpFunc = cmp_func;
 
     return start;
+}
+
+void BSTDestroy(bst_t *tree)
+{
+    bst_iter_t current = BSTBegin(tree);
+    int which_child = -1;
+
+    assert(NULL != tree);
+
+    while (!BSTIsEmpty(tree))
+    {
+        if (LonelyLeaf(current))
+        {
+            bst_iter_t terminator = GetParent(current);
+
+            which_child = CHOSEN_ONE(current);
+
+            terminator->children[which_child] = NULL;
+           
+            free(current);
+            current = terminator;
+                
+        }
+        else if (HasChild(current,RIGHT))
+        {
+            current = GetRight(current);
+        }
+        else
+        {
+            current = GetLeft(current);
+        }
+    }
+    
+    free(tree);
+    tree = NULL;
 }
 
 
@@ -254,40 +289,7 @@ size_t BSTSize(const bst_t *tree)
     return counter;
 }
 
-void BSTDestroy(bst_t *tree)
-{
-    bst_iter_t current = BSTBegin(tree);
-    int which_child = -1;
 
-    assert(NULL != tree);
-
-    while (!BSTIsEmpty(tree))
-    {
-        if (LonelyLeaf(current))
-        {
-            bst_iter_t terminator = GetParent(current);
-
-            which_child = CHOSEN_ONE(current);
-
-            terminator->children[which_child] = NULL;
-           
-            free(current);
-            current = terminator;
-                
-        }
-        else if (HasChild(current,RIGHT))
-        {
-            current = GetRight(current);
-        }
-        else
-        {
-            current = GetLeft(current);
-        }
-    }
-    
-    free(tree);
-    tree = NULL;
-}
 
 
 
@@ -340,7 +342,6 @@ int BSTForEach(bst_iter_t from, bst_iter_t to,
     return status;
 
 }
-
 
 
 static void InitNode(bst_iter_t parent, bst_iter_t *new_node, void *data)
