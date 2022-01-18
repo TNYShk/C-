@@ -70,23 +70,7 @@ bst_t *BSTCreate(bst_cmp_func_t cmp_func)
 }
 
 
-/*
-void BSTDestroy(bst_t *tree)
-{
-    bst_node_t *runner_next;
-    bst_node_t *runner_left;
-    
-    assert(NULL != tree);
-    runner_left = BSTBegin(tree);
-    runner_next = GetParent(runner_left);
-    while (!BSTIsEmpty(tree))
-    {
 
-    }
-    free(tree);
-    tree = NULL;
-}
-*/
 bst_iter_t BSTInsert(bst_t *tree, void *data)
 {
     bst_node_t *new_n = NULL;
@@ -95,7 +79,7 @@ bst_iter_t BSTInsert(bst_t *tree, void *data)
     int where = 0;
     assert(NULL != tree);
 
-    if (tree->root_stub.children[LEFT] == NULL)
+    if (ROOT(tree) == NULL)
     {
         InitNode(&tree->root_stub, &new_n, data);
         tree->root_stub.children[LEFT] = new_n;
@@ -107,14 +91,15 @@ bst_iter_t BSTInsert(bst_t *tree, void *data)
     {
        
        where = tree->CmpFunc(data,runner->data);
-       parent = runner;
-       assert(where != 0);
+        assert(where != 0);
 
+       parent = runner;
+
+      
        runner = runner->children[0 < where];
     }
 
     InitNode(parent, &new_n, data);
-
 
     parent->children[0 < where] = new_n;
     
@@ -162,8 +147,6 @@ bst_iter_t BSTNext(bst_iter_t iter)
         {
             runner = GetLeft(runner);
         }
-
-       return runner; 
     }
     else
     {
@@ -171,7 +154,7 @@ bst_iter_t BSTNext(bst_iter_t iter)
         {
             runner = runner->parent;        
         }
-     runner = runner->parent;     
+    runner = runner->parent;     
     }
     return runner;
 }
@@ -204,23 +187,30 @@ bst_iter_t BSTPrev(bst_iter_t iter)
 
 
 /*
-static bst_iter_t ZigZag(bst_iter_t itter)
+static bst_iter_t ZigZag(bst_iter_t itter, int side)
 {
-    bst_iter_t runner = itter;
-    
-    if(GetRight(runner) != NULL)
+    if(HasChild(itter,side))
     {
-        runner = itter->children[RIGHT];
-
-        while(GetLeft(runner) != NULL)
+        runner = iter->children[side];
+        
+        while(HasChild(itter,!side))
         {
-            runner = runner->children[LEFT];
+            itter = GetRight(itter);
         }
+    }
 
-        return runner;
+    else
+    {
+        while(HasParent(itter) && GetParent(itter)->children[!side] != itter)
+        {
+            itter = itter->parent;        
+        }
+     itter = itter->parent;     
+    }
 
-}*/
-
+    return itter;
+}
+*/
 
 
 int BSTIterIsEqual(bst_iter_t iter1, bst_iter_t iter2)
@@ -246,6 +236,28 @@ size_t BSTSize(const bst_t *tree)
     }
     return counter;
 }
+/*
+void BSTDestroy(bst_t *tree)
+{
+    bst_iter_t current = BSTBegin(tree);
+    bst_iter_t terminator = NULL;
+    
+    assert(NULL != tree);
+
+    while(NULL != current)
+    {
+        memset(current, 0, sizeof(bst_node_t)); 
+        terminator = BSTNext(current);
+        free(current);
+
+       current = terminator;
+
+    }
+    memset(tree, 0, sizeof(bst_t));
+    free(terminator);
+    terminator = NULL;
+    free(tree);
+    tree = NULL;
 
 void BSTDestroy(bst_t *tree)
 {
@@ -266,6 +278,65 @@ void BSTDestroy(bst_t *tree)
     free(tree);
     tree = NULL;
 }
+}*/
+void BSTDestroy(bst_t *tree)
+{
+    bst_iter_t current = NULL;
+    bst_iter_t terminator = NULL;
+    current = BSTBegin(tree);
+
+    while (!BSTIsEmpty(tree))
+    {
+        if ( (!HasChild(current,LEFT)) && (!HasChild(current,RIGHT)) )
+        {
+            bst_iter_t terminator =  current->parent;
+            free(current);
+            current = terminator;
+            
+        }
+       else if (HasChild(current,LEFT))
+       {
+            current = GetLeft(current);
+       }
+       else 
+       {
+            current = GetRight(current);
+       }
+    }
+
+    memset(tree, 0, sizeof(bst_t));
+    free(tree);
+    tree = NULL;
+}
+
+/*
+void BSTDestroy(bst_t *bst)
+{
+    bst_node_t *runner = NULL;
+
+    assert(NULL != bst);
+
+    runner = ROOT(bst);
+    while (!BSTIsEmpty(bst))
+    {
+        if (NULL == runner->children[LEFT] &&
+            NULL == runner->children[RIGHT])
+        {
+            bst_node_t *parent = runner->parent;
+            BSTRemove(runner);
+            runner = parent;
+        }
+        else
+        {
+            runner = runner->children[WHICH_CHILD(runner)];
+        }
+    }
+
+    memset(bst, 0, sizeof(bst_t));
+    free(bst); bst = NULL;
+}
+*/
+
 
 
 void *BSTGetData(bst_iter_t iter)
@@ -287,6 +358,8 @@ bst_iter_t BSTFind(const bst_t *tree, void *data_to_find)
 {
     bst_iter_t runner = BSTBegin(tree);
 
+    assert(NULL != tree);
+
     while(runner != BSTEnd(tree) && !BSTIterIsEqual(runner->data,data_to_find))
     {
         runner = BSTNext(runner);
@@ -301,11 +374,9 @@ int BSTForEach(bst_iter_t from, bst_iter_t to,
 {
     int status = 0;
    
-
     assert(NULL != from);
     assert(NULL != to);
 
-   
     while(!BSTIterIsEqual(from, to) && (0 == status))
     {
         status = action_func(BSTGetData(from), param);

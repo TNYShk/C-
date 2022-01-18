@@ -13,7 +13,7 @@
 #include "bst.h" /* program header*/
 
 int CompareData(const void *left, const void *right);
-
+int PrinterFunc(void *data, void *param);
 int main(void)
 {
     bst_t *tree = BSTCreate(CompareData);
@@ -36,8 +36,12 @@ int main(void)
     find = BSTFind(tree, &data1);
     getdata = BSTGetData(find);
     printf("found? data: %d\n",*(int *)getdata);
-
-
+    getdata = BSTGetData(BSTBegin(tree));
+    printf("BST begin data: %d\n",*(int *)getdata);
+   
+    BSTForEach(BSTBegin(tree),BSTEnd(tree),PrinterFunc, &data );
+    /*
+    should fail assert find = BSTInsert(tree, &data);*/
 
     BSTDestroy(tree);
 
@@ -57,5 +61,14 @@ int main(void)
 
 int CompareData(const void *left, const void *right)
 {
-    return (*(int *)left - *(int *)right);
+    return (*(size_t *)left - *(size_t *)right);
+}
+
+int PrinterFunc(void *data, void *param)
+{
+
+    int print = (*(int*)data);
+    printf("node has %d\n", print);
+   
+    return 0;
 }
