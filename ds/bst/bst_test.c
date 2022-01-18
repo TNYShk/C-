@@ -65,6 +65,7 @@ int main(void)
    
     BSTForEach(BSTBegin(tree),BSTEnd(tree),PrinterFunc, &data );
     BSTRemove(node1);
+
     printf("\npost removal of node:\n");
     BSTForEach(BSTBegin(tree),BSTEnd(tree),PrinterFunc, &data );
     printf("size? %ld\n", BSTSize(tree));
@@ -105,7 +106,8 @@ static void PopulateTree()
     node1 = BSTInsert(tree, &data2);
     BSTInsert(tree, &data3);
     BSTInsert(tree, &data4);
-
+    find = BSTPrev(node1);
+    printf("BST Prev data: %d\n",*(int *)BSTGetData(find));
     getdata = BSTGetData(BSTBegin(tree));
     printf("BST begin data: %d\n",*(int *)getdata);
 
