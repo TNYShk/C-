@@ -9,18 +9,17 @@
 #include <stdlib.h> /* malloc */
 #include <string.h> /* memmove */
 
-
-
 #include "bst.h" /* program header*/
 
 #define ROOT(tree) (tree->root_stub.children[LEFT])
 #define CHOSEN_ONE(iter) (iter == GetRight(GetParent(iter)))
 #define HAS_RIGHT(node) (NULL != GetRight(node))
-#define CONTINUE (0)
+
+
 
 
 /**************  Service Funcs  *******************/
-static void InitNode(bst_iter_t parent, bst_iter_t *new, void *data);
+static int InitNode(bst_iter_t parent, bst_iter_t *new, void *data);
 static int HasChild(bst_iter_t iter, int side);
 static int HasParent(bst_iter_t iter);
 static bst_iter_t GetLeft(bst_iter_t iter);
@@ -36,6 +35,12 @@ enum children
     LEFT,
     RIGHT,
     NUM_OF_CHILDREN
+};
+
+enum status
+{
+    FAIL = -1,
+    SUCCESS
 };
 
 typedef struct bst_node bst_node_t;
@@ -122,10 +127,12 @@ bst_iter_t BSTInsert(bst_t *tree, void *data)
     
     if (ROOT(tree) == NULL)
     {
-        InitNode(&tree->root_stub, &new_n, data);
-        tree->root_stub.children[LEFT] = new_n;
-        
-        return new_n;
+        if(SUCCESS == InitNode(&tree->root_stub, &new_n, data))
+        {
+            tree->root_stub.children[LEFT] = new_n;
+        }
+
+       return new_n; 
     } 
     
     while (runner != NULL)
@@ -137,10 +144,11 @@ bst_iter_t BSTInsert(bst_t *tree, void *data)
         runner = runner->children[0 < where];
     }
 
-    InitNode(parent, &new_n, data);
+    if(SUCCESS == InitNode(parent, &new_n, data))
+    {
+         parent->children[0 < where] = new_n;
+    }
 
-    parent->children[0 < where] = new_n;
-    
  return new_n;
 
 }
@@ -327,13 +335,13 @@ bst_iter_t BSTFind(const bst_t *tree, void *data_to_find)
 int BSTForEach(bst_iter_t from, bst_iter_t to,
     bst_action_func_t action_func, void *param)
 {
-    int status = CONTINUE;
+    int status = SUCCESS;
    
     assert(NULL != from);
     assert(NULL != to);
     assert(NULL != param);
 
-    while(!BSTIterIsEqual(from, to) && (CONTINUE == status))
+    while(!BSTIterIsEqual(from, to) && (SUCCESS == status))
     {
         status = action_func(BSTGetData(from), param);
         from = BSTNext(from);
@@ -344,13 +352,13 @@ int BSTForEach(bst_iter_t from, bst_iter_t to,
 }
 
 
-static void InitNode(bst_iter_t parent, bst_iter_t *new_node, void *data)
+static int InitNode(bst_iter_t parent, bst_iter_t *new_node, void *data)
 {
     *new_node = (bst_node_t *)malloc(sizeof(bst_node_t));
     
     if (new_node == NULL)
     {
-        return;
+        return FAIL;
     }
     assert(NULL != data);
     assert(parent->data != data);
@@ -360,6 +368,7 @@ static void InitNode(bst_iter_t parent, bst_iter_t *new_node, void *data)
     (*new_node)->children[LEFT] = NULL;
     (*new_node)->children[RIGHT] = NULL;
     
+    return SUCCESS;
 }
 
 

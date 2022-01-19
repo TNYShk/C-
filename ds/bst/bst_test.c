@@ -80,7 +80,7 @@ int main(void)
 
     BSTDestroy(tree);
 
-     PopulateTree();
+    PopulateTree();
     return 0;
 }
 
