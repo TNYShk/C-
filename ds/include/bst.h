@@ -177,7 +177,7 @@ void *BSTGetData(bst_iter_t iter);
  * void *data_to_find in the tree
  * 
  * RETURN:
- * iterator to the found data, if not fount root stub is returned
+ * iterator to the found data, if not fount BSTEnd is returned (which is NULL)
  *
  *  Complexity: O(log n) time, O(1) space.
  */

@@ -58,8 +58,7 @@ void SmallScale()
     printf("\n\t******Counting Sort Test******\n");
     printf("\nTest small array, same elements +Zero, before\n");
     PrintArr(countzero,TEN);
-    (CountingSort(countzero,TEN) == 1) ? printf("Sorted!\n") : printf("FAILED!\n");
-  
+    CountingSort(countzero,TEN);
     printf("post Counting Sort:\n");
     PrintArr(countzero,TEN);
     assert(1 == IsSorted(countzero,TEN));
@@ -69,12 +68,11 @@ void SmallScale()
     PrintArr(arr,length);
     
     start = clock();
-    (CountingSort(arr,length) == 1) ? printf("Sorted!\n") : printf("FAILED!\n");
-   
+    CountingSort(arr,length);
     end = clock();
     printf("post Counting Sort:\n");
     PrintArr(arr,length);
-    
+    assert(1 == IsSorted(arr,length));
     
     printf("Counting Sort 10 elements, ranged 1-99, took %ld clocks to run \n", end - start);
 
@@ -83,8 +81,7 @@ void SmallScale()
     PrintArr(arr,length);
     
     start = clock();
-    (RadixSort(arr,length,2) == 1) ? printf("Sorted!\n") : printf("FAILED!\n");
-   /* RadixSort(arr,length,2);*/
+    RadixSort(arr,length,2);
     end = clock();
     assert(1 == IsSorted(arr,length));
 
@@ -93,11 +90,10 @@ void SmallScale()
     printf("Radix Sort of 10 elements, ranged 1-6666, chunks of 2, took %ld clocks to run \n", end - start);
     printf("\nTest small array, same elements, before\n");
     PrintArr(same,5);
-    (RadixSort(same,5,1) == 1) ? printf("Sorted!\n") : printf("FAILED!\n");
-    /*RadixSort(same,5,1);*/
+    RadixSort(same,5,1);
     printf("post Radix Sort:\n");
     PrintArr(same,5);
-    assert(1 == IsSorted(same,5));
+
 }
 
 void FiveKScale()
@@ -113,10 +109,9 @@ void FiveKScale()
     InitArrNoZero(fivek, FIVEK, RANGE);
    
     start = clock();
-    (CountingSort(fivek, FIVEK) == 1) ? printf("Sorted!\n") : printf("FAILED!\n");
-    /*CountingSort(fivek, FIVEK);*/
+    CountingSort(fivek, FIVEK);
     end = clock();
-  
+    assert(1 == IsSorted(fivek,FIVEK));
     
     printf("Counting Sort of 5K elements, ranged 1-99, took %ld clocks to run \n", end - start);
 }
@@ -134,8 +129,7 @@ void FiveKRadix()
    
 
     start = clock();
-    (RadixSort(fivek, FIVEK,4) == 1) ? printf("Sorted!\n") : printf("FAILED!\n");
-    /*RadixSort(fivek, FIVEK,4);*/
+    RadixSort(fivek, FIVEK,4);
     end = clock();
     assert(1 == IsSorted(fivek,FIVEK));
     
@@ -144,8 +138,7 @@ void FiveKRadix()
     InitArr(fivek, FIVEK, HUGENUM);
     
     start = clock();
-    (RadixSort(fivek, FIVEK,3) == 1) ? printf("Sorted!\n") : printf("FAILED!\n");
-   /*RadixSort(fivek, FIVEK,3);*/
+    RadixSort(fivek, FIVEK,3);
     end = clock();
     assert(1 == IsSorted(fivek,FIVEK));
     printf("Radix Sort of 5K elements, ranged 1-1000000, chunks of 3 took %ld clocks to run \n", end - start);
@@ -162,28 +155,27 @@ void RadixChunk()
     
      start = clock();
      InitArr(fivek, FIVEK, HUGENUM);
-     (RadixSort(fivek, FIVEK,1) == 1) ? printf("Sorted!\n") : printf("FAILED!\n");
-      /*RadixSort(fivek, FIVEK,1);*/
+      RadixSort(fivek, FIVEK,1);
        end = clock();
        assert(1 == IsSorted(fivek,FIVEK));
     printf("Radix Sort of 5K elements, ranged 1-1000000, chunks of 1 took %ld clocks to run \n", end - start);
 
     start = clock();
     InitArr(fivek, FIVEK, HUGENUM);
-      (RadixSort(fivek, FIVEK,2) == 1) ? printf("Sorted!\n") : printf("FAILED!\n");
+      RadixSort(fivek, FIVEK,2);
         end = clock();
        assert(1 == IsSorted(fivek,FIVEK));
     printf("Radix Sort of 5K elements, ranged 1-1000000, chunks of 2 took %ld clocks to run \n", end - start);
     
  
      InitArr(fivek, FIVEK, HUGENUM);
-      (RadixSort(fivek, FIVEK,3) == 1) ? printf("Sorted!\n") : printf("FAILED!\n");
+      RadixSort(fivek, FIVEK,3);
        assert(1 == IsSorted(fivek,FIVEK));
        
 
     start = clock();
      InitArr(fivek, FIVEK, HUGENUM);
-      (RadixSort(fivek, FIVEK,4) == 1) ? printf("Sorted!\n") : printf("FAILED!\n");
+      RadixSort(fivek, FIVEK,4);
        end = clock();
        assert(1 == IsSorted(fivek,FIVEK));
         printf("Radix Sort of 5K elements, ranged 1-1000000, chunks of 4 took %ld clocks to run \n", end - start);
@@ -191,7 +183,7 @@ void RadixChunk()
 
     start = clock();
      InitArr(fivek, FIVEK, HUGENUM);
-      (RadixSort(fivek, FIVEK,5) == 1) ? printf("Sorted!\n") : printf("FAILED!\n");
+      RadixSort(fivek, FIVEK,5);
       end = clock();
        assert(1 == IsSorted(fivek,FIVEK));
     printf("Radix Sort of 5K elements, ranged 1-1000000, chunks of 5 took %ld clocks to run \n", end - start);

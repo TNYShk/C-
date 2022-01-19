@@ -183,7 +183,7 @@ bst_iter_t BSTNext(bst_iter_t iter)
 {
     bst_iter_t runner = iter;
     
-    assert(NULL != iter);
+    
 
     if(HasChild(runner,RIGHT))
     {
