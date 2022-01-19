@@ -3,7 +3,7 @@
  * Developer: Tanya			                  *
  *          Jan 16, 2022                      *
  *                                            *
- * Reviewer:    		                      *
+ * Reviewer: NURIT  	                      *
  **********************************************/
 #include <assert.h> /* assert */
 #include <stdlib.h> /* calloc */
@@ -37,6 +37,7 @@ int main(void)
     int data7 = 24;
     int data8 = 26;
     int data9 = 25;
+    int data10 = 50;
     void *getdata = NULL;
     bst_iter_t root = BSTInsert(tree, &data);
     bst_iter_t node = BSTInsert(tree, &data1);
@@ -53,17 +54,22 @@ int main(void)
     BSTInsert(tree, &data9);
   
     printf("empty? %d\n", BSTIsEmpty(tree));
-    printf("size? %ld\n", BSTSize(tree));
+    
     
     printf("first node is: %d\n",*(int *)BSTGetData(BSTBegin(tree)));
     
-    find = BSTFind(tree, &data1);
+    find = BSTFind(tree, &data5);
     getdata = BSTGetData(find);
-    printf("found? data: %d\n",*(int *)getdata);
+    printf("found? (23)data: %d\n",*(int *)getdata);
+    find = BSTFind(tree, &data10);
+    assert(NULL == BSTGetData(find));
+    printf("searched for another node data which isnt there. NULL returned\n");
+    
     getdata = BSTGetData(BSTBegin(tree));
-    printf("BST begin data: %d\n",*(int *)getdata);
+    printf("\nBST begin data: %d\n",*(int *)getdata);
    
     BSTForEach(BSTBegin(tree),BSTEnd(tree),PrinterFunc, &data );
+    printf("size? %ld\n", BSTSize(tree));
     BSTRemove(node1);
 
     printf("\npost removal of node:\n");
@@ -115,7 +121,7 @@ static void PopulateTree()
    
     printf("size? %ld\n", BSTSize(tree));
     BSTDestroy(tree);
-    printf("Test end\n\n");
+    printf("Tree Destroyed, Test passed\n\n");
 }
 
 

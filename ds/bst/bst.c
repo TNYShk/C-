@@ -12,14 +12,13 @@
 #include "bst.h" /* program header*/
 
 #define ROOT(tree) (tree->root_stub.children[LEFT])
-#define CHOSEN_ONE(iter) (iter == GetRight(GetParent(iter)))
+#define WHOSE_CHILD(iter) (iter == GetRight(GetParent(iter)))
 #define HAS_RIGHT(node) (NULL != GetRight(node))
 
 
 
-
 /**************  Service Funcs  *******************/
-static int InitNode(bst_iter_t parent, bst_iter_t *new, void *data);
+static int CreateIniteNode(bst_iter_t parent, bst_iter_t *new, void *data);
 static int HasChild(bst_iter_t iter, int side);
 static int HasParent(bst_iter_t iter);
 static bst_iter_t GetLeft(bst_iter_t iter);
@@ -64,7 +63,6 @@ bst_t *BSTCreate(bst_cmp_func_t cmp_func)
     bst_t *start = NULL;
   
     start = (bst_t *)malloc(sizeof(bst_t));
-
     if(NULL == start)
     {
         return NULL;
@@ -92,7 +90,7 @@ void BSTDestroy(bst_t *tree)
         {
             bst_iter_t terminator = GetParent(current);
 
-            which_child = CHOSEN_ONE(current);
+            which_child = WHOSE_CHILD(current);
 
             terminator->children[which_child] = NULL;
            
@@ -125,9 +123,9 @@ bst_iter_t BSTInsert(bst_t *tree, void *data)
     assert(NULL != tree);
     assert(NULL != data);
     
-    if (ROOT(tree) == NULL)
+    if (NULL == ROOT(tree))
     {
-        if(SUCCESS == InitNode(&tree->root_stub, &new_n, data))
+        if(SUCCESS == CreateIniteNode(&tree->root_stub, &new_n, data))
         {
             tree->root_stub.children[LEFT] = new_n;
         }
@@ -135,7 +133,7 @@ bst_iter_t BSTInsert(bst_t *tree, void *data)
        return new_n; 
     } 
     
-    while (runner != NULL)
+    while (NULL != runner)
     {
         where = tree->CmpFunc(data,runner->data);
         assert(where != 0);
@@ -144,7 +142,7 @@ bst_iter_t BSTInsert(bst_t *tree, void *data)
         runner = runner->children[0 < where];
     }
 
-    if(SUCCESS == InitNode(parent, &new_n, data))
+    if(SUCCESS == CreateIniteNode(parent, &new_n, data))
     {
          parent->children[0 < where] = new_n;
     }
@@ -163,7 +161,7 @@ bst_iter_t BSTBegin(const bst_t *tree)
 
     runner = tree->root_stub.children[LEFT];
     
-    while (runner->children[LEFT] != NULL)
+    while (NULL != runner->children[LEFT])
     {
         runner = GetLeft(runner);
 
@@ -198,7 +196,7 @@ bst_iter_t BSTNext(bst_iter_t iter)
     }
     else
     {
-        while(HasParent(runner) && CHOSEN_ONE(runner))
+        while(HasParent(runner) && WHOSE_CHILD(runner))
         {
             runner = runner->parent;        
         }
@@ -228,7 +226,7 @@ bst_iter_t BSTPrev(bst_iter_t iter)
 
     else
     {
-        while(HasParent(runner) && !CHOSEN_ONE(runner))
+        while(HasParent(runner) && !WHOSE_CHILD(runner))
         {
             runner = runner->parent;        
         }
@@ -256,8 +254,8 @@ void BSTRemove(bst_iter_t node2remove)
         node2remove = next_node;
 
     }
-    which_child = CHOSEN_ONE(node2remove);
-    node2remove->parent->children[HAS_RIGHT(node2remove)] = node2remove->children[CHOSEN_ONE(node2remove)];
+    which_child = WHOSE_CHILD(node2remove);
+    node2remove->parent->children[HAS_RIGHT(node2remove)] = node2remove->children[WHOSE_CHILD(node2remove)];
 
     if (NULL != node2remove->children[which_child])
     {
@@ -323,7 +321,7 @@ bst_iter_t BSTFind(const bst_t *tree, void *data_to_find)
     assert(NULL != tree);
     assert(NULL != data_to_find);
 
-    while(runner != BSTEnd(tree) && !BSTIterIsEqual(runner->data,data_to_find))
+    while(runner != BSTEnd(tree) && (tree->CmpFunc(runner->data,data_to_find)))
     {
         runner = BSTNext(runner);
     }
@@ -352,11 +350,11 @@ int BSTForEach(bst_iter_t from, bst_iter_t to,
 }
 
 
-static int InitNode(bst_iter_t parent, bst_iter_t *new_node, void *data)
+static int CreateIniteNode(bst_iter_t parent, bst_iter_t *new_node, void *data)
 {
     *new_node = (bst_node_t *)malloc(sizeof(bst_node_t));
     
-    if (new_node == NULL)
+    if (NULL == new_node)
     {
         return FAIL;
     }
