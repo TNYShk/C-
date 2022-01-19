@@ -24,8 +24,8 @@ static int HasParent(bst_iter_t iter);
 static bst_iter_t GetLeft(bst_iter_t iter);
 static bst_iter_t GetRight(bst_iter_t node);
 static bst_iter_t GetParent(bst_iter_t node);
-static int LonelyLeaf(bst_iter_t node);
-static int FamilyNode(bst_iter_t node);
+static int IsLonelyLeaf(bst_iter_t node);
+static int IsFamilyNode(bst_iter_t node);
 /* ********************************************** */
 
 
@@ -86,7 +86,7 @@ void BSTDestroy(bst_t *tree)
 
     while (!BSTIsEmpty(tree))
     {
-        if (LonelyLeaf(current))
+        if (IsLonelyLeaf(current))
         {
             bst_iter_t terminator = GetParent(current);
 
@@ -247,7 +247,7 @@ void BSTRemove(bst_iter_t node2remove)
     assert(NULL != node2remove);
     assert(NULL != BSTGetData(node2remove));
 
-    if (FamilyNode(node2remove))
+    if (IsFamilyNode(node2remove))
     {
         bst_iter_t next_node = BSTNext(node2remove);
         node2remove->data = BSTGetData(next_node);
@@ -396,12 +396,12 @@ static int HasParent(bst_iter_t node)
     return (node->parent != NULL);
 }
 
-static int LonelyLeaf(bst_iter_t node)
+static int IsLonelyLeaf(bst_iter_t node)
 {
     return ( (!HasChild(node,LEFT)) && (!HasChild(node,RIGHT)) );
 }
 
-static int FamilyNode(bst_iter_t node)
+static int IsFamilyNode(bst_iter_t node)
 {
     return ( (HasChild(node,LEFT)) && (HasChild(node,RIGHT)) );
 }
