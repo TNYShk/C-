@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <assert.h>
-
+#include <ctype.h>
 #include "pars.h"
 
 int ParseNum(const char *str, char **next_ptr, double *result)
@@ -22,11 +22,10 @@ char ParseChar(const char *str, char **str_after_parse)
 	assert(NULL != str);
 	result = *str;
 	
+	assert(!isdigit(result));
 	*str_after_parse = (char *)(str + 1);
 	
 
 	return result;
 	
-	
-
 }
