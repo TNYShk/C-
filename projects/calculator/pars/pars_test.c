@@ -1,13 +1,18 @@
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <ctype.h>
+/**********************************************
+ * Parser - Test File         			      *
+ * Developer: Tanya			                  *
+ *          Jan 20, 2022                      *
+ *                                            *
+ * Reviewer:  		  	                      *
+ **********************************************/
+#include <stdio.h> /* printf */
 
-#include "pars.h"
+#include "pars.h" /* program header*/
 
 static void TestParseNum();
 static void TestParseChar();
 static void CombineParse();
+
 int main(void)
 {
 	
@@ -17,6 +22,7 @@ int main(void)
 	CombineParse();
 	return 0;
 }
+
 
 static void TestParseNum()
 {
@@ -53,7 +59,7 @@ static void TestParseChar()
 static void CombineParse()
 {
 	char *runner  = NULL;
-	char *str = "-165.88 + (123456789.123456789* -550)";
+	char *str = "-165.88 + (123456789.123456789* -550)-15";
 	double result = 0.0;
 	char ch = '@';
 	int flag = 1;
@@ -72,7 +78,7 @@ static void CombineParse()
 			flag = ParseNum(runner,&runner,&result);
 			if(flag == 1)
 			{
-				printf(", %f ,",result);
+				printf(", %.4f ,",result);
 			}
 			
 		}
