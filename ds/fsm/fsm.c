@@ -10,7 +10,7 @@ int CheckValidity(const char *string);
 
 typedef enum 
 {
-	START,
+	Q0,
 	BLACKHOLE,
 	Q1,
 	Q2
@@ -32,7 +32,7 @@ typedef struct fsm
 
 static const fsm_t FiniteStateM[] = 
 {
-	{START, {{'1', BLACKHOLE}, {'0', Q1}} },
+	{Q0, {{'1', BLACKHOLE}, {'0', Q1}} },
 	{BLACKHOLE, {{'1', BLACKHOLE},{'0', BLACKHOLE}} },
 	{Q1,{{'1', Q1},{'0', Q2}} },
 	{Q2, {{'1', Q1},{'0', Q2}} }
@@ -60,7 +60,7 @@ int main()
 
 int CheckValidity(const char *string)
 {
-	int cur_state = START;
+	fsm_state cur_state = Q0;
 	size_t length = strlen(string);
 	const char *runner = string;
 	size_t index = 0;
