@@ -7,20 +7,22 @@
 #define ASCIT (256)
 #define ESC (27)
 #define HIDE (system("stty -icanon -echo"))
-#define UNHIDE (system("stty icanon echo");)
+#define UNHIDE (system("stty icanon echo"))
 
 typedef void (*foo)(char);
 typedef void (*ptr_to_func)(void);
 
 static void DoNothing(void);
-
+static void PrintT(void);
+static void PrintA(void);
 
 
 
 void iAT(void)
 {
 	char cc=' ';
-	system("stty -icanon -echo");
+	HIDE;
+
 	while (cc != ESC)
 	{
 		while((cc != 'T') && (cc != 'A'))
@@ -31,13 +33,13 @@ void iAT(void)
 		cc = getc(stdin);
 	}
 
-	system("stty icanon echo");
+	UNHIDE;
 }
 
 void ifAT(void)
 {
 	char cc =' ';
-	system("stty -icanon -echo");
+	HIDE;
 	
 	while (cc != ESC)
 	{
@@ -48,14 +50,14 @@ void ifAT(void)
 			printf("%c-pressed!\n",cc);
 		}
 	}
-	system("stty icanon echo");
+	UNHIDE;
 
 }
 
 void PrintAT(void)
 {
 	char cc = ' ';
-	system("stty -icanon -echo");
+	HIDE;
 	
 	while(1)
 	{
@@ -63,7 +65,7 @@ void PrintAT(void)
 		
 		switch(cc){
 			case (ESC):
-				system("stty icanon echo");
+				UNHIDE;
 				return;
 			case 'A':
 			case 'T':
@@ -86,6 +88,16 @@ static void DoNothing(void)
 	printf("\n\t");
 }
 
+static void PrintA(void)
+{
+	printf("AAA\n");
+}
+
+static void PrintT(void)
+{
+	printf("TT\n");
+}
+
 
 void ActionFunc()
 {
@@ -93,28 +105,28 @@ void ActionFunc()
 	int i = 0;
 
 	ptr_to_func lut_of[ASCIT];
-	foo lut[ASCIT] = {0};
+	
 
 	ptr_to_func nada = DoNothing;
-	ptr_to_func a_t_pressed = ifAT;
-	
+	ptr_to_func a_pressed = PrintA;
+	ptr_to_func t_pressed = PrintT;
 
 	for(i = 0;i < ASCIT; ++i)
 	{
 		lut_of[i] = nada;
-		lut[i] = PrintChar;
+		
 	}
-	lut_of['A'] = a_t_pressed;
-	lut_of['T'] = a_t_pressed;
+	lut_of['A'] = a_pressed;
+	lut_of['T'] = t_pressed;
 
-	system("stty -icanon -echo");
+	HIDE;
 	
 	while((cc = getc(stdin)) != ESC)
 	{
-		lut[(unsigned char)cc](cc);
+		lut_of[(unsigned char)cc]();
 	}
 	
-	system("stty icanon echo");
+	UNHIDE;
 	
 }
 
