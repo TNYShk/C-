@@ -22,7 +22,7 @@ char ParseChar(const char *str, char **str_after_parse)
 	assert(NULL != str);
 	result = *str;
 	
-	assert(!isalnum(result));
+	/*assert(!isalnum(result));*/
 	*str_after_parse = (char *)(str + 1);
 	
 

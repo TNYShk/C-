@@ -53,10 +53,11 @@ static void TestParseChar()
 static void CombineParse()
 {
 	char *runner  = NULL;
-	char *str = "-165.88+123456789.123456789*-550";
+	char *str = "-165.88 + (123456789.123456789* -550)";
 	double result = 0.0;
 	char ch = '@';
 	int flag = 1;
+
 	printf("\n\tCombined Test\n");
 	printf("Original string is %s\n", str);
 	printf("Parse id down: \n");
@@ -64,7 +65,7 @@ static void CombineParse()
 	{
 		printf("%f ,",result);
 
-		while (runner && flag)
+		while (*runner != '\0')
 		{
 			ch = ParseChar(runner, &runner);
 			printf(" %c ", ch);
