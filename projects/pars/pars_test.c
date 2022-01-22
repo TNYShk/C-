@@ -9,7 +9,7 @@
 
 #include "pars.h" /* program header*/
 
-#define BADOP ('~')	
+#define BADOP ('#')	
 
 
 static void TestParseNum();
