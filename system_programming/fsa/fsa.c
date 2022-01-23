@@ -35,6 +35,7 @@ fsa_t *FSAInit(void *memory, size_t mem_size, size_t block_size)
 	
 	assert(NULL != memory);
 
+
 	block_size = WORD_SIZE + ALIGNDOWN(block_size);
 
 	((fsa_t*)memory)->start = sizeof(fsa_t);
@@ -47,7 +48,7 @@ fsa_t *FSAInit(void *memory, size_t mem_size, size_t block_size)
 	{
 	 	*(long *)runner = block_size;
 	 	runner += block_size;
-	 	mem_size -=block_size;
+	 	mem_size -= block_size;
 	}
 	
 	*(long *)runner = (long)memory - (long)runner;

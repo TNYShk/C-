@@ -9,6 +9,7 @@
 #define __FSA_H__
 
 #include <unistd.h>
+#include <stddef.h> /*size_t */
 
 
 typedef struct fsa fsa_t;
@@ -16,7 +17,8 @@ typedef struct fsa fsa_t;
 
 /* 
  * DESCRIPTION:
- * based on user's desired param, suggest the min amount of bytes needed for the memory pool? FSA?
+ * based on user's desired param, suggest the min amount of bytes needed for the memory pool
+ * + overhead
  * 
  * PARAMETERS:
  * num_of_block (size_t)
@@ -63,7 +65,7 @@ void *FSAAlloc(fsa_t *pool);
  * PARAMETERS:
  * pool - pointer to the FSA
  * block - pointer to the used block of memory
- * 
+ * UNDEFINED BEAHVIOR if block was freed
  * 
  * RETURN: 
  * None
