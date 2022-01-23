@@ -17,7 +17,7 @@
 static int IsOperator(char op);
 
 
-static const char operators[] = {'(',')','*','+','-','/','^','[',']','{','}'};
+static const char operators[] = {'{','[','(','^','*','/','+','-',')',']','}'};
 
 
 
