@@ -14,11 +14,12 @@
 
 
 typedef int (*action_func_t)(double left, double right, double *result);
-typedef int (*fsm_state_func_t)(calc_status_t status, stack_t *numbers, stack_t *operators,double *result);
+typedef int (*fsm_state_func_t)(calc_status_t status, calc_status_t ,double *result);
 
 
 static int Plus(double left, double right, double *result);
 static int Minus(double left, double right, double *result);
+static int Multiply(double left, double right, double *result);
 
 /*
 typedef enum
@@ -40,16 +41,17 @@ typedef enum state
 typedef struct event
 {
 	fsm_state input;
-	alc_status_t output;
+	action_func_t output;
 
 }event_t;
 
 
 typedef struct fsm
 {
-	
-	calculation_func;
+	event_t input_output;
+	fsm_state_func_t calculations;
 	fsm_state fsm_cur_state[3];
+	
 }fsm_t;
 
 typedef struct calc_stack
