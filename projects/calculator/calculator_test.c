@@ -11,10 +11,19 @@
 
 int main(void)
 {
-	double result  = 66.6;
+	double result  = 66666.66666666;
 	char *str = "5 - -5";
+	Calculator("5.4 # 66.6 -5 *2", &result);
+	printf("5.4 #66.6 -5 *2: result is: %f\n",result);
 
+	Calculator("5.4+66.6", &result);
+	printf("5.4+66.6: result is: %f\n",result);
+	Calculator("5.4 * 66.6", &result);
+	printf("5.4 * 66.6: result is: %f\n",result);
 	Calculator(str, &result);
-	printf("result is %f\n",result);
+	printf("%s : result is %f\n",str,result);
+	
+	
+
 	return 0;
 }

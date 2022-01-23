@@ -38,11 +38,9 @@ typedef enum pars_status
 
 typedef enum state
 {
-	
 	WAIT_NUM,
 	WAIT_OP,
-	INVALID,
-	STATES
+	INVALID
 
 }state_t;
 
@@ -130,7 +128,6 @@ calc_status_t Calculator(const char *string, double *result)
 	int precedence_table[ASCII] = {0};
 
 	calc_status_t status = CALC_SUCCESS;
-	int state = WAIT_NUM;
 	calc_stack_t *calc = NULL;
 	
 	char *string_runner = NULL;
@@ -154,12 +151,16 @@ calc_status_t Calculator(const char *string, double *result)
 	string_runner = (char *)string;
 	runner_end = string + strlen(string);
 	
-	while ((string_runner <= runner_end) && (INVALID != state))
+	while ((string_runner <= runner_end) && (INVALID != calc->cur_state))
 	{
-		state = states_lut[state](&string_runner, &status, 
+		calc->cur_state = states_lut[calc->cur_state](&string_runner, &status, 
 			operators_lut, precedence_table, calc);
 	}
-	
+	if(INVALID == calc->cur_state)
+	{
+
+		return CALC_MATH_ERROR;
+	}
 	*result = *(double *)StackPeek(calc->numbers);
 
 	StackDestroy(calc->numbers);
@@ -176,11 +177,11 @@ static int StateGetNumber(char **math_expression, calc_status_t *status, operati
 	int *precedence_table, calc_stack_t *calc)
 {
 	double result = 0;
-	state_t next_state = WAIT_OP;
+	calc->cur_state = WAIT_OP;
 	
 	
 	ParseNum(*math_expression, math_expression, &result);
-	/**math_expression = ParseNum(*math_expression, &number);*/
+
 	StackPush(calc->numbers, &result);
 	
 	if (NULL == *math_expression)
@@ -189,7 +190,7 @@ static int StateGetNumber(char **math_expression, calc_status_t *status, operati
 		*status = CALC_SYNTAX_ERROR;
 	}
 	
-	return next_state;
+	return calc->cur_state;
 }
 
 
@@ -197,12 +198,15 @@ static int StateGetNumber(char **math_expression, calc_status_t *status, operati
 static int StateGetOperator(char **math_expression, calc_status_t *status, operation_func_t *operators_lut,
 	int *precedence_table, calc_stack_t *calc)
 {
-	char new_operator = 0;
-	char prev_operator = 0;
+	char new_operator = ' ';
+	char prev_operator = ' ';
 	
 	prev_operator = *(char *)StackPeek(calc->operators);
-	*math_expression = ParseChar2(*math_expression, &new_operator);
-	
+	calc->cur_state = ParseChar1(*math_expression, math_expression, &new_operator);
+	if(calc->cur_state == INVALID_READ)
+	{
+		return INVALID;
+	}
 	
 	while (precedence_table[(int)prev_operator] >= precedence_table[(int)new_operator])
 	{
@@ -212,8 +216,9 @@ static int StateGetOperator(char **math_expression, calc_status_t *status, opera
 	
 	StackPush(calc->operators, &new_operator);
 	
-	return (CALC_SUCCESS == *status) ? WAIT_NUM : INVALID;
+	return (CALC_SUCCESS == *status) ? WAIT_NUM : INVALID; /* PROBLEM to fix*/
 }
+
 
 
 static void InitOperatorsLut(operation_func_t *operators_lut)
@@ -227,9 +232,13 @@ static void InitOperatorsLut(operation_func_t *operators_lut)
 		operators_lut[loop_index] = CalcInvalidOperator;
 	}
 	
-	InitValidOperators(operators_lut);
+	operators_lut['+'] = CalcPlus;
+	operators_lut['-'] = CalcMinus;
+	operators_lut['*'] = CalcMultiply;
+	operators_lut['/'] = CalcDivide;
+	/*InitValidOperators(operators_lut);*/
 }
-
+/*
 static void InitValidOperators(operation_func_t *operators_lut)
 {	
 	assert(NULL != operators_lut);
@@ -241,7 +250,7 @@ static void InitValidOperators(operation_func_t *operators_lut)
 	operators_lut['*'] = CalcMultiply;
 	operators_lut['/'] = CalcDivide;
 }
-
+*/
 
 static void InitPrecedenceTable(int *precedence_table)
 {	
