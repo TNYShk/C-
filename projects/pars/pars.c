@@ -27,7 +27,7 @@ int ParseNum(const char *str, char **next_ptr, double *result)
 
 	*result = strtod(str,next_ptr);
 
-	if(str != *next_ptr);
+	return(str != *next_ptr);
 }
 
 

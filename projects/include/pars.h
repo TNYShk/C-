@@ -10,7 +10,7 @@
 
 typedef enum pars_status
 {
-	INVALID_READ,
+	INVALID_READ = -1,
 	READ_NUMBER,
 	READ_OPERATOR
 	
