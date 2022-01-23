@@ -8,7 +8,7 @@ OBJS := $(SRCS:.c=.o)
 TARGET := a.out
 
 .DEFAULT_GOAL := $(TARGET)
-.PHONY := valg push clean
+.PHONY := valg clean
 
 %.c: | %.h
 	sed 's/^#.*//g ; 3i #include "$|"' $| > $@

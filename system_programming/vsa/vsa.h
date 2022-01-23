@@ -16,7 +16,7 @@ typedef struct vsa vsa_t;
 /* 
  * DESCRIPTION:
  * Initialize VSA based on users request, 
- * given memory size must be atlseat 64 bytes
+ * given memory size must be atlseat 64 bytes, else behavior is undefined
  * 
  * PARAMETERS:
  * void *pool - pointer to the allocated memory
@@ -32,8 +32,8 @@ vsa_t *VSAInit(void *pool, size_t mem_size);
 /**
  * DESCRIPTION: 
  * Allocated block of memory based
- * Memory block shall be ALIGNED to word size, algorithm is First Fit.
- * [Implementation should represent malloc(), meaning overhead]
+ * Memory block adrs shall be ALIGNED to word size, algorithm is First Fit.
+ * [Implementation should represent malloc(), meaning mem_size can be zero]
  * 
  * 
  * to minimize NULL returns, FreeChunk function should be ran periodically

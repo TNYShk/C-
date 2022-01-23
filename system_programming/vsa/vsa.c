@@ -12,7 +12,7 @@
 #include "vsa.h" /* header file */
 
 
-#define ALIGN(a) ( (a - 1) + (WORD_SIZE) - ((a - 1) & (WORD_SIZE - 1)) )
+#define ALIGNUP(a) ( (a - 1) + (WORD_SIZE) - ((a - 1) & (WORD_SIZE - 1)) )
 #define WORD_SIZE (sizeof(size_t))
 #define MAGIC (0x666AAA666AAA6666l)
 #define STOP (LONG_MIN)
@@ -85,7 +85,7 @@ void *VSAAlloc(vsa_t *pool, size_t alloc_size)
 	assert(NULL != pool);
 	assert(ZERO < alloc_size);
 	
-	alloc_size = ALIGN(alloc_size) + sizeof(vsa_t);
+	alloc_size = ALIGNUP(alloc_size) + sizeof(vsa_t);
 
 	while (allocated->start != STOP)
 	{
