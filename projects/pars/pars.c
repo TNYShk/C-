@@ -27,13 +27,13 @@ int ParseNum(const char *str, char **next_ptr, double *result)
 
 	*result = strtod(str,next_ptr);
 
-	return (str != *next_ptr);
+	if(str != *next_ptr);
 }
 
 
 char ParseChar(const char *str, char **str_after_parse)
 {
-	char result = BADOP;
+	char result = INVALID_READ;
 	assert(NULL != str);
 
 	*str_after_parse = (char *)(str);
@@ -50,6 +50,31 @@ char ParseChar(const char *str, char **str_after_parse)
 	}
 	
 	return result;
+}
+
+
+
+int ParseChar1(const char *str, char **str_after_parse, char *result)
+{
+	
+	assert(NULL != str);
+
+	*str_after_parse = (char *)(str);
+
+	while(isspace(**str_after_parse))
+	{
+		++(*str_after_parse);
+	}
+	
+	if (IsOperator(**str_after_parse))
+	{
+		*result = **str_after_parse;
+		++(*str_after_parse);
+
+		return READ_OPERATOR;
+	}
+	
+	return INVALID_READ;
 }
 
 

@@ -11,10 +11,10 @@
 
 
 #define ASCII (256)
-
+#define BADOP ('~')	
 
 typedef int (*action_func_t)(double left, double right, double *result);
-typedef int (*fsm_state_func_t)(calc_status_t status, calc_status_t ,double *result);
+typedef int (*fsm_state_func_t)(calc_stack_t *, char * , char **, double *result);
 
 
 static int Plus(double left, double right, double *result);
@@ -32,16 +32,17 @@ typedef enum
 */
 typedef enum state
 {
+	INVALID,
 	WAIT_NUM,
 	WAIT_OP,
-	INVALID
+	STATES
 
 }fsm_state;
 
-typedef struct event
+typedef struct state_chage
 {
-	fsm_state input;
-	action_func_t output;
+	pars_status_p input;
+	fsm_state ouput;
 
 }event_t;
 
@@ -50,38 +51,98 @@ typedef struct fsm
 {
 	event_t input_output;
 	fsm_state_func_t calculations;
-	fsm_state fsm_cur_state[3];
-	
+	event_t fsm_cur_state[STATES];
+
 }fsm_t;
 
 typedef struct calc_stack
 {
 	stack_t *numbers;
 	stack_t *operators;
+	fsm_state fsm_cur_state;
+
 }calc_stack_t;
 
 
 
 static const fsm_t FiniteStateM[] = 
 {
-	{WAIT_NUM, {{CALC_SYNTAX_ERROR, INVALID}, {CALC_SUCCESS, WAIT_OP}} },
-	{WAIT_OP, {{CALC_MATH_ERROR, INVALID},{CALC_SUCCESS, WAIT_NUM}} },
-	{INVALID,{{CALC_SYNTAX_ERROR, INVALID},{CALC_MATH_ERROR, INVALID}} }
+	{INVALID, &Nothing,   { {INVALID_READ , INVALID},
+							{READ_NUMBER, INVALID}},
+							{READ_OPERATOR, INVALID} },
+
+	{WAIT_NUM, &ProcessNum, { {INVALID_READ, INVALID}, 
+							{READ_NUMBER, WAIT_OP},
+							{READ_OPERATOR, WAIT_NUM} },
+
+	{WAIT_OP, &ProcessOp,   { {INVALID_READ , INVALID},
+							{READ_NUMBER, INVALID}},
+							{READ_OPERATOR, WAIT_NUM} }
+	
 };
 
 
+int ProcessNum(calc_stack_t *calc, char *string , char **afterparse, double *result)
+{
+	
+}
+
+calc_status_t Calculator(const char *string, double *result)
+{
 
 
-static const action_func_t calculations[] = { &OpernPars, &OpernPars, &OpernPars,
-												&Power, &Multiply, &Divide, &Plus, &Minus, 
-											  &ClosePars, &ClosePars,&ClosePars 
-											};
+	double temp = 0.0;
+	char *runner = NULL;
 
-calc_status_t Calculator(const char *string, double *result);
+	calc_stack_t *cstack = (calc_stack_t*)malloc(sizeof(calc_stack_t));
+	if (NULL == cstack)
+	{
+		return CALC_ALLOC_ERROR;
+	}
+
+		if(InitStacks(cstack, strlen(string + 1)) == CALC_SUCCESS)
+		{
+			StackPush(cstack->operators, &BADOP);
+			StackPush(cstack->numbers, &temp);
+			
+			cstack->fsm_cur_state = WAIT_NUM;
+		}
+
+if(ParseNum(string,runner,temp))
+{
+	char ch = ' ';
+
+	while(('\0' != runner) && (ch != '('))
+	{
+		StackPush(cstack->numbers, temp);
+		ch = ParseChar(runner, &runner);
+		StackPush(cstack->operators, ch)
+
+	}
+}
+
+}
 
 
 
 
+static int InitStacks(calc_stack_t *new, size_t len)
+{
+	new->numbers = StackCreate(len, sizeof(double));
+	if (NULL == new->numbers)
+	{
+		return CALC_ALLOC_ERROR;
+	}
+	new->operators = StackCreate(len, sizeof(char));
+	if (NULL == new->operators)
+	{
+		StackDestroy(new->numbers);
+		return CALC_ALLOC_ERROR;
+	}
+	
+
+	return CALC_SUCCESS;
+}
 
 static int Plus(double left, double right, double *result)
 {

@@ -19,12 +19,16 @@ static void NewTest();
 
 int main(void)
 {
-	
-	TestParseNum();
+	char *runner  = NULL;
+	char *b_num = "*56";
+	char result = ' ';
+	printf("int: %d \n", ParseChar1(b_num, &runner, &result));
+	printf("char is %c\n", result);
+	/*TestParseNum();
 	TestParseChar();
 
 	CombineParse();
-	NewTest();
+	NewTest();*/
 	return 0;
 }
 

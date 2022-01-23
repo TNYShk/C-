@@ -8,6 +8,16 @@
 #ifndef __PARS_H__
 #define __PARS_H__
 
+typedef enum pars_status
+{
+	INVALID_READ,
+	READ_NUMBER,
+	READ_OPERATOR
+	
+}pars_status_p;
+
+
+
 /* DESCRIPTION: 
  * 
  *
@@ -35,6 +45,7 @@ int ParseNum(const char *str, char **next_ptr, double *result);
  */
 char ParseChar(const char *str, char **str_after_parse);
 
+int ParseChar1(const char *str, char **str_after_parse, char *result);
 
 #endif 
 /* __PARS_H__ */
