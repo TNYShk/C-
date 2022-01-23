@@ -12,8 +12,9 @@
 int main(void)
 {
 	double result  = 66.6;
-	char *str = "5+5";
+	char *str = "5 - -5";
 
 	Calculator(str, &result);
+	printf("result is %f\n",result);
 	return 0;
 }

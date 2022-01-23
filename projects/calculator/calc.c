@@ -55,8 +55,12 @@ typedef struct calc_stack
 
 }calc_stack_t;
 
-typedef calc_status_t (*operation_func_t)(calc_stack_t *calc);
-typedef int (*state_func_t)(char **, calc_status_t *, operation_func_t *, int *, calc_stack_t *calc);
+typedef calc_status_t (*operation_func_t)(calc_stack_t *);
+typedef int (*state_func_t)(char **, calc_status_t *, operation_func_t *, int *, calc_stack_t *);
+
+static void InitOperatorsLut(operation_func_t *operators_lut);
+static void InitValidOperators(operation_func_t *operators_lut);
+static void InitPrecedenceTable(int *precedence_table);
 
 static int StateGetNumber(char **math_expression, calc_status_t *status, operation_func_t *operators_lut,
 	int *precedence_table, calc_stack_t *calc);
@@ -64,9 +68,7 @@ static int StateGetNumber(char **math_expression, calc_status_t *status, operati
 static int StateGetOperator(char **math_expression, calc_status_t *status, operation_func_t *operators_lut,
 	int *precedence_table, calc_stack_t *calc);
 
-static void InitOperatorsLut(operation_func_t *operators_lut);
-static void InitValidOperators(operation_func_t *operators_lut);
-static void InitPrecedenceTable(int *precedence_table);
+
 
 static calc_stack_t *IniCalc(size_t len);
 
@@ -193,7 +195,7 @@ static int StateGetNumber(char **math_expression, calc_status_t *status, operati
 
 
 static int StateGetOperator(char **math_expression, calc_status_t *status, operation_func_t *operators_lut,
-	char *precedence_table, calc_stack_t *calc)
+	int *precedence_table, calc_stack_t *calc)
 {
 	char new_operator = 0;
 	char prev_operator = 0;
@@ -241,7 +243,7 @@ static void InitValidOperators(operation_func_t *operators_lut)
 }
 
 
-static void InitPrecedenceTable(char *precedence_table)
+static void InitPrecedenceTable(int *precedence_table)
 {	
 	precedence_table['@'] = -5;		/* dummy operator */
 	
