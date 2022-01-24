@@ -6,6 +6,7 @@
  * Reviewer:  		  	                      *
  **********************************************/
 #include <stdio.h> /* printf */
+#include <string.h>
 
 #include "pars.h" /* program header*/
 
@@ -19,19 +20,24 @@ static void NewTest();
 
 int main(void)
 {
+		
+	extern char operators;
+
 	char *runner  = NULL;
 	char *b_num = "*56";
 	char result = ' ';
+	
 	printf("int: %d \n", ParseChar1(b_num, &runner, &result));
 	printf("char is %c\n", result);
-	/*TestParseNum();
+	
+	/*
+	TestParseNum();
 	TestParseChar();
 
 	CombineParse();
 	NewTest();*/
 	return 0;
 }
-
 
 static void TestParseNum()
 {
@@ -104,8 +110,9 @@ static void NewTest()
 	printf("\n\t*****Combined Test2*****\nOriginal string is %s\n", str);
 	printf("Parse it down: \n");
 	
-	if(ParseNum(str,&runner,&result) == 0)
+	if(ParseNum(str,&runner,&result) == 2)
 	{
+		ch = *runner;
 		ch = ParseChar(runner, &runner);
 		printf(" %c ,", ch);
 	}

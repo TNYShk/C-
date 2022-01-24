@@ -1,16 +1,18 @@
  /**********************************************
  * Parser - Header File                       *
- * Approver: AMIT                             *
+ * Approver: 	                              *
  * Written: 2022-1-20                         *
  *                                            *
- * Reviewer: AMIT                             *
+ * Reviewer:  	                              *
  **********************************************/
 #ifndef __PARS_H__
 #define __PARS_H__
 
+
+
 typedef enum pars_status
 {
-	INVALID_READ = -1,
+	INVALID_READ,
 	READ_NUMBER,
 	READ_OPERATOR
 	
@@ -44,8 +46,9 @@ int ParseNum(const char *str, char **next_ptr, double *result);
  *  Complexity: O(1) time, O(1) space.
  */
 char ParseChar(const char *str, char **str_after_parse);
-
+char *ParseChar2(const char *str, char *ch);
 int ParseChar1(const char *str, char **str_after_parse, char *result);
+
 
 #endif 
 /* __PARS_H__ */

@@ -10,6 +10,7 @@
 #include <string.h> /* strlen */
 #include <math.h> /* power */
 
+
 #include "../include/cal.h" /* program header */
 #include "../include/stack.h" /* required module */
 #include "../include/pars.h" /* required module */
@@ -36,7 +37,7 @@ typedef struct calc_stack
 
 }calc_stack_t;
 
-
+extern const char operators[11];
 /* typedef funcs */
 typedef calc_status_t (*operation_func_t)(calc_stack_t *);
 typedef int (*state_func_t)(char **, calc_status_t *, operation_func_t *, int *, calc_stack_t *);
@@ -73,6 +74,7 @@ static calc_stack_t *IniCalc(size_t len)
 	stack_t *numbers = NULL;
 	stack_t *operators = NULL;
 	calc_stack_t *cstack = (calc_stack_t*)malloc(sizeof(calc_stack_t));
+	
 	if (NULL == cstack)
 	{
 		return NULL;
@@ -124,7 +126,7 @@ calc_status_t Calculator(const char *string, double *result)
 	{
 		return CALC_ALLOC_ERROR;
 	}
-
+	
 	assert(NULL != string);
 	assert(NULL != result);
 
@@ -199,7 +201,7 @@ static int StateGetOperator(char **math_expression, calc_status_t *status, opera
 	
 	prev_operator = *(char *)StackPeek(calc->operators);
 	
-	if(ans == INVALID_READ)
+	if(INVALID_READ == ans)
 	{
 		return INVALID;
 	}
@@ -319,7 +321,6 @@ static calc_status_t CalcDivide(calc_stack_t *calc)
 		return CALC_MATH_ERROR;
 	}
 	
-
 	right = *(double *)StackPeek(calc->numbers);
 	StackPop(calc->numbers);
 	
@@ -372,24 +373,17 @@ static calc_status_t CalcInvalidOperator(calc_stack_t *calc)
 
 static char MatchPresidents(char right_president)
 {
-    char left_par = '\0';
+   char left_president = ' ';
+   char *location = strchr(operators,right_president);
+   size_t distance = 0;
+   size_t op_lut_len = (sizeof(operators)/sizeof(*operators) - 1);
+   
+   distance = location - ((char*)(operators));
+   left_president = (*(char*)(operators + (op_lut_len - distance)));
+    
+   return left_president;
+    
 
-    switch(right_president)
-    {
-        case ')':
-        left_par = '(';
-        break;
-
-        case ']':
-        left_par = '[';
-        break;
-
-        case '}':
-        left_par = '{';
-        break;
-    }
-
-    return left_par;
 }
 
 static int IsRightParanthesis(char c)
