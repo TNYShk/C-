@@ -139,10 +139,7 @@ calc_status_t Calculator(const char *string, double *result)
 	calc_stack_t *calc = NULL;
 	
 	char *string_runner = NULL;
-	const char *runner_end = NULL;
-
 	
-
 	calc = IniCalc(strlen(string));
 	if (NULL == calc)
 	{
@@ -157,9 +154,8 @@ calc_status_t Calculator(const char *string, double *result)
 	InitPrecedenceTable(precedence_table);
 	
 	string_runner = (char *)string;
-	runner_end = string + strlen(string);
 	
-	while ((string_runner <= runner_end) && (INVALID != calc->cur_state))
+	while ((string_runner <= (string + strlen(string))) && (INVALID != calc->cur_state))
 	{
 		calc->cur_state = states_lut[calc->cur_state](&string_runner, &status, 
 			operators_lut, precedence_table, calc);
@@ -171,6 +167,7 @@ calc_status_t Calculator(const char *string, double *result)
 		free(calc);
 		return CALC_MATH_ERROR;
 	}
+	
 	*result = *(double *)StackPeek(calc->numbers);
 
 	StackDestroy(calc->numbers);
@@ -251,8 +248,6 @@ static void InitOperatorsLut(operation_func_t *operators_lut)
 {	
 	size_t indx = 0;
 	
-	assert(NULL != operators_lut);
-	
 	for (indx = 0; indx < ASCII; ++indx)
 	{
 		operators_lut[indx] = CalcInvalidOperator;
@@ -271,6 +266,10 @@ static void InitPrecedenceTable(int *precedence_table)
 {	
 	precedence_table[BADOP] = -5;		
 	
+	precedence_table['('] = 0;
+	precedence_table['{'] = 0;
+	precedence_table['['] = 0;
+
 	precedence_table['+'] = 1;
 	precedence_table['-'] = 1;
 	
@@ -278,10 +277,7 @@ static void InitPrecedenceTable(int *precedence_table)
 	precedence_table['/'] = 2;
 	
 	precedence_table['^'] = 3;
-	
-	precedence_table['('] = 0;
-	precedence_table['{'] = 0;
-	precedence_table['['] = 0;
+
 }
 
 
@@ -290,8 +286,6 @@ static calc_status_t CalcPlus(calc_stack_t *calc)
 	double right = 0.0;
 	double left = 0.0;
 	
-	assert(NULL != calc->numbers);
-	assert(NULL != calc->operators);
 	
 	right = *(double *)StackPeek(calc->numbers);
 	StackPop(calc->numbers);
@@ -313,9 +307,7 @@ static calc_status_t CalcMinus(calc_stack_t *calc)
 	double right = 0.0;
 	double left = 0.0;
 	
-	assert(NULL != calc->numbers);
-	assert(NULL != calc->operators);
-	
+
 	right = *(double *)StackPeek(calc->numbers);
 	StackPop(calc->numbers);
 	
@@ -336,8 +328,6 @@ static calc_status_t CalcMultiply(calc_stack_t *calc)
 	double right = 0.0;
 	double left = 0.0;
 	
-	assert(NULL != calc->numbers);
-	assert(NULL != calc->operators);
 	
 	right = *(double *)StackPeek(calc->numbers);
 	StackPop(calc->numbers);
@@ -358,9 +348,6 @@ static calc_status_t CalcDivide(calc_stack_t *calc)
 {
 	double right = 0.0;
 	double left = 0.0;
-	
-	assert(NULL != calc->numbers);
-	assert(NULL != calc->operators);
 	
 	right = *(double *)StackPeek(calc->numbers);
 	if(0.0 == right)
@@ -385,8 +372,6 @@ static calc_status_t CalcPower(calc_stack_t *calc)
 	double right = 0.0;
 	double left = 0.0;
 	
-	assert(NULL != calc->numbers);
-	assert(NULL != calc->operators);
 	
 	right = *(double *)StackPeek(calc->numbers);
 	if(0.0 == right)
