@@ -5,15 +5,14 @@
  *                                            *
  * Reviewer:         	                      *
  **********************************************/
-#include <stdlib.h> /* strtod*/
+#include <stdlib.h> /* memory allocation*/
 #include <assert.h> /* assert */
-#include <string.h> /* strchr */
+#include <string.h> /* strlen */
 #include <math.h> /* power */
 
-#include "../include/stack.h"
-#include "../include/cal.h"
-#include "../include/pars.h"
-
+#include "../include/cal.h" /* program header */
+#include "../include/stack.h" /* required module */
+#include "../include/pars.h" /* required module */
 
 #define ASCII (128)
 #define BADOP ('@')	
@@ -41,6 +40,7 @@ typedef struct calc_stack
 /* typedef funcs */
 typedef calc_status_t (*operation_func_t)(calc_stack_t *);
 typedef int (*state_func_t)(char **, calc_status_t *, operation_func_t *, int *, calc_stack_t *);
+
 /*** service funs ***/
 static int IsRightParanthesis(char c);
 static void InitOperatorsLut(operation_func_t *operators_lut);
@@ -57,9 +57,10 @@ static calc_status_t CalcMinus(calc_stack_t *calc);
 static calc_status_t CalcMultiply(calc_stack_t *calc);
 static calc_status_t CalcDivide(calc_stack_t *calc);
 static calc_status_t CalcPower(calc_stack_t *calc);
-static calc_status_t CalcPresident(calc_stack_t *calc, operation_func_t *operators_lut, char right_president);
-static char MatchPresidents(char right_president);
 static calc_status_t CalcInvalidOperator(calc_stack_t *calc);
+static calc_status_t CalcPresident(calc_stack_t *calc, operation_func_t *operators_lut, char right_president);
+
+static char MatchPresidents(char right_president);
 /*** end of service funs ***/
 
 
