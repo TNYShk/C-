@@ -4,9 +4,9 @@
 #include <assert.h> /* assert */
 #include <ctype.h> /* isspace, isdigit*/
 #include <string.h> /* strchr */
-#include <math.h>
+#include <math.h> /* pow */
 
-#include "../include/cal.h"
+#include "../include/cal.h" /* program header*/
 
 
 int main(void)
@@ -28,8 +28,8 @@ int main(void)
 	printf("%s : result is %f\n",str,result);
 	Calculator("5.4 / 66.6 -5 *2", &result);
 	printf("5.4 / 66.6 -5 *2: result is: %f\n",result);
-	Calculator("2+2^2", &result);
-	printf("2+2^2 is: %f\n",result);
+	Calculator("2+(2^2)", &result);
+	printf("2+(2^2) is: %f\n",result);
 	Calculator("\n2+3*4", &result);
 	printf("2+3*4: result is: %f\n",result);
 	

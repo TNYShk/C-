@@ -55,7 +55,7 @@ typedef struct calc_stack
 }calc_stack_t;
 
 typedef calc_status_t (*operation_func_t)(calc_stack_t *);
-typedef calc_status_t (*presedntial_op_func_t)(calc_stack_t *, char);
+
 
 typedef int (*state_func_t)(char **, calc_status_t *, operation_func_t *, int *, calc_stack_t *);
 static int IsRightParanthesis(char c);
@@ -91,10 +91,9 @@ static calc_stack_t *IniCalc(size_t len)
 {
 	char stam = BADOP;
 	double temp = 0;
-	calc_stack_t *cstack = (calc_stack_t*)malloc(sizeof(calc_stack_t));
 	stack_t *numbers = NULL;
 	stack_t *operators = NULL;
-
+	calc_stack_t *cstack = (calc_stack_t*)malloc(sizeof(calc_stack_t));
 	if (NULL == cstack)
 	{
 		return NULL;
@@ -103,14 +102,18 @@ static calc_stack_t *IniCalc(size_t len)
 	numbers = StackCreate(len, sizeof(double));
 	if (NULL == numbers)
 	{
+		memset(cstack,0,sizeof(calc_stack_t));
 		free(cstack);
+		cstack = NULL;
 		return NULL;
 	}
 	operators = StackCreate(len, sizeof(char));
 	if (NULL == operators)
 	{
 		StackDestroy(numbers);
+		memset(cstack,0,sizeof(calc_stack_t));
 		free(cstack);
+		cstack = NULL;
 		return NULL;
 	}
 
@@ -163,6 +166,9 @@ calc_status_t Calculator(const char *string, double *result)
 	}
 	if(INVALID == calc->cur_state)
 	{
+		StackDestroy(calc->numbers);
+		StackDestroy(calc->operators);
+		free(calc);
 		return CALC_MATH_ERROR;
 	}
 	*result = *(double *)StackPeek(calc->numbers);
@@ -182,13 +188,11 @@ calc_status_t Calculator(const char *string, double *result)
 static int StateGetNumber(char **math_expression, calc_status_t *status, operation_func_t *operators_lut,
 	int *precedence_table, calc_stack_t *calc)
 {
-	int ans = -1;
+	
 	double result = 0;
 	calc->cur_state = WAIT_OP;
-	
-	ans = ParseNum(*math_expression, math_expression, &result);
-	
-	if (ans == READ_OPERATOR)
+
+	if (ParseNum(*math_expression, math_expression, &result) == READ_OPERATOR)
 	{
 		StackPush(calc->operators, *math_expression);
 		++(*math_expression);
@@ -198,7 +202,6 @@ static int StateGetNumber(char **math_expression, calc_status_t *status, operati
 	{
 		StackPush(calc->numbers, &result);
 	}
-	
 	
 	if (NULL == *math_expression)
 	{
@@ -246,13 +249,13 @@ static int StateGetOperator(char **math_expression, calc_status_t *status, opera
 
 static void InitOperatorsLut(operation_func_t *operators_lut)
 {	
-	size_t loop_index = 0;
+	size_t indx = 0;
 	
 	assert(NULL != operators_lut);
 	
-	for (; loop_index < ASCII; ++loop_index)
+	for (indx = 0; indx < ASCII; ++indx)
 	{
-		operators_lut[loop_index] = CalcInvalidOperator;
+		operators_lut[indx] = CalcInvalidOperator;
 	}
 	
 	operators_lut['+'] = CalcPlus;
@@ -260,9 +263,6 @@ static void InitOperatorsLut(operation_func_t *operators_lut)
 	operators_lut['*'] = CalcMultiply;
 	operators_lut['/'] = CalcDivide;
 	operators_lut['^'] = CalcPower;
-	/*operators_lut[')'] = CalcPresedent;
-	operators_lut[']'] = CalcPresedent;
-	operators_lut['}'] = CalcPresedent;*/
 	
 }
 
