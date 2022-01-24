@@ -16,27 +16,6 @@
 
 
 
-
-/*
-typedef enum
-{
-    CALC_SUCCESS = 0,
-    CALC_MATH_ERROR = 1,
-    CALC_ALLOC_ERROR = 2,
-    CALC_SYNTAX_ERROR = 3
-} calc_status_t;
-
-typedef enum pars_status
-{
-	INVALID_READ, -1
-	READ_NUMBER, = DOUBLE
-	READ_OPERATOR = CHAR
-	
-}pars_status_p;
-
-*/
-
-
 typedef enum state
 {
 	WAIT_NUM,
@@ -82,7 +61,7 @@ static calc_status_t CalcPresident(calc_stack_t *calc, operation_func_t *operato
 static char MatchPresidents(char right_president);
 
 static calc_status_t CalcInvalidOperator(calc_stack_t *calc);
-static calc_status_t CalcDoNothing(calc_stack_t *calc);
+
 
 
 
@@ -167,7 +146,7 @@ calc_status_t Calculator(const char *string, double *result)
 		free(calc);
 		return CALC_MATH_ERROR;
 	}
-	
+
 	*result = *(double *)StackPeek(calc->numbers);
 
 	StackDestroy(calc->numbers);
@@ -205,7 +184,9 @@ static int StateGetNumber(char **math_expression, calc_status_t *status, operati
 		calc->cur_state = INVALID;
 		*status = CALC_SYNTAX_ERROR;
 	}
-	
+	(void)operators_lut;
+	(void)precedence_table;
+
 	return calc->cur_state;
 }
 
@@ -415,13 +396,7 @@ static calc_status_t CalcInvalidOperator(calc_stack_t *calc)
 
 
 
-static calc_status_t CalcDoNothing(calc_stack_t *calc)
-{
-	(void)calc;
-	
-	
-	return CALC_SUCCESS;
-}
+
 
 static char MatchPresidents(char right_president)
 {
