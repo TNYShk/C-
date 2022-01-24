@@ -31,16 +31,16 @@ int main(void)
 	
 
 	stat = Calculator("5.4 # 66.6 -5 *2", &result);
-	printf("5.4 #66.6 -5 *2: result is: %f, calc_stat is %d\n",result, stat);
+	printf("5.4 #66.6 -5 *2: result is: %f, \tcalc_stat is %d\n",result, stat);
 	
 	stat = Calculator("(-5.4*66.6)", &result);
-	printf("(-5.4*66.6): result is: %f, calc_stat is %d\n",result, stat);
+	printf("(-5.4*66.6): result is: %f, \tcalc_stat is %d\n",result, stat);
 	
 	stat = Calculator("2*[3*(1+2)]-5", &result);
-	printf("2*[3*(1+2)]-5: result is: %f,calc_stat is %d\n",result, stat);
+	printf("2*[3*(1+2)]-5: result is: %f,\tcalc_stat is %d\n",result, stat);
 	
 	stat = Calculator("(5.4+*66.6)", &result);
-	printf("not good (5.4+*66.6): result is: %f,calc_stat is %d\n",result, stat);
+	printf("status not good, but acts as expected, returns up to calc\n (5.4+*66.6): result is: %f,\tcalc_stat is %d\n",result, stat);
 	
 
 	Calculator("5.4 * 66.6", &result);
