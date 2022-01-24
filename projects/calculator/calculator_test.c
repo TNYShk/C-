@@ -11,13 +11,17 @@
 
 int main(void)
 {
-	double result  = 66666.66666666;
+	double result  = 666666666.66666666;
 	char *str = "5 - -5";
+	
 	Calculator("5.4 # 66.6 -5 *2", &result);
 	printf("5.4 #66.6 -5 *2: result is: %f\n",result);
-
-	Calculator("5.4+66.6", &result);
-	printf("5.4+66.6: result is: %f\n",result);
+	Calculator("2*[3*(1+2)]-5", &result);
+	printf("2*[3*(1+2)]-5: result is: %f\n",result);
+	Calculator("(5.4+66.6)", &result);
+	printf("(5.4+66.6): result is: %f\n",result);
+	
+	
 	Calculator("5.4 * 66.6", &result);
 	printf("5.4 * 66.6: result is: %f\n",result);
 	Calculator(str, &result);
@@ -26,6 +30,8 @@ int main(void)
 	printf("5.4 / 66.6 -5 *2: result is: %f\n",result);
 	Calculator("2+2^2", &result);
 	printf("2+2^2 is: %f\n",result);
+	Calculator("\n2+3*4", &result);
+	printf("2+3*4: result is: %f\n",result);
 	
 
 	return 0;
