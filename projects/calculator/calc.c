@@ -116,7 +116,8 @@ calc_status_t Calculator(const char *string, double *result)
 	calc_stack_t *calc = NULL;
 	
 	char *string_runner = NULL;
-	
+	char *string_end = NULL;
+
 	calc = IniCalc(strlen(string));
 	if (NULL == calc)
 	{
@@ -130,19 +131,17 @@ calc_status_t Calculator(const char *string, double *result)
 	InitPrecedenceTable(precedence_lut);
 	
 	string_runner = (char *)string;
-	
-	while ((string_runner <= (string + strlen(string))) && (INVALID != calc->cur_state))
+	string_end = string_runner + strlen(string);
+
+	while ( (string_runner <= string_end) && (INVALID != calc->cur_state) )
 	{
 		calc->cur_state = states_lut[calc->cur_state](&string_runner, &status, 
 			operators_lut, precedence_lut, calc);
 	}
 	if(INVALID == calc->cur_state)
 	{
-		StackDestroy(calc->numbers);
-		StackDestroy(calc->operators);
-		memset(calc,0,sizeof(calc_stack_t));
-		free(calc);
-		return CALC_SYNTAX_ERROR;
+		printf("yallaprint!\n");
+		status = CALC_SYNTAX_ERROR;
 	}
 
 	*result = *(double *)StackPeek(calc->numbers);
@@ -164,9 +163,10 @@ static int StateGetNumber(char **math_expression, calc_status_t *status, operati
 	int *precedence_lut, calc_stack_t *calc)
 {
 	double result = 0;
+	int ans = ParseNum(*math_expression, math_expression, &result);
 	calc->cur_state = WAIT_OP;
 
-	if (READ_OPERATOR == ParseNum(*math_expression, math_expression, &result) )
+	if (READ_OPERATOR == ans )
 	{
 		StackPush(calc->operators, *math_expression);
 		++(*math_expression);
@@ -177,7 +177,7 @@ static int StateGetNumber(char **math_expression, calc_status_t *status, operati
 		StackPush(calc->numbers, &result);
 	}
 	
-	if (NULL == *math_expression)
+	if (INVALID_READ == ans)
 	{
 		calc->cur_state = INVALID;
 		*status = CALC_MATH_ERROR;
@@ -210,7 +210,7 @@ static int StateGetOperator(char **math_expression, calc_status_t *status, opera
 		return INVALID;
 	}
 	
-	while (precedence_lut[(int)prev_operator] >= precedence_lut[(int)new_operator])
+	while (precedence_lut[(int)prev_operator] > precedence_lut[(int)new_operator])
 	{
 		*status = operators_lut[(int)prev_operator](calc);
 		prev_operator = *(char *)StackPeek(calc->operators);
@@ -293,18 +293,13 @@ static calc_status_t CalcMinus(calc_stack_t *calc)
 static calc_status_t CalcMultiply(calc_stack_t *calc)
 {
 	double right = 0.0;
-	double left = 0.0;
 	
+	StackPop(calc->operators);
+
 	right = *(double *)StackPeek(calc->numbers);
 	StackPop(calc->numbers);
 	
-	left = *(double *)StackPeek(calc->numbers);
-	StackPop(calc->numbers);
-	
-	left *= right;
-	
-	StackPush(calc->numbers, &left);
-	StackPop(calc->operators);
+	*(double *)StackPeek(calc->numbers) *= right;
 	
 	return CALC_SUCCESS;
 }
@@ -313,22 +308,19 @@ static calc_status_t CalcMultiply(calc_stack_t *calc)
 static calc_status_t CalcDivide(calc_stack_t *calc)
 {
 	double right = 0.0;
-	double left = 0.0;
+	
 	
 	right = *(double *)StackPeek(calc->numbers);
 	if(0.0 == right)
 	{
 		return CALC_MATH_ERROR;
 	}
-	StackPop(calc->numbers);
-	
-	left = *(double *)StackPeek(calc->numbers);
-	StackPop(calc->numbers);
-	
-	left /= right;
-	
-	StackPush(calc->numbers, &left);
 	StackPop(calc->operators);
+
+	right = *(double *)StackPeek(calc->numbers);
+	StackPop(calc->numbers);
+	
+	*(double *)StackPeek(calc->numbers) /= right;
 	
 	return CALC_SUCCESS;
 }
@@ -339,11 +331,7 @@ static calc_status_t CalcPower(calc_stack_t *calc)
 	double left = 0.0;
 	
 	right = *(double *)StackPeek(calc->numbers);
-	if(0.0 == right)
-	{
-		return CALC_MATH_ERROR;
-	}
-
+	
 	StackPop(calc->numbers);
 	
 	left = *(double *)StackPeek(calc->numbers);

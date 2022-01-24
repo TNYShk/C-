@@ -40,17 +40,17 @@ int main(void)
 	printf("2*[3*(1+2)]-5: result is: %f,\tcalc_stat is %d\n",result, stat);
 	
 	stat = Calculator("(5.4+*66.6)", &result);
-	printf("status not good, but acts as expected, returns up to calc\n (5.4+*66.6): result is: %f,\tcalc_stat is %d\n",result, stat);
+	printf("(5.4+*66.6): result is: %f,\tcalc_stat is %d\n",result, stat);
 	
 
-	Calculator("5.4 * 66.6", &result);
-	printf("5.4 * 66.6: result is: %f\n",result);
+	Calculator("-5.4 + 66.6 + 8 -5", &result);
+	printf("-5.4 + 66.6 + 8 -5: result is: %f\n",result);
 	Calculator(str, &result);
 	printf("%s : result is %f\n",str,result);
 	Calculator("5.4 / 66.6 -5 *2", &result);
 	printf("5.4 / 66.6 -5 *2: result is: %f\n",result);
-	Calculator("2+(2^2)", &result);
-	printf("2+(2^2) is: %f\n",result);
+	Calculator("1+2^3^2+1", &result);
+	printf("1+2^3^2+1 is: %f\n",result);
 	Calculator("\n2+3*4", &result);
 	printf("2+3*4: result is: %f\n",result);
 	
