@@ -140,7 +140,6 @@ calc_status_t Calculator(const char *string, double *result)
 	}
 	if(INVALID == calc->cur_state)
 	{
-		printf("yallaprint!\n");
 		status = CALC_SYNTAX_ERROR;
 	}
 
@@ -195,20 +194,22 @@ static int StateGetOperator(char **math_expression, calc_status_t *status, opera
 {
 	char new_operator = ' ';
 	char prev_operator = ' ';
+	int ans = ParseChar1(*math_expression, math_expression, &new_operator);
 	
 	prev_operator = *(char *)StackPeek(calc->operators);
-	calc->cur_state = ParseChar1(*math_expression, math_expression, &new_operator);
 	
+	if(ans == INVALID_READ)
+	{
+		return INVALID;
+	}
+
 	if(IsRightParanthesis(new_operator))
 	{
 		*status = CalcPresident(calc, operators_lut, new_operator);
 		return (CALC_SUCCESS == *status) ? WAIT_OP : INVALID; 
 	}
 
-	if(calc->cur_state == INVALID_READ)
-	{
-		return INVALID;
-	}
+	
 	
 	while (precedence_lut[(int)prev_operator] > precedence_lut[(int)new_operator])
 	{
@@ -309,13 +310,14 @@ static calc_status_t CalcDivide(calc_stack_t *calc)
 {
 	double right = 0.0;
 	
-	
+	StackPop(calc->operators);
 	right = *(double *)StackPeek(calc->numbers);
-	if(0.0 == right)
+	if(0 == right)
 	{
+		calc->cur_state = INVALID;
 		return CALC_MATH_ERROR;
 	}
-	StackPop(calc->operators);
+	
 
 	right = *(double *)StackPeek(calc->numbers);
 	StackPop(calc->numbers);
@@ -389,12 +391,13 @@ static char MatchPresidents(char right_president)
     return left_par;
 }
 
-static int IsLeftParanthesis(char c)
-{
-    return (c == '(') || (c == '[') || (c == '{');
-}
-
 static int IsRightParanthesis(char c)
 {
     return (c == ')') || (c == ']') || (c == '}');
 }
+/*
+static int IsLeftParanthesis(char c)
+{
+    return (c == '(') || (c == '[') || (c == '{');
+}*/
+
