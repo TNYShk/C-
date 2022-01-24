@@ -1,10 +1,14 @@
-
-#include <stdio.h>    /* printf */
+/**********************************************
+ * Calculator - Source File                   *
+ * Tanya			                          *
+ *          Jan 24, 2022                      *
+ *                                            *
+ * Reviewer:         	                      *
+ **********************************************/
 #include <stdlib.h> /* strtod*/
 #include <assert.h> /* assert */
-#include <ctype.h> /* isspace, isdigit*/
 #include <string.h> /* strchr */
-#include <math.h>
+#include <math.h> /* power */
 
 #include "../include/stack.h"
 #include "../include/cal.h"
@@ -33,25 +37,21 @@ typedef struct calc_stack
 
 }calc_stack_t;
 
+
+/* typedef funcs */
 typedef calc_status_t (*operation_func_t)(calc_stack_t *);
-
-
 typedef int (*state_func_t)(char **, calc_status_t *, operation_func_t *, int *, calc_stack_t *);
+/*** service funs ***/
 static int IsRightParanthesis(char c);
 static void InitOperatorsLut(operation_func_t *operators_lut);
-
-static void InitPrecedenceTable(int *precedence_table);
+static void InitPrecedenceTable(int *precedence_lut);
 
 static int StateGetNumber(char **math_expression, calc_status_t *status, operation_func_t *operators_lut,
-	int *precedence_table, calc_stack_t *calc);
-
+	int *precedence_lut, calc_stack_t *calc);
 static int StateGetOperator(char **math_expression, calc_status_t *status, operation_func_t *operators_lut,
-	int *precedence_table, calc_stack_t *calc);
-
-
+	int *precedence_lut, calc_stack_t *calc);
 
 static calc_stack_t *IniCalc(size_t len);
-
 static calc_status_t CalcPlus(calc_stack_t *calc);
 static calc_status_t CalcMinus(calc_stack_t *calc);
 static calc_status_t CalcMultiply(calc_stack_t *calc);
@@ -59,9 +59,8 @@ static calc_status_t CalcDivide(calc_stack_t *calc);
 static calc_status_t CalcPower(calc_stack_t *calc);
 static calc_status_t CalcPresident(calc_stack_t *calc, operation_func_t *operators_lut, char right_president);
 static char MatchPresidents(char right_president);
-
 static calc_status_t CalcInvalidOperator(calc_stack_t *calc);
-
+/*** end of service funs ***/
 
 
 
@@ -99,9 +98,9 @@ static calc_stack_t *IniCalc(size_t len)
 	cstack->numbers = numbers;
 	cstack->operators = operators;
 	cstack->cur_state = WAIT_NUM;
+	
 	StackPush(cstack->operators, &stam);
 	StackPush(cstack->numbers, &temp);
-
 
 	return cstack;
 }
@@ -109,10 +108,9 @@ static calc_stack_t *IniCalc(size_t len)
 
 calc_status_t Calculator(const char *string, double *result)
 {
-
 	static state_func_t states_lut[] = {StateGetNumber, StateGetOperator};
 	static operation_func_t operators_lut[ASCII] = {0};
-	static int precedence_table[ASCII] = {0};
+	static int precedence_lut[ASCII] = {0};
 
 	calc_status_t status = CALC_SUCCESS;
 	calc_stack_t *calc = NULL;
@@ -127,30 +125,31 @@ calc_status_t Calculator(const char *string, double *result)
 
 	assert(NULL != string);
 	assert(NULL != result);
-	
-	
+
 	InitOperatorsLut(operators_lut);
-	InitPrecedenceTable(precedence_table);
+	InitPrecedenceTable(precedence_lut);
 	
 	string_runner = (char *)string;
 	
 	while ((string_runner <= (string + strlen(string))) && (INVALID != calc->cur_state))
 	{
 		calc->cur_state = states_lut[calc->cur_state](&string_runner, &status, 
-			operators_lut, precedence_table, calc);
+			operators_lut, precedence_lut, calc);
 	}
 	if(INVALID == calc->cur_state)
 	{
 		StackDestroy(calc->numbers);
 		StackDestroy(calc->operators);
+		memset(calc,0,sizeof(calc_stack_t));
 		free(calc);
-		return CALC_MATH_ERROR;
+		return CALC_SYNTAX_ERROR;
 	}
 
 	*result = *(double *)StackPeek(calc->numbers);
 
 	StackDestroy(calc->numbers);
 	StackDestroy(calc->operators);
+	memset(calc,0,sizeof(calc_stack_t));
 	free(calc);
 	calc = NULL;
 	
@@ -162,13 +161,12 @@ calc_status_t Calculator(const char *string, double *result)
 
 
 static int StateGetNumber(char **math_expression, calc_status_t *status, operation_func_t *operators_lut,
-	int *precedence_table, calc_stack_t *calc)
+	int *precedence_lut, calc_stack_t *calc)
 {
-	
 	double result = 0;
 	calc->cur_state = WAIT_OP;
 
-	if (ParseNum(*math_expression, math_expression, &result) == READ_OPERATOR)
+	if (READ_OPERATOR == ParseNum(*math_expression, math_expression, &result) )
 	{
 		StackPush(calc->operators, *math_expression);
 		++(*math_expression);
@@ -182,10 +180,10 @@ static int StateGetNumber(char **math_expression, calc_status_t *status, operati
 	if (NULL == *math_expression)
 	{
 		calc->cur_state = INVALID;
-		*status = CALC_SYNTAX_ERROR;
+		*status = CALC_MATH_ERROR;
 	}
 	(void)operators_lut;
-	(void)precedence_table;
+	(void)precedence_lut;
 
 	return calc->cur_state;
 }
@@ -193,7 +191,7 @@ static int StateGetNumber(char **math_expression, calc_status_t *status, operati
 
 
 static int StateGetOperator(char **math_expression, calc_status_t *status, operation_func_t *operators_lut,
-	int *precedence_table, calc_stack_t *calc)
+	int *precedence_lut, calc_stack_t *calc)
 {
 	char new_operator = ' ';
 	char prev_operator = ' ';
@@ -212,7 +210,7 @@ static int StateGetOperator(char **math_expression, calc_status_t *status, opera
 		return INVALID;
 	}
 	
-	while (precedence_table[(int)prev_operator] >= precedence_table[(int)new_operator])
+	while (precedence_lut[(int)prev_operator] >= precedence_lut[(int)new_operator])
 	{
 		*status = operators_lut[(int)prev_operator](calc);
 		prev_operator = *(char *)StackPeek(calc->operators);
@@ -243,21 +241,21 @@ static void InitOperatorsLut(operation_func_t *operators_lut)
 }
 
 
-static void InitPrecedenceTable(int *precedence_table)
+static void InitPrecedenceTable(int *precedence_lut)
 {	
-	precedence_table[BADOP] = -5;		
+	precedence_lut[BADOP] = -5;		
 	
-	precedence_table['('] = 0;
-	precedence_table['{'] = 0;
-	precedence_table['['] = 0;
+	precedence_lut['('] = 0;
+	precedence_lut['{'] = 0;
+	precedence_lut['['] = 0;
 
-	precedence_table['+'] = 1;
-	precedence_table['-'] = 1;
+	precedence_lut['+'] = 1;
+	precedence_lut['-'] = 1;
 	
-	precedence_table['*'] = 2;
-	precedence_table['/'] = 2;
+	precedence_lut['*'] = 2;
+	precedence_lut['/'] = 2;
 	
-	precedence_table['^'] = 3;
+	precedence_lut['^'] = 3;
 
 }
 
@@ -267,7 +265,6 @@ static calc_status_t CalcPlus(calc_stack_t *calc)
 	double right = 0.0;
 	double left = 0.0;
 	
-	
 	right = *(double *)StackPeek(calc->numbers);
 	StackPop(calc->numbers);
 	
@@ -276,8 +273,8 @@ static calc_status_t CalcPlus(calc_stack_t *calc)
 	
 	left += right;
 	
-	StackPush(calc->numbers, &left);
 	StackPop(calc->operators);
+	StackPush(calc->numbers, &left);
 	
 	return CALC_SUCCESS;
 }
@@ -288,7 +285,6 @@ static calc_status_t CalcMinus(calc_stack_t *calc)
 	double right = 0.0;
 	double left = 0.0;
 	
-
 	right = *(double *)StackPeek(calc->numbers);
 	StackPop(calc->numbers);
 	
@@ -308,7 +304,6 @@ static calc_status_t CalcMultiply(calc_stack_t *calc)
 {
 	double right = 0.0;
 	double left = 0.0;
-	
 	
 	right = *(double *)StackPeek(calc->numbers);
 	StackPop(calc->numbers);
@@ -353,12 +348,6 @@ static calc_status_t CalcPower(calc_stack_t *calc)
 	double right = 0.0;
 	double left = 0.0;
 	
-	
-	right = *(double *)StackPeek(calc->numbers);
-	if(0.0 == right)
-	{
-		return CALC_MATH_ERROR;
-	}
 	StackPop(calc->numbers);
 	
 	left = *(double *)StackPeek(calc->numbers);
@@ -393,10 +382,6 @@ static calc_status_t CalcInvalidOperator(calc_stack_t *calc)
 
 	return CALC_SYNTAX_ERROR;
 }
-
-
-
-
 
 static char MatchPresidents(char right_president)
 {
