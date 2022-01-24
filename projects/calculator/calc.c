@@ -263,38 +263,28 @@ static void InitPrecedenceTable(int *precedence_lut)
 static calc_status_t CalcPlus(calc_stack_t *calc)
 {
 	double right = 0.0;
-	double left = 0.0;
 	
+	StackPop(calc->operators);
+
 	right = *(double *)StackPeek(calc->numbers);
 	StackPop(calc->numbers);
 	
-	left = *(double *)StackPeek(calc->numbers);
-	StackPop(calc->numbers);
-	
-	left += right;
-	
-	StackPop(calc->operators);
-	StackPush(calc->numbers, &left);
+	*(double *)StackPeek(calc->numbers) += right;
 	
 	return CALC_SUCCESS;
 }
 
-
 static calc_status_t CalcMinus(calc_stack_t *calc)
 {
 	double right = 0.0;
-	double left = 0.0;
 	
+	StackPop(calc->operators);
+
 	right = *(double *)StackPeek(calc->numbers);
 	StackPop(calc->numbers);
 	
-	left = *(double *)StackPeek(calc->numbers);
-	StackPop(calc->numbers);
+	*(double *)StackPeek(calc->numbers) -= right;
 	
-	left-= right;
-	
-	StackPush(calc->numbers, &left);
-	StackPop(calc->operators);
 	
 	return CALC_SUCCESS;
 }
@@ -348,6 +338,12 @@ static calc_status_t CalcPower(calc_stack_t *calc)
 	double right = 0.0;
 	double left = 0.0;
 	
+	right = *(double *)StackPeek(calc->numbers);
+	if(0.0 == right)
+	{
+		return CALC_MATH_ERROR;
+	}
+
 	StackPop(calc->numbers);
 	
 	left = *(double *)StackPeek(calc->numbers);
