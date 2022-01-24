@@ -43,8 +43,8 @@ typedef calc_status_t (*operation_func_t)(calc_stack_t *);
 typedef int (*state_func_t)(char **, calc_status_t *, operation_func_t *, int *, calc_stack_t *);
 
 /*** service funs ***/
-static int IsRightParanthesis(char c);
-static void InitOperatorsLut(operation_func_t *operators_lut);
+static int IsRightParent(char c);
+static void InitOperatFuncsLut(operation_func_t *operators_lut);
 static void InitPrecedenceTable(int *precedence_lut);
 
 static int StateGetNumber(char **math_expression, calc_status_t *status, operation_func_t *operators_lut,
@@ -59,9 +59,9 @@ static calc_status_t CalcMultiply(calc_stack_t *calc);
 static calc_status_t CalcDivide(calc_stack_t *calc);
 static calc_status_t CalcPower(calc_stack_t *calc);
 static calc_status_t CalcInvalidOperator(calc_stack_t *calc);
-static calc_status_t CalcPresident(calc_stack_t *calc, operation_func_t *operators_lut, char right_president);
+static calc_status_t CalcPresident(calc_stack_t *calc, operation_func_t *operators_lut, char right_parent);
 
-static char MatchPresidents(char right_president);
+static char MatchParents(char right_parent);
 /*** end of service funs ***/
 
 
@@ -70,7 +70,7 @@ static char MatchPresidents(char right_president);
 static calc_stack_t *IniCalc(size_t len)
 {
 	char stam = BADOP;
-	double temp = 0;
+	double dummy = 0;
 	stack_t *numbers = NULL;
 	stack_t *operators = NULL;
 	calc_stack_t *cstack = (calc_stack_t*)malloc(sizeof(calc_stack_t));
@@ -103,7 +103,7 @@ static calc_stack_t *IniCalc(size_t len)
 	cstack->cur_state = WAIT_NUM;
 	
 	StackPush(cstack->operators, &stam);
-	StackPush(cstack->numbers, &temp);
+	StackPush(cstack->numbers, &dummy);
 
 	return cstack;
 }
@@ -130,7 +130,7 @@ calc_status_t Calculator(const char *string, double *result)
 	assert(NULL != string);
 	assert(NULL != result);
 
-	InitOperatorsLut(operators_lut);
+	InitOperatFuncsLut(operators_lut);
 	InitPrecedenceTable(precedence_lut);
 	
 	string_runner = (char *)string;
@@ -168,7 +168,7 @@ static int StateGetNumber(char **math_expression, calc_status_t *status, operati
 	int ans = ParseNum(*math_expression, math_expression, &result);
 	calc->cur_state = WAIT_OP;
 
-	if (READ_OPERATOR == ans )
+	if (READ_OPERATOR == ans)
 	{
 		StackPush(calc->operators, *math_expression);
 		++(*math_expression);
@@ -206,7 +206,7 @@ static int StateGetOperator(char **math_expression, calc_status_t *status, opera
 		return INVALID;
 	}
 
-	if(IsRightParanthesis(new_operator))
+	if(IsRightParent(new_operator))
 	{
 		*status = CalcPresident(calc, operators_lut, new_operator);
 		return (CALC_SUCCESS == *status) ? WAIT_OP : INVALID; 
@@ -227,7 +227,7 @@ static int StateGetOperator(char **math_expression, calc_status_t *status, opera
 
 
 
-static void InitOperatorsLut(operation_func_t *operators_lut)
+static void InitOperatFuncsLut(operation_func_t *operators_lut)
 {	
 	size_t indx = 0;
 	
@@ -349,19 +349,19 @@ static calc_status_t CalcPower(calc_stack_t *calc)
 	return CALC_SUCCESS;
 }
 
-static calc_status_t CalcPresident(calc_stack_t *calc, operation_func_t *operators_lut, char right_president)
+static calc_status_t CalcPresident(calc_stack_t *calc, operation_func_t *operators_lut, char right_parent)
 {
-	char left_president = MatchPresidents(right_president);
-	calc_status_t temp = CALC_SUCCESS;
+	char left_parent = MatchParents(right_parent);
+	calc_status_t cal_stat = CALC_SUCCESS;
 
-	while (left_president != (*(char *)StackPeek(calc->operators)))
+	while (left_parent != (*(char *)StackPeek(calc->operators)))
 	{
-		temp = operators_lut[(int)*(char *)StackPeek(calc->operators)](calc);
+		cal_stat = operators_lut[(int)*(char *)StackPeek(calc->operators)](calc);
 	}
 	StackPop(calc->operators);
 
 
-	return temp;
+	return cal_stat;
 }
 
 static calc_status_t CalcInvalidOperator(calc_stack_t *calc)
@@ -371,28 +371,24 @@ static calc_status_t CalcInvalidOperator(calc_stack_t *calc)
 	return CALC_SYNTAX_ERROR;
 }
 
-static char MatchPresidents(char right_president)
+static char MatchParents(char right_parent)
 {
-   char left_president = ' ';
-   char *location = strchr(operators,right_president);
-   size_t distance = 0;
-   size_t op_lut_len = (sizeof(operators)/sizeof(*operators) - 1);
+   char left_parent = ' ';
+   char *location = strchr(operators,right_parent);
+   size_t distance_to_parent = 0;
+   size_t extern_op_lut_len = (sizeof(operators)/sizeof(*operators) - 1);
    
-   distance = location - ((char*)(operators));
-   left_president = (*(char*)(operators + (op_lut_len - distance)));
+   distance_to_parent = location - ((char*)(operators));
+   left_parent = (*(char*)(operators + (extern_op_lut_len - distance_to_parent)));
     
-   return left_president;
-    
+   return left_parent;
+  
 
 }
 
-static int IsRightParanthesis(char c)
+static int IsRightParent(char c)
 {
     return (c == ')') || (c == ']') || (c == '}');
 }
-/*
-static int IsLeftParanthesis(char c)
-{
-    return (c == '(') || (c == '[') || (c == '{');
-}*/
+
 
