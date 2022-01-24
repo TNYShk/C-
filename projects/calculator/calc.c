@@ -4,6 +4,7 @@
 #include <assert.h> /* assert */
 #include <ctype.h> /* isspace, isdigit*/
 #include <string.h> /* strchr */
+#include <math.h>
 
 #include "../include/stack.h"
 #include "../include/cal.h"
@@ -74,6 +75,7 @@ static calc_status_t CalcPlus(calc_stack_t *calc);
 static calc_status_t CalcMinus(calc_stack_t *calc);
 static calc_status_t CalcMultiply(calc_stack_t *calc);
 static calc_status_t CalcDivide(calc_stack_t *calc);
+static calc_status_t CalcPower(calc_stack_t *calc);
 
 static calc_status_t CalcInvalidOperator(calc_stack_t *calc);
 static calc_status_t CalcDoNothing(calc_stack_t *calc);
@@ -113,7 +115,6 @@ static calc_stack_t *IniCalc(size_t len)
 	cstack->cur_state = WAIT_NUM;
 	StackPush(cstack->operators, &stam);
 	StackPush(cstack->numbers, &temp);
-
 
 
 	return cstack;
@@ -158,7 +159,6 @@ calc_status_t Calculator(const char *string, double *result)
 	}
 	if(INVALID == calc->cur_state)
 	{
-
 		return CALC_MATH_ERROR;
 	}
 	*result = *(double *)StackPeek(calc->numbers);
@@ -178,7 +178,6 @@ static int StateGetNumber(char **math_expression, calc_status_t *status, operati
 {
 	double result = 0;
 	calc->cur_state = WAIT_OP;
-	
 	
 	ParseNum(*math_expression, math_expression, &result);
 
@@ -203,6 +202,7 @@ static int StateGetOperator(char **math_expression, calc_status_t *status, opera
 	
 	prev_operator = *(char *)StackPeek(calc->operators);
 	calc->cur_state = ParseChar1(*math_expression, math_expression, &new_operator);
+	
 	if(calc->cur_state == INVALID_READ)
 	{
 		return INVALID;
@@ -216,7 +216,7 @@ static int StateGetOperator(char **math_expression, calc_status_t *status, opera
 	
 	StackPush(calc->operators, &new_operator);
 	
-	return (CALC_SUCCESS == *status) ? WAIT_NUM : INVALID; /* PROBLEM to fix*/
+	return (CALC_SUCCESS == *status) ? WAIT_NUM : INVALID; 
 }
 
 
@@ -236,6 +236,7 @@ static void InitOperatorsLut(operation_func_t *operators_lut)
 	operators_lut['-'] = CalcMinus;
 	operators_lut['*'] = CalcMultiply;
 	operators_lut['/'] = CalcDivide;
+	operators_lut['^'] = CalcPower;
 	/*InitValidOperators(operators_lut);*/
 }
 /*
@@ -330,7 +331,7 @@ static calc_status_t CalcMultiply(calc_stack_t *calc)
 	left = *(double *)StackPeek(calc->numbers);
 	StackPop(calc->numbers);
 	
-	left*= right;
+	left *= right;
 	
 	StackPush(calc->numbers, &left);
 	StackPop(calc->operators);
@@ -364,6 +365,33 @@ static calc_status_t CalcDivide(calc_stack_t *calc)
 	
 	return CALC_SUCCESS;
 }
+
+static calc_status_t CalcPower(calc_stack_t *calc)
+{
+	double right = 0.0;
+	double left = 0.0;
+	
+	assert(NULL != calc->numbers);
+	assert(NULL != calc->operators);
+	
+	right = *(double *)StackPeek(calc->numbers);
+	if(0.0 == right)
+	{
+		return CALC_MATH_ERROR;
+	}
+	StackPop(calc->numbers);
+	
+	left = *(double *)StackPeek(calc->numbers);
+	StackPop(calc->numbers);
+	
+	left = pow(left,right);
+	
+	StackPush(calc->numbers, &left);
+	StackPop(calc->operators);
+	
+	return CALC_SUCCESS;
+}
+
 
 static calc_status_t CalcInvalidOperator(calc_stack_t *calc)
 {

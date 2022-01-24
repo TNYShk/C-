@@ -9,7 +9,7 @@ PIC := -fPIC
 CPPFLAGS := -I ../include
 LINKN := -shared
 TARGET:= a.out
-DEBUG := -g
+DEBUG := -g -lm
 
 SRCS := $(wildcard *.c)
 OBJS := $(SRCS:.c=.o)

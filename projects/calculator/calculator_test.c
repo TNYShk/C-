@@ -4,7 +4,7 @@
 #include <assert.h> /* assert */
 #include <ctype.h> /* isspace, isdigit*/
 #include <string.h> /* strchr */
-
+#include <math.h>
 
 #include "../include/cal.h"
 
@@ -22,7 +22,10 @@ int main(void)
 	printf("5.4 * 66.6: result is: %f\n",result);
 	Calculator(str, &result);
 	printf("%s : result is %f\n",str,result);
-	
+	Calculator("5.4 / 66.6 -5 *2", &result);
+	printf("5.4 / 66.6 -5 *2: result is: %f\n",result);
+	Calculator("2+2^2", &result);
+	printf("2+2^2 is: %f\n",result);
 	
 
 	return 0;
