@@ -148,6 +148,22 @@ char *RecStrCat(char *dest, const char *src)
 	return RecStrCpy(++runner, ++src);
 }
 
+char *RecStrStr(const char *haystack, const char *needle)
+{
+
+	if ( ('\0' == *haystack) || (NULL == haystack ) )
+	{
+	  	return NULL;
+	}
+     
+   if(strncmp(haystack, needle, strlen(needle)) == 0)
+   {
+     return (char *)haystack;
+   }
+
+   return(RecStrStr(++haystack, needle));
+}
+
 
 
 

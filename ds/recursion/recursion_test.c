@@ -13,19 +13,21 @@ static void TestStack();
 static void PrintRec(int);
 static char ReverseString(char *input);
 static void PrintStack(stack_t *stack);
-static void ConvertBinary(int num, char *result);
+
 
 
 
 int main(void)
 {
+	PrintRec(5);
+	printf("\n");
 	TestStringH();
-	/*PrintRec(5);
+	
 	printf("\n");
 	TestFibo();
 	TestFlip();
 	
-	TestStack();*/
+	TestStack();
 	return 0;
 }
 
@@ -79,12 +81,17 @@ static void TestFibo()
 static void TestStringH()
 {
 	char *space = NULL;
+	char *ans = NULL;
+	char *ans1 = NULL;
+	char *haystack = "%$#@!^%";
+	char *needle = "!";
 	printf("\n\t----------------------------Recursive string.h-------------------------------------------\n");
 	
-	printf("\nhello my name\n");
-	ReverseString(" hello my name");
+	printf("\nI hate strstr\n");
+	ReverseString(" I hate strstr");
 	printf("\n");
-	printf("rec strlen %ld\n",RecStrLen("hello my name"));
+	printf("rec strlen %ld\n",RecStrLen("I hate strstr"));
+	printf("real strlen: %ld\n", strlen("I hate strstr"));
 	printf("\nhello\n");
 	printf("rec strlen %ld\n",RecStrLen("hello"));
 	printf("real strlen %ld\n",strlen("hello"));
@@ -97,12 +104,19 @@ static void TestStringH()
 	printf("\nhell help\n");
 	printf("rec strcmp: %d\n",RecStrCmp("hell", "help"));
 	printf("strcmp: %d\n",strcmp("hell", "help"));
-
+	printf("\n");
 	space = (char *)calloc(strlen("testing StrCpy and StrCat")+1, sizeof(char));
 	RecStrCpy(space, "testing StrCpy");
 	printf("%s\n", space);
-	RecStrCat(space, "and StrCat");
+	RecStrCat(space, " and StrCat");
 	printf("%s\n", space);
+	memset(space,0,strlen(space));
+	
+	ans = RecStrStr(haystack,needle);
+	printf("\nrec strstr ans is %s\n", ans);
+	ans1 = strstr(haystack,needle);
+	printf("real strstr ans is %s\n", ans1);
+
 	free(space);
 
 }
@@ -176,16 +190,3 @@ static void PrintStack(stack_t *stack)
 	}
 	printf("\n");
 }
-/*
-static void ConvertBinary(int num, char *result)
-{
-	char string[10];
-	if (num == 0)
-	{
-		return;
-	}
-	
-	sprintf(string,"%d %c ",num , *result);
-
-	ConvertBinary(num/2, result);
-}*/

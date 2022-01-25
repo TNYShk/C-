@@ -72,7 +72,7 @@ char *RecStrCpy(char *dest, const char *src);
 
 char *RecStrCat(char *dest, const char *src);
 
- char *RecStrStr(const char *haystack, const char *needle);
+char *RecStrStr(const char *haystack, const char *needle);
 
 
 #endif /* __RECURSION_H__ */
