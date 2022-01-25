@@ -8,7 +8,7 @@
 #include <stdio.h> /* printf */
 #include <string.h>
 
-#include "pars.h" /* program header*/
+#include "../include/pars.h" /* program header*/
 
 #define BADOP ('#')	
 
@@ -21,21 +21,21 @@ static void NewTest();
 int main(void)
 {
 		
-	extern char operators;
+	
 
 	char *runner  = NULL;
 	char *b_num = "*56";
 	char result = ' ';
-	
-	printf("int: %d \n", ParseChar1(b_num, &runner, &result));
+	printf("\t----test ParseChar1------\n");
+	printf("Status: %d READ OPERATOR\n", ParseChar1(b_num, &runner, &result));
 	printf("char is %c\n", result);
+	printf("remaining is %s\n", runner);
 	
-	/*
 	TestParseNum();
 	TestParseChar();
 
 	CombineParse();
-	NewTest();*/
+	NewTest();
 	return 0;
 }
 
@@ -110,7 +110,7 @@ static void NewTest()
 	printf("\n\t*****Combined Test2*****\nOriginal string is %s\n", str);
 	printf("Parse it down: \n");
 	
-	if(ParseNum(str,&runner,&result) == 2)
+	if(ParseNum1(str,&runner,&result) == 2)
 	{
 		ch = *runner;
 		ch = ParseChar(runner, &runner);
@@ -119,7 +119,7 @@ static void NewTest()
 
 	else
 	{
-		ParseNum(str,&runner,&result);
+		ParseNum1(str,&runner,&result);
 		printf("%f ,",result);
 	}
 	
@@ -128,7 +128,7 @@ static void NewTest()
 		
 		ch = ParseChar(runner, &runner);
 		printf(" %c ,", ch);
-		ParseNum(runner,&runner,&result);
+		ParseNum1(runner,&runner,&result);
 		if(result != 0)
 			printf(" %f ,",result);
 			

@@ -15,16 +15,15 @@
 #define BADOP ('~')	
 
 static int IsOperator(char op);
-
+static int IsLeftParent(char c);
 
 const char operators[11] = {'{','[','(','^','*','/','+','-',')',']','}'};
-
 
 
 int ParseNum(const char *str, char **next_ptr, double *result)
 {
 	assert(NULL != str);
-	if((*str == '(') || (*str == '[') || (*str == '{'))
+	if(IsLeftParent(*str))
 	{
 		return READ_OPERATOR;
 	}
@@ -32,6 +31,15 @@ int ParseNum(const char *str, char **next_ptr, double *result)
 	*result = strtod(str,next_ptr);
 
 	return(str != *next_ptr);
+}
+int ParseNum1(const char *str, char **next_ptr, double *result)
+{
+	assert(NULL != str);
+	
+
+	*result = strtod(str,next_ptr);
+
+	return (str != *next_ptr);
 }
 
 int ParseChar1(const char *str, char **str_after_parse, char *result)
@@ -51,6 +59,7 @@ int ParseChar1(const char *str, char **str_after_parse, char *result)
 	if (IsOperator(**str_after_parse))
 	{
 		++(*str_after_parse);
+		
 		return READ_OPERATOR;
 	}
 	
@@ -105,6 +114,10 @@ static int IsOperator(char op)
 	return (strchr(operators, op) != NULL);
 }
 
+static int IsLeftParent(char c)
+{
+    return (c == '(') || (c == '[') || (c == '{');
+}
 
 /*
 char ParseChar(const char *str, char **str_after_parse)
