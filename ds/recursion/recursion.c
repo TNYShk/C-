@@ -159,12 +159,12 @@ char *RecStrStr(const char *haystack, const char *needle)
 {
 	assert(NULL != haystack);
 
-	if ( ('\0' == *haystack) || (NULL == haystack))
+	if ( '\0' == *haystack)
 	{
 	  	return NULL;
 	}
      
-   if(strncmp(haystack, needle, RecStrLen(needle)) == 0)
+   if(!RecStrnCmp(haystack, needle, RecStrLen(needle)))
    {
      return (char *)haystack;
    }
@@ -175,7 +175,7 @@ char *RecStrStr(const char *haystack, const char *needle)
 static int RecStrnCmp(const char *s1, const char *s2, size_t len)
 {
 	
-	if( ( '\0' == *s1) || (0 == len) || ( *s1 != *s2) )
+	if( ( '\0' == *s1) || (1 == len) || ( *s1 != *s2) )
 	{
 		return (*s1 - *s2);
 	}
