@@ -92,7 +92,7 @@ static void TestStringH()
 	char *ans = NULL;
 	char *ans1 = NULL;
 	char *haystack = "%$#@!^%";
-	char *needle = "!";
+	char *needle = "^";
 	printf("\n\t----------------------------Recursive string.h-------------------------------------------\n");
 	
 	printf("\nI hate strstr\n");
@@ -107,7 +107,7 @@ static void TestStringH()
 	printf("rec strcmp: %d\n",RecStrCmp("hell", "hell"));
 	printf("strcmp: %d\n",strcmp("hell", "hell"));
 	printf("\nhello hell\n");
-	printf("strcmp: %d\n",RecStrCmp("hello", "hell"));
+	printf("recursive strcmp: %d\n",RecStrCmp("hello", "hell"));
 	printf("strcmp: %d\n",strcmp("hello", "hell"));
 	printf("\nhell help\n");
 	printf("rec strcmp: %d\n",RecStrCmp("hell", "help"));

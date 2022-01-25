@@ -14,18 +14,9 @@
 
 
 
-
-
 static void InSortedStack(stack_t *stack, int val);
 
 	
-
-
-
-
-
-
-
 
 int IterFibonacci(int element_index)
 {
@@ -54,8 +45,6 @@ int RecFibonacci(int element_index)
 
 	return (RecFibonacci(element_index - 1) + RecFibonacci(element_index - 2) );
 }
-
-
 
 
 node_t *RecFlipList(node_t *head)
@@ -108,8 +97,6 @@ void RecSort(stack_t *stack)
 	InSortedStack(stack, peek);
 
 }
-
-
 
 
 size_t RecStrLen(const char *strq)
@@ -165,14 +152,14 @@ char *RecStrCat(char *dest, const char *src)
 		return dest;
 	}
 	*runner = *src;
-	return RecStrCpy(++runner, ++src);
+	return RecStrCat(++runner, ++src); /*also: return RecStrCpy(++runner, ++src) */
 }
 
 char *RecStrStr(const char *haystack, const char *needle)
 {
 	assert(NULL != haystack);
 
-	if ( ('\0' == *haystack) || (NULL == haystack ) )
+	if ( ('\0' == *haystack))
 	{
 	  	return NULL;
 	}
