@@ -1,18 +1,18 @@
 
-
 #include <stddef.h> /* size_t*/
 #include <stdio.h> /*print */
 
 #define ASCI (256)
 
+/* Service funcs */
 int IsFound(char *arr, size_t len, char tofind);
 static void EmptyLut(int *lut);
 void CircularShift(char *arr, size_t len, int shift);
 static void Reverse(char *arr,int from, int to);
 static void Swap(char *a, char *b);
+/* End of them*/
 
 static int LUT[ASCI] = {0};
-
 
 
 int main(void)
@@ -43,14 +43,7 @@ int IsFound(char *arr, size_t len, char tofind)
 	return LUT[(int)tofind];
 }
 
-static void EmptyLut(int *lut)
-{
-	int i = 0;
-	for(i = 0; i<ASCI; ++i)
-	{
-		lut[i] = 0;
-	}
-}
+
 
 void CircularShift(char *arr, size_t len, int shift)
 {
@@ -59,6 +52,15 @@ void CircularShift(char *arr, size_t len, int shift)
 	Reverse(arr, shift, len - 1);	
 }
 
+
+static void EmptyLut(int *lut)
+{
+	int i = 0;
+	for(i = 0; i < ASCI; ++i)
+	{
+		lut[i] = 0;
+	}
+}
 static void Reverse(char *arr, int from, int to)
 {
 	while(from < to)

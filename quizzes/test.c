@@ -238,11 +238,15 @@ void SwapIntVal(int *a, int *b)
 /*Q15 */
 void SwapIntXOR(int *a, int *b)
 {
-	printf("a is  %d and b  %d\n",*a,*b);
+	if(a != b)
+	{
+		printf("a is  %d and b  %d\n",*a,*b);
 	*a = *a ^ *b;
 	*b = *a ^ *b;
 	*a = *a ^ *b;
 	printf("a is now %d and b  %d\n",*a,*b);
+	}
+	
 }
 /*Q15 */
 void SwapInts(int *a, int *b)
