@@ -87,6 +87,8 @@ void RecSort(stack_t *stack)
 {
 	int peek = 0;
 
+	assert(NULL != stack);
+
 	if(StackIsEmpty(stack))
 	{
 		return;
@@ -106,6 +108,8 @@ void RecSort(stack_t *stack)
 size_t RecStrLen(const char *strq)
 {
 	size_t len = 0;
+
+	assert(NULL != strq);
 
 	if( '\0' == *strq)
 	{
@@ -132,6 +136,9 @@ int RecStrCmp(const char *s1, const char *s2)
 char *RecStrCpy(char *dest, const char *src)
 {
 	char *runner = dest;
+
+	assert(NULL != dest);
+
 	if('\0' == *src)
 	{
 		return runner;
@@ -142,8 +149,10 @@ char *RecStrCpy(char *dest, const char *src)
 
 char *RecStrCat(char *dest, const char *src)
 {
-	
 	char *runner = dest + strlen(dest);
+	
+	assert(NULL != dest);
+
 	if('\0' == *src)
 	{
 		return dest;
@@ -154,7 +163,8 @@ char *RecStrCat(char *dest, const char *src)
 
 char *RecStrStr(const char *haystack, const char *needle)
 {
-
+	assert(NULL != haystack);
+	
 	if ( ('\0' == *haystack) || (NULL == haystack ) )
 	{
 	  	return NULL;
