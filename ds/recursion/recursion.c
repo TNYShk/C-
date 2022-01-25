@@ -48,7 +48,7 @@ int RecFibonacci(int element_index)
 	{
 		return element_index;
 	}
-	
+
 	return (RecFibonacci(element_index - 1) + RecFibonacci(element_index - 2) );
 }
 
@@ -77,6 +77,21 @@ char ReverseString(char *input)
 	++input;
 	return (ReverseString(input)+ printf("%c", *input));
 }
+
+size_t RecStrLen(const char *strq)
+{
+	size_t len = 0;
+	if( '\0' == *strq)
+	{
+		return len;
+	}
+
+	++strq;
+	
+	return (RecStrLen(strq)+ (++len));;
+
+}
+
 
 void PrintRec(int val)
 {

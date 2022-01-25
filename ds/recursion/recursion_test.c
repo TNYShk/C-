@@ -13,8 +13,9 @@ int main(void)
 
 	TestFibo();
 	TestFlip();
-	printf("\n hello my name\n");
-	ReverseString(" hello my name");
+	printf("\nhello my name\n");
+	/*ReverseString(" hello my name");*/
+	printf("\nlen %ld",RecStrLen("hello my name"));
 
 	return 0;
 }
