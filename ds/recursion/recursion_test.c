@@ -1,10 +1,17 @@
+/**********************************\
+* RECURSION   test file            *
+* Developer:   Tanya               *
+* Written: 2021-1-25               *
+*                                  *
+* Reviewer:                        *
+\**********************************/
 #include <stdio.h>    /* printf */
 #include <assert.h> /* assert */
 #include <math.h> /* power fabs */
-#include <stdlib.h>
-#include <string.h>
+#include <stdlib.h> /*memory allocation & free */
+#include <string.h> /* testing strlen, strcmp, strstr*/
 
-#include "recursion.h"
+#include "recursion.h" /* program header*/
 
 static void TestFibo();
 static void TestFlip();
@@ -122,6 +129,8 @@ static void TestStringH()
 	printf("original strcat:\n%s\n", space1);
 	printf("\ncomparing strings with recursive StrCmp:\n");
 	(RecStrCmp(space, space1) == 0)? printf("strings are the same! Yey\n"): printf("Oh No something is wrong\n");
+	printf("\ncomparing strings with real strcmp:\n");
+	(strcmp(space, space1) == 0)? printf("strings are the same! Yey\n"): printf("Oh No something is wrong\n");
 	memset(space,0,strlen(space));
 	
 	ans = RecStrStr(haystack,needle);

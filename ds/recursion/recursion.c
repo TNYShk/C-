@@ -1,9 +1,16 @@
-#include <stdio.h>    /* printf */
+/**********************************\
+* RECURSION   source file          *
+* Developer:  Tanya                *
+* Written: 2021-1-25               *
+*                                  *
+* Reviewer:                        *
+\**********************************/
+
 #include <assert.h> /* assert */
-#include <string.h> /* strlen*/
+#include <string.h> /* strlen, strncmp*/
 
 
-#include "recursion.h"
+#include "recursion.h" /* program header*/
 
 
 
