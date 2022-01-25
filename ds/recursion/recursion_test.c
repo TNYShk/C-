@@ -13,7 +13,9 @@ int main(void)
 
 	TestFibo();
 	TestFlip();
-	
+	printf("\n hello my name\n");
+	ReverseString(" hello my name");
+
 	return 0;
 }
 
@@ -55,10 +57,11 @@ static void TestFlip()
 static void TestFibo()
 {
 	printf("\n\t-----------------------Fibonacci, get element----------------------------------------\n");
+	printf("\t excluding zero");
 	printf("\nRecursive(5): %d ",RecFibonacci(5));
 	printf("\nIterative(5): %d ",IterFibonacci(5));
 	printf("\n");
-	printf("\nIterative (40): %d ",IterFibonacci(40));
-	printf("\nRecursive(40): %d ",RecFibonacci(40));
+	printf("\nIterative (20): %d ",IterFibonacci(20));
+	printf("\nRecursive(20): %d ",RecFibonacci(20));
 	printf("\n");
 }

@@ -8,38 +8,21 @@
 
 
 
-static void PrintRec(int);
+void PrintRec(int);
 int IterFibonacci(int element_index);
 int RecFibonacci(int element_index);
 node_t *RecFlipList(node_t *head);
-static char ReverseString(char *input);
+char ReverseString(char *input);
 
 
 	
-	/*ReverseString(" hello my name");
-	printf("\n");
-	
-	PrintRec(5);
-	printf("\n");
-	
-	*/
-	
 
 
 
 
 
-static void PrintRec(int val)
-{
-	if (val == 10)
-	{
-		return;
-	}
-	printf("%d ", val);
-	PrintRec(val + 1);
 
 
-}
 
 int IterFibonacci(int element_index)
 {
@@ -59,27 +42,23 @@ int IterFibonacci(int element_index)
 
 int RecFibonacci(int element_index)
 {
+	assert(0 <= element_index );
+
 	if( (element_index == 0) ||(element_index == 1) )
 	{
 		return element_index;
 	}
+	
 	return (RecFibonacci(element_index - 1) + RecFibonacci(element_index - 2) );
 }
 
-static char ReverseString(char *input)
-{
-	if( '\0' == *input)
-		return *input;
-	
-	++input;
-	return (ReverseString(input)+ printf("%c", *input));
-}
+
 
 
 node_t *RecFlipList(node_t *head)
 {
 	node_t *new;
-	if((NULL == head) || (NULL == head->next))
+	if((NULL == head->next)|| (NULL == head))
 	{
 		return head;
 	}
@@ -89,3 +68,24 @@ node_t *RecFlipList(node_t *head)
 	return new;
 }
 
+
+char ReverseString(char *input)
+{
+	if( '\0' == *input)
+		return *input;
+	
+	++input;
+	return (ReverseString(input)+ printf("%c", *input));
+}
+
+void PrintRec(int val)
+{
+	if (val == 10)
+	{
+		return;
+	}
+	printf("%d ", val);
+	PrintRec(val + 1);
+
+
+}
