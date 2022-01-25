@@ -19,7 +19,7 @@ static void TestCalculations();
 int main(void)
 {
 
-	
+
 	TestCalcStatus();
 	TestCalculations();
 	return 0;
@@ -29,6 +29,8 @@ static void TestCalcStatus()
 {
 	double result  = 666666666.66666666;
 	printf("\n---------------Calc Status Test-ERRORS----------\n\n");
+	assert(Calculator("(5.4)", &result) ==  CALC_SUCCESS);
+	printf("(5.4), calculation result: %f\n", result);
 	assert(Calculator("5.4 # 66.6 -5 *2", &result) ==  CALC_SYNTAX_ERROR);
 	printf("5.4 #66.6 -5 *2\n");
 	assert(Calculator("5.4@+@*66.6)", &result) ==  CALC_SYNTAX_ERROR);
@@ -95,6 +97,11 @@ static void TestCalculations()
 	Calculator("10-2+3", &result);
 	printf("10-2+3 is: %f\n",result);
 	actual_result = 10-2+3;
+	assert(fabs(result)== fabs(actual_result));
+
+	Calculator("10-2+3*5", &result);
+	printf("10-2+3*5 is: %f\n",result);
+	actual_result = 10-2+3*5;
 	assert(fabs(result)== fabs(actual_result));
 
 	Calculator("10+3-2", &result);

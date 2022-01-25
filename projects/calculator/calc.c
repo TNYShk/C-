@@ -82,7 +82,7 @@ calc_status_t Calculator(const char *string, double *result)
 	char *string_runner = NULL;
 	char *string_end = NULL;
 
-	calc = IniCalc(strlen(string));
+	calc = IniCalc(strlen(string)+1);
 	if (NULL == calc)
 	{
 		return CALC_ALLOC_ERROR;
