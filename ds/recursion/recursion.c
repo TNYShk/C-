@@ -5,7 +5,7 @@
 
 #include "recursion.h"
 
-#include "../include/stack.h"
+
 
 
 
@@ -164,7 +164,7 @@ char *RecStrCat(char *dest, const char *src)
 char *RecStrStr(const char *haystack, const char *needle)
 {
 	assert(NULL != haystack);
-	
+
 	if ( ('\0' == *haystack) || (NULL == haystack ) )
 	{
 	  	return NULL;

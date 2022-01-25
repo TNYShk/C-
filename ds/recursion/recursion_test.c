@@ -81,6 +81,7 @@ static void TestFibo()
 static void TestStringH()
 {
 	char *space = NULL;
+	char *space1 = NULL;
 	char *ans = NULL;
 	char *ans1 = NULL;
 	char *haystack = "%$#@!^%";
@@ -106,10 +107,21 @@ static void TestStringH()
 	printf("strcmp: %d\n",strcmp("hell", "help"));
 	printf("\n");
 	space = (char *)calloc(strlen("testing StrCpy and StrCat")+1, sizeof(char));
+	space1 = (char *)calloc(strlen("testing StrCpy and StrCat")+1, sizeof(char));
+	
+	strcpy(space1,"testing StrCpy");
 	RecStrCpy(space, "testing StrCpy");
-	printf("%s\n", space);
+	
+	printf("\nrecursive StrCpy:\n%s\n", space);
+	printf("original strcpy:\n%s\n", space1);
+	
+	strcat(space1," and StrCat");
 	RecStrCat(space, " and StrCat");
-	printf("%s\n", space);
+	
+	printf("\nrecursive StrCat:\n%s\n", space);
+	printf("original strcat:\n%s\n", space1);
+	printf("\ncomparing strings with recursive StrCmp:\n");
+	(RecStrCmp(space, space1) == 0)? printf("strings are the same! Yey\n"): printf("Oh No something is wrong\n");
 	memset(space,0,strlen(space));
 	
 	ans = RecStrStr(haystack,needle);
@@ -118,6 +130,7 @@ static void TestStringH()
 	printf("real strstr ans is %s\n", ans1);
 
 	free(space);
+	free(space1);
 
 }
 
