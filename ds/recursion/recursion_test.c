@@ -2,6 +2,7 @@
 #include <assert.h> /* assert */
 #include <math.h> /* power fabs */
 #include <stdlib.h>
+#include <string.h>
 
 #include "recursion.h"
 
@@ -12,16 +13,19 @@ static void TestStack();
 static void PrintRec(int);
 static char ReverseString(char *input);
 static void PrintStack(stack_t *stack);
+static void ConvertBinary(int num, char *result);
 
 
 
 int main(void)
 {
-
+	TestStringH();
+	/*PrintRec(5);
+	printf("\n");
 	TestFibo();
 	TestFlip();
-	TestStringH();
-	TestStack();
+	
+	TestStack();*/
 	return 0;
 }
 
@@ -74,19 +78,33 @@ static void TestFibo()
 
 static void TestStringH()
 {
+	char *space = NULL;
 	printf("\n\t----------------------------Recursive string.h-------------------------------------------\n");
+	
 	printf("\nhello my name\n");
 	ReverseString(" hello my name");
 	printf("\n");
-	printf("strlen %ld\n",RecStrLen("hello my name"));
+	printf("rec strlen %ld\n",RecStrLen("hello my name"));
 	printf("\nhello\n");
-	printf("strlen %ld\n",RecStrLen("hello"));
+	printf("rec strlen %ld\n",RecStrLen("hello"));
+	printf("real strlen %ld\n",strlen("hello"));
 	printf("\nhell hell\n");
-	printf("strcmp: %d\n",RecStrCmp("hell", "hell"));
+	printf("rec strcmp: %d\n",RecStrCmp("hell", "hell"));
+	printf("strcmp: %d\n",strcmp("hell", "hell"));
 	printf("\nhello hell\n");
 	printf("strcmp: %d\n",RecStrCmp("hello", "hell"));
+	printf("strcmp: %d\n",strcmp("hello", "hell"));
 	printf("\nhell help\n");
-	printf("strcmp: %d\n",RecStrCmp("hell", "help"));
+	printf("rec strcmp: %d\n",RecStrCmp("hell", "help"));
+	printf("strcmp: %d\n",strcmp("hell", "help"));
+
+	space = (char *)calloc(strlen("testing StrCpy and StrCat")+1, sizeof(char));
+	RecStrCpy(space, "testing StrCpy");
+	printf("%s\n", space);
+	RecStrCat(space, "and StrCat");
+	printf("%s\n", space);
+	free(space);
+
 }
 
 static char ReverseString(char *input)
@@ -100,11 +118,13 @@ static char ReverseString(char *input)
 
 static void PrintRec(int val)
 {
+	char string[10];
 	if (val == 10)
 	{
 		return;
 	}
-	printf("%d ", val);
+	sprintf(string,"%d ", val);
+	printf("%s ", string);
 	PrintRec(val + 1);
 
 
@@ -142,7 +162,8 @@ static void TestStack()
     printf("\nStack after:\n");
     PrintStack(sstack);
 
-
+    StackDestroy(sstack);
+    StackDestroy(copy_stack);
 }
 
 static void PrintStack(stack_t *stack)
@@ -155,3 +176,16 @@ static void PrintStack(stack_t *stack)
 	}
 	printf("\n");
 }
+/*
+static void ConvertBinary(int num, char *result)
+{
+	char string[10];
+	if (num == 0)
+	{
+		return;
+	}
+	
+	sprintf(string,"%d %c ",num , *result);
+
+	ConvertBinary(num/2, result);
+}*/

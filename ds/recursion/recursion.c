@@ -1,6 +1,6 @@
 #include <stdio.h>    /* printf */
 #include <assert.h> /* assert */
-
+#include <string.h> /* strlen*/
 
 
 #include "recursion.h"
@@ -66,25 +66,26 @@ node_t *RecFlipList(node_t *head)
 
 static void InSortedStack(stack_t *stack, int val)
 {
-	int pop = 0;
-	if ((StackIsEmpty(stack)) || (val > (*(int *)StackPeek(stack))))
+	int peek = 0;
+	if ((StackIsEmpty(stack)) || (val <= (*(int *)StackPeek(stack))))
 	{
 		StackPush(stack, &val);
 		return;
 	}
-	pop = *(int *)StackPeek(stack);
+	peek = *(int *)StackPeek(stack);
 	StackPop(stack);
 
 	InSortedStack(stack, val);
 
-	StackPush(stack, &pop);
+	StackPush(stack, &peek);
 
 }
 
 void RecSort(stack_t *stack)
 {
 	int peek = 0;
-	if (StackIsEmpty(stack))
+
+	if(StackIsEmpty(stack))
 		return;
 
 	peek = *(int *)StackPeek(stack);
@@ -101,6 +102,7 @@ void RecSort(stack_t *stack)
 size_t RecStrLen(const char *strq)
 {
 	size_t len = 0;
+
 	if( '\0' == *strq)
 	{
 		return len;
@@ -113,7 +115,7 @@ size_t RecStrLen(const char *strq)
 int RecStrCmp(const char *s1, const char *s2)
 {
 	
-	if(( '\0' == *s1) || ( '\0' == *s2) || ( *s1 != *s2))
+	if(( *s1 != *s2) || ( '\0' == *s1)  )
 	{
 		return *s1 - *s2;
 	}
@@ -123,7 +125,28 @@ int RecStrCmp(const char *s1, const char *s2)
 
 
 
+char *RecStrCpy(char *dest, const char *src)
+{
+	char *runner = dest;
+	if('\0' == *src)
+	{
+		return runner;
+	}
+	*dest = *src;
+	return RecStrCpy(++dest, ++src);
+}
 
+char *RecStrCat(char *dest, const char *src)
+{
+	
+	char *runner = dest + strlen(dest);
+	if('\0' == *src)
+	{
+		return dest;
+	}
+	*runner = *src;
+	return RecStrCpy(++runner, ++src);
+}
 
 
 

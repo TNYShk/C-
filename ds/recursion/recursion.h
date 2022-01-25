@@ -19,12 +19,49 @@ typedef struct node
     struct node *next;
 }node_t;
 
+/*
+ * DESCRIPTION: 
+ * Creates a new Double Linked List ("dll")
+ * 
+ * !don't forget to free allocated memory!
+ *
+ * PARAMS: Nada
+ * 
+ * RETURN: Pointer to the newly created dll, otherwise NULL
+ * O(n) time, O(n) memory */
 int RecFibonacci(int element_index);
-
+/*
+ * DESCRIPTION: 
+ * Creates a new Double Linked List ("dll")
+ * 
+ * !don't forget to free allocated memory!
+ *
+ * PARAMS: Nada
+ * 
+ * RETURN: Pointer to the newly created dll, otherwise NULL
+ * O(n) time, O(1) memory */
 int IterFibonacci(int element_index);
-
+/*
+ * DESCRIPTION: 
+ * Creates a new Double Linked List ("dll")
+ * 
+ * !don't forget to free allocated memory!
+ *
+ * PARAMS: Nada
+ * 
+ * RETURN: Pointer to the newly created dll, otherwise NULL
+ * O(n) time, O(n) memory */
 node_t *RecFlipList(node_t *node);
-
+/*
+ * DESCRIPTION: 
+ * Creates a new Double Linked List ("dll")
+ * 
+ * !don't forget to free allocated memory!
+ *
+ * PARAMS: Nada
+ * 
+ * RETURN: Pointer to the newly created dll, otherwise NULL
+ * O(n^2) time, O(n) memory */
 void RecSort(stack_t *stack);
 
 size_t RecStrLen(const char *strq);
