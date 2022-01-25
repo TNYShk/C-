@@ -1,4 +1,5 @@
 #include <stdio.h>    /* printf */
+#include <limits.h> /* INT MAX*/
 
 
 /* assume array has even num of elements, sum values in-house. into long*/
@@ -7,8 +8,8 @@ long *SumIntPairsToLongs1(int arr[], size_t length);
 
 int main(void)
 {
-	int arr[] = {1,6,456,-3,8,12};
-	int arr1[] = {1,6,456,-3,8,12};
+	int arr[] = {1,LONG_MAX - 1,456,-3,8,12};
+	int arr1[] = {1,LONG_MAX - 1,456,-3,8,12};
 	long *l_arr = NULL;
 	long *l_arr1 = NULL;
 	printf(" %d ",arr[0]);
@@ -52,7 +53,6 @@ long *SumIntPairsToLongs(int arr[], size_t length)
 		*(long*)&arr[idx] = new_num + arr[idx + 1];
 	}
 
-	
 	return l_ptr;
 }
 
