@@ -67,46 +67,7 @@ static char MatchParents(char right_parent);
 
 
 
-static calc_stack_t *IniCalc(size_t len)
-{
-	char stam = BADOP;
-	double dummy = 0;
-	stack_t *numbers = NULL;
-	stack_t *operators = NULL;
-	calc_stack_t *cstack = (calc_stack_t*)malloc(sizeof(calc_stack_t));
-	
-	if (NULL == cstack)
-	{
-		return NULL;
-	}
 
-	numbers = StackCreate(len, sizeof(double));
-	if (NULL == numbers)
-	{
-		memset(cstack,0,sizeof(calc_stack_t));
-		free(cstack);
-		cstack = NULL;
-		return NULL;
-	}
-	operators = StackCreate(len, sizeof(char));
-	if (NULL == operators)
-	{
-		StackDestroy(numbers);
-		memset(cstack,0,sizeof(calc_stack_t));
-		free(cstack);
-		cstack = NULL;
-		return NULL;
-	}
-
-	cstack->numbers = numbers;
-	cstack->operators = operators;
-	cstack->cur_state = WAIT_NUM;
-	
-	StackPush(cstack->operators, &stam);
-	StackPush(cstack->numbers, &dummy);
-
-	return cstack;
-}
 
 
 calc_status_t Calculator(const char *string, double *result)
@@ -157,6 +118,46 @@ calc_status_t Calculator(const char *string, double *result)
 	return status;	
 }
 
+static calc_stack_t *IniCalc(size_t len)
+{
+	char stam = BADOP;
+	double dummy = 0;
+	stack_t *numbers = NULL;
+	stack_t *operators = NULL;
+	calc_stack_t *cstack = (calc_stack_t*)malloc(sizeof(calc_stack_t));
+	
+	if (NULL == cstack)
+	{
+		return NULL;
+	}
+
+	numbers = StackCreate(len, sizeof(double));
+	if (NULL == numbers)
+	{
+		memset(cstack,0,sizeof(calc_stack_t));
+		free(cstack);
+		cstack = NULL;
+		return NULL;
+	}
+	operators = StackCreate(len, sizeof(char));
+	if (NULL == operators)
+	{
+		StackDestroy(numbers);
+		memset(cstack,0,sizeof(calc_stack_t));
+		free(cstack);
+		cstack = NULL;
+		return NULL;
+	}
+
+	cstack->numbers = numbers;
+	cstack->operators = operators;
+	cstack->cur_state = WAIT_NUM;
+	
+	StackPush(cstack->operators, &stam);
+	StackPush(cstack->numbers, &dummy);
+
+	return cstack;
+}
 
 
 
@@ -184,6 +185,7 @@ static int StateGetNumber(char **math_expression, calc_status_t *status, operati
 		calc->cur_state = INVALID;
 		*status = CALC_MATH_ERROR;
 	}
+	
 	(void)operators_lut;
 	(void)precedence_lut;
 
