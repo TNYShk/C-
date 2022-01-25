@@ -67,11 +67,13 @@ node_t *RecFlipList(node_t *head)
 static void InSortedStack(stack_t *stack, int val)
 {
 	int peek = 0;
+
 	if ((StackIsEmpty(stack)) || (val <= (*(int *)StackPeek(stack))))
 	{
 		StackPush(stack, &val);
 		return;
 	}
+
 	peek = *(int *)StackPeek(stack);
 	StackPop(stack);
 
@@ -86,7 +88,9 @@ void RecSort(stack_t *stack)
 	int peek = 0;
 
 	if(StackIsEmpty(stack))
+	{
 		return;
+	}
 
 	peek = *(int *)StackPeek(stack);
 	StackPop(stack);
@@ -117,10 +121,10 @@ int RecStrCmp(const char *s1, const char *s2)
 	
 	if(( *s1 != *s2) || ( '\0' == *s1)  )
 	{
-		return *s1 - *s2;
+		return (*s1 - *s2);
 	}
 	
-	return (RecStrCmp(++s1, ++s2));
+	return RecStrCmp(++s1, ++s2);
 }
 
 
