@@ -86,10 +86,20 @@ size_t RecStrLen(const char *strq)
 		return len;
 	}
 
-	++strq;
-	
-	return (RecStrLen(strq)+ (++len));;
+	return (RecStrLen(++strq) + (++len));
 
+}
+
+int RecStrCmp(const char *s1, const char *s2)
+{
+	
+
+	if(( '\0' == *s1) || ( '\0' == *s2) || ( *s1 != *s2))
+	{
+		return *s1 - *s2;
+	}
+	
+	return (RecStrCmp(++s1, ++s2));
 }
 
 

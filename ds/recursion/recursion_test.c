@@ -7,16 +7,14 @@
 
 static void TestFibo();
 static void TestFlip();
+static void TestStringH();
 
 int main(void)
 {
 
 	TestFibo();
 	TestFlip();
-	printf("\nhello my name\n");
-	/*ReverseString(" hello my name");*/
-	printf("\nlen %ld",RecStrLen("hello my name"));
-
+	TestStringH();
 	return 0;
 }
 
@@ -65,4 +63,21 @@ static void TestFibo()
 	printf("\nIterative (20): %d ",IterFibonacci(20));
 	printf("\nRecursive(20): %d ",RecFibonacci(20));
 	printf("\n");
+}
+
+static void TestStringH()
+{
+	printf("\n\t----------------------------Recursive string.h-------------------------------------------\n");
+	printf("\nhello my name\n");
+	ReverseString(" hello my name");
+	printf("\n");
+	printf("strlen %ld\n",RecStrLen("hello my name"));
+	printf("\nhello\n");
+	printf("strlen %ld\n",RecStrLen("hello"));
+	printf("\nhell hell\n");
+	printf("strcmp: %d\n",RecStrCmp("hell", "hell"));
+	printf("\nhello hell\n");
+	printf("strcmp: %d\n",RecStrCmp("hello", "hell"));
+	printf("\nhell help\n");
+	printf("strcmp: %d\n",RecStrCmp("hell", "help"));
 }
