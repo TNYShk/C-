@@ -256,12 +256,12 @@ static void InitPrecedenceTable(int *precedence_lut)
 	precedence_lut['['] = 0;
 
 	precedence_lut['+'] = 1;
-	precedence_lut['-'] = 1;
+	precedence_lut['-'] = 2;
 	
-	precedence_lut['*'] = 2;
-	precedence_lut['/'] = 2;
+	precedence_lut['*'] = 3;
+	precedence_lut['/'] = 4;
 	
-	precedence_lut['^'] = 3;
+	precedence_lut['^'] = 5;
 
 }
 
@@ -379,7 +379,7 @@ static char MatchParents(char right_parent)
    char *location = strchr(operators,right_parent);
    size_t distance_to_parent = 0;
    size_t extern_op_lut_len = (sizeof(operators)/sizeof(*operators) - 1);
-   
+   printf("");
    distance_to_parent = location - ((char*)(operators));
    left_parent = (*(char*)(operators + (extern_op_lut_len - distance_to_parent)));
     

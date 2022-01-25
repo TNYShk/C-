@@ -8,15 +8,6 @@
 #include <stdio.h>    /* printf */
 #include <assert.h> /* assert */
 #include <math.h> /* power fabs */
-/*
-typedef enum
-{
-    CALC_SUCCESS = 0,
-    CALC_MATH_ERROR = 1,
-    CALC_ALLOC_ERROR = 2,
-    CALC_SYNTAX_ERROR = 3
-} calc_status_t;
-*/
 
 
 #include "../include/cal.h" /* program header*/
@@ -100,6 +91,26 @@ static void TestCalculations()
 	printf("1+2^3+1*2 is: %f\n",result);
 	actual_result = 1+pow(2,3)+1*2;
 	assert(fabs(result)== fabs(actual_result));
+
+	Calculator("10-2+3", &result);
+	printf("10-2+3 is: %f\n",result);
+	actual_result = 10-2+3;
+	assert(fabs(result)== fabs(actual_result));
+
+	Calculator("10+3-2", &result);
+	printf("10+3-2 is: %f\n",result);
+	actual_result = 10+3-2;
+	assert(fabs(result)== fabs(actual_result));
+
+	Calculator("10*3/2", &result);
+	printf("10*3/2 is: %f\n",result);
+	actual_result = 10*3/2;
+	assert(fabs(result)== fabs(actual_result));
+
+	Calculator("10/2*3", &result);
+	printf("10/2*3 is: %f\n",result);
+	actual_result = 10/2*3 ;
+	assert(fabs(result) == fabs(actual_result));
 
 	printf("\nPassed Calculation assert Tests!!\n");
 }
