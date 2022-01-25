@@ -8,6 +8,12 @@
 static void TestFibo();
 static void TestFlip();
 static void TestStringH();
+static void TestStack();
+static void PrintRec(int);
+static char ReverseString(char *input);
+static void PrintStack(stack_t *stack);
+
+
 
 int main(void)
 {
@@ -15,6 +21,7 @@ int main(void)
 	TestFibo();
 	TestFlip();
 	TestStringH();
+	TestStack();
 	return 0;
 }
 
@@ -80,4 +87,71 @@ static void TestStringH()
 	printf("strcmp: %d\n",RecStrCmp("hello", "hell"));
 	printf("\nhell help\n");
 	printf("strcmp: %d\n",RecStrCmp("hell", "help"));
+}
+
+static char ReverseString(char *input)
+{
+	if( '\0' == *input)
+		return *input;
+	
+	++input;
+	return (ReverseString(input)+ printf("%c", *input));
+}
+
+static void PrintRec(int val)
+{
+	if (val == 10)
+	{
+		return;
+	}
+	printf("%d ", val);
+	PrintRec(val + 1);
+
+
+}
+
+static void TestStack()
+{
+	stack_t *sstack = NULL;
+	stack_t *copy_stack = NULL;
+
+	int num1 = 10;
+    int num2 = 3;
+    int num3 = -12;
+    int num4 = 5;
+    int num5 = 4;
+    printf("\n\t----------------------------Recursive Stack Sort-------------------------------------------\n");
+    sstack = StackCreate(5, sizeof(int));
+    copy_stack = StackCreate(5, sizeof(int));
+
+    StackPush(sstack, &num1);
+    StackPush(copy_stack, &num1);
+    StackPush(sstack, &num2);
+    StackPush(copy_stack, &num2);
+    StackPush(sstack, &num3);
+    StackPush(copy_stack, &num3);
+    StackPush(sstack, &num4);
+    StackPush(copy_stack, &num4);
+    StackPush(sstack, &num5);
+    StackPush(copy_stack, &num5);
+
+   	printf("\nStack before:\n");
+    PrintStack(copy_stack);
+
+    RecSort(sstack);
+    printf("\nStack after:\n");
+    PrintStack(sstack);
+
+
+}
+
+static void PrintStack(stack_t *stack)
+{
+	while(!StackIsEmpty(stack))
+	{
+		int peek = *(int *)StackPeek(stack);
+		printf("%d ", peek);
+		StackPop(stack);
+	}
+	printf("\n");
 }

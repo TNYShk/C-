@@ -5,15 +5,11 @@
 
 #include "recursion.h"
 
+#include "../include/stack.h"
 
 
 
-void PrintRec(int);
-int IterFibonacci(int element_index);
-int RecFibonacci(int element_index);
-node_t *RecFlipList(node_t *head);
-char ReverseString(char *input);
-
+static void InSortedStack(stack_t *stack, int val);
 
 	
 
@@ -58,7 +54,7 @@ int RecFibonacci(int element_index)
 node_t *RecFlipList(node_t *head)
 {
 	node_t *new;
-	if((NULL == head->next)|| (NULL == head))
+	if((NULL == head->next) || (NULL == head))
 	{
 		return head;
 	}
@@ -68,15 +64,39 @@ node_t *RecFlipList(node_t *head)
 	return new;
 }
 
-
-char ReverseString(char *input)
+static void InSortedStack(stack_t *stack, int val)
 {
-	if( '\0' == *input)
-		return *input;
-	
-	++input;
-	return (ReverseString(input)+ printf("%c", *input));
+	int pop = 0;
+	if ((StackIsEmpty(stack)) || (val > (*(int *)StackPeek(stack))))
+	{
+		StackPush(stack, &val);
+		return;
+	}
+	pop = *(int *)StackPeek(stack);
+	StackPop(stack);
+
+	InSortedStack(stack, val);
+
+	StackPush(stack, &pop);
+
 }
+
+void RecSort(stack_t *stack)
+{
+	int peek = 0;
+	if (StackIsEmpty(stack))
+		return;
+
+	peek = *(int *)StackPeek(stack);
+	StackPop(stack);
+
+	RecSort(stack);
+	InSortedStack(stack, peek);
+
+}
+
+
+
 
 size_t RecStrLen(const char *strq)
 {
@@ -93,7 +113,6 @@ size_t RecStrLen(const char *strq)
 int RecStrCmp(const char *s1, const char *s2)
 {
 	
-
 	if(( '\0' == *s1) || ( '\0' == *s2) || ( *s1 != *s2))
 	{
 		return *s1 - *s2;
@@ -103,14 +122,11 @@ int RecStrCmp(const char *s1, const char *s2)
 }
 
 
-void PrintRec(int val)
-{
-	if (val == 10)
-	{
-		return;
-	}
-	printf("%d ", val);
-	PrintRec(val + 1);
 
 
-}
+
+
+
+
+
+
