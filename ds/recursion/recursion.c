@@ -15,7 +15,7 @@
 
 
 static void InSortedStack(stack_t *stack, int val);
-
+static int RecStrnCmp(const char *s1, const char *s2, size_t len);
 	
 
 int IterFibonacci(int element_index)
@@ -152,27 +152,36 @@ char *RecStrCat(char *dest, const char *src)
 		return dest;
 	}
 	*runner = *src;
-	return RecStrCat(++runner, ++src); /*also: return RecStrCpy(++runner, ++src) */
+	return RecStrCpy(++runner, ++src); /*also: return RecStrCat(++runner, ++src) */
 }
 
 char *RecStrStr(const char *haystack, const char *needle)
 {
 	assert(NULL != haystack);
 
-	if ( ('\0' == *haystack))
+	if ( ('\0' == *haystack) || (NULL == haystack))
 	{
 	  	return NULL;
 	}
      
-   if(strncmp(haystack, needle, strlen(needle)) == 0)
+   if(strncmp(haystack, needle, RecStrLen(needle)) == 0)
    {
      return (char *)haystack;
    }
 
-   return(RecStrStr(++haystack, needle));
+   return RecStrStr(++haystack, needle);
 }
 
-
+static int RecStrnCmp(const char *s1, const char *s2, size_t len)
+{
+	
+	if( ( '\0' == *s1) || (0 == len) || ( *s1 != *s2) )
+	{
+		return (*s1 - *s2);
+	}
+	
+	return RecStrnCmp(++s1, ++s2,--len);
+}
 
 
 
