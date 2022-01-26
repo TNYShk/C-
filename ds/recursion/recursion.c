@@ -23,12 +23,11 @@ int IterFibonacci(int element_index)
 	int ans = 1;
 	int x1 = 1, x2 = 1;
 	
-	while(2 < element_index )
+	for(;2 < element_index; --element_index)
 	{
 		ans = x1 + x2;
 		x1 = x2;
 		x2 = ans;
-		--element_index;
 	}
 	return ans;
 }
@@ -38,26 +37,33 @@ int RecFibonacci(int element_index)
 {
 	assert(0 <= element_index );
 
-	if( (element_index == 0) ||(element_index == 1) )
+	if( (0 == element_index) || (1 == element_index) )
 	{
 		return element_index;
 	}
 
-	return (RecFibonacci(element_index - 1) + RecFibonacci(element_index - 2) );
+	return ( RecFibonacci(element_index - 1) + RecFibonacci(element_index - 2) );
 }
 
 
 node_t *RecFlipList(node_t *head)
 {
-	node_t *new;
-	if((NULL == head->next) || (NULL == head))
+	assert(NULL != head);
+
+	if(NULL == head->next)
 	{
 		return head;
 	}
-	new = RecFlipList(head->next);
-	head->next->next = head;
-	head->next = NULL;
-	return new;
+
+	else
+	{
+		node_t *new = RecFlipList(head->next);
+
+		head->next->next = head;
+		head->next = NULL;
+
+		return new;
+	}
 }
 
 
@@ -67,16 +73,14 @@ void RecSort(stack_t *stack)
 
 	assert(NULL != stack);
 
-	if(StackIsEmpty(stack))
+	if(!StackIsEmpty(stack))
 	{
-		return;
+		peek = *(int *)StackPeek(stack);
+		StackPop(stack);
+
+		RecSort(stack);
+		InSortedStack(stack, peek);
 	}
-
-	peek = *(int *)StackPeek(stack);
-	StackPop(stack);
-
-	RecSort(stack);
-	InSortedStack(stack, peek);
 }
 
 static void InSortedStack(stack_t *stack, int val)
@@ -90,6 +94,7 @@ static void InSortedStack(stack_t *stack, int val)
 		InSortedStack(stack, val);
 		
 		StackPush(stack, &peek);
+		
 		return;
 	}
 
@@ -101,13 +106,12 @@ size_t RecStrLen(const char *strq)
 {
 	assert(NULL != strq);
 
-	if( '\0' == *strq)
+	if ('\0' == *strq)
 	{
 		return 0;
 	}
 
 	return (1 + RecStrLen(++strq));
-
 }
 
 int RecStrCmp(const char *s1, const char *s2)
@@ -115,7 +119,7 @@ int RecStrCmp(const char *s1, const char *s2)
 	assert(NULL != s1);
 	assert(NULL != s2);
 
-	if( ( '\0' == *s1) || ( *s1 != *s2) )
+	if ( ('\0' == *s1) || (*s1 != *s2) )
 	{
 		return (*s1 - *s2);
 	}
@@ -132,7 +136,7 @@ char *RecStrCpy(char *dest, const char *src)
 
 	*dest = *src;
 
-	if('\0' == *src)
+	if ('\0' == *src)
 	{
 		return dest;
 	}
@@ -147,7 +151,7 @@ char *RecStrCat(char *dest, const char *src)
 
 	assert(NULL != src);
 	
-	return (RecStrCpy( (dest + len), src) - len); 
+	return (RecStrCpy((dest + len), src) - len); 
 }
 
 
@@ -163,11 +167,11 @@ char *RecStrStr(const char *haystack, const char *needle)
 
     if (*haystack == *needle)
     {
-     	if(!RecStrnCmp(haystack, needle, RecStrLen(needle)))
+     	if (!RecStrnCmp(haystack, needle, RecStrLen(needle)))
    		{
      		return (char *)haystack;
    		}
-     }
+    }
 
    return RecStrStr(haystack + 1, needle);
 }
@@ -175,7 +179,7 @@ char *RecStrStr(const char *haystack, const char *needle)
 static int RecStrnCmp(const char *s1, const char *s2, size_t len)
 {
 	
-	if( ( '\0' == *s1) || (1 == len) || ( *s1 != *s2) )
+	if ( ('\0' == *s1) || (1 == len) || (*s1 != *s2) )
 	{
 		return (*s1 - *s2);
 	}

@@ -102,7 +102,7 @@ static void TestStringH()
 	char *ans = NULL;
 	char *ans1 = NULL;
 	char *haystack = "%$#@!^%";
-	char *needle = "^";
+	char *needle = "!^";
 	printf("\n\t----------------------------Recursive string.h-------------------------------------------\n");
 	space = (char *)calloc(strlen("testing StrCpy and StrCat")+1, sizeof(char));
 	printf("\nI hate strstr\n");
