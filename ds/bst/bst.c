@@ -64,7 +64,7 @@ bst_t *BSTCreate(bst_cmp_func_t cmp_func)
   
     assert(NULL != cmp_func);
 
-    start = (bst_t *)calloc(1,sizeof(bst_t));
+    start = (bst_t *)calloc(2,sizeof(bst_t));
     if(NULL == start)
     {
         return NULL;

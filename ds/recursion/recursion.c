@@ -83,23 +83,7 @@ void RecSort(stack_t *stack)
 	}
 }
 
-static void InSortedStack(stack_t *stack, int val)
-{
-	
-	if (!(StackIsEmpty(stack)) && (val > (*(int *)StackPeek(stack))))
-	{
-		int peek = *(int *)StackPeek(stack);
-		StackPop(stack);
-		
-		InSortedStack(stack, val);
-		
-		StackPush(stack, &peek);
-		
-		return;
-	}
 
-	StackPush(stack, &val);
-}
 
 
 size_t RecStrLen(const char *strq)
@@ -145,6 +129,7 @@ char *RecStrCpy(char *dest, const char *src)
 }
 
 
+
 char *RecStrCat(char *dest, const char *src)
 {
 	size_t len = RecStrLen(dest);
@@ -153,22 +138,6 @@ char *RecStrCat(char *dest, const char *src)
 	
 	return (RecStrCpy((dest + len), src) - len); 
 }
-/*
-char *RecStrCat(char *dest, const char *src)
-{
-	assert(NULL != dest);
-	assert(NULL != src);
-
-	if ('\0' == *dest)
-	{
-		return RecStrCpy(dest,src);
-	}
-
-	RecStrCat(dest + 1, src); 
-	return dest;
-}*/
-
-
 
 
 char *RecStrStr(const char *haystack, const char *needle)
@@ -192,6 +161,8 @@ char *RecStrStr(const char *haystack, const char *needle)
    return RecStrStr(haystack + 1, needle);
 }
 
+
+
 static int RecStrnCmp(const char *s1, const char *s2, size_t len)
 {
 	
@@ -203,7 +174,38 @@ static int RecStrnCmp(const char *s1, const char *s2, size_t len)
 	return RecStrnCmp(++s1, ++s2,--len);
 }
 
+static void InSortedStack(stack_t *stack, int number)
+{
+	
+	if (!(StackIsEmpty(stack)) && (number > (*(int *)StackPeek(stack))))
+	{
+		int peek = *(int *)StackPeek(stack);
+		StackPop(stack);
+		
+		InSortedStack(stack, number);
+		
+		StackPush(stack, &peek);
+		
+		return;
+	}
 
+	StackPush(stack, &number);
+}
+
+/*
+char *RecStrCat(char *dest, const char *src)
+{
+	assert(NULL != dest);
+	assert(NULL != src);
+
+	if ('\0' == *dest)
+	{
+		return RecStrCpy(dest,src);
+	}
+
+	RecStrCat(dest + 1, src); 
+	return dest;
+}*/
 
 /*
 char *RecStrCat(char *dest, const char *src)
@@ -216,4 +218,5 @@ char *RecStrCat(char *dest, const char *src)
 	return (RecStrCpy(runner, src) - (runner - dest)); 
 }
 */
+
 

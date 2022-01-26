@@ -38,13 +38,13 @@ int main(void)
 	
 	TestFlip();
 	printf("\n");
-	/*
+	
 	TestStringH();
 	StrTestCase();
 	TestRecStrCmp();
 	TestRecStrCpy();
 	TestRecStrStr();
-	*/
+	
 	
 	return 0;
 }
@@ -251,7 +251,7 @@ void StrTestCase()
     printf("PASSED\n");  
 
 	printf("\nRecStrCat Test status: ");
-    assert(0 == strcmp(strcat(str1, str2), RecStrCat(str1, str2)));
+    assert(0 == strcmp(strcat(str1, str2), RecStrCat(dest1, str2)));
     printf("PASSED\n");  
 
 	printf("\nRecStrStr Test status: ");
