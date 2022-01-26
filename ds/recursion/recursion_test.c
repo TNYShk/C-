@@ -24,25 +24,26 @@ void StrTestCase();
 void TestRecStrCmp();
 void TestRecStrCpy(void);
 void TestRecStrStr(void);
+
 int main(void)
 {
+	PrintRec(5);
+	printf("\n");
+	TestFibo();
+	printf("\n");
+	
 	TestStack();
+	printf("\n");
+	
+	TestFlip();
+	printf("\n");
 	
 	TestStringH();
 	StrTestCase();
 	TestRecStrCmp();
 	TestRecStrCpy();
 	TestRecStrStr();
-/*
-	TestFibo();
-	PrintRec(5);
-	printf("\n");
-
 	
-	printf("\n");
-	
-	TestFlip();
-*/	
 	
 	return 0;
 }
@@ -89,8 +90,8 @@ static void TestFibo()
 	printf("\nRecursive(5): %d ",RecFibonacci(5));
 	printf("\nIterative(5): %d ",IterFibonacci(5));
 	printf("\n");
-	printf("\nIterative (45): %d ",IterFibonacci(45));
-	printf("\nRecursive(45): %d ",RecFibonacci(45));
+	printf("\nIterative (12): %d ",IterFibonacci(12));
+	printf("\nRecursive(12): %d ",RecFibonacci(12));
 	printf("\n");
 }
 

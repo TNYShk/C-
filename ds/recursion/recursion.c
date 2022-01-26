@@ -141,17 +141,6 @@ char *RecStrCpy(char *dest, const char *src)
 }
 
 
-/*
-char *RecStrCat(char *dest, const char *src)
-{
-	char *runner = NULL;
-	
-	assert(NULL != dest);
-
-	runner = dest + RecStrLen(dest);
-	return (RecStrCpy(runner, src) - (runner - dest)); 
-}
-*/
 
 
 char *RecStrCat(char *dest, const char *src)
@@ -161,7 +150,7 @@ char *RecStrCat(char *dest, const char *src)
 	
 	assert(NULL != src);
 	
-	return (RecStrCpy( (dest + len), src)- len); 
+	return (RecStrCpy( (dest + len), src) - len); 
 }
 
 
@@ -199,4 +188,15 @@ static int RecStrnCmp(const char *s1, const char *s2, size_t len)
 
 
 
+/*
+char *RecStrCat(char *dest, const char *src)
+{
+	char *runner = NULL;
+	
+	assert(NULL != dest);
+
+	runner = dest + RecStrLen(dest);
+	return (RecStrCpy(runner, src) - (runner - dest)); 
+}
+*/
 
