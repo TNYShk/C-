@@ -20,26 +20,30 @@ static void TestStack();
 static void PrintRec(int);
 static char ReverseString(char *input);
 static void PrintStack(stack_t *stack);
-void TestRecStrCat(void);
+void StrTestCase();
+void TestRecStrCmp();
 void TestRecStrCpy(void);
-
-
+void TestRecStrStr(void);
 int main(void)
 {
+	TestStack();
+	
 	TestStringH();
-	TestRecStrCat();
+	StrTestCase();
+	TestRecStrCmp();
 	TestRecStrCpy();
-
-	/*TestFibo();
+	TestRecStrStr();
+/*
+	TestFibo();
 	PrintRec(5);
 	printf("\n");
-	TestStringH();
+
 	
 	printf("\n");
 	
 	TestFlip();
+*/	
 	
-	TestStack();*/
 	return 0;
 }
 
@@ -218,49 +222,109 @@ static void PrintStack(stack_t *stack)
 	printf("\n");
 }
 
+
+
+
+
+void StrTestCase()
+{
+	char *str = "hello";
+	char str1[100] = "stringnumber1";
+	char str2[] = "stringnumber2";
+    char dest[100];
+    char dest1[100];
+    char *haystack = "I Hate strstr have has done it or not";
+    char *needle = "Hate";
+	printf("\nGal BZ tests: ");
+	printf("\nRecStrLen Test status: ");
+	assert(strlen(str) == RecStrLen(str));	
+    printf("PASSED\n"); 
+
+    printf("\nRecStrCmp Test status: ");
+	assert(strcmp(str1, str2) == RecStrCmp(str1, str2));
+	printf("PASSED\n");  
+
+	printf("\nRecStrCpy Test status: ");
+    assert(0 == strcmp(strcpy(dest, str1), RecStrCpy(dest1, str1)));
+    printf("PASSED\n");  
+
+	printf("\nRecStrCat Test status: ");
+    assert(0 == strcmp(strcat(str1, str2), RecStrCat(str1, str2)));
+    printf("PASSED\n");  
+
+	printf("\nRecStrStr Test status: ");
+    assert(0 == strcmp(strstr(haystack, needle), RecStrStr(haystack, needle)));
+	assert(NULL == RecStrStr(needle, haystack));
+    printf("PASSED\n");  
+
+}
+
+
+void TestRecStrCmp()
+{
+	char *str1 = "123456789";
+	char *str2 = "Hey";
+	char *str3 = "Hey";
+	char *str4 = "hey it same string";
+	char *str5 = "hey it same string";
+	printf("\nShoshana's tests");
+	printf("\nstrcmp = %d\n", strcmp(str1, str2));
+	printf("strcmp = %d\n", strcmp(str2, str1));
+	printf("my cmp = %d\n", RecStrCmp(str1, str2));
+	printf("my cmp = %d\n", RecStrCmp(str2, str1));
+	assert(strcmp(str2, str3) == RecStrCmp(str2, str3));
+	assert(strcmp(str5, str4) == RecStrCmp(str5, str4));
+
+	
+}
+
 void TestRecStrCpy(void)
 {
 	char *src = "Hey Soul Sister";
 	char dest[50] = {0};
 	char *src1 = "123456     654321";
 	char dest1[50] = {0};
-	char *src2 = "Tanya Tanya";
+	char *src2 = "Shoshana Huri";
 	char dest2[50] = {0};
 	char *src3 = "@@@ $$$ %";
 	char dest3[50] = {0};
 
-	assert(0 == RecStrCmp(strcpy(dest, src), RecStrCpy(dest, src)));
-	assert(0 == RecStrCmp(strcpy(dest1, src1), RecStrCpy(dest1, src1)));
-	assert(0 == RecStrCmp(strcpy(dest2, src2), RecStrCpy(dest2, src2)));
-	assert(0 == RecStrCmp(strcpy(dest3, src3), RecStrCpy(dest3, src3)));
-
-	printf("\n");
-}
-
-void TestRecStrCat(void)
-{
-	char *src = "Hey Soul Sister";
-	char dest[50] = {'P', 'P', 'P', '\0'};
-	char *src1 = "123456     654321";
-	char dest1[100] = {'h','E', 'l', 'e', 'M', '\0'};
-	char *src2 = "Tanya Tanya";
-	char dest2[100] = {'H', 'e', 'y', '\0'};
-
 	char *src_b = "Hey Soul Sister";
-	char dest_b[50] = {'P', 'P', 'P', '\0'};
+	char dest_b[50] = {0};
 	char *src1_b = "123456     654321";
-	char dest1_b[100] = {'h','E', 'l', 'e', 'M', '\0'};
-	char *src2_b = "Tanya Tanya";
-	char dest2_b[100] = {'H', 'e', 'y', '\0'};
+	char dest1_b[50] = {0};
+	char *src2_b = "Shoshana Huri";
+	char dest2_b[50] = {0};
+	char *src3_b = "@@@ $$$ %";
+	char dest3_b[50] = {0};
 
-	printf("dest = %s\n", RecStrCat(dest, src));
-	printf("dest = %s\n", RecStrCat(dest1, src1));
-	printf("dest = %s\n", RecStrCat(dest2, src2));
+	assert(0 == RecStrCmp(strcpy(dest_b, src_b), RecStrCpy(dest, src)));
+	assert(0 == RecStrCmp(strcpy(dest1_b, src1_b), RecStrCpy(dest1, src1)));
+	assert(0 == RecStrCmp(strcpy(dest2_b, src2_b), RecStrCpy(dest2, src2)));
+	assert(0 == RecStrCmp(strcpy(dest3_b, src3_b), RecStrCpy(dest3, src3)));
 
-	assert(0 == RecStrCmp(strcat(dest_b, src_b), RecStrCat(dest, src)));
-	assert(0 == RecStrCmp(strcat(dest1_b, src1_b), RecStrCat(dest1, src1)));
-	assert(0 == RecStrCmp(strcat(dest2_b, src2_b), RecStrCat(dest2, src2)));
-
-	printf("\n");
 }
+
+void TestRecStrStr(void)
+{
+	char *haystack = "The quick brown fox jumps over the lazy dog";
+    char *needles[] = {"fox", "dog", "bazilisk", "the"};
+    size_t i = 0;
+
+    printf("haystack is: %s\n", haystack);
+    for (i = 0; i < sizeof(needles)/sizeof(char *); ++i)
+    {    
+        printf("needle: %s >> ", needles[i]);
+        assert(RecStrStr(haystack, needles[i]) == strstr(haystack, needles[i]));
+        printf("successful.\n");
+    }
+
+    printf("TestRecStrStr Clear!\n");
+
+    printf("\n");
+}
+
+
+
+
 

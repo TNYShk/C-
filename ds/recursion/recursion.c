@@ -139,31 +139,31 @@ char *RecStrCpy(char *dest, const char *src)
 	
 	return (RecStrCpy(++dest, ++src) -1);
 }
+
+
 /*
 char *RecStrCat(char *dest, const char *src)
 {
-	char *runner = dest + RecStrLen(dest);
+	char *runner = NULL;
 	
 	assert(NULL != dest);
 
-	if('\0' == *src)
-	{
-		return dest;
-	}
-	*runner = *src;
-	return RecStrCat(++runner, ++src); 
-}*/
+	runner = dest + RecStrLen(dest);
+	return (RecStrCpy(runner, src) - (runner - dest)); 
+}
+*/
+
 
 char *RecStrCat(char *dest, const char *src)
 {
-	dest += RecStrLen(dest);
-	
-	assert(NULL != dest);
-	assert(NULL != src);
+	size_t len = RecStrLen(dest);
 
-	*dest = *src;
-	return RecStrCpy(dest , src); 
+	
+	assert(NULL != src);
+	
+	return (RecStrCpy( (dest + len), src)- len); 
 }
+
 
 char *RecStrStr(const char *haystack, const char *needle)
 {
