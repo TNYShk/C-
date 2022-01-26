@@ -11,9 +11,9 @@
  * array to sort
  * size_t length of the array 
  * 
- * RETURN: None
+ * RETURN: 1 if Sorted, 0 if not sorted, FAIL (-1) if malloc failed
  *complexity: time: O(n + k) space: O(n)*/
-void CountingSort(int *arr, size_t arr_size);
+int CountingSort(int *arr, size_t arr_size);
 
 /*
  * DESCRIPTION: 
@@ -25,9 +25,9 @@ void CountingSort(int *arr, size_t arr_size);
  * size_t length of the array
  * chunk - size of chunks to use when counting instances 
  * 
- * RETURN: None
+ * RETURN: 1 if Sorted, 0 if not sorted, FAIL (-1) if malloc failed
  *complexity: time: O(n + k) space: O(n)*/
-void RadixSort(int *arr, size_t arr_size, int chunk);
+int RadixSort(int *arr, size_t arr_size, int chunk);
 
 
 

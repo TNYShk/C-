@@ -14,7 +14,7 @@ typedef struct node
 node_t *Flip(node_t *head);
 int HasLoop(const node_t *head);
 node_t *FindIntersection(node_t *head_1, node_t *head_2);
-
+node_t *FlipRec(node_t *head);
 static size_t countElements(node_t *head);
 static void MoveHead(node_t *head, size_t bymuch);
 
@@ -75,7 +75,8 @@ int main()
 	printf("\ncheck for intersection node, its value is: %d\n", *(int *)temp->data);
 
 	printf("\n\t----------------------------flip-------------------------------------------\n");
-	printf("data in three.next->data is %d\n", *(int *)three.next->data);
+	printf("before: data in two.next->data is %d\n", *(int *)two.next->data);
+	printf("before: data in three.next->data is %d\n", *(int *)three.next->data);
 	Flip(head);
 	printf("post flip data in two.next->data is %d\n", *(int *)two.next->data);
 	printf("post flip data in three.next->data is %d\n", *(int *)three.next->data);
@@ -110,6 +111,20 @@ node_t *Flip(node_t *head)
 
 	return new_head;
 }
+
+node_t *FlipRec(node_t *head)
+{
+	node_t *new;
+	if((NULL == head) || (NULL == head->next))
+	{
+		return head;
+	}
+	new = FlipRec(head->next);
+	head->next->next = head;
+	head->next = NULL;
+	return new;
+}
+
 
 int HasLoop(const node_t *head)
 {

@@ -26,6 +26,7 @@ static bst_iter_t GetRight(bst_iter_t node);
 static bst_iter_t GetParent(bst_iter_t node);
 static int IsLonelyLeaf(bst_iter_t node);
 static int IsFamilyNode(bst_iter_t node);
+static bst_iter_t ZigZag(bst_iter_t runner, int side );
 /* ********************************************** */
 
 
@@ -62,14 +63,13 @@ bst_t *BSTCreate(bst_cmp_func_t cmp_func)
     bst_t *start = NULL;
   
     assert(NULL != cmp_func);
-    
+
     start = (bst_t *)calloc(1,sizeof(bst_t));
     if(NULL == start)
     {
         return NULL;
     }
 
-   
     start->CmpFunc = cmp_func;
 
     return start;
@@ -93,8 +93,7 @@ void BSTDestroy(bst_t *tree)
             terminator->children[which_child] = NULL;
            
             free(current);
-            current = terminator;
-                
+            current = terminator;       
         }
         else
         {
@@ -138,7 +137,7 @@ bst_iter_t BSTInsert(bst_t *tree, void *data)
 
     if(SUCCESS == CreateIniteNode(parent, &new_n, data))
     {
-         parent->children[0 < where] = new_n;
+        parent->children[0 < where] = new_n;
     }
 
  return new_n;
@@ -177,27 +176,10 @@ bst_iter_t BSTNext(bst_iter_t iter)
 {
     bst_iter_t runner = iter;
     
-    if(HasChild(runner,RIGHT))
-    {
-        runner = GetRight(runner);
-
-        while(HasChild(runner,LEFT))
-        {
-            runner = GetLeft(runner);
-        }
-    }
-    else
-    {
-        while(HasParent(runner) && WHOSE_CHILD(runner))
-        {
-            runner = runner->parent;        
-        }
-
-        runner = runner->parent;     
-    }
-
-    return runner;
+   return ZigZag(runner,RIGHT);
 }
+
+
 
 
 bst_iter_t BSTPrev(bst_iter_t iter)
@@ -205,7 +187,7 @@ bst_iter_t BSTPrev(bst_iter_t iter)
     bst_iter_t runner = iter;
 
     assert(NULL != iter);
-
+                                 
     if(HasChild(runner,LEFT))
     {
         runner = iter->children[LEFT];
@@ -277,6 +259,7 @@ size_t BSTSize(const bst_t *tree)
     assert(NULL != tree);
 
     runner = BSTBegin(tree);
+
     while(runner != BSTEnd(tree) )
     {
         ++counter;
@@ -340,8 +323,7 @@ int BSTForEach(bst_iter_t from, bst_iter_t to,
 
 static int CreateIniteNode(bst_iter_t parent, bst_iter_t *new_node, void *data)
 {
-    *new_node = (bst_node_t *)malloc(sizeof(bst_node_t));
-    
+    *new_node = (bst_node_t *)calloc(1,sizeof(bst_node_t));
     if (NULL == new_node)
     {
         return FAIL;
@@ -352,8 +334,6 @@ static int CreateIniteNode(bst_iter_t parent, bst_iter_t *new_node, void *data)
 
     (*new_node)->data = data;
     (*new_node)->parent = parent;
-    (*new_node)->children[LEFT] = NULL;
-    (*new_node)->children[RIGHT] = NULL;
     
     return SUCCESS;
 }
@@ -395,7 +375,29 @@ static int IsFamilyNode(bst_iter_t node)
     return ( (HasChild(node,LEFT)) && (HasChild(node,RIGHT)) );
 }
 
+static bst_iter_t ZigZag(bst_iter_t runner, int side )
+{
+    if(HasChild(runner,side))
+    {   
+        runner = runner->children[side];
+        
+        while (HasChild(runner, !side))
+        {
+            runner = runner->children[!side];
+        }
+    }
+    else
+    {
+        while( (HasParent(runner)) && (runner == GetRight(GetParent(runner)) ) )
+        {
+            runner = runner->parent;        
+        }
 
+        runner = runner->parent;     
+    }
+
+    return runner;  
+}
 
 
 

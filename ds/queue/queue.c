@@ -2,7 +2,7 @@
 #include <stdlib.h> /* memory allocation  */
 #include <assert.h> /* assert() */
 
-#include "../include/sll.h"
+#include "sll.h"
 #include "queue.h"
 
 /*********Reviewed by David**********

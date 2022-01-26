@@ -11,7 +11,7 @@
 
 #include <stddef.h> /* size_t */
 
-#include "../include/stack.h"
+#include "stack.h"
 
 typedef struct node
 {
@@ -21,20 +21,22 @@ typedef struct node
 
 /*
  * DESCRIPTION: 
- * Creates a new Double Linked List ("dll")
+ * Calculates the value of Fibonacci number of the requested index
  * 
- * !don't forget to free allocated memory!
  *
- * PARAMS: Nada
+ *
+ * PARAMS: 
+ * index of desired Fib element
  * 
- * RETURN: Pointer to the newly created dll, otherwise NULL
- * O(n) time, O(n) memory */
+ * RETURN: value of the Fibonacci index
+ *
+ * O(n^2) time, O(tree height) memory */
 int RecFibonacci(int element_index);
 /*
  * DESCRIPTION: 
- * Creates a new Double Linked List ("dll")
+ * Calculates the value of Fibonacci number of the requested index
  * 
- * !don't forget to free allocated memory!
+ * 
  *
  * PARAMS: Nada
  * 

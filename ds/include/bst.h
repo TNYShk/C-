@@ -179,7 +179,7 @@ void *BSTGetData(bst_iter_t iter);
  * RETURN:
  * iterator to the found data, if not fount BSTEnd is returned (which is NULL)
  *
- *  Complexity: O(log n) time, O(1) space.
+ *  Complexity: O(log n) amortized time, O(1) space. O(n) if the tree is not balanced
  */
 bst_iter_t BSTFind(const bst_t *tree, void *data_to_find);
 

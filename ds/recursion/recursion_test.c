@@ -27,6 +27,7 @@ void TestRecStrStr(void);
 
 int main(void)
 {
+	TestStringH();
 	PrintRec(5);
 	printf("\n");
 	TestFibo();
@@ -37,13 +38,13 @@ int main(void)
 	
 	TestFlip();
 	printf("\n");
-	
+	/*
 	TestStringH();
 	StrTestCase();
 	TestRecStrCmp();
 	TestRecStrCpy();
 	TestRecStrStr();
-	
+	*/
 	
 	return 0;
 }
@@ -104,7 +105,7 @@ static void TestStringH()
 	char *haystack = "%$#@!^%";
 	char *needle = "!^";
 	printf("\n\t----------------------------Recursive string.h-------------------------------------------\n");
-	space = (char *)calloc(strlen("testing StrCpy and StrCat")+1, sizeof(char));
+	space = (char *)calloc(strlen("testing StrCpy and StrCat   ")+1, sizeof(char));
 	printf("\nI hate strstr\n");
 	ReverseString(" I hate strstr");
 	printf("\n");
@@ -124,7 +125,7 @@ static void TestStringH()
 	printf("strcmp: %d\n",strcmp("hell", "help"));
 	printf("\n");
 	
-	space1 = (char *)calloc(strlen("testing StrCpy and StrCat")+1, sizeof(char));
+	space1 = (char *)calloc(strlen("testing StrCpy and StrCat   ")+1, sizeof(char));
 	
 	strcpy(space1,"testing StrCpy");
 	RecStrCpy(space, "testing StrCpy");
@@ -234,8 +235,8 @@ void StrTestCase()
 	char str2[] = "stringnumber2";
     char dest[100];
     char dest1[100];
-    char *haystack = "I Hate strstr have has done it or not";
-    char *needle = "Hate";
+    char *haystack = "I hate strstr have has done it or not";
+    char *needle = "hate";
 	printf("\nGal BZ tests: ");
 	printf("\nRecStrLen Test status: ");
 	assert(strlen(str) == RecStrLen(str));	
@@ -255,6 +256,7 @@ void StrTestCase()
 
 	printf("\nRecStrStr Test status: ");
     assert(0 == strcmp(strstr(haystack, needle), RecStrStr(haystack, needle)));
+    assert(0 == strcmp(strstr("why why where who whose whore", "who"), RecStrStr("why why where who whose whore", "who")));
 	assert(NULL == RecStrStr(needle, haystack));
     printf("PASSED\n");  
 

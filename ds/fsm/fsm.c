@@ -4,10 +4,6 @@
 
 #include "fsm.h"
 
-
-
-
-
 typedef struct fsm
 {
 	fsm_state fsm_cur_state;

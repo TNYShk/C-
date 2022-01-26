@@ -153,6 +153,22 @@ char *RecStrCat(char *dest, const char *src)
 	
 	return (RecStrCpy((dest + len), src) - len); 
 }
+/*
+char *RecStrCat(char *dest, const char *src)
+{
+	assert(NULL != dest);
+	assert(NULL != src);
+
+	if ('\0' == *dest)
+	{
+		return RecStrCpy(dest,src);
+	}
+
+	RecStrCat(dest + 1, src); 
+	return dest;
+}*/
+
+
 
 
 char *RecStrStr(const char *haystack, const char *needle)
