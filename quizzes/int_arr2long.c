@@ -8,8 +8,8 @@ long *SumIntPairsToLongs1(int arr[], size_t length);
 
 int main(void)
 {
-	int arr[] = {1,LONG_MAX - 1,456,-3,8,12};
-	int arr1[] = {1,LONG_MAX - 1,456,-3,8,12};
+	int arr[] = {10,INT_MAX ,456,-3,8,12};
+	int arr1[] = {10,INT_MAX,456,-3,8,12};
 	long *l_arr = NULL;
 	long *l_arr1 = NULL;
 	printf(" %d ",arr[0]);
@@ -44,16 +44,15 @@ int main(void)
 
 long *SumIntPairsToLongs(int arr[], size_t length)
 {
-	long *l_ptr = (long*)arr;
+	
 	size_t idx = 0;
 
 	for(idx = 0; idx < length; idx += 2)
 	{
-		long new_num = arr[idx];
-		*(long*)&arr[idx] = new_num + arr[idx + 1];
+		*(long *)&arr[idx] = (long)arr[idx] + (long)arr[idx + 1];
 	}
 
-	return l_ptr;
+	return (long *)arr;
 }
 
 long *SumIntPairsToLongs1(int arr[], size_t length)
@@ -66,10 +65,12 @@ long *SumIntPairsToLongs1(int arr[], size_t length)
 		long new_num = arr[idx];
 		arr[idx] = new_num + arr[idx + 1];
 	}
+
 	for(idx = 1; idx < length; idx += 2)
 	{
 		long zero = 0;
 		arr[idx] = zero;
 	}
+	
 	return l_ptr;
 }
