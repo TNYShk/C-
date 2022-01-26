@@ -23,7 +23,7 @@ int IterFibonacci(int element_index)
 	int ans = 1;
 	int x1 = 1, x2 = 1;
 	
-	while(element_index > 2)
+	while(2 < element_index )
 	{
 		ans = x1 + x2;
 		x1 = x2;
@@ -106,14 +106,14 @@ size_t RecStrLen(const char *strq)
 		return 0;
 	}
 
-	return (RecStrLen(++strq) + 1);
+	return (1 + RecStrLen(++strq));
 
 }
 
 int RecStrCmp(const char *s1, const char *s2)
 {
 	
-	if( ( *s1 != *s2) || ( '\0' == *s1)  )
+	if( ( '\0' == *s1) || ( *s1 != *s2) )
 	{
 		return (*s1 - *s2);
 	}
@@ -125,21 +125,22 @@ int RecStrCmp(const char *s1, const char *s2)
 
 char *RecStrCpy(char *dest, const char *src)
 {
-	char *runner = dest;
-
 	assert(NULL != dest);
+	assert(NULL != src);
+
+	*dest = *src;
 
 	if('\0' == *src)
 	{
-		return runner;
+		return dest;
 	}
-	*dest = *src;
-	return RecStrCpy(++dest, ++src);
+	
+	return (RecStrCpy(++dest, ++src) -1);
 }
-
+/*
 char *RecStrCat(char *dest, const char *src)
 {
-	char *runner = dest + strlen(dest);
+	char *runner = dest + RecStrLen(dest);
 	
 	assert(NULL != dest);
 
@@ -148,22 +149,36 @@ char *RecStrCat(char *dest, const char *src)
 		return dest;
 	}
 	*runner = *src;
-	return RecStrCat(++runner, ++src); /*also:  return RecStrCpy(++runner, ++src) */
+	return RecStrCat(++runner, ++src); 
+}*/
+
+char *RecStrCat(char *dest, const char *src)
+{
+	dest += RecStrLen(dest);
+	
+	assert(NULL != dest);
+	assert(NULL != src);
+
+	*dest = *src;
+	return RecStrCpy(++dest , ++src); 
 }
 
 char *RecStrStr(const char *haystack, const char *needle)
 {
 	assert(NULL != haystack);
 
-	if ( '\0' == *haystack)
+	if ('\0' == *haystack)
 	{
 	  	return NULL;
 	}
-     
-   if(!RecStrnCmp(haystack, needle, RecStrLen(needle)))
-   {
-     return (char *)haystack;
-   }
+
+     if (*haystack == *needle)
+     {
+     	if(!RecStrnCmp(haystack, needle, RecStrLen(needle)))
+   		{
+     		return (char *)haystack;
+   		}
+     }
 
    return RecStrStr(++haystack, needle);
 }

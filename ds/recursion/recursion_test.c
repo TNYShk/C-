@@ -26,12 +26,13 @@ static void PrintStack(stack_t *stack);
 
 int main(void)
 {
+	TestFibo();
 	PrintRec(5);
 	printf("\n");
 	TestStringH();
 	
 	printf("\n");
-	TestFibo();
+	
 	TestFlip();
 	
 	TestStack();
@@ -80,8 +81,8 @@ static void TestFibo()
 	printf("\nRecursive(5): %d ",RecFibonacci(5));
 	printf("\nIterative(5): %d ",IterFibonacci(5));
 	printf("\n");
-	printf("\nIterative (20): %d ",IterFibonacci(20));
-	printf("\nRecursive(20): %d ",RecFibonacci(20));
+	printf("\nIterative (45): %d ",IterFibonacci(45));
+	printf("\nRecursive(45): %d ",RecFibonacci(45));
 	printf("\n");
 }
 
