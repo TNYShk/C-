@@ -141,13 +141,10 @@ char *RecStrCpy(char *dest, const char *src)
 }
 
 
-
-
 char *RecStrCat(char *dest, const char *src)
 {
 	size_t len = RecStrLen(dest);
 
-	
 	assert(NULL != src);
 	
 	return (RecStrCpy( (dest + len), src) - len); 
@@ -172,7 +169,7 @@ char *RecStrStr(const char *haystack, const char *needle)
    		}
      }
 
-   return RecStrStr(++haystack, needle);
+   return RecStrStr(haystack + 1, needle);
 }
 
 static int RecStrnCmp(const char *s1, const char *s2, size_t len)
