@@ -60,24 +60,6 @@ node_t *RecFlipList(node_t *head)
 	return new;
 }
 
-static void InSortedStack(stack_t *stack, int val)
-{
-	int peek = 0;
-
-	if ((StackIsEmpty(stack)) || (val <= (*(int *)StackPeek(stack))))
-	{
-		StackPush(stack, &val);
-		return;
-	}
-
-	peek = *(int *)StackPeek(stack);
-	StackPop(stack);
-
-	InSortedStack(stack, val);
-
-	StackPush(stack, &peek);
-
-}
 
 void RecSort(stack_t *stack)
 {
@@ -95,22 +77,37 @@ void RecSort(stack_t *stack)
 
 	RecSort(stack);
 	InSortedStack(stack, peek);
+}
 
+static void InSortedStack(stack_t *stack, int val)
+{
+	
+
+	if (!(StackIsEmpty(stack)) && (val > (*(int *)StackPeek(stack))))
+	{
+		int peek = *(int *)StackPeek(stack);
+		StackPop(stack);
+		
+		InSortedStack(stack, val);
+		
+		StackPush(stack, &peek);
+		return;
+	}
+
+	StackPush(stack, &val);
 }
 
 
 size_t RecStrLen(const char *strq)
 {
-	size_t len = 0;
-
 	assert(NULL != strq);
 
 	if( '\0' == *strq)
 	{
-		return len;
+		return 0;
 	}
 
-	return (RecStrLen(++strq) + (++len));
+	return (RecStrLen(++strq) + 1);
 
 }
 
