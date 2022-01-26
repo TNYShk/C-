@@ -112,7 +112,9 @@ size_t RecStrLen(const char *strq)
 
 int RecStrCmp(const char *s1, const char *s2)
 {
-	
+	assert(NULL != s1);
+	assert(NULL != s2);
+
 	if( ( '\0' == *s1) || ( *s1 != *s2) )
 	{
 		return (*s1 - *s2);
@@ -160,20 +162,21 @@ char *RecStrCat(char *dest, const char *src)
 	assert(NULL != src);
 
 	*dest = *src;
-	return RecStrCpy(++dest , ++src); 
+	return RecStrCpy(dest , src); 
 }
 
 char *RecStrStr(const char *haystack, const char *needle)
 {
 	assert(NULL != haystack);
+	assert(NULL != needle);
 
 	if ('\0' == *haystack)
 	{
 	  	return NULL;
 	}
 
-     if (*haystack == *needle)
-     {
+    if (*haystack == *needle)
+    {
      	if(!RecStrnCmp(haystack, needle, RecStrLen(needle)))
    		{
      		return (char *)haystack;

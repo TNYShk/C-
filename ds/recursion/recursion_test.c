@@ -20,13 +20,17 @@ static void TestStack();
 static void PrintRec(int);
 static char ReverseString(char *input);
 static void PrintStack(stack_t *stack);
-
-
+void TestRecStrCat(void);
+void TestRecStrCpy(void);
 
 
 int main(void)
 {
-	TestFibo();
+	TestStringH();
+	TestRecStrCat();
+	TestRecStrCpy();
+
+	/*TestFibo();
 	PrintRec(5);
 	printf("\n");
 	TestStringH();
@@ -35,7 +39,7 @@ int main(void)
 	
 	TestFlip();
 	
-	TestStack();
+	TestStack();*/
 	return 0;
 }
 
@@ -95,7 +99,7 @@ static void TestStringH()
 	char *haystack = "%$#@!^%";
 	char *needle = "^";
 	printf("\n\t----------------------------Recursive string.h-------------------------------------------\n");
-	
+	space = (char *)calloc(strlen("testing StrCpy and StrCat")+1, sizeof(char));
 	printf("\nI hate strstr\n");
 	ReverseString(" I hate strstr");
 	printf("\n");
@@ -114,7 +118,7 @@ static void TestStringH()
 	printf("rec strcmp: %d\n",RecStrCmp("hell", "help"));
 	printf("strcmp: %d\n",strcmp("hell", "help"));
 	printf("\n");
-	space = (char *)calloc(strlen("testing StrCpy and StrCat")+1, sizeof(char));
+	
 	space1 = (char *)calloc(strlen("testing StrCpy and StrCat")+1, sizeof(char));
 	
 	strcpy(space1,"testing StrCpy");
@@ -213,3 +217,50 @@ static void PrintStack(stack_t *stack)
 	}
 	printf("\n");
 }
+
+void TestRecStrCpy(void)
+{
+	char *src = "Hey Soul Sister";
+	char dest[50] = {0};
+	char *src1 = "123456     654321";
+	char dest1[50] = {0};
+	char *src2 = "Tanya Tanya";
+	char dest2[50] = {0};
+	char *src3 = "@@@ $$$ %";
+	char dest3[50] = {0};
+
+	assert(0 == RecStrCmp(strcpy(dest, src), RecStrCpy(dest, src)));
+	assert(0 == RecStrCmp(strcpy(dest1, src1), RecStrCpy(dest1, src1)));
+	assert(0 == RecStrCmp(strcpy(dest2, src2), RecStrCpy(dest2, src2)));
+	assert(0 == RecStrCmp(strcpy(dest3, src3), RecStrCpy(dest3, src3)));
+
+	printf("\n");
+}
+
+void TestRecStrCat(void)
+{
+	char *src = "Hey Soul Sister";
+	char dest[50] = {'P', 'P', 'P', '\0'};
+	char *src1 = "123456     654321";
+	char dest1[100] = {'h','E', 'l', 'e', 'M', '\0'};
+	char *src2 = "Tanya Tanya";
+	char dest2[100] = {'H', 'e', 'y', '\0'};
+
+	char *src_b = "Hey Soul Sister";
+	char dest_b[50] = {'P', 'P', 'P', '\0'};
+	char *src1_b = "123456     654321";
+	char dest1_b[100] = {'h','E', 'l', 'e', 'M', '\0'};
+	char *src2_b = "Tanya Tanya";
+	char dest2_b[100] = {'H', 'e', 'y', '\0'};
+
+	printf("dest = %s\n", RecStrCat(dest, src));
+	printf("dest = %s\n", RecStrCat(dest1, src1));
+	printf("dest = %s\n", RecStrCat(dest2, src2));
+
+	assert(0 == RecStrCmp(strcat(dest_b, src_b), RecStrCat(dest, src)));
+	assert(0 == RecStrCmp(strcat(dest1_b, src1_b), RecStrCat(dest1, src1)));
+	assert(0 == RecStrCmp(strcat(dest2_b, src2_b), RecStrCat(dest2, src2)));
+
+	printf("\n");
+}
+
