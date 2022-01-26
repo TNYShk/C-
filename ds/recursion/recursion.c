@@ -82,7 +82,6 @@ void RecSort(stack_t *stack)
 static void InSortedStack(stack_t *stack, int val)
 {
 	
-
 	if (!(StackIsEmpty(stack)) && (val > (*(int *)StackPeek(stack))))
 	{
 		int peek = *(int *)StackPeek(stack);
@@ -114,7 +113,7 @@ size_t RecStrLen(const char *strq)
 int RecStrCmp(const char *s1, const char *s2)
 {
 	
-	if(( *s1 != *s2) || ( '\0' == *s1)  )
+	if( ( *s1 != *s2) || ( '\0' == *s1)  )
 	{
 		return (*s1 - *s2);
 	}
@@ -149,7 +148,7 @@ char *RecStrCat(char *dest, const char *src)
 		return dest;
 	}
 	*runner = *src;
-	return RecStrCpy(++runner, ++src); /*also: return RecStrCat(++runner, ++src) */
+	return RecStrCat(++runner, ++src); /*also:  return RecStrCpy(++runner, ++src) */
 }
 
 char *RecStrStr(const char *haystack, const char *needle)
