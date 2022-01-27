@@ -12,7 +12,7 @@
 
 #include "avl.h"
 
-
+#define MAX(a,b) ((a > b)? (a) : (b))
 
 
 typedef enum status
@@ -50,6 +50,11 @@ struct avl
 static void Destroy(avl_node_t *runner);
 static size_t CountNodes(avl_node_t *runner);
 
+static avl_node_t *Createnode(void *data);
+static int InsertNode(avl_node_t *new, void *n_data, avl_cmp_func_t CmpFunc);
+static int HasChildren(avl_node_t *node, int child);
+
+
 avl_t *AVLCreate(avl_cmp_func_t CmpFunc)
 {
     avl_t *tree = NULL;
@@ -63,7 +68,6 @@ avl_t *AVLCreate(avl_cmp_func_t CmpFunc)
     }
 
     tree->cmp_func = CmpFunc;
-    
     
     return tree;
 }
@@ -110,7 +114,6 @@ static size_t CountNodes(avl_node_t *runner)
     
     return (CountNodes(runner->children[RIGHT]) + 1 + (CountNodes(runner->children[LEFT])));
 
-     
 }
 
 size_t AVLSize(const avl_t *avl)
@@ -118,12 +121,10 @@ size_t AVLSize(const avl_t *avl)
     size_t counter = 0;
     assert(NULL != avl);
     
-    
-    
     if (avl->root != NULL)
     {
         avl_node_t *runner = avl->root;
-        counter = CountNodes(runner);
+        return CountNodes(runner);
     }
     return counter;
 }
@@ -140,21 +141,7 @@ static int HasChild(avl_node_t *parent, int child)
     return (NULL != parent->children[child])
 }
 
-static void DestroyNode(avl_node_t *todestroy)
-{
-   avl_node_t *runner = NULL;
 
-   if (runner == NULL)
-   {
-    free(runner);
-   }
-
-   
-   runner = todestroy->children[HasChild(todestroy,RIGHT)];
-   runner = todestroy->children[HasChild(todestroy,LEFT)];
-   DestroyNode(runner);
-
-}
 */
 
 size_t AVLHeight(const avl_t *tree)
@@ -167,7 +154,6 @@ size_t AVLHeight(const avl_t *tree)
 
 
 
-
 int AVLIsEmpty(const avl_t *tree)
 {
     assert(NULL != tree);
@@ -175,13 +161,57 @@ int AVLIsEmpty(const avl_t *tree)
     return (NULL == tree->root);
 }
 
+static avl_node_t *Createnode(void *data)
+{
+    avl_node_t *node = (avl_node_t *)calloc(1,sizeof(avl_node_t));
+    if (NULL == node)
+    {
+        return NULL;
+    }
+    
+    node->data = data;
+    node->height = 1;
+    printf("check\n");
 
+    return node;
+}
+
+static int InsertNode(avl_node_t *new, void *n_data, avl_cmp_func_t CmpFunc)
+{
+    int where = CmpFunc(n_data, new->data);
+
+    int status = FAILURE;
+
+    assert(where != 0);
+
+    if (NULL == new->children[0 < where])
+    {
+        new->children[0 < where] = Createnode(n_data);
+        if (new->children[0 < where] != NULL)
+        {
+            status =  SUCCESS;
+        }
+    }
+    else
+    {
+        
+        status = InsertNode(new->children[0 < where],n_data, CmpFunc);
+    }
+
+    printf("test\n");
+    new->height = 1 + MAX(HasChildren(new,LEFT), HasChildren(new,RIGHT));
+
+    return status;
+}
+
+static int HasChildren(avl_node_t *node, int child)
+{
+   return ( (node->children[child] == NULL) ? 0 : node->children[child]->height);
+}
 
 int AVLInsert(avl_t *tree, void *n_data)
 {  
-    avl_node_t *newnode = NULL;
-    int where = 0;
-
+   
     if(NULL == tree->root)
     {
       tree->root = (avl_node_t*)calloc(1, sizeof(avl_node_t));
@@ -198,12 +228,15 @@ int AVLInsert(avl_t *tree, void *n_data)
     else
     {
         avl_node_t *runner = tree->root;
-        where = tree->cmp_func(tree->root->data, n_data);
 
+        printf("line 236\n");
+
+       return InsertNode(runner,n_data, tree->cmp_func);
 
     }
-    return SUCCESS;
 }
+
+
 
 
 
