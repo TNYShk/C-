@@ -48,7 +48,7 @@ struct avl
 
 
 static void Destroy(avl_node_t *runner);
-
+static size_t CountNodes(avl_node_t *runner);
 
 avl_t *AVLCreate(avl_cmp_func_t CmpFunc)
 {
@@ -63,7 +63,7 @@ avl_t *AVLCreate(avl_cmp_func_t CmpFunc)
     }
 
     tree->cmp_func = CmpFunc;
-    tree->root = NULL;
+    
     
     return tree;
 }
@@ -71,15 +71,12 @@ avl_t *AVLCreate(avl_cmp_func_t CmpFunc)
 
 void AVLDestroy(avl_t *tree)
 {
-    
-    
-    
+
     assert(NULL != tree);
     
     if (tree->root != NULL)
     {
         avl_node_t *runner = tree->root;
-        printf("root data is %d\n", *(int *)runner->data);
         Destroy(runner);
     }
 
@@ -102,6 +99,35 @@ static void Destroy(avl_node_t *runner)
 
     free(runner);
 }
+
+static size_t CountNodes(avl_node_t *runner)
+{
+   
+    if (runner == NULL)
+    {
+        return 0;
+    }
+    
+    return (CountNodes(runner->children[RIGHT]) + 1 + (CountNodes(runner->children[LEFT])));
+
+     
+}
+
+size_t AVLSize(const avl_t *avl)
+{
+    size_t counter = 0;
+    assert(NULL != avl);
+    
+    
+    
+    if (avl->root != NULL)
+    {
+        avl_node_t *runner = avl->root;
+        counter = CountNodes(runner);
+    }
+    return counter;
+}
+
 /*
 static int WhichChild(avl_node_t *parent, avl_node_t *child)
 {
@@ -178,6 +204,8 @@ int AVLInsert(avl_t *tree, void *n_data)
     }
     return SUCCESS;
 }
+
+
 
 
 

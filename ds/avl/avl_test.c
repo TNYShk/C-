@@ -23,9 +23,9 @@ int main(void)
 	avl = AVLCreate(CompareData);
 
 	(1 == AVLIsEmpty(avl)? printf("empty tree!\n"): printf("NOT empty tree!\n") ); 
-
+	printf("node size is %ld\n",AVLSize(avl) );
 	(0 == AVLInsert(avl, &num)? printf("inserted data tree!\n"): printf("Failed!\n") ); 
-	
+	printf("node size is %ld\n",AVLSize(avl) );
 	/*(1 == AVLIsEmpty(avl)? printf("empty tree!\n"): printf("NOT empty tree!\n") ); */
 	printf("tree height is %ld\n", AVLHeight(avl));
 	AVLDestroy(avl);
