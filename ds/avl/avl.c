@@ -53,8 +53,8 @@ static size_t CountNodes(avl_node_t *runner);
 static avl_node_t *CreateNode(void *data);
 static int InsertNode(avl_node_t *new, void *n_data, avl_cmp_func_t CmpFunc);
 static int GetChildHeight(avl_node_t *node, int child);
+static avl_node_t *RecFindNode(avl_node_t *runner, const void *data, avl_cmp_func_t CmpFunc);
 static void *RecFind(avl_node_t *runner, const void *data, avl_cmp_func_t CmpFunc);
-
 
 
 avl_t *AVLCreate(avl_cmp_func_t CmpFunc)
@@ -245,6 +245,7 @@ void *AVLFind(const avl_t *avl, const void *data)
     return RecFind(avl->root, data, avl->cmp_func);
 }
 
+
 static void *RecFind(avl_node_t *runner, const void *data, avl_cmp_func_t CmpFunc)
 {
     int where = CmpFunc(data, runner->data);  
@@ -258,6 +259,46 @@ static void *RecFind(avl_node_t *runner, const void *data, avl_cmp_func_t CmpFun
     return RecFind(runner->children[(0 < where)], data, CmpFunc);
 
 }
+
+
+
+
+/*
+void *AVLFind(const avl_t *avl, const void *data)
+{
+    avl_node_t *where = NULL;
+
+    assert(NULL != avl);
+    assert(NULL != data);
+
+    if (avl->root == NULL)
+    {
+        return NULL;
+    }
+
+    where = RecFindNode(avl->root, data, avl->cmp_func);
+
+    return (NULL == where) ? NULL : where->data;
+}
+
+static avl_node_t *RecFindNode(avl_node_t *runner, const void *data, avl_cmp_func_t CmpFunc)
+{
+    int where = CmpFunc(data, runner->data);  
+
+    if((0 == where) || (runner->children[0 < where] == NULL))
+    {
+        return ((!where) ? (runner) : NULL);
+    }
+
+    
+    return RecFindNode(runner->children[(0 < where)], data, CmpFunc);
+
+}
+
+*/
+
+
+
 
 
 
