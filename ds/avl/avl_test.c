@@ -20,24 +20,35 @@ int CompareData(const void *left, const void *right);
 int main(void)
 {
 	avl_t *avl = NULL;
-	int num = 10;
+	int num = 6;
 	int num2 = 8;
 	int num3 = 5;
-	
+	int num4 = 10;
+	int num5 = 11;
 	avl = AVLCreate(CompareData);
 	
 	(1 == AVLIsEmpty(avl)? printf("empty tree!\n"): printf("NOT empty tree!\n") ); 
 	printf("node size is %ld\n",AVLSize(avl) );
 	(0 == AVLInsert(avl, &num)? printf("inserted data tree!\n"): printf("Failed!\n") ); 
 	(1 == AVLIsEmpty(avl)? printf("empty tree!\n"): printf("NOT empty tree!\n") );
-	printf("size is %ld\n",AVLSize(avl) );
+	printf("size or tree is %ld\n",AVLSize(avl) );
 	(0 == AVLInsert(avl, &num2)? printf("inserted data tree!\n"): printf("Failed!\n") ); 
-	printf("node size is %ld\n",AVLSize(avl) );
-	/*(1 == AVLIsEmpty(avl)? printf("empty tree!\n"): printf("NOT empty tree!\n") ); */
 	printf("tree height is %ld\n", AVLHeight(avl));
-	
+	printf("nodes in tree %ld\n",AVLSize(avl) );
+
+	(1 == AVLIsEmpty(avl)? printf("empty tree!\n"): printf("NOT empty tree!\n") ); 
+	(0 == AVLInsert(avl, &num3)? printf("inserted data tree!\n"): printf("Failed!\n") ); 
+	printf("tree height is %ld\n", AVLHeight(avl));
+	printf("size of tree is %ld\n",AVLSize(avl));
+	(0 == AVLInsert(avl, &num4)? printf("inserted data tree!\n"): printf("Failed!\n") ); 
+	printf("\ntree height is %ld\n", AVLHeight(avl));
+	printf("size of tree is %ld\n",AVLSize(avl) );
+	assert(NULL == AVLFind(avl, &num5));
+	assert(&num4 == AVLFind(avl, &num4));
+	(1 == AVLIsEmpty(avl)? printf("empty tree!\n"): printf("NOT empty tree!\n") );
 	AVLDestroy(avl);
-	/*(1 == AVLIsEmpty(avl)? printf("empty tree!\n"): printf("NOT empty tree!\n") ); */
+	
+	/* */
 
 	return 0;
 }
