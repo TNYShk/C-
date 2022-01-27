@@ -8,8 +8,12 @@
 #include <assert.h> /* assert */
 #include <stdlib.h> /* malloc */
 #include <string.h> /* memmove */
+#include <stdio.h>
 
 #include "avl.h"
+
+
+
 
 typedef enum status
 {
@@ -36,41 +40,102 @@ struct avl_node
 };
 
 
-typedef struct avl
+struct avl
 {
-   avl_node *root;  
-   avl_cmp_func_t cmp_func;
-   
-}avl_t;
+    avl_node_t *root;
+    avl_cmp_func_t cmp_func;
+};
+
+
+static void Destroy(avl_node_t *runner);
 
 
 avl_t *AVLCreate(avl_cmp_func_t CmpFunc)
 {
     avl_t *tree = NULL;
 
-    assert(NULL != cmp_func);
+    assert(NULL != CmpFunc);
 
-    tree = (avl_t *)calloc(NUM_OF_CHILDREN, sizeof(avl_t));
+    tree = (avl_t *)calloc(1,sizeof(avl_t));
     if (NULL == tree)
     {
         return NULL;
     }
 
     tree->cmp_func = CmpFunc;
-
+    tree->root = NULL;
+    
     return tree;
 }
 
+
 void AVLDestroy(avl_t *tree)
 {
+    
+    
+    
     assert(NULL != tree);
+    
+    if (tree->root != NULL)
+    {
+        avl_node_t *runner = tree->root;
+        printf("root data is %d\n", *(int *)runner->data);
+        Destroy(runner);
+    }
+
+    free(tree);
+    
 }
 
-size_t AVLSize(const avl_t *tree)
+static void Destroy(avl_node_t *runner)
+{
+    if (runner == NULL)
+    {
+        return;
+    }
+    
+    Destroy(runner->children[RIGHT]);
+    Destroy(runner->children[LEFT]);
+    
+    printf("deleted node with data %d\n", *(int *)runner->data);
+    
+
+    free(runner);
+}
+/*
+static int WhichChild(avl_node_t *parent, avl_node_t *child)
+{
+    return (child == parent->children[RIGHT])
+}
+
+
+static int HasChild(avl_node_t *parent, int child)
+{
+    return (NULL != parent->children[child])
+}
+
+static void DestroyNode(avl_node_t *todestroy)
+{
+   avl_node_t *runner = NULL;
+
+   if (runner == NULL)
+   {
+    free(runner);
+   }
+
+   
+   runner = todestroy->children[HasChild(todestroy,RIGHT)];
+   runner = todestroy->children[HasChild(todestroy,LEFT)];
+   DestroyNode(runner);
+
+}
+*/
+
+size_t AVLHeight(const avl_t *tree)
 {
     assert(NULL != tree);
 
-    return (tree->root->height);
+    return (0 == AVLIsEmpty(tree)? tree->root->height : 0 );
 }
 
 
@@ -81,39 +146,44 @@ int AVLIsEmpty(const avl_t *tree)
 {
     assert(NULL != tree);
 
-    return (NULL == tree->root)
+    return (NULL == tree->root);
 }
 
 
 
 int AVLInsert(avl_t *tree, void *n_data)
-{   
+{  
+    avl_node_t *newnode = NULL;
+    int where = 0;
+
     if(NULL == tree->root)
     {
-        avl_node_t *new = NULL;
-        new = (avl_node_t*)calloc(1,sizeof(avl_node_t));
-        if(NULL == new)
-        {
-            return FAILURE;
-        }
-        if (InitNode(new,n_data))
-        {
-            tree->root = new;
-            tree->root->height += 1;
+      tree->root = (avl_node_t*)calloc(1, sizeof(avl_node_t));
+      if(tree->root == NULL)
+      {
+        return FAILURE;
+      }
+        
+      tree->root->data = n_data;
+      tree->root->height += 1;
 
-            return SUCCESS;
-        }
+      return SUCCESS;
     }
-    if (tree->CmpFunc(n_data, data))
+    else
+    {
+        avl_node_t *runner = tree->root;
+        where = tree->cmp_func(tree->root->data, n_data);
+
+
+    }
+    return SUCCESS;
 }
 
 
 
-static int InitNode(avl_node_t *new, void n_data)
-{
-   
-    new->data = n_data;
-   
-    return TRUES;
-}
+
+
+
+
+
 

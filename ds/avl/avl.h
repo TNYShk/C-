@@ -1,11 +1,10 @@
-/**********************************\
-* Recursive Binary Search Tree     *
-* Developer:                       *
-* Written: 2021-1-26               *
-*                                  *
-* Reviewer:                        *
-\**********************************/
-
+/***********************************************
+ * Recursive Balanced Binary Search Tree (AVL) *
+ * Developer:                                  *
+ * Written: 2021-01-26                         *
+ *                                             *
+ * Reviewer:                                   *
+ **********************************************/
 #ifndef __AVL_H__
 #define __AVL_H__
 
@@ -13,7 +12,7 @@
 
 typedef struct avl avl_t;
 
-typedef int (*avl_cmp_func_t)(const void *data1, const void *data2);
+typedef int (*avl_cmp_func_t)(const void *left, const void *right);
 typedef int (*avl_action_func_t)(void *data, void *param);
 
 typedef enum traversal_order
@@ -23,77 +22,56 @@ typedef enum traversal_order
     POST_ORDER
 } order_t;
 
-/*
-
-typdef struct avl
-{
-   avl_node *root  
-   avl_cmp_func_t cmp_func
-   
-} avl_t;
-
+/**
 enum children
 {
     LEFT,
     RIGHT,
-    NUM_OF_CHILDREN
+    NUM_CHILDREN
 };
 
+typedef struct avl_node avl_node_t;
 struct avl_node
 {
     void *data;
-    size_t height  
-    avl_node_t *children[NUM_OF_CHILDREN];
+    size_t height; // height of a leaf is 1.
+    avl_node_t *children[NUM_CHILDREN];
 };
 
+struct avl
+{
+    avl_node_t *root;
+    avl_cmp_func_t cmp_func;
+};
 */
 
-/* 
- * time complexity: O(1), space complexity O(1)
- */
+/* Complexity: O(1) time, O(1) space. */
 avl_t *AVLCreate(avl_cmp_func_t cmp_func);
 
-/* 
- * time complexity: O(n), avg space complexity O(log n)
- */
-void AVLDestroy(avl_t *tree);
+/* Complexity: O(n) time, O(log n) average space. */
+void AVLDestroy(avl_t *avl);
 
-/* 
- * time complexity: O(n), avg space complexity O(log n)
- */
-size_t AVLSize(const avl_t *tree);
+/* Complexity: O(n) time, O(log n) average space. */
+size_t AVLSize(const avl_t *avl);
 
-/* 
- * time complexity: O(1), space complexity O(1)
- * boolean int
- */
-int AVLIsEmpty(const avl_t *tree);
+/* Complexity: O(1) time, O(1) space. */
+int AVLIsEmpty(const avl_t *avl);
 
-/* 
- * avg time complexity: O(log n), avg space complexity O(log n)
- * status int
- */
-int AVLInsert(avl_t *tree, void *data);
+/* Complexity: O(log n) average time, O(log n) average space. */
+int AVLInsert(avl_t *avl, void *data);
 
-/* 
- * avg time complexity: O(log n), avg space complexity O(log n)
- */
-void AVLRemove(avl_t *tree, const void *data);
+/* Complexity: O(log n) average time, O(log n) average space. */
+void AVLRemove(avl_t *avl, const void *data);
 
-/*
- * time complexity: O(1), space complexity O(1)
- */
-size_t AVLHeight(const avl_t *tree);
+/* Complexity: O(1) time, O(1) space. */
+/* Height of an empty tree is 0. Height of a non empty tree with only one node is 1. */
+size_t AVLHeight(const avl_t *avl);
 
-/* 
- * avg time complexity: O(log n), avg space complexity O(log n)
- */
-void *AVLFind(const avl_t *tree, const void *data_to_find);
+/* Complexity: O(log n) average time, O(log n) average space. */
+void *AVLFind(const avl_t *avl, const void *data);
 
-/* 
- * time complexity: O(n), space complexity O(1)
- */
-int AVLForEach(avl_t *tree, avl_action_func_t 
-                action_func, void *param, order_t order);
+/* Complexity: O(n) time, O(log n) average space. */
+int AVLForEach(avl_t *avl, avl_action_func_t action_func, 
+    void *param, order_t order);
 
 #endif /* __AVL_H__ */
