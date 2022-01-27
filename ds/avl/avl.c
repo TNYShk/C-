@@ -31,6 +31,7 @@ enum children
 };
 
 typedef struct avl_node avl_node_t;
+typedef int (*forEachFunc)(avl_node_t *tree, avl_action_func_t action, void *param);
 
 struct avl_node
 {
@@ -47,6 +48,7 @@ struct avl
 };
 
 
+
 static void Destroy(avl_node_t *runner);
 static size_t CountNodes(avl_node_t *runner);
 
@@ -56,6 +58,9 @@ static int GetChildHeight(avl_node_t *node, int child);
 static avl_node_t *RecFindNode(avl_node_t *runner, const void *data, avl_cmp_func_t CmpFunc);
 static void *RecFind(avl_node_t *runner, const void *data, avl_cmp_func_t CmpFunc);
 
+static int ForEachPreOrder(avl_node_t *node, avl_action_func_t action_func, void *param);
+static int ForEachInOrder(avl_node_t *node, avl_action_func_t action_func, void *param);
+static int ForEachPostOrder(avl_node_t *node, avl_action_func_t action_func, void *param);
 
 avl_t *AVLCreate(avl_cmp_func_t CmpFunc)
 {
@@ -155,8 +160,6 @@ void AVLRemove(avl_t *avl, const void *data)
 
     
 }
-
-
 
 
 static avl_node_t *CreateNode(void *data)
@@ -260,6 +263,20 @@ static void *RecFind(avl_node_t *runner, const void *data, avl_cmp_func_t CmpFun
 
 }
 
+int AVLForEach(avl_t *avl, avl_action_func_t action_func, void *param, order_t order)
+{
+
+    const forEachFunc forEachLut[] = {ForEachPreOrder, ForEachInOrder, ForEachPostOrder};
+    assert(NULL != avl);
+    assert(NULL != action_func);
+    assert(NULL != param);
+    assert(3 >= order);
+
+    return forEachLut[order](avl->root, action_func, param);
+}
+
+
+
 
 
 
@@ -298,8 +315,52 @@ static avl_node_t *RecFindNode(avl_node_t *runner, const void *data, avl_cmp_fun
 */
 
 
+static int ForEachPreOrder(avl_node_t *node, avl_action_func_t action_func, void *param)
+{
+    int status = SUCCESS;
 
+    
+    if ((NULL == node) || (status != SUCCESS) )
+    {
+        return status;
+    }
+    status  += action_func(node->data, param);
+    status += (ForEachPreOrder(node->children[LEFT], action_func, param) +
+            ForEachPreOrder(node->children[RIGHT], action_func, param));
+    return (status != 0); 
+}
 
+static int ForEachInOrder(avl_node_t *node, avl_action_func_t action_func, void *param)
+{
+    int status = SUCCESS;
+
+    if ((NULL == node) || (status != SUCCESS) )
+    {
+        return status;
+    }
+    status += ForEachInOrder(node->children[LEFT], action_func, param);
+    status  += action_func(node->data, param);
+    status += ForEachInOrder(node->children[RIGHT], action_func, param);
+
+    return (status != 0); 
+
+}
+
+static int ForEachPostOrder(avl_node_t *node, avl_action_func_t action_func, void *param)
+{
+    int status = SUCCESS;
+
+    if ((NULL == node) || (status != SUCCESS) )
+    {
+        return status;
+    }
+    status += ForEachPostOrder(node->children[LEFT], action_func, param);
+    status += ForEachPostOrder(node->children[RIGHT], action_func, param);
+    status  += action_func(node->data, param);
+
+    return (status != 0); 
+
+}
 
 
 
