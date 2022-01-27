@@ -320,27 +320,27 @@ static int ForEachPreOrder(avl_node_t *node, avl_action_func_t action_func, void
     int status = SUCCESS;
 
     
-    if ((NULL == node) || (status != SUCCESS) )
+    if ((NULL == node) )
     {
         return status;
     }
-    status  += action_func(node->data, param);
-    status += (ForEachPreOrder(node->children[LEFT], action_func, param) +
-            ForEachPreOrder(node->children[RIGHT], action_func, param));
-    return (status != 0); 
+   (void)(status || (status  += action_func(node->data, param)));
+    return (status || (ForEachPreOrder(node->children[LEFT], action_func, param) +
+            ForEachPreOrder(node->children[RIGHT], action_func, param)));
+    
 }
 
 static int ForEachInOrder(avl_node_t *node, avl_action_func_t action_func, void *param)
 {
     int status = SUCCESS;
 
-    if ((NULL == node) || (status != SUCCESS) )
+    if (NULL == node)  
     {
         return status;
     }
-    status += ForEachInOrder(node->children[LEFT], action_func, param);
-    status  += action_func(node->data, param);
-    status += ForEachInOrder(node->children[RIGHT], action_func, param);
+    (void)(status || (status += ForEachInOrder(node->children[LEFT], action_func, param)));
+    (void)(status || (status  += action_func(node->data, param)));
+    (void)(status || (status += ForEachInOrder(node->children[RIGHT], action_func, param)));
 
     return (status != 0); 
 
@@ -350,13 +350,13 @@ static int ForEachPostOrder(avl_node_t *node, avl_action_func_t action_func, voi
 {
     int status = SUCCESS;
 
-    if ((NULL == node) || (status != SUCCESS) )
+    if (NULL == node) 
     {
         return status;
     }
-    status += ForEachPostOrder(node->children[LEFT], action_func, param);
-    status += ForEachPostOrder(node->children[RIGHT], action_func, param);
-    status  += action_func(node->data, param);
+    (void)(status ||(status += (ForEachPostOrder(node->children[LEFT], action_func, param) + ForEachPostOrder(node->children[RIGHT], action_func, param))));
+    
+    (void)(status ||(status  += action_func(node->data, param)));
 
     return (status != 0); 
 

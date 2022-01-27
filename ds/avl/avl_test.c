@@ -16,6 +16,7 @@
 
 int CompareData(const void *left, const void *right);
 int PrintNodes(void *data, void *param);
+int DontPrintNodes(void *data, void *param);
 
 int main(void)
 {
@@ -46,17 +47,17 @@ int main(void)
 	assert(NULL == AVLFind(avl, &num5));
 	assert(&num4 == AVLFind(avl, &num4));
 	(1 == AVLIsEmpty(avl)? printf("empty tree!\n"): printf("NOT empty tree!\n") );
-
-	printf("\n Pre Order\n");
-	AVLForEach(avl, PrintNodes, &num5,PRE_ORDER);
+	printf("\nForEach Tests: stops once status changes\n");
+	printf("Pre Order\n");
+	assert(1 == AVLForEach(avl, DontPrintNodes, &num, IN_ORDER));
 	printf("\n In Order\n");
-	AVLForEach(avl, PrintNodes, &num5,IN_ORDER);
+	AVLForEach(avl, PrintNodes, &num, PRE_ORDER );
 	printf("\n Post Order\n");
-	AVLForEach(avl, PrintNodes, &num5,POST_ORDER);
+	AVLForEach(avl, PrintNodes, &num,POST_ORDER);
 	printf("\n \n");
 	AVLDestroy(avl);
 	
-	/* */
+	
 
 	return 0;
 }
@@ -74,3 +75,13 @@ int PrintNodes(void *data, void *param)
 
 	 return 0;
 }
+
+int DontPrintNodes(void *data, void *param)
+{
+	 printf("Root: %d \n", (*(int*)param));
+	 printf("Node: %d ", (*(int*)data));
+	 
+
+	 return -1;
+}
+
