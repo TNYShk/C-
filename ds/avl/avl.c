@@ -66,7 +66,7 @@ static avl_node_t *MinNode(avl_t *tree);
 static avl_node_t *GetMinNode(avl_node_t *runner);
 static avl_node_t *DeleteNode(avl_node_t *runner, void *data_to_remove, avl_cmp_func_t CmpFunc);
 
-
+static int ActionCounter(void *data, void *param);
 
 avl_t *AVLCreate(avl_cmp_func_t CmpFunc)
 {
@@ -117,16 +117,6 @@ static void Destroy(avl_node_t *runner)
     free(runner);
 }
 
-static size_t CountNodes(avl_node_t *runner)
-{
-    if (runner == NULL)
-    {
-        return 0;
-    }
-    
-    return (CountNodes(runner->children[RIGHT]) + 1 + (CountNodes(runner->children[LEFT])));
-
-}
 
 size_t AVLSize(const avl_t *avl)
 {
@@ -136,12 +126,12 @@ size_t AVLSize(const avl_t *avl)
     
     if (avl->root != NULL)
     {
-        avl_node_t *runner = avl->root;
-
-        return CountNodes(runner);
+        AVLForEach((avl_t*)avl, ActionCounter, &counter, IN_ORDER);
     }
     return counter;
 }
+
+
 
 
 size_t AVLHeight(const avl_t *tree)
@@ -152,14 +142,13 @@ size_t AVLHeight(const avl_t *tree)
 }
 
 
-
-
 int AVLIsEmpty(const avl_t *tree)
 {
     assert(NULL != tree);
 
     return (NULL == tree->root);
 }
+
 
 void AVLRemove(avl_t *tree, const void *data)
 {
@@ -172,7 +161,6 @@ void AVLRemove(avl_t *tree, const void *data)
        tree->root = DeleteNode(tree->root, (void*)data, tree->cmp_func);
     } 
 }
-
 
 
 static avl_node_t *DeleteNode(avl_node_t *root, void *data2remove, avl_cmp_func_t CmpFunc)
@@ -333,51 +321,10 @@ int AVLForEach(avl_t *avl, avl_action_func_t action_func, void *param, order_t o
     return forEachLut[order](avl->root, action_func, param);
 }
 
-
-
-
-
-
-/*
-void *AVLFind(const avl_t *avl, const void *data)
-{
-    avl_node_t *where = NULL;
-
-    assert(NULL != avl);
-    assert(NULL != data);
-
-    if (avl->root == NULL)
-    {
-        return NULL;
-    }
-
-    where = RecFindNode(avl->root, data, avl->cmp_func);
-
-    return (NULL == where) ? NULL : where->data;
-}
-*/
-static avl_node_t *RecFindNode(avl_node_t *runner, const void *data, avl_cmp_func_t CmpFunc)
-{
-    int where = CmpFunc(data, runner->data);  
-
-    if((0 == where) || (runner->children[0 < where] == NULL))
-    {
-        return ((!where) ? (runner) : NULL);
-    }
-
-    
-    return RecFindNode(runner->children[(0 < where)], data, CmpFunc);
-
-}
-
-
-
-
 static int ForEachPreOrder(avl_node_t *node, avl_action_func_t action_func, void *param)
 {
     int status = SUCCESS;
 
-    
     if ((NULL == node) )
     {
         return status;
@@ -421,13 +368,70 @@ static int ForEachPostOrder(avl_node_t *node, avl_action_func_t action_func, voi
 
 }
 
+
+
+
+
+/*
+size_t AVLSize(const avl_t *avl)
+{
+    size_t counter = 0;
+
+    assert(NULL != avl);
+    
+    if (avl->root != NULL)
+    {
+        avl_node_t *runner = avl->root;
+
+        return CountNodes(runner);
+    }
+    return counter;
+}
+
+
+
+void *AVLFind(const avl_t *avl, const void *data)
+{
+    avl_node_t *where = NULL;
+
+    assert(NULL != avl);
+    assert(NULL != data);
+
+    if (avl->root == NULL)
+    {
+        return NULL;
+    }
+
+    where = RecFindNode(avl->root, data, avl->cmp_func);
+
+    return (NULL == where) ? NULL : where->data;
+}
+*/
+static avl_node_t *RecFindNode(avl_node_t *runner, const void *data, avl_cmp_func_t CmpFunc)
+{
+    int where = CmpFunc(data, runner->data);  
+
+    if((0 == where) || (runner->children[0 < where] == NULL))
+    {
+        return ((!where) ? (runner) : NULL);
+    }
+
+    return RecFindNode(runner->children[(0 < where)], data, CmpFunc);
+
+}
+
+
+
+
 static avl_node_t *MinNode(avl_t *tree)
 {
     avl_node_t *runner = NULL;
 
     assert(NULL != tree);
+    assert(NULL != tree->root);
 
     runner = tree->root;
+
     if(!AVLIsEmpty(tree))
     {
         return GetMinNode(runner);
@@ -446,9 +450,24 @@ static avl_node_t *GetMinNode(avl_node_t *runner)
     return runner;
 }
 
+static size_t CountNodes(avl_node_t *runner)
+{
+    if (runner == NULL)
+    {
+        return 0;
+    }
+    
+    return (CountNodes(runner->children[RIGHT]) + 1 + (CountNodes(runner->children[LEFT])));
 
+}
 
+static int ActionCounter(void *data, void *param)
+{
+    ++(*(size_t *)param);
+    (void)data;
 
+    return SUCCESS;
+}
 
 
 
