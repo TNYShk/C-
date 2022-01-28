@@ -28,21 +28,26 @@ int main(void)
 static void TestCalcStatus()
 {
 	double result  = 666666666.66666666;
+	int status = -9;
 	printf("\n---------------Calc Status Test-ERRORS----------\n\n");
 	assert(Calculator("(5.4)", &result) ==  CALC_SUCCESS);
 	printf("(5.4), calculation result: %f\n", result);
 	assert(Calculator("5.4 # 66.6 -5 *2", &result) ==  CALC_SYNTAX_ERROR);
-	printf("5.4 #66.6 -5 *2\n");
+	printf("calc status of: 5.4 # 66.6 -5 *2 is: %d\n",Calculator("5.4 # 66.6 -5 *2", &result));
+	
 	assert(Calculator("5.4@+@*66.6)", &result) ==  CALC_SYNTAX_ERROR);
 	printf("5.4@+@*66.6)\n");
-	assert(Calculator("(5.4+*66.6)", &result) ==  CALC_SYNTAX_ERROR);
+	assert(Calculator("(5.4+*66.6)", &result) ==  CALC_MATH_ERROR);
 	printf("(5.4+*66.6)\n");
-	assert(Calculator("{(5.4+*66.6)", &result) ==  CALC_SYNTAX_ERROR);
+	assert(Calculator("{(5.4+*66.6)", &result) ==  CALC_MATH_ERROR);
 	printf("{(5.4+*66.6)\n");
-	assert(Calculator("5.4+@*66.6)", &result) ==  CALC_SYNTAX_ERROR);
-	printf("5.4+@*66.6)\n");
-	assert(Calculator("1+0/0",&result) != CALC_MATH_ERROR);
-	printf("1+0/0\n");
+	assert(Calculator("5.4@+*66.6)", &result) ==  CALC_SYNTAX_ERROR);
+	printf("5.4@+*66.6)\n");
+	printf("status of 1+(5/0) is %d\n",Calculator("1+(5/0)",&result));
+	assert(Calculator("1+(5/0)",&result) == CALC_MATH_ERROR);
+	assert(Calculator("5/0",&result) == CALC_MATH_ERROR);
+	printf("status of 5/0: %d\n",Calculator("5/0",&result));
+	
 	assert(Calculator("[1+0/0@",&result) == CALC_SYNTAX_ERROR);
 	printf("[1+0/0@\n");
 
