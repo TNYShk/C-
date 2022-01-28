@@ -7,7 +7,7 @@
 \**********************************/
 #include <stdio.h>    /* printf */
 #include <assert.h> /* assert */
-#include <math.h> /* power fabs */
+
 #include <stdlib.h> /*memory allocation & free */
 #include <string.h> /* testing strlen, strcmp, strstr*/
 
@@ -24,6 +24,12 @@ void SizeHeight();
 
 int main(void)
 {
+	CreateDestroy();
+	SizeHeight();
+
+	
+
+	/*
 	avl_t *avl = NULL;
 	int num = 6;
 	int num2 = 8;
@@ -31,8 +37,6 @@ int main(void)
 	int num4 = 10;
 	int num5 = 11;
 
-	CreateDestroy();
-	SizeHeight();
 	avl = AVLCreate(CompareData);
 	
 	(1 == AVLIsEmpty(avl)? printf("empty tree!\n"): printf("NOT empty tree!\n") ); 
@@ -65,7 +69,7 @@ int main(void)
 	AVLDestroy(avl);
 	
 	
-
+*/
 	return 0;
 }
 
@@ -77,7 +81,7 @@ void CreateDestroy()
 	int num = 6;
 	int num2 = 18;
 	int num3 = 5;
-	int num4 = 10;
+	int num4 = 4;
 	int num5 = 11;
 	int num6 = 110;
 
@@ -97,6 +101,14 @@ void CreateDestroy()
 	assert(0 == AVLInsert(avl, &num6));
 	assert(6 == AVLSize(avl));
 	assert(0 == AVLForEach(avl, PrintNodes, &num, IN_ORDER));
+	printf("\nsize of tree is %ld\n",AVLSize(avl) );
+	printf("\ntree height is %ld\n", AVLHeight(avl));
+	AVLRemove(avl, &num6);
+	AVLRemove(avl, &num4);
+	AVLRemove(avl, &num5);
+	printf("\npost removal - size of tree is %ld\n",AVLSize(avl) );
+	printf("\npost removal - tree height is %ld\n", AVLHeight(avl));
+	AVLForEach(avl, PrintNodes, &num, IN_ORDER);
 	AVLDestroy(avl);
 
 	printf("\n\tCreate & Destroy & IsEmpty PASSED\n");
