@@ -15,13 +15,13 @@ TARGET := a.out
 	sed -i 's/^typedef.*//g ; s/);/)\n{\n    \n}/g' $@ 
 	sed -i '/./{H;$!d} ; x ; s/\/\*.*\*\///g' $@
 
-bst.o: ../../ds/bst/bst.c ../../ds/include/stack.h | ../../ds/bst
+bst.o: ../../ds/bst/bst.c ../../ds/include/stack.h | ../../ds/bst/
 	$(COMPILE.c) $< -o $@
 	
 queue.o: ../../ds/queue/queue.c ../../ds/include/queue.h | ../../ds/include
 	$(COMPILE.c) $< -o $@
 
-sll.o: ../../ds/sll/sll.c ../../ds/include/sll.h | ../../ds/sll
+sll.o: ../../ds/sll/sll.c ../../ds/include/sll.h | ../../ds/include
 	$(COMPILE.c) $< -o $@
 
 $(TARGET): $(OBJS)

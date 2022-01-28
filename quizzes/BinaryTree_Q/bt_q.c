@@ -48,11 +48,11 @@ int main()
 	bst_t *tree = BSTCreate(CompareData);
 	queue_t *qt = QueueCreate();
    
-    int data = 4;
-    int data1 = 5;
-    int data2 = 2;
-    int data3 = 3;
-    int data4 = 1;
+    int data = 'A';
+    int data1 = 'B';
+    int data2 = 'C';
+    int data3 = 'D';
+    int data4 = 'E';
 
    	BSTInsert(tree, &data);
     BSTInsert(tree, &data1);
@@ -90,7 +90,7 @@ void LevelBLevelPrint(bst_t *tree, queue_t *queue)
 			{
 				QueueEnqueue(queue, runner->children[RIGHT]);
 			}
-			printf("%d ,", *(int *)BSTGetData(runner));
+			printf("%c ,", *(char *)BSTGetData(runner));
 			QueueDequeue(queue);
 		}
 		printf("\n");
@@ -112,8 +112,8 @@ int CompareData(const void *left, const void *right)
 int PrinterFunc(void *data, void *param)
 {
    
-    printf("BST Root %d ", (*(int*)param));
-    printf("Node: %d\n", (*(int*)data));
+    printf("BST Root %c ", (*(char*)param));
+    printf("Node: %c\n", (*(char*)data));
     
    
     return 0;
