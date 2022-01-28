@@ -84,7 +84,7 @@ void CreateDestroy()
 	int num4 = 4;
 	int num5 = 11;
 	int num6 = 110;
-
+	int num7 = 111;
 	printf("\n\tCreate & Destroy Tests\n");	
 	avl1 = AVLCreate(CompareData);
 	assert(1 == AVLIsEmpty(avl1));
@@ -106,6 +106,10 @@ void CreateDestroy()
 	AVLRemove(avl, &num6);
 	AVLRemove(avl, &num4);
 	AVLRemove(avl, &num5);
+	AVLRemove(avl, &num7);
+	AVLRemove(avl, &num2);
+	AVLRemove(avl, &num3);
+	AVLRemove(avl, &num);
 	printf("\npost removal - size of tree is %ld\n",AVLSize(avl) );
 	printf("\npost removal - tree height is %ld\n", AVLHeight(avl));
 	AVLForEach(avl, PrintNodes, &num, IN_ORDER);
@@ -163,8 +167,9 @@ int CompareData(const void *left, const void *right)
 
 int PrintNodes(void *data, void *param)
 {
-	 printf("Node: %d ", (*(int*)data));
-	 (void)param;
+	printf("Node: %d ", (*(int*)data));
+
+	(void)param;
 
 	 return 0;
 }

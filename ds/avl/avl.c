@@ -178,11 +178,6 @@ static avl_node_t *DeleteNode(avl_node_t *root, void *data2remove, avl_cmp_func_
 {
     int where = CmpFunc(data2remove, root->data);
    
-    if (NULL == root)
-    {
-        return root;
-    }
-    
     if(where != 0)
     {
         root->children[0 < where] = DeleteNode(root->children[0 < where], data2remove, CmpFunc);
@@ -190,7 +185,7 @@ static avl_node_t *DeleteNode(avl_node_t *root, void *data2remove, avl_cmp_func_
     
     else
     {
-
+        /* node-to-remove has 0-1 children*/
         if( (NULL == root->children[LEFT]) || (NULL == root->children[RIGHT]))
         {
             avl_node_t *runner = root->children[LEFT]? root->children[LEFT] : root->children[RIGHT];
@@ -202,8 +197,9 @@ static avl_node_t *DeleteNode(avl_node_t *root, void *data2remove, avl_cmp_func_
             }
             else
             {
-                root->data = runner->data; /* void data is the 1st element of the struct avl node*/
+                root->data = runner->data; 
             }
+
             free(runner);
         }
         else
@@ -222,7 +218,7 @@ static avl_node_t *DeleteNode(avl_node_t *root, void *data2remove, avl_cmp_func_
     }
 
     root->height = ( 1 + MAX(GetChildHeight(root,LEFT), GetChildHeight(root,RIGHT)));
-    printf("line 212\n");
+    
     return root;
 }
 
@@ -323,7 +319,6 @@ static void *RecFind(avl_node_t *runner, const void *data, avl_cmp_func_t CmpFun
         return ((!where) ? (runner->data) : NULL);
     }
 
-    
     return RecFind(runner->children[(0 < where)], data, CmpFunc);
 
 }
