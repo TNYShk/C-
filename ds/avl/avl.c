@@ -66,6 +66,8 @@ static avl_node_t *MinNode(avl_t *tree);
 static avl_node_t *GetMinNode(avl_node_t *runner);
 static avl_node_t *DeleteNode(avl_node_t *runner, void *data_to_remove, avl_cmp_func_t CmpFunc);
 
+
+
 avl_t *AVLCreate(avl_cmp_func_t CmpFunc)
 {
     avl_t *tree = NULL;
@@ -165,11 +167,10 @@ void AVLRemove(avl_t *tree, const void *data)
     assert(NULL != tree);
 
     runner = RecFindNode(tree->root, data, tree->cmp_func);
-   if (NULL != runner)
-   {
+    if (NULL != runner)
+    {
        tree->root = DeleteNode(tree->root, (void*)data, tree->cmp_func);
-   } 
-
+    } 
 }
 
 
@@ -258,7 +259,7 @@ static int InsertNode(avl_node_t *new, void *n_data, avl_cmp_func_t CmpFunc)
         status = InsertNode(new->children[0 < where],n_data, CmpFunc);
     }
 
-    new->height =( 1 + MAX(GetChildHeight(new,LEFT), GetChildHeight(new,RIGHT)));
+    new->height = ( 1 + MAX(GetChildHeight(new,LEFT), GetChildHeight(new,RIGHT)));
 
     return status;
 }
@@ -274,14 +275,11 @@ int AVLInsert(avl_t *tree, void *n_data)
    
     if(NULL == tree->root)
     {
-      tree->root = (avl_node_t*)calloc(1, sizeof(avl_node_t));
+      tree->root = CreateNode(n_data);
       if(tree->root == NULL)
       {
         return FAILURE;
       }
-        
-      tree->root->data = n_data;
-      tree->root->height = 1;
 
       return SUCCESS;
     }
@@ -314,7 +312,7 @@ static void *RecFind(avl_node_t *runner, const void *data, avl_cmp_func_t CmpFun
 {
     int where = CmpFunc(data, runner->data);  
 
-    if((0 == where) || (runner->children[0 < where] == NULL))
+    if ( (0 == where) || (runner->children[0 < where] == NULL) )
     {
         return ((!where) ? (runner->data) : NULL);
     }
@@ -327,9 +325,9 @@ int AVLForEach(avl_t *avl, avl_action_func_t action_func, void *param, order_t o
 {
 
     const forEachFunc forEachLut[] = {ForEachPreOrder, ForEachInOrder, ForEachPostOrder};
+
     assert(NULL != avl);
     assert(NULL != action_func);
-    assert(NULL != param);
     assert(3 >= order);
 
     return forEachLut[order](avl->root, action_func, param);
