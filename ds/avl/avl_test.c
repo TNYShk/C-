@@ -12,21 +12,49 @@
 #include <string.h> /* testing strlen, strcmp, strstr*/
 
 #include "avl.h"
+#include "queue.h"
+
+typedef struct avl_node avl_node_t;
+
+enum children
+{
+    LEFT,
+    RIGHT,
+    NUM_OF_CHILDREN
+};
+
+struct avl_node
+{
+    void *data;
+    size_t height; 
+    avl_node_t *children[NUM_OF_CHILDREN];
+};
+struct avl
+{
+    avl_node_t *root;
+    avl_cmp_func_t cmp_func;
+};
+
 
 
 int CompareData(const void *left, const void *right);
+int CompareChars(const void *left, const void *right);
 int PrintNodes(void *data, void *param);
+int PrintChars(void *data, void *param);
 int DontPrintNodes(void *data, void *param);
+void LevelBLevelPrint(avl_t *tree, queue_t *queue);
+void LevelBLevelPrintChar(avl_t *tree, queue_t *queue);
 
 void CreateDestroy();
 void SizeHeight();
-
+void FoolingAround();
 
 int main(void)
 {
+
 	CreateDestroy();
 	SizeHeight();
-
+	/*FoolingAround();*/
 
 	return 0;
 }
@@ -50,7 +78,7 @@ void CreateDestroy()
 
 	avl = AVLCreate(CompareData);
 	assert(1 == AVLIsEmpty(avl));
-	(0 == AVLInsert(avl, &num)? printf("inserted data tree!\n"): printf("Failed!\n") );
+	(0 == AVLInsert(avl, &num)? printf("inserted data into tree!\n"): printf("Failed!\n") );
 	assert(0 == AVLInsert(avl, &num2));
 	/*assert(0 != AVLInsert(avl, &num2)); WORKS, assert same number */
 	assert(0 == AVLInsert(avl, &num3));
@@ -61,6 +89,7 @@ void CreateDestroy()
 	assert(0 == AVLForEach(avl, PrintNodes, &num, IN_ORDER));
 	printf("\nsize of tree is %ld\n",AVLSize(avl) );
 	printf("\ntree height is %ld\n", AVLHeight(avl));
+	AVLForEach(avl, PrintNodes, &num, IN_ORDER);
 	AVLRemove(avl, &num6);
 	AVLRemove(avl, &num4);
 	AVLRemove(avl, &num5);
@@ -70,7 +99,16 @@ void CreateDestroy()
 	AVLRemove(avl, &num);
 	printf("\npost removal - size of tree is %ld\n",AVLSize(avl) );
 	printf("\npost removal - tree height is %ld\n", AVLHeight(avl));
-	AVLForEach(avl, PrintNodes, &num, IN_ORDER);
+	printf("\ninserting nodes back! in dif order\n");
+	assert(0 == AVLInsert(avl, &num2));
+	assert(0 == AVLInsert(avl, &num3));
+	assert(0 == AVLInsert(avl, &num4));
+	assert(0 == AVLInsert(avl, &num5));
+	assert(0 == AVLInsert(avl, &num6));
+	assert(0 == AVLForEach(avl, PrintNodes, &num, IN_ORDER));
+	assert(5 == AVLSize(avl));
+	assert(3 == AVLHeight(avl));
+	printf("\n");
 	AVLDestroy(avl);
 
 	printf("\n\tCreate & Destroy & IsEmpty PASSED\n");
@@ -80,17 +118,22 @@ void CreateDestroy()
 void SizeHeight()
 {
 	avl_t *avl = NULL;
+	queue_t *qt = QueueCreate();
 	int num = 16;
 	int num2 = 18;
 	int num3 = 5;
 	int num4 = 10;
 	int num5 = 11;
 	int num6 = 12;
-
+	int num7 = 118;
+	printf("\n");
 	printf("\n\tBST- rec size & Height Tests\n");
 
 	avl = AVLCreate(CompareData);
+	
+
 	assert(1 == AVLIsEmpty(avl));
+	
 	(0 == AVLInsert(avl, &num)? printf("inserting data int tree!\n"): printf("Failed!\n") );
 	assert(1 == AVLHeight(avl));
 	assert(1 == AVLSize(avl));
@@ -102,8 +145,13 @@ void SizeHeight()
 	
 	assert(0 == AVLInsert(avl, &num5));
 	assert(0 == AVLInsert(avl, &num6));
+	assert(0 == AVLInsert(avl, &num7));
 	assert(5 == AVLHeight(avl));
-	assert(6 == AVLSize(avl));
+	assert(7 == AVLSize(avl));
+	printf("\nPrinting Nodes by Level\n");
+	LevelBLevelPrint(avl,qt);
+	QueueDestroy(qt);
+
 	printf("\n");
 	assert(0 == AVLForEach(avl, PrintNodes, &num, PRE_ORDER));
 	printf("\n");
@@ -111,21 +159,74 @@ void SizeHeight()
 	printf("\n");
 	assert(0 == AVLForEach(avl, PrintNodes, &num, POST_ORDER));
 	printf("\n");
+	assert(0 == AVLForEach(avl, PrintNodes, &num, IN_ORDER));
+	printf("\n");
+	
+	
 	AVLDestroy(avl);
 	printf("\n\tTree Size & Height PASSED\n");
 }
 
+void FoolingAround()
+{
+	avl_t *avl = NULL;
+	queue_t *qt = QueueCreate();
+	int root = 'T';
+	int left = 'A';
+	int right = 'N';
+	int left1 = 'Y';
+	int right1 = 'a';
+	
+	avl = AVLCreate(CompareData);
+	
+	assert(0 == AVLInsert(avl, &root));
+	assert(0 == AVLInsert(avl, &left));
+	assert(0 == AVLInsert(avl, &right));
+	assert(0 == AVLInsert(avl, &left1));
+	assert(0 == AVLInsert(avl, &right1));
+	printf("\tFooling Around Test\n");
+	LevelBLevelPrintChar(avl,qt);
+	printf("\n");
+	AVLForEach(avl, PrintChars,NULL,IN_ORDER);
+	printf("\n");
+	AVLForEach(avl, PrintChars,NULL,PRE_ORDER);
+	printf("\n");
+	AVLForEach(avl, PrintChars,NULL,POST_ORDER);
+	printf("\n");
+	printf("\n");
+	
+	AVLRemove(avl, &left);
+	AVLRemove(avl, &right1);
+	LevelBLevelPrintChar(avl,qt);
+	QueueDestroy(qt);
+	AVLDestroy(avl);
+	
+	
+}
 
 
 
 int CompareData(const void *left, const void *right)
 {
-    return (*(size_t *)left - *(size_t *)right);
+    return (*(int *)left - *(int *)right);
+}
+int CompareChars(const void *left, const void *right)
+{
+    return (*(char *)left - *(char *)right);
 }
 
 int PrintNodes(void *data, void *param)
 {
 	printf("Node: %d ", (*(int*)data));
+
+	(void)param;
+
+	 return 0;
+}
+
+int PrintChars(void *data, void *param)
+{
+	printf("Node: %c ", (*(char*)data));
 
 	(void)param;
 
@@ -141,3 +242,60 @@ int DontPrintNodes(void *data, void *param)
 	 return -1;
 }
 
+void LevelBLevelPrint(avl_t *tree, queue_t *queue)
+{
+	
+	avl_node_t *runner = NULL;
+	
+
+	if (!AVLIsEmpty(tree))
+	{
+		
+		QueueEnqueue(queue, tree->root);
+		while (!QueueIsEmpty(queue))
+		{
+			runner = QueuePeek(queue);
+			if (NULL != runner->children[LEFT])
+			{
+				QueueEnqueue(queue, runner->children[LEFT]);
+			}
+			if (NULL != runner->children[RIGHT])
+			{
+				QueueEnqueue(queue, runner->children[RIGHT]);
+			}
+			printf("%d ", *(int *)runner->data);
+			QueueDequeue(queue);
+		}
+		printf("\n");
+	}
+
+}
+
+void LevelBLevelPrintChar(avl_t *tree, queue_t *queue)
+{
+	
+	avl_node_t *runner = NULL;
+	
+
+	if (!AVLIsEmpty(tree))
+	{
+		
+		QueueEnqueue(queue, tree->root);
+		while (!QueueIsEmpty(queue))
+		{
+			runner = QueuePeek(queue);
+			if (NULL != runner->children[LEFT])
+			{
+				QueueEnqueue(queue, runner->children[LEFT]);
+			}
+			if (NULL != runner->children[RIGHT])
+			{
+				QueueEnqueue(queue, runner->children[RIGHT]);
+			}
+			printf("%c ", *(char *)runner->data);
+			QueueDequeue(queue);
+		}
+		printf("\n");
+	}
+
+}

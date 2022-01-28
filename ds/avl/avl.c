@@ -6,9 +6,9 @@
  * Reviewer:         	                      *
  **********************************************/
 #include <assert.h> /* assert */
-#include <stdlib.h> /* malloc */
-#include <string.h> /* memmove */
-#include <stdio.h>
+#include <stdlib.h> /* calloc, free */
+#include <string.h> /* memset */
+
 
 #include "avl.h"
 
@@ -19,7 +19,8 @@ typedef enum status
 {
     FAILURE = -1,
     SUCCESS = 0,
-    TRUES
+    ALLOC_ERROR = -2
+    
 }status_e;
 
 
@@ -47,14 +48,16 @@ struct avl
     avl_cmp_func_t cmp_func;
 };
 
-
+static avl_node_t *CreateNode(void *data);
+static status_e InsertNode(avl_node_t *new, void *n_data, avl_cmp_func_t CmpFunc);
 
 static void Destroy(avl_node_t *runner);
-static size_t CountNodes(avl_node_t *runner);
+static avl_node_t *DeleteNode(avl_node_t *runner, void *data_to_remove, avl_cmp_func_t CmpFunc);
 
-static avl_node_t *CreateNode(void *data);
-static int InsertNode(avl_node_t *new, void *n_data, avl_cmp_func_t CmpFunc);
+static size_t CountNodes(avl_node_t *runner);
+static status_e ActionCounter(void *data, void *param);
 static int GetChildHeight(avl_node_t *node, int child);
+
 static avl_node_t *RecFindNode(avl_node_t *runner, const void *data, avl_cmp_func_t CmpFunc);
 static void *RecFind(avl_node_t *runner, const void *data, avl_cmp_func_t CmpFunc);
 
@@ -64,9 +67,9 @@ static int ForEachPostOrder(avl_node_t *node, avl_action_func_t action_func, voi
 
 static avl_node_t *MinNode(avl_t *tree);
 static avl_node_t *GetMinNode(avl_node_t *runner);
-static avl_node_t *DeleteNode(avl_node_t *runner, void *data_to_remove, avl_cmp_func_t CmpFunc);
 
-static int ActionCounter(void *data, void *param);
+
+
 
 avl_t *AVLCreate(avl_cmp_func_t CmpFunc)
 {
@@ -91,31 +94,15 @@ void AVLDestroy(avl_t *tree)
 
     assert(NULL != tree);
     
-    if (tree->root != NULL)
-    {
-        avl_node_t *runner = tree->root;
-        Destroy(runner);
-    }
+    Destroy(tree->root);
 
+    memset(tree,0,sizeof(avl_t*));
     free(tree);
+    tree = NULL;
     
 }
 
-static void Destroy(avl_node_t *runner)
-{
-    if (runner == NULL)
-    {
-        return;
-    }
-    
-    Destroy(runner->children[RIGHT]);
-    Destroy(runner->children[LEFT]);
-    
-    printf("deleted node with data %d\n", *(int *)runner->data);
-    
 
-    free(runner);
-}
 
 
 size_t AVLSize(const avl_t *avl)
@@ -152,111 +139,18 @@ int AVLIsEmpty(const avl_t *tree)
 
 void AVLRemove(avl_t *tree, const void *data)
 {
-   avl_node_t *runner = NULL;
+   avl_node_t *find_node = NULL;
     assert(NULL != tree);
 
-    runner = RecFindNode(tree->root, data, tree->cmp_func);
-    if (NULL != runner)
+    find_node = RecFindNode(tree->root, data, tree->cmp_func);
+    if (NULL != find_node)
     {
        tree->root = DeleteNode(tree->root, (void*)data, tree->cmp_func);
     } 
 }
 
 
-static avl_node_t *DeleteNode(avl_node_t *root, void *data2remove, avl_cmp_func_t CmpFunc)
-{
-    int where = CmpFunc(data2remove, root->data);
-   
-    if(where != 0)
-    {
-        root->children[0 < where] = DeleteNode(root->children[0 < where], data2remove, CmpFunc);
-    }
-    
-    else
-    {
-        /* node-to-remove has 0-1 children*/
-        if( (NULL == root->children[LEFT]) || (NULL == root->children[RIGHT]))
-        {
-            avl_node_t *runner = root->children[LEFT]? root->children[LEFT] : root->children[RIGHT];
 
-            if(NULL == runner)
-            {
-                runner = root;
-                root = NULL;
-            }
-            else
-            {
-                root->data = runner->data; 
-            }
-
-            free(runner);
-        }
-        else
-        {
-            avl_node_t *runner = GetMinNode(root->children[RIGHT]);
-
-            root->data = runner->data;
-
-            root->children[RIGHT] = DeleteNode(root->children[RIGHT],runner->data, CmpFunc);
-        }
-    }
-
-    if (NULL == root)
-    {
-        return root;
-    }
-
-    root->height = ( 1 + MAX(GetChildHeight(root,LEFT), GetChildHeight(root,RIGHT)));
-    
-    return root;
-}
-
-
-static avl_node_t *CreateNode(void *data)
-{
-    avl_node_t *node = (avl_node_t *)calloc(1,sizeof(avl_node_t));
-    if (NULL == node)
-    {
-        return NULL;
-    }
-    
-    node->data = data;
-    node->height = 1;
-   
-    return node;
-}
-
-static int InsertNode(avl_node_t *new, void *n_data, avl_cmp_func_t CmpFunc)
-{
-    int where = CmpFunc(n_data, new->data);
-
-    int status = FAILURE;
-
-    assert(where != 0);
-
-    if (NULL == new->children[0 < where])
-    {
-        new->children[0 < where] = CreateNode(n_data);
-        if (new->children[0 < where] != NULL)
-        {
-            status =  SUCCESS;
-        }
-    }
-    else
-    {
-        status = InsertNode(new->children[0 < where],n_data, CmpFunc);
-    }
-
-    new->height = ( 1 + MAX(GetChildHeight(new,LEFT), GetChildHeight(new,RIGHT)));
-
-    return status;
-}
-
-static int GetChildHeight(avl_node_t *node, int child)
-{
-
-   return ( (node->children[child] == NULL) ? 0 : node->children[child]->height);
-}
 
 int AVLInsert(avl_t *tree, void *n_data)
 {  
@@ -264,18 +158,17 @@ int AVLInsert(avl_t *tree, void *n_data)
     if(NULL == tree->root)
     {
       tree->root = CreateNode(n_data);
-      if(tree->root == NULL)
+      if(NULL == tree->root)
       {
-        return FAILURE;
+        return ALLOC_ERROR;
       }
 
       return SUCCESS;
     }
     else
     {
-        avl_node_t *runner = tree->root;
 
-       return InsertNode(runner, n_data, tree->cmp_func);
+       return InsertNode(tree->root, n_data, tree->cmp_func);
 
     }
 }
@@ -295,37 +188,154 @@ void *AVLFind(const avl_t *avl, const void *data)
     return RecFind(avl->root, data, avl->cmp_func);
 }
 
-
-static void *RecFind(avl_node_t *runner, const void *data, avl_cmp_func_t CmpFunc)
-{
-    int where = CmpFunc(data, runner->data);  
-
-    if ( (0 == where) || (runner->children[0 < where] == NULL) )
-    {
-        return ((!where) ? (runner->data) : NULL);
-    }
-
-    return RecFind(runner->children[(0 < where)], data, CmpFunc);
-
-}
-
 int AVLForEach(avl_t *avl, avl_action_func_t action_func, void *param, order_t order)
 {
-
     const forEachFunc forEachLut[] = {ForEachPreOrder, ForEachInOrder, ForEachPostOrder};
 
     assert(NULL != avl);
     assert(NULL != action_func);
-    assert(3 >= order);
+    assert(NUM_OF_ORDERS > order);
 
     return forEachLut[order](avl->root, action_func, param);
 }
 
+
+
+/****************************Service Recursive Functions **************************/
+
+static avl_node_t *CreateNode(void *data)
+{
+    avl_node_t *node = (avl_node_t *)calloc(1,sizeof(avl_node_t));
+    if (NULL == node)
+    {
+        return NULL;
+    }
+    
+    node->data = data;
+    node->height = 1;
+   
+    return node;
+}
+
+static int InsertNode(avl_node_t *new, void *n_data, avl_cmp_func_t CmpFunc)
+{
+    int where2go = CmpFunc(n_data, new->data);
+
+    int status = SUCCESS;
+
+    assert(0 != where2go);
+
+    if (NULL == new->children[0 < where2go])
+    {
+        new->children[0 < where2go] = CreateNode(n_data);
+        if (NULL == new->children[0 < where2go])
+        {
+            return FAILURE;
+        }
+    }
+    else
+    {
+        status = InsertNode(new->children[0 < where2go],n_data, CmpFunc);
+    }
+
+    new->height = ( 1 + MAX(GetChildHeight(new,LEFT), GetChildHeight(new,RIGHT)));
+
+    return status;
+}
+
+static void Destroy(avl_node_t *node)
+{
+    if (node == NULL)
+    {
+        return;
+    }
+
+    Destroy(node->children[LEFT]);
+    Destroy(node->children[RIGHT]);
+    
+    /*printf("deleted node with data %d\n", *(int *)node->data);*/
+    
+    free(node);
+    node = NULL;
+}
+
+
+
+
+
+static avl_node_t *DeleteNode(avl_node_t *root, void *data2remove, avl_cmp_func_t CmpFunc)
+{
+    int where = CmpFunc(data2remove, root->data);
+   
+    if(where != 0)
+    {
+        root->children[0 < where] = DeleteNode(root->children[0 < where], data2remove, CmpFunc);
+    }
+    
+    else
+    {
+        /* node-to-remove has 0-1 children*/
+        if( (NULL == root->children[LEFT]) || (NULL == root->children[RIGHT]))
+        {
+            avl_node_t *temp_node = root->children[LEFT]? root->children[LEFT] : root->children[RIGHT];
+
+            if(NULL == temp_node)
+            {
+                temp_node = root;
+                root = NULL;
+            }
+            else
+            {
+                root->data = temp_node->data; 
+            }
+
+            free(temp_node);
+        }
+        else
+        {
+            avl_node_t *temp_node = GetMinNode(root->children[RIGHT]);
+
+            root->data = temp_node->data;
+
+            root->children[RIGHT] = DeleteNode(root->children[RIGHT],temp_node->data, CmpFunc);
+        }
+    }
+
+    if (NULL == root)
+    {
+        return root;
+    }
+
+    root->height = ( 1 + MAX(GetChildHeight(root,LEFT), GetChildHeight(root,RIGHT)));
+    
+    return root;
+}
+
+
+static int GetChildHeight(avl_node_t *node, int child)
+{
+
+   return ( (node->children[child] == NULL) ? 0 : node->children[child]->height);
+}
+
+
+static void *RecFind(avl_node_t *node, const void *data, avl_cmp_func_t CmpFunc)
+{
+    int where = CmpFunc(data, node->data);  
+
+    if ( (0 == where) || (NULL == node->children[0 < where]) )
+    {   
+        return ((!where) ? (node->data) : NULL);
+    }       /* where == 0*/
+
+    return RecFind(node->children[(0 < where)], data, CmpFunc);
+
+}
 static int ForEachPreOrder(avl_node_t *node, avl_action_func_t action_func, void *param)
 {
     int status = SUCCESS;
 
-    if ((NULL == node) )
+    if (NULL == node)
     {
         return status;
     }
@@ -343,9 +353,9 @@ static int ForEachInOrder(avl_node_t *node, avl_action_func_t action_func, void 
     {
         return status;
     }
-    (void)(status || (status += ForEachInOrder(node->children[LEFT], action_func, param)));
-    (void)(status || (status  += action_func(node->data, param)));
-    (void)(status || (status += ForEachInOrder(node->children[RIGHT], action_func, param)));
+    (void)(status != 0  || (status += ForEachInOrder(node->children[LEFT], action_func, param)));
+    (void)(status != 0 || (status  += action_func(node->data, param)));
+    (void)(status !=0 || (status += ForEachInOrder(node->children[RIGHT], action_func, param)));
 
     return (status != 0); 
 
@@ -372,41 +382,7 @@ static int ForEachPostOrder(avl_node_t *node, avl_action_func_t action_func, voi
 
 
 
-/*
-size_t AVLSize(const avl_t *avl)
-{
-    size_t counter = 0;
 
-    assert(NULL != avl);
-    
-    if (avl->root != NULL)
-    {
-        avl_node_t *runner = avl->root;
-
-        return CountNodes(runner);
-    }
-    return counter;
-}
-
-
-
-void *AVLFind(const avl_t *avl, const void *data)
-{
-    avl_node_t *where = NULL;
-
-    assert(NULL != avl);
-    assert(NULL != data);
-
-    if (avl->root == NULL)
-    {
-        return NULL;
-    }
-
-    where = RecFindNode(avl->root, data, avl->cmp_func);
-
-    return (NULL == where) ? NULL : where->data;
-}
-*/
 static avl_node_t *RecFindNode(avl_node_t *runner, const void *data, avl_cmp_func_t CmpFunc)
 {
     int where = CmpFunc(data, runner->data);  
@@ -461,7 +437,7 @@ static size_t CountNodes(avl_node_t *runner)
 
 }
 
-static int ActionCounter(void *data, void *param)
+static status_e ActionCounter(void *data, void *param)
 {
     ++(*(size_t *)param);
     (void)data;
@@ -473,4 +449,38 @@ static int ActionCounter(void *data, void *param)
 
 
 
+/*
+size_t AVLSize(const avl_t *avl)
+{
+    size_t counter = 0;
 
+    assert(NULL != avl);
+    
+    if (avl->root != NULL)
+    {
+        avl_node_t *runner = avl->root;
+
+        return CountNodes(runner);
+    }
+    return counter;
+}
+
+
+
+void *AVLFind(const avl_t *avl, const void *data)
+{
+    avl_node_t *where = NULL;
+
+    assert(NULL != avl);
+    assert(NULL != data);
+
+    if (avl->root == NULL)
+    {
+        return NULL;
+    }
+
+    where = RecFindNode(avl->root, data, avl->cmp_func);
+
+    return (NULL == where) ? NULL : where->data;
+}
+*/
