@@ -2,7 +2,7 @@
  * Calculator Header file            *
  * Developer: Tanya                  *
  * Jan 24, 2022                      *
- * Reviewer:                         *
+ * Reviewer: AMIT                    *
  *************************************/
 
 #ifndef __CALC_H__

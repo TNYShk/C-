@@ -36,6 +36,7 @@ int main(void)
 
 	CombineParse();
 	NewTest();
+	
 	return 0;
 }
 

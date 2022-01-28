@@ -32,7 +32,7 @@ typedef enum pars_status
  *  Complexity: O(1) time, O(1) space.
  */
 int ParseNum(const char *str, char **next_ptr, double *result);
-
+int ParseNum1(const char *str, char **next_ptr, double *result);
 
 /* DESCRIPTION: 
  * 
