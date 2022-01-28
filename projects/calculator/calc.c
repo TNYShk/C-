@@ -108,7 +108,7 @@ calc_status_t Calculator(const char *string, double *result)
 
 	if(INVALID == calc->cur_state)
 	{
-		(status == CALC_SYNTAX_ERROR)? CALC_SYNTAX_ERROR: CALC_MATH_ERROR ;
+		
 		*result = INVALID_ANS;
 	}
 	
