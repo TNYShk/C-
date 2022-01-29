@@ -183,7 +183,7 @@ void *AVLFind(const avl_t *avl, const void *data)
 
 int AVLForEach(avl_t *avl, avl_action_func_t action_func, void *param, order_t order)
 {
-    const forEachFunc forEachLut[] = {ForEachPreOrder, ForEachInOrder, ForEachPostOrder};
+   static const forEachFunc forEachLut[] = {ForEachPreOrder, ForEachInOrder, ForEachPostOrder};
 
     assert(NULL != avl);
     assert(NULL != action_func);

@@ -55,7 +55,7 @@ int main(void)
 
 	CreateDestroy();
 	SizeHeight();
-	/*FoolingAround();*/
+	FoolingAround();
 
 	return 0;
 }
@@ -76,7 +76,7 @@ void CreateDestroy()
 	printf("\n\tInsert & Remove  Tests\n");	
 	
 	avl1 = AVLCreate(CompareData);
-	
+
 	AVLDestroy(avl1);
 	
 	
@@ -88,6 +88,7 @@ void CreateDestroy()
 	assert(0 == AVLIsEmpty(avl));
 	/*assert(0 != AVLInsert(avl, &num2)); WORKS, assert same number */
 	assert(0 == AVLInsert(avl, &num3));
+	printf("\nbalanced tree height is %ld\n", AVLHeight(avl));
 	assert(0 == AVLInsert(avl, &num4));
 	assert(0 == AVLInsert(avl, &num5));
 	assert(0 == AVLInsert(avl, &num6));
@@ -190,7 +191,7 @@ void SizeHeight()
 void FoolingAround()
 {
 	avl_t *avl = NULL;
-	queue_t *qt = QueueCreate();
+	
 	int root = 'T';
 	int left = 'A';
 	int right = 'N';
@@ -205,18 +206,15 @@ void FoolingAround()
 	assert(0 == AVLInsert(avl, &left1));
 	assert(0 == AVLInsert(avl, &right1));
 	printf("\n\tFooling Around Test\n");
-	
 	printf("\n");
+	printf("\nTree data in-order:\n");
 	
 	AVLForEach(avl, PrintChars,&blank,PRE_ORDER);
 	printf("\n");
-	
 	printf("\n");
-
-	AVLRemove(avl, &left);
-	AVLRemove(avl, &right1);
-	LevelBLevelPrintChar(avl,qt);
-	QueueDestroy(qt);
+	
+	
+	
 	AVLDestroy(avl);
 	
 }
