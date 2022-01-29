@@ -13,7 +13,7 @@
 #include "avl.h"
 
 #define MAX(a,b) ((a > b)? (a) : (b))
-
+#define DIRECTION(a) (0 < a)
 
 typedef enum status
 {
@@ -91,12 +91,14 @@ avl_t *AVLCreate(avl_cmp_func_t CmpFunc)
 
 void AVLDestroy(avl_t *tree)
 {
-
     assert(NULL != tree);
-    
-    Destroy(tree->root);
 
-    memset(tree,0,sizeof(avl_t*));
+    if(tree->root != NULL)
+    {
+        Destroy(tree->root);
+    }
+
+    memset(tree,0,sizeof(avl_t));
     free(tree);
     tree = NULL;
     
@@ -167,9 +169,7 @@ int AVLInsert(avl_t *tree, void *n_data)
     }
     else
     {
-
        return InsertNode(tree->root, n_data, tree->cmp_func);
-
     }
 }
 
@@ -225,17 +225,17 @@ static int InsertNode(avl_node_t *new, void *n_data, avl_cmp_func_t CmpFunc)
 
     assert(0 != where2go);
 
-    if (NULL == new->children[0 < where2go])
+    if (NULL == new->children[DIRECTION(where2go)])
     {
-        new->children[0 < where2go] = CreateNode(n_data);
-        if (NULL == new->children[0 < where2go])
+        new->children[DIRECTION(where2go)] = CreateNode(n_data);
+        if (NULL == new->children[DIRECTION(where2go)])
         {
             return FAILURE;
         }
     }
     else
     {
-        status = InsertNode(new->children[0 < where2go],n_data, CmpFunc);
+        status = InsertNode(new->children[DIRECTION(where2go)],n_data, CmpFunc);
     }
 
     new->height = ( 1 + MAX(GetChildHeight(new,LEFT), GetChildHeight(new,RIGHT)));
