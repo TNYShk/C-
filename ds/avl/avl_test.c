@@ -55,7 +55,7 @@ int main(void)
 
 	CreateDestroy();
 	SizeHeight();
-	FoolingAround();
+	/*FoolingAround();*/
 
 	return 0;
 }
@@ -76,6 +76,7 @@ void CreateDestroy()
 	printf("\n\tInsert & Remove  Tests\n");	
 	
 	avl1 = AVLCreate(CompareData);
+	
 	AVLDestroy(avl1);
 	
 	
