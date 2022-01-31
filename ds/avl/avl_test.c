@@ -36,7 +36,8 @@ struct avl
 };
 
 
-
+void Swap(avl_node_t **left, avl_node_t **right);
+void MirrorTree(avl_node_t* root);
 int CompareData(const void *left, const void *right);
 
 int PrintNodes(void *data, void *param);
@@ -53,9 +54,10 @@ void FoolingAround();
 int main(void)
 {
 
-	CreateDestroy();
+	
 	SizeHeight();
-	FoolingAround();
+	/*CreateDestroy();
+	FoolingAround();*/
 
 	return 0;
 }
@@ -97,8 +99,6 @@ void CreateDestroy()
 	printf("\nsize of tree is %ld\n",AVLSize(avl) );
 	printf("\ntree height is %ld\n", AVLHeight(avl));
 	
-
-	
 	AVLRemove(avl, &num6);
 	AVLRemove(avl, &num4);
 	AVLRemove(avl, &num5);
@@ -134,6 +134,7 @@ void CreateDestroy()
 	assert(7 == AVLSize(avl));
 	assert(4 == AVLHeight(avl));
 	printf("\n");
+	
 	AVLDestroy(avl);
 
 	printf("\n\tForEach Print Tests PASSED\n");
@@ -163,18 +164,30 @@ void SizeHeight()
 	assert(1 == AVLHeight(avl));
 	assert(1 == AVLSize(avl));
 	assert(0 == AVLInsert(avl, &num2));
-	assert(2 == AVLHeight(avl));
-	assert(0 == AVLInsert(avl, &num3));
-	assert(0 == AVLInsert(avl, &num4));
-	assert(3 == AVLHeight(avl));
+
+	AVLInsert(avl, &num3);
+	AVLInsert(avl, &num4);
+	
+	
+	AVLInsert(avl, &num5);
+	printf("height is %ld\n",AVLHeight(avl));
+	printf("size is %ld\n",AVLSize(avl));
+	printf("\n");
+	assert(0 == AVLForEach(avl, PrintNodes, &num, IN_ORDER));
+	printf("\n");
+	LevelBLevelPrint(avl,qt);
 	printf("\nAVLFind Tests\n");
 	assert(NULL == AVLFind(avl,&num7));
-	assert(0 == AVLInsert(avl, &num5));
-	assert(0 == AVLInsert(avl, &num6));
-	assert(0 == AVLInsert(avl, &num7));
+	
+	LevelBLevelPrint(avl,qt);
+	AVLInsert(avl, &num6);
+
+	AVLInsert(avl, &num7);
+	assert(0 == AVLForEach(avl, PrintNodes, &num, PRE_ORDER));
 	assert(&num7 == AVLFind(avl,&num7));
-	assert(5 == AVLHeight(avl));
-	assert(7 == AVLSize(avl));
+
+	/*assert(5 == AVLHeight(avl));
+	assert(7 == AVLSize(avl));*/
 	printf("\nPrinting Nodes by Level\n");
 	LevelBLevelPrint(avl,qt);
 	QueueDestroy(qt);
@@ -213,8 +226,7 @@ void FoolingAround()
 	printf("\n");
 	printf("\n");
 	
-	
-	
+
 	AVLDestroy(avl);
 	
 }
