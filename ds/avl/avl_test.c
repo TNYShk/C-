@@ -44,7 +44,8 @@ int PrintNodes(void *data, void *param);
 int PrintChars(void *data, void *param);
 int DontPrintNodes(void *data, void *param);
 void LevelBLevelPrint(avl_t *tree, queue_t *queue);
-void LevelBLevelPrintChar(avl_t *tree, queue_t *queue);
+void PrintTreeNicely(avl_t *avl);
+static void PrintNicely(avl_node_t *node, int index);
 
 
 void CreateDestroy();
@@ -164,32 +165,32 @@ void SizeHeight()
 	assert(1 == AVLHeight(avl));
 	assert(1 == AVLSize(avl));
 	assert(0 == AVLInsert(avl, &num2));
-
-	AVLInsert(avl, &num3);
-	AVLInsert(avl, &num4);
+	assert(0 == AVLInsert(avl, &num3));
+	assert(0 == AVLInsert(avl, &num4));
+	assert(0 == AVLInsert(avl, &num5));
 	
 	
-	AVLInsert(avl, &num5);
-	printf("height is %ld\n",AVLHeight(avl));
-	printf("size is %ld\n",AVLSize(avl));
-	printf("\n");
+	
+	printf("\nPrint In order:\n");
 	assert(0 == AVLForEach(avl, PrintNodes, &num, IN_ORDER));
 	printf("\n");
+	printf("\nprint by level:\n");
 	LevelBLevelPrint(avl,qt);
-	printf("\nAVLFind Tests\n");
+	printf("\n\tAVLFind Tests\n");
 	assert(NULL == AVLFind(avl,&num7));
 	
+	
+	assert(0 == AVLInsert(avl, &num6));
+	assert(0 == AVLInsert(avl, &num7));
+	printf("print by level:\n");
 	LevelBLevelPrint(avl,qt);
-	AVLInsert(avl, &num6);
-
-	AVLInsert(avl, &num7);
+	printf("\nPrint PRE order:\n");
 	assert(0 == AVLForEach(avl, PrintNodes, &num, PRE_ORDER));
+	printf("\n");
 	assert(&num7 == AVLFind(avl,&num7));
-
-	/*assert(5 == AVLHeight(avl));
-	assert(7 == AVLSize(avl));*/
-	printf("\nPrinting Nodes by Level\n");
-	LevelBLevelPrint(avl,qt);
+	printf("height is %ld\n",AVLHeight(avl));
+	assert(7 == AVLSize(avl));
+	PrintTreeNicely(avl);
 	QueueDestroy(qt);
 
 	printf("\n");
@@ -295,32 +296,31 @@ void LevelBLevelPrint(avl_t *tree, queue_t *queue)
 
 }
 
-void LevelBLevelPrintChar(avl_t *tree, queue_t *queue)
+void PrintTreeNicely(avl_t *avl)
 {
-	
-	avl_node_t *runner = NULL;
-	
+    PrintNicely(avl->root, 0);
+}
 
-	if (!AVLIsEmpty(tree))
-	{
-		
-		QueueEnqueue(queue, tree->root);
-		while (!QueueIsEmpty(queue))
-		{
-			runner = QueuePeek(queue);
-			if (NULL != runner->children[LEFT])
-			{
-				QueueEnqueue(queue, runner->children[LEFT]);
-			}
-			if (NULL != runner->children[RIGHT])
-			{
-				QueueEnqueue(queue, runner->children[RIGHT]);
-			}
-			printf("%c ", *(char *)runner->data);
-			QueueDequeue(queue);
-		}
-		printf("\n");
-	}
+static void PrintNicely(avl_node_t *node, int index)
+{
+    int i = 0;
+    
+    if (NULL == node)
+    {
+        return;
+    }
 
+    index += 10;
+   
+    PrintNicely(node->children[RIGHT], index);
+   
+    for (i = 10; i < index; ++i)
+    {
+            printf(" ");
+    }
+   
+    printf("%d\n", *(int *)node->data);
+
+    PrintNicely(node->children[LEFT], index);
 }
 
