@@ -38,7 +38,7 @@ enum children
 };
 
 typedef struct avl_node avl_node_t;
-typedef int (*forEachFunc)(avl_node_t *tree, avl_action_func_t action, void *param);
+typedef status_e (*forEachFunc)(avl_node_t *tree, avl_action_func_t action, void *param);
 
 struct avl_node
 {
@@ -60,25 +60,22 @@ static avl_node_t *InsertNode(avl_node_t *new, void *n_data, avl_cmp_func_t CmpF
 static void Destroy(avl_node_t *runner);
 static avl_node_t *DeleteNode(avl_node_t *runner, void *data_to_remove, avl_cmp_func_t CmpFunc);
 
-
-static status_e ActionCounter(void *data, void *param);
+static status_e ActionAVLSize(void *data, void *param);
 static int GetChildHeight(avl_node_t *node, int child);
 
 static avl_node_t *RecFindNode(avl_node_t *runner, const void *data, avl_cmp_func_t CmpFunc);
 static void *RecFind(avl_node_t *runner, const void *data, avl_cmp_func_t CmpFunc);
 
-static int ForEachPreOrder(avl_node_t *node, avl_action_func_t action_func, void *param);
-static int ForEachInOrder(avl_node_t *node, avl_action_func_t action_func, void *param);
-static int ForEachPostOrder(avl_node_t *node, avl_action_func_t action_func, void *param);
+static status_e ForEachPreOrder(avl_node_t *node, avl_action_func_t action_func, void *param);
+static status_e ForEachInOrder(avl_node_t *node, avl_action_func_t action_func, void *param);
+static status_e ForEachPostOrder(avl_node_t *node, avl_action_func_t action_func, void *param);
 
-static avl_node_t *MinNodeTree(avl_t *tree);
-static avl_node_t *GetMinValSubTree(avl_node_t *runner);
+static avl_node_t *TreeDiveDown(avl_t *tree);
+static avl_node_t *GetMinNode(avl_node_t *subtree);
 
 static int GetBalanceFactor(avl_node_t *subtree);
 static avl_node_t *RotateNode(avl_node_t *node, int side);
-static avl_node_t *BalanceTree(avl_node_t *new);
-
-
+static avl_node_t *BalanceNode(avl_node_t *new);
 
 
 
@@ -120,7 +117,7 @@ size_t AVLSize(const avl_t *avl)
     
     if (NULL != avl->root)
     {
-        AVLForEach((avl_t *)avl, ActionCounter, &counter, IN_ORDER);
+        AVLForEach((avl_t *)avl, ActionAVLSize, &counter, IN_ORDER);
     }
 
     return counter;
@@ -233,7 +230,7 @@ static avl_node_t *InsertNode(avl_node_t *new, void *n_data, avl_cmp_func_t CmpF
         }
 
         *status = (NULL == new->children[DIRECTION(where2go)]);
-        new = BalanceTree(new);
+        new = BalanceNode(new);
     }
     else
     {
@@ -246,35 +243,35 @@ static avl_node_t *InsertNode(avl_node_t *new, void *n_data, avl_cmp_func_t CmpF
 }
 
 
-static avl_node_t *BalanceTree(avl_node_t *new)
+static avl_node_t *BalanceNode(avl_node_t *new)
 {
-    int balance = GetBalanceFactor(new); 
+    int scale = GetBalanceFactor(new); 
     
-    if( 1 < abs(balance) )
+    if (1 < abs(scale))
     {
-        if (balance == UNBALANCED_LEFT)
+        if (scale == UNBALANCED_LEFT)
         {
 
-            if(0 > GetBalanceFactor(new->children[DIRECTION(balance)]))
+            if(0 > GetBalanceFactor(new->children[DIRECTION(scale)]))
             {
                 return RotateNode(new,RIGHT);
             }
             else  
             {
-                new->children[DIRECTION(balance)] = RotateNode(new->children[DIRECTION(balance)],LEFT);
+                new->children[DIRECTION(scale)] = RotateNode(new->children[DIRECTION(scale)],LEFT);
                 return RotateNode(new,RIGHT);
             }     
         }
-        else if(balance == UNBALANCED_RIGHT)
+        else if(scale == UNBALANCED_RIGHT)
         {
-            if(0 < GetBalanceFactor(new->children[DIRECTION(balance)]))
+            if(0 < GetBalanceFactor(new->children[DIRECTION(scale)]))
             {
                 return RotateNode(new,LEFT);
             }
             else
             {
-               new->children[DIRECTION(balance)] = RotateNode(new->children[DIRECTION(balance)],RIGHT);
-               return RotateNode(new,LEFT);
+                new->children[DIRECTION(scale)] = RotateNode(new->children[DIRECTION(scale)],RIGHT);
+                return RotateNode(new,LEFT);
             }
         }
     }
@@ -318,17 +315,17 @@ static avl_node_t *DeleteNode(avl_node_t *root, void *data2remove, avl_cmp_func_
 {
     int where = CmpFunc(data2remove, root->data);
 
-    if(where != 0)
+    if (0 != where)
     {
         root->children[DIRECTION(where)] = DeleteNode(root->children[DIRECTION(where)], data2remove, CmpFunc);
     }
     else
     {
-        if( (NULL == root->children[LEFT]) || (NULL == root->children[RIGHT]))
+        if ((NULL == root->children[LEFT]) || (NULL == root->children[RIGHT]))
         {
             avl_node_t *temp_node = root->children[LEFT]? root->children[LEFT] : root->children[RIGHT];
 
-            if(NULL == temp_node)
+            if (NULL == temp_node)
             {
                 temp_node = root;
                 root = NULL;
@@ -343,7 +340,7 @@ static avl_node_t *DeleteNode(avl_node_t *root, void *data2remove, avl_cmp_func_
         }
         else
         {
-            avl_node_t *temp_node = GetMinValSubTree(root->children[RIGHT]);
+            avl_node_t *temp_node = GetMinNode(root->children[RIGHT]);
             root->data = temp_node->data;
 
             root->children[RIGHT] = DeleteNode(root->children[RIGHT],temp_node->data, CmpFunc);
@@ -355,7 +352,7 @@ static avl_node_t *DeleteNode(avl_node_t *root, void *data2remove, avl_cmp_func_
     }
 
     root->height = ( 1 + MAX(GetChildHeight(root,LEFT), GetChildHeight(root,RIGHT)));
-    root = BalanceTree(root);
+    root = BalanceNode(root);
 
     return root;
 }
@@ -382,7 +379,7 @@ static void *RecFind(avl_node_t *node, const void *data, avl_cmp_func_t CmpFunc)
     return RecFind(node->children[DIRECTION(where)], data, CmpFunc);
 }
 
-static int ForEachPreOrder(avl_node_t *node, avl_action_func_t action_func, void *param)
+static status_e ForEachPreOrder(avl_node_t *node, avl_action_func_t action_func, void *param)
 {
     int status = SUCCESS;
 
@@ -395,7 +392,7 @@ static int ForEachPreOrder(avl_node_t *node, avl_action_func_t action_func, void
             ForEachPreOrder(node->children[RIGHT], action_func, param)));
 }
 
-static int ForEachInOrder(avl_node_t *node, avl_action_func_t action_func, void *param)
+static status_e ForEachInOrder(avl_node_t *node, avl_action_func_t action_func, void *param)
 {
     int status = SUCCESS;
 
@@ -410,7 +407,7 @@ static int ForEachInOrder(avl_node_t *node, avl_action_func_t action_func, void 
     return (status != 0); 
 }
 
-static int ForEachPostOrder(avl_node_t *node, avl_action_func_t action_func, void *param)
+static status_e ForEachPostOrder(avl_node_t *node, avl_action_func_t action_func, void *param)
 {
     int status = SUCCESS;
 
@@ -426,48 +423,30 @@ static int ForEachPostOrder(avl_node_t *node, avl_action_func_t action_func, voi
 }
 
 
-static avl_node_t *RecFindNode(avl_node_t *runner, const void *data, avl_cmp_func_t CmpFunc)
+static avl_node_t *RecFindNode(avl_node_t *node, const void *data2find, avl_cmp_func_t CmpFunc)
 {
-    int where = CmpFunc(data, runner->data);  
+    int where = CmpFunc(data2find, node->data);  
 
-    if((0 == where) || (NULL == runner->children[DIRECTION(where)]))
+    if((0 == where) || (NULL == node->children[DIRECTION(where)]))
     {
-        return ((!where) ? (runner) : NULL);
+        return ((!where) ? (node) : NULL);
     }
 
-    return RecFindNode(runner->children[DIRECTION(where)], data, CmpFunc);
+    return RecFindNode(node->children[DIRECTION(where)], data2find, CmpFunc);
 }
 
 
-
-static avl_node_t *MinNodeTree(avl_t *tree)
+static avl_node_t *GetMinNode(avl_node_t *diver)
 {
-    avl_node_t *runner = NULL;
-
-    assert(NULL != tree);
-    assert(NULL != tree->root);
-
-    runner = tree->root;
-
-    if(!AVLIsEmpty(tree))
+    while(NULL != diver->children[LEFT])
     {
-        return GetMinValSubTree(runner);
+        diver = diver->children[LEFT];
     }
 
-    return runner;
+    return diver;
 }
 
-static avl_node_t *GetMinValSubTree(avl_node_t *runner)
-{
-    while(NULL != runner->children[LEFT])
-    {
-        runner = runner->children[LEFT];
-    }
-
-    return runner;
-}
-
-static status_e ActionCounter(void *data, void *param)
+static status_e ActionAVLSize(void *data, void *param)
 {
     ++(*(size_t *)param);
     (void)data;
@@ -481,5 +460,23 @@ static int GetBalanceFactor(avl_node_t *subtree)
         return 0;
 
     return (GetChildHeight(subtree,RIGHT) - GetChildHeight(subtree,LEFT) );
+}
+
+/* Not Used, Maybe in Future */
+static avl_node_t *TreeDiveDown(avl_t *tree)
+{
+    avl_node_t *runner = NULL;
+
+    assert(NULL != tree);
+    assert(NULL != tree->root);
+
+    runner = tree->root;
+
+    if(!AVLIsEmpty(tree))
+    {
+        return GetMinNode(runner);
+    }
+
+    return runner;
 }
 

@@ -332,7 +332,8 @@ static void PrintNicely(avl_node_t *node, int index)
    
     for (i = 10; i < index; ++i)
     {
-            printf(" ");
+        printf(" ");
+    	
     }
    
     printf("%d\n", *(int *)node->data);
