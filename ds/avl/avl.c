@@ -71,8 +71,7 @@ static avl_node_t *GetMinValSubTree(avl_node_t *runner);
 static int GetBalanceFactor(avl_node_t *subtree);
 
 static avl_node_t *RotateNode(avl_node_t *node, int side);
-static avl_node_t *RotateLeft(avl_node_t *node);
-static avl_node_t *RotateRight(avl_node_t *node);
+
 static avl_node_t *BalanceTree(avl_node_t *new, void *n_data, avl_cmp_func_t CmpFunc);
 
 
@@ -237,16 +236,18 @@ static avl_node_t *InsertNode(avl_node_t *new, void *n_data, avl_cmp_func_t CmpF
         {
             return NULL;
         }
+
         *status = (NULL == new->children[DIRECTION(where2go)]);
+        new = BalanceTree(new, n_data, CmpFunc);
     }
     else
     {
         new->children[DIRECTION(where2go)] = InsertNode(new->children[DIRECTION(where2go)],n_data, CmpFunc, status);
     }
     
-     new->height = ( 1 + MAX(GetChildHeight(new,LEFT), GetChildHeight(new,RIGHT)));
+    new->height = ( 1 + MAX(GetChildHeight(new,LEFT), GetChildHeight(new,RIGHT)));
    
-   return BalanceTree(new, n_data, CmpFunc);
+   return new;
 }
 
 
@@ -261,28 +262,32 @@ static avl_node_t *BalanceTree(avl_node_t *new, void *n_data, avl_cmp_func_t Cmp
         {
             if(0 > CmpFunc(n_data,new->children[DIRECTION(balance)]))
             {
-                new = RotateNode(new,RIGHT);
                 printf("rotated data %d\n", *(int *)new->data);
+                new =  RotateNode(new,RIGHT);
+                
             }
             else  
             {
                 new->children[DIRECTION(balance)] = RotateNode(new->children[DIRECTION(balance)],LEFT);
-                new = RotateNode(new,RIGHT);
-                printf("rotated data %d\n", *(int *)new->data);
+                 printf("rotated data %d\n", *(int *)new->data);
+                new =  RotateNode(new,RIGHT);
+               
             }     
         }
         else if(balance == 2)
         {
             if(0 < CmpFunc(n_data, new->children[DIRECTION(balance)]))
             {
-                new = RotateNode(new,LEFT);
                 printf("rotated data %d\n", *(int *)new->data);
+                new =  RotateNode(new,LEFT);
+                
             }
             else
             {
                new->children[DIRECTION(balance)] = RotateNode(new->children[DIRECTION(balance)],RIGHT);
-               new = RotateNode(new,LEFT);
                printf("rotated data %d\n", *(int *)new->data);
+               new =  RotateNode(new,LEFT);
+               
             }
         }
     }
@@ -327,7 +332,9 @@ static void Destroy(avl_node_t *node)
 static avl_node_t *DeleteNode(avl_node_t *root, void *data2remove, avl_cmp_func_t CmpFunc)
 {
     int where = CmpFunc(data2remove, root->data);
-   
+    int balance = 0;
+
+
     if(where != 0)
     {
         root->children[DIRECTION(where)] = DeleteNode(root->children[DIRECTION(where)], data2remove, CmpFunc);
@@ -362,15 +369,16 @@ static avl_node_t *DeleteNode(avl_node_t *root, void *data2remove, avl_cmp_func_
             root->children[RIGHT] = DeleteNode(root->children[RIGHT],temp_node->data, CmpFunc);
         }
     }
-
     if (NULL == root)
     {
         return root;
     }
+   
 
     root->height = ( 1 + MAX(GetChildHeight(root,LEFT), GetChildHeight(root,RIGHT)));
-    
-    return BalanceTree(root, data2remove, CmpFunc);
+
+    root = BalanceTree(root,root->data, CmpFunc );
+    return root;
 }
 
 
@@ -512,36 +520,7 @@ static int GetBalanceFactor(avl_node_t *subtree)
 
 
 
-static avl_node_t *RotateRight(avl_node_t *node)
-{
-    
-    avl_node_t *rotator = node->children[LEFT];
-    avl_node_t *temp = rotator->children[RIGHT];
-    printf("rotating RIGHT node is: %d\n", *(int *)node->data);
-    rotator->children[RIGHT] = node;
-    node->children[LEFT] = temp;
 
-    node->height = ( 1 + MAX(GetChildHeight(node,LEFT), GetChildHeight(node,RIGHT)));
-    rotator->height = ( 1 + MAX(GetChildHeight(rotator,LEFT), GetChildHeight(rotator,RIGHT)));
-    printf("RIGHTrotated node is: %d\n", *(int *)rotator->data);
-    return rotator; 
-}
-
-static avl_node_t *RotateLeft(avl_node_t *node)
-{
-    avl_node_t *rotator = node->children[RIGHT];
-    avl_node_t *temp = rotator->children[LEFT];
-    printf("LEFT rotating node is: %d\n", *(int *)node->data);
-    rotator->children[LEFT] = node;
-    node->children[RIGHT] = temp;
-
-    
-
-    node->height = ( 1 + MAX(GetChildHeight(node,LEFT), GetChildHeight(node,RIGHT)));
-    rotator->height = ( 1 + MAX(GetChildHeight(rotator,LEFT), GetChildHeight(rotator,RIGHT)));
-    printf("LEFT rotated node is: %d\n", *(int *)rotator->data);
-    return rotator; 
-}
 
 
         

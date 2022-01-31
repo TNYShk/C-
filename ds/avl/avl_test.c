@@ -56,7 +56,7 @@ int main(void)
 {
 
 	
-	SizeHeight();
+	/*SizeHeight();*/
 	CreateDestroy();
 	/*FoolingAround();*/
 
@@ -125,6 +125,7 @@ void CreateDestroy()
 	assert(0 == AVLInsert(avl, &num));
 	PrintTreeNicely(avl);
 	printf("\n");
+	printf("removing nodes:\n");
 	AVLRemove(avl, &num4);
 	AVLRemove(avl, &num);
 	AVLRemove(avl, &num3);
