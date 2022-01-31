@@ -72,7 +72,7 @@ static int GetBalanceFactor(avl_node_t *subtree);
 
 static avl_node_t *RotateNode(avl_node_t *node, int side);
 
-static avl_node_t *BalanceTree(avl_node_t *new, void *n_data, avl_cmp_func_t CmpFunc);
+static avl_node_t *BalanceTree(avl_node_t *new);
 
 
 
@@ -225,8 +225,7 @@ static avl_node_t *CreateNode(void *data)
 static avl_node_t *InsertNode(avl_node_t *new, void *n_data, avl_cmp_func_t CmpFunc, int *status)
 {
     int where2go = CmpFunc(n_data, new->data);
-    int balance = 0;
-   
+    
     assert(0 != where2go);
 
     if (NULL == new->children[DIRECTION(where2go)])
@@ -238,7 +237,7 @@ static avl_node_t *InsertNode(avl_node_t *new, void *n_data, avl_cmp_func_t CmpF
         }
 
         *status = (NULL == new->children[DIRECTION(where2go)]);
-        new = BalanceTree(new, n_data, CmpFunc);
+        new = BalanceTree(new);
     }
     else
     {
@@ -251,43 +250,36 @@ static avl_node_t *InsertNode(avl_node_t *new, void *n_data, avl_cmp_func_t CmpF
 }
 
 
-static avl_node_t *BalanceTree(avl_node_t *new, void *n_data, avl_cmp_func_t CmpFunc)
+static avl_node_t *BalanceTree(avl_node_t *new)
 {
     int balance = GetBalanceFactor(new); 
     
     if( 1 < abs(balance) )
     {
-        printf("balance factor is: %d\nbalancing tree\n", balance);
+
         if (balance == -2)
         {
-            if(0 > CmpFunc(n_data,new->children[DIRECTION(balance)]))
+
+            if(0 > GetBalanceFactor(new->children[DIRECTION(balance)]))
             {
-                printf("rotated data %d\n", *(int *)new->data);
-                new =  RotateNode(new,RIGHT);
-                
+                return RotateNode(new,RIGHT);
             }
             else  
             {
                 new->children[DIRECTION(balance)] = RotateNode(new->children[DIRECTION(balance)],LEFT);
-                 printf("rotated data %d\n", *(int *)new->data);
-                new =  RotateNode(new,RIGHT);
-               
+                return RotateNode(new,RIGHT);
             }     
         }
         else if(balance == 2)
         {
-            if(0 < CmpFunc(n_data, new->children[DIRECTION(balance)]))
+            if(0 < GetBalanceFactor(new->children[DIRECTION(balance)]))
             {
-                printf("rotated data %d\n", *(int *)new->data);
-                new =  RotateNode(new,LEFT);
-                
+                return RotateNode(new,LEFT);
             }
             else
             {
                new->children[DIRECTION(balance)] = RotateNode(new->children[DIRECTION(balance)],RIGHT);
-               printf("rotated data %d\n", *(int *)new->data);
-               new =  RotateNode(new,LEFT);
-               
+               return RotateNode(new,LEFT);
             }
         }
     }
@@ -332,8 +324,6 @@ static void Destroy(avl_node_t *node)
 static avl_node_t *DeleteNode(avl_node_t *root, void *data2remove, avl_cmp_func_t CmpFunc)
 {
     int where = CmpFunc(data2remove, root->data);
-    int balance = 0;
-
 
     if(where != 0)
     {
@@ -376,8 +366,8 @@ static avl_node_t *DeleteNode(avl_node_t *root, void *data2remove, avl_cmp_func_
    
 
     root->height = ( 1 + MAX(GetChildHeight(root,LEFT), GetChildHeight(root,RIGHT)));
+    root = BalanceTree(root);
 
-    root = BalanceTree(root,root->data, CmpFunc );
     return root;
 }
 

@@ -56,7 +56,7 @@ int main(void)
 {
 
 	
-	/*SizeHeight();*/
+	SizeHeight();
 	CreateDestroy();
 	/*FoolingAround();*/
 
@@ -92,13 +92,13 @@ void CreateDestroy()
 	assert(0 == AVLIsEmpty(avl));
 	/*assert(0 != AVLInsert(avl, &num2)); WORKS, assert same number */
 	assert(0 == AVLInsert(avl, &num3));
-	printf("\nbalanced tree height is %ld\n", AVLHeight(avl));
+	printf("\nTree height is %ld, inserting nodes\n\n", AVLHeight(avl));
 	assert(0 == AVLInsert(avl, &num4));
 	assert(0 == AVLInsert(avl, &num5));
 	assert(0 == AVLInsert(avl, &num6));
 	assert(6 == AVLSize(avl));
 	assert(0 == AVLForEach(avl, PrintNodes, &num, IN_ORDER));
-	printf("\nsize of tree is %ld\n",AVLSize(avl) );
+	printf("\nTree has %ld nodes\n",AVLSize(avl) );
 	assert(3 == AVLHeight(avl));
 	PrintTreeNicely(avl);
 	printf("\n");
@@ -112,11 +112,11 @@ void CreateDestroy()
 	AVLRemove(avl, &num);
 	printf("\npost removal - size of tree is %ld\n",AVLSize(avl) );
 	printf("\npost removal - tree height is %ld\n", AVLHeight(avl));
-	
+	assert(1 == AVLIsEmpty(avl));
 	printf("\n\tCreate & Destroy & IsEmpty PASSED\n");
-	
+	AVLDestroy(avl);
 	printf("\ninserting nodes back! in dif order\n");
-	
+	avl = AVLCreate(CompareData);
 	assert(0 == AVLInsert(avl, &num2));
 	assert(0 == AVLInsert(avl, &num3));
 	assert(0 == AVLInsert(avl, &num4));
@@ -125,21 +125,26 @@ void CreateDestroy()
 	assert(0 == AVLInsert(avl, &num));
 	PrintTreeNicely(avl);
 	printf("\n");
+	LevelBLevelPrint(avl,qt);
+	printf("\n");
 	printf("removing nodes:\n");
 	AVLRemove(avl, &num4);
 	AVLRemove(avl, &num);
 	AVLRemove(avl, &num3);
-	printf("\n");
+	
 	PrintTreeNicely(avl);
-	printf("\nPrint by Level:\n");
-	LevelBLevelPrint(avl,qt);
-	QueueDestroy(qt);
+	printf("\nIn Order Print:\n");
+	assert(0 == AVLForEach(avl, PrintNodes, &num2, IN_ORDER));
+	printf("\n");
 	printf("\nPre Order Print:\n");
 	assert(0 == AVLForEach(avl, PrintNodes, &num2, PRE_ORDER));
 	printf("\nPost Order Print:\n");
 	assert(0 == AVLForEach(avl, PrintNodes, &num2, POST_ORDER));
-	printf("\nIn Order Print:\n");
-	assert(0 == AVLForEach(avl, PrintNodes, &num2, IN_ORDER));
+	
+	printf("\nPrint by Level:\n");
+	LevelBLevelPrint(avl,qt);
+	QueueDestroy(qt);
+
 	printf("\n");
 	printf("\nStop Print Check:\n");
 	assert(1 == AVLForEach(avl, DontPrintNodes, &num2, IN_ORDER));
