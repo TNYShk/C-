@@ -1,9 +1,9 @@
 /**********************************************
  * AVL - Source File                          *
  * Developer: Tanya			                  *
- *          Jan 26, 2022                      *
+ *          Jan 31, 2022                      *
  *                                            *
- * Reviewer:         	                      *
+ * Reviewer: Nurit  	                      *
  **********************************************/
 #include <assert.h> /* assert */
 #include <stdlib.h> /* calloc, free */
@@ -108,7 +108,6 @@ void AVLDestroy(avl_t *tree)
     tree = NULL;
 }
 
-
 size_t AVLSize(const avl_t *avl)
 {
     size_t counter = 0;
@@ -199,7 +198,7 @@ int AVLForEach(avl_t *avl, avl_action_func_t action_func, void *param, order_t o
     return forEachLut[order](avl->root, action_func, param);
 }
 
-/****************************Service Recursive Functions **************************/
+/****************************Service & Recursive Functions **************************/
 
 static avl_node_t *CreateNode(void *data)
 {
@@ -239,7 +238,7 @@ static avl_node_t *InsertNode(avl_node_t *new, void *n_data, avl_cmp_func_t CmpF
     
     new->height = ( 1 + MAX(GetChildHeight(new,LEFT), GetChildHeight(new,RIGHT)));
    
-   return new;
+    return new;
 }
 
 
@@ -277,7 +276,6 @@ static avl_node_t *BalanceNode(avl_node_t *new)
     }
 
     return new;
-
 }
 
 static avl_node_t *RotateNode(avl_node_t *node, int side)
@@ -374,7 +372,7 @@ static void *RecFind(avl_node_t *node, const void *data, avl_cmp_func_t CmpFunc)
     if ( (0 == where) || (NULL == node->children[DIRECTION(where)]) )
     {   
         return ((!where) ? (node->data) : NULL);
-    }       /* where == 0*/
+    }       
 
     return RecFind(node->children[DIRECTION(where)], data, CmpFunc);
 }
@@ -459,7 +457,7 @@ static int GetBalanceFactor(avl_node_t *subtree)
     if (NULL == subtree)
         return 0;
 
-    return (GetChildHeight(subtree,RIGHT) - GetChildHeight(subtree,LEFT) );
+    return (GetChildHeight(subtree,RIGHT) - GetChildHeight(subtree,LEFT));
 }
 
 /* Not Used, Maybe in Future */

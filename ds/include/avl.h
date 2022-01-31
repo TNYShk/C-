@@ -3,7 +3,7 @@
  * Developer:                                  *
  * Written: 2021-01-31                         *
  *                                             *
- * Reviewer:                                   *
+ * Reviewer: Nurit                             *
  **********************************************/
 #ifndef __AVL_H__
 #define __AVL_H__
@@ -32,7 +32,7 @@ typedef enum traversal_order
  * RETURN:
  * pointer to the newlty created empty tree
  *
-/* Complexity: O(1) time, O(1) space. */
+ * Complexity: O(1) time, O(1) space. */
 avl_t *AVLCreate(avl_cmp_func_t cmp_func);
 
 /* DESCRIPTION: 
@@ -44,7 +44,7 @@ avl_t *AVLCreate(avl_cmp_func_t cmp_func);
  * RETURN:
  * None
  *
-/* Complexity: O(n) time, O(log n) average space. */
+ * Complexity: O(n) time, O(log n) average space. */
 void AVLDestroy(avl_t *avl);
 
 /* DESCRIPTION: 
@@ -56,7 +56,7 @@ void AVLDestroy(avl_t *avl);
  * RETURN:
  * size_t size of the tree - current amount of nodes
  *
-/* Complexity: O(n) time, O(log n) average space. */
+ * Complexity: O(n) time, O(log n) average space. */
 size_t AVLSize(const avl_t *avl);
 
 /* DESCRIPTION: 
@@ -68,7 +68,7 @@ size_t AVLSize(const avl_t *avl);
  * RETURN:
  * TRUE(1) if empty, otherwise Zero
  *
-/* Complexity: O(1) time, O(1) space. */
+ * Complexity: O(1) time, O(1) space. */
 int AVLIsEmpty(const avl_t *avl);
 
 /* DESCRIPTION: 
@@ -81,7 +81,7 @@ int AVLIsEmpty(const avl_t *avl);
  * RETURN:
  * Status of action: zero for SUCCESS, otherwise fail
  *
-/* Complexity: O(log n) average time, O(log n) average space. */
+ * Complexity: O(log n) average time, O(log n) average space. */
 int AVLInsert(avl_t *avl, void *data);
 
 /* DESCRIPTION: 
@@ -94,13 +94,13 @@ int AVLInsert(avl_t *avl, void *data);
  * RETURN:
  * NONE
  *
-/* Complexity: O(log n) average time, O(log n) average space. */
+ * Complexity: O(log n) average time, O(log n) average space. */
 void AVLRemove(avl_t *avl, const void *data);
 
 /* DESCRIPTION: 
  * Counts Levels in the tree. aka Height. 
  * longest path from root node to leaf. in a balanced tree, subtrees height must be < 2
- *
+ * Height of an empty tree is 0. Leaf node height is 1
  * PARAMS: 
  * avl_t *tree  pointer to the tree 
  * 
@@ -108,8 +108,7 @@ void AVLRemove(avl_t *avl, const void *data);
  * RETURN:
  * size_t height of the tree.
  *
-/* Complexity: O(1) time, O(1) space. */
-/* Height of an empty tree is 0. Height of a non empty tree with only one node is 1. */
+ * Complexity: O(1) time, O(1) space. */
 size_t AVLHeight(const avl_t *avl);
 
 /* DESCRIPTION: 
@@ -123,7 +122,7 @@ size_t AVLHeight(const avl_t *avl);
  * RETURN:
  * data of the located node, otherwise NULL
  *
-/* Complexity: O(log n) average time, O(log n) average space. */
+ * Complexity: O(log n) average time, O(log n) average space. */
 void *AVLFind(const avl_t *avl, const void *data);
 
 /* DESCRIPTION: 
@@ -140,7 +139,7 @@ void *AVLFind(const avl_t *avl, const void *data);
  * RETURN:
  * ZERO for SUCCESS, 
  *
-/* Complexity: O(n) time, O(log n) average space. */
+ * Complexity: O(n) time, O(log n) average space. */
 int AVLForEach(avl_t *avl, avl_action_func_t action_func, 
     void *param, order_t order);
 
