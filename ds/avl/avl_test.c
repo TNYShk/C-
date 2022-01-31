@@ -102,7 +102,7 @@ void CreateDestroy()
 	assert(3 == AVLHeight(avl));
 	PrintTreeNicely(avl);
 	printf("\n");
-	
+	printf("Emptying Tree!\n");
 	AVLRemove(avl, &num6);
 	AVLRemove(avl, &num4);
 	AVLRemove(avl, &num5);
@@ -114,9 +114,9 @@ void CreateDestroy()
 	printf("\npost removal - tree height is %ld\n", AVLHeight(avl));
 	assert(1 == AVLIsEmpty(avl));
 	printf("\n\tCreate & Destroy & IsEmpty PASSED\n");
-	AVLDestroy(avl);
+	
 	printf("\ninserting nodes back! in dif order\n");
-	avl = AVLCreate(CompareData);
+	
 	assert(0 == AVLInsert(avl, &num2));
 	assert(0 == AVLInsert(avl, &num3));
 	assert(0 == AVLInsert(avl, &num4));
