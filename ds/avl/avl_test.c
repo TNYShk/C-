@@ -57,8 +57,8 @@ int main(void)
 
 	
 	SizeHeight();
-	/*CreateDestroy();
-	FoolingAround();*/
+	CreateDestroy();
+	/*FoolingAround();*/
 
 	return 0;
 }
@@ -67,6 +67,7 @@ void CreateDestroy()
 {
 
 	avl_t *avl = NULL;
+
 	avl_t *avl1 = NULL;
 	queue_t *qt = QueueCreate();
 	int num = 6;
@@ -74,8 +75,8 @@ void CreateDestroy()
 	int num3 = 5;
 	int num4 = 4;
 	int num5 = 11;
-	int num6 = 110;
-	int num7 = 111;
+	int num6 = 99;
+	int num7 = 100;
 	printf("\n\tInsert & Remove  Tests\n");	
 	
 	avl1 = AVLCreate(CompareData);
@@ -98,7 +99,9 @@ void CreateDestroy()
 	assert(6 == AVLSize(avl));
 	assert(0 == AVLForEach(avl, PrintNodes, &num, IN_ORDER));
 	printf("\nsize of tree is %ld\n",AVLSize(avl) );
-	printf("\ntree height is %ld\n", AVLHeight(avl));
+	assert(3 == AVLHeight(avl));
+	PrintTreeNicely(avl);
+	printf("\n");
 	
 	AVLRemove(avl, &num6);
 	AVLRemove(avl, &num4);
@@ -109,16 +112,24 @@ void CreateDestroy()
 	AVLRemove(avl, &num);
 	printf("\npost removal - size of tree is %ld\n",AVLSize(avl) );
 	printf("\npost removal - tree height is %ld\n", AVLHeight(avl));
+	
 	printf("\n\tCreate & Destroy & IsEmpty PASSED\n");
-
+	
 	printf("\ninserting nodes back! in dif order\n");
+	
 	assert(0 == AVLInsert(avl, &num2));
 	assert(0 == AVLInsert(avl, &num3));
 	assert(0 == AVLInsert(avl, &num4));
 	assert(0 == AVLInsert(avl, &num5));
 	assert(0 == AVLInsert(avl, &num6));
 	assert(0 == AVLInsert(avl, &num));
-	assert(0 == AVLInsert(avl, &num7));
+	PrintTreeNicely(avl);
+	printf("\n");
+	AVLRemove(avl, &num4);
+	AVLRemove(avl, &num);
+	AVLRemove(avl, &num3);
+	printf("\n");
+	PrintTreeNicely(avl);
 	printf("\nPrint by Level:\n");
 	LevelBLevelPrint(avl,qt);
 	QueueDestroy(qt);
@@ -132,8 +143,7 @@ void CreateDestroy()
 	printf("\nStop Print Check:\n");
 	assert(1 == AVLForEach(avl, DontPrintNodes, &num2, IN_ORDER));
 	printf("\n");
-	assert(7 == AVLSize(avl));
-	assert(4 == AVLHeight(avl));
+	
 	printf("\n");
 	
 	AVLDestroy(avl);

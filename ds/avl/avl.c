@@ -249,6 +249,7 @@ static avl_node_t *InsertNode(avl_node_t *new, void *n_data, avl_cmp_func_t CmpF
    return BalanceTree(new, n_data, CmpFunc);
 }
 
+
 static avl_node_t *BalanceTree(avl_node_t *new, void *n_data, avl_cmp_func_t CmpFunc)
 {
     int balance = GetBalanceFactor(new); 
@@ -369,7 +370,7 @@ static avl_node_t *DeleteNode(avl_node_t *root, void *data2remove, avl_cmp_func_
 
     root->height = ( 1 + MAX(GetChildHeight(root,LEFT), GetChildHeight(root,RIGHT)));
     
-    return root;
+    return BalanceTree(root, data2remove, CmpFunc);
 }
 
 
