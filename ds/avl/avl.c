@@ -15,6 +15,12 @@
 #define MAX(a,b) ((a > b)? (a) : (b))
 #define DIRECTION(a) (0 < a)
 
+typedef enum balancing
+{
+    UNBALANCED_LEFT = -2,
+    UNBALANCED_RIGHT = 2
+
+}balancing_e;
 
 typedef enum status
 {
@@ -54,7 +60,7 @@ static avl_node_t *InsertNode(avl_node_t *new, void *n_data, avl_cmp_func_t CmpF
 static void Destroy(avl_node_t *runner);
 static avl_node_t *DeleteNode(avl_node_t *runner, void *data_to_remove, avl_cmp_func_t CmpFunc);
 
-static size_t CountNodes(avl_node_t *runner);
+
 static status_e ActionCounter(void *data, void *param);
 static int GetChildHeight(avl_node_t *node, int child);
 
@@ -69,9 +75,7 @@ static avl_node_t *MinNodeTree(avl_t *tree);
 static avl_node_t *GetMinValSubTree(avl_node_t *runner);
 
 static int GetBalanceFactor(avl_node_t *subtree);
-
 static avl_node_t *RotateNode(avl_node_t *node, int side);
-
 static avl_node_t *BalanceTree(avl_node_t *new);
 
 
@@ -108,8 +112,6 @@ void AVLDestroy(avl_t *tree)
 }
 
 
-
-
 size_t AVLSize(const avl_t *avl)
 {
     size_t counter = 0;
@@ -123,8 +125,6 @@ size_t AVLSize(const avl_t *avl)
 
     return counter;
 }
-
-
 
 
 size_t AVLHeight(const avl_t *tree)
@@ -156,11 +156,9 @@ void AVLRemove(avl_t *tree, const void *data)
 }
 
 
-
-
 int AVLInsert(avl_t *tree, void *n_data)
 {  
-    int status = SUCCESS;
+    int status = FAILURE;
 
     if(NULL == tree->root)
     {
@@ -180,7 +178,6 @@ int AVLInsert(avl_t *tree, void *n_data)
 }
 
 
-
 void *AVLFind(const avl_t *avl, const void *data)
 {
     assert(NULL != avl);
@@ -193,6 +190,7 @@ void *AVLFind(const avl_t *avl, const void *data)
     return RecFind(avl->root, data, avl->cmp_func);
 }
 
+
 int AVLForEach(avl_t *avl, avl_action_func_t action_func, void *param, order_t order)
 {
    static const forEachFunc forEachLut[] = {ForEachPreOrder, ForEachInOrder, ForEachPostOrder};
@@ -203,8 +201,6 @@ int AVLForEach(avl_t *avl, avl_action_func_t action_func, void *param, order_t o
 
     return forEachLut[order](avl->root, action_func, param);
 }
-
-
 
 /****************************Service Recursive Functions **************************/
 
@@ -256,8 +252,7 @@ static avl_node_t *BalanceTree(avl_node_t *new)
     
     if( 1 < abs(balance) )
     {
-
-        if (balance == -2)
+        if (balance == UNBALANCED_LEFT)
         {
 
             if(0 > GetBalanceFactor(new->children[DIRECTION(balance)]))
@@ -270,7 +265,7 @@ static avl_node_t *BalanceTree(avl_node_t *new)
                 return RotateNode(new,RIGHT);
             }     
         }
-        else if(balance == 2)
+        else if(balance == UNBALANCED_RIGHT)
         {
             if(0 < GetBalanceFactor(new->children[DIRECTION(balance)]))
             {
@@ -314,8 +309,6 @@ static void Destroy(avl_node_t *node)
     Destroy(node->children[LEFT]);
     Destroy(node->children[RIGHT]);
     
-    /*printf("deleted node with data %d\n", *(int *)node->data);*/
-    
     free(node);
     node = NULL;
 }
@@ -329,10 +322,8 @@ static avl_node_t *DeleteNode(avl_node_t *root, void *data2remove, avl_cmp_func_
     {
         root->children[DIRECTION(where)] = DeleteNode(root->children[DIRECTION(where)], data2remove, CmpFunc);
     }
-    
     else
     {
-        /* node-to-remove has 0-1 children*/
         if( (NULL == root->children[LEFT]) || (NULL == root->children[RIGHT]))
         {
             avl_node_t *temp_node = root->children[LEFT]? root->children[LEFT] : root->children[RIGHT];
@@ -353,7 +344,6 @@ static avl_node_t *DeleteNode(avl_node_t *root, void *data2remove, avl_cmp_func_
         else
         {
             avl_node_t *temp_node = GetMinValSubTree(root->children[RIGHT]);
-
             root->data = temp_node->data;
 
             root->children[RIGHT] = DeleteNode(root->children[RIGHT],temp_node->data, CmpFunc);
@@ -363,7 +353,6 @@ static avl_node_t *DeleteNode(avl_node_t *root, void *data2remove, avl_cmp_func_
     {
         return root;
     }
-   
 
     root->height = ( 1 + MAX(GetChildHeight(root,LEFT), GetChildHeight(root,RIGHT)));
     root = BalanceTree(root);
@@ -381,8 +370,6 @@ static int GetChildHeight(avl_node_t *node, int child)
     return 0;
    }
    
-
-
 static void *RecFind(avl_node_t *node, const void *data, avl_cmp_func_t CmpFunc)
 {
     int where = CmpFunc(data, node->data);  
@@ -480,16 +467,6 @@ static avl_node_t *GetMinValSubTree(avl_node_t *runner)
     return runner;
 }
 
-static size_t CountNodes(avl_node_t *runner)
-{
-    if (NULL == runner)
-    {
-        return 0;
-    }
-    
-    return (CountNodes(runner->children[RIGHT]) + 1 + (CountNodes(runner->children[LEFT])));
-}
-
 static status_e ActionCounter(void *data, void *param)
 {
     ++(*(size_t *)param);
@@ -497,8 +474,6 @@ static status_e ActionCounter(void *data, void *param)
 
     return SUCCESS;
 }
-
-
 
 static int GetBalanceFactor(avl_node_t *subtree)
 {
@@ -508,86 +483,3 @@ static int GetBalanceFactor(avl_node_t *subtree)
     return (GetChildHeight(subtree,RIGHT) - GetChildHeight(subtree,LEFT) );
 }
 
-
-
-
-
-
-        
-
-/*
-void *AVLFind(const avl_t *avl, const void *data)
-{
-    avl_node_t *where = NULL;
-
-    assert(NULL != avl);
-    assert(NULL != data);
-
-    if (avl->root == NULL)
-    {
-        return NULL;
-    }
-
-    where = RecFindNode(avl->root, data, avl->cmp_func);
-
-    return (NULL == where) ? NULL : where->data;
-}
-/*
-static int InsertNode(avl_node_t *new, void *n_data, avl_cmp_func_t CmpFunc)
-{
-    int where2go = CmpFunc(n_data, new->data);
-    int balance = 0;
-    int status = SUCCESS;
-
-    assert(0 != where2go);
-
-    if (NULL == new->children[DIRECTION(where2go)])
-    {
-        new->children[DIRECTION(where2go)] = CreateNode(n_data);
-        if (NULL == new->children[DIRECTION(where2go)])
-        {
-            return FAILURE;
-        }
-    }
-    else
-    {
-        status = InsertNode(new->children[DIRECTION(where2go)],n_data, CmpFunc);
-    }
-    
-    balance = GetBalanceFactor(new); 
-    printf("balance factor is: %d\n", balance);
-
-
-   if( 1 < abs(balance) )
-    {
-        if (balance <= -1)
-        {
-            if(0 > CmpFunc(n_data,new->children[LEFT]))
-            {
-                new = RotateRight(new);
-            }
-            else
-            {
-                new->children[LEFT] = RotateLeft(new->children[LEFT]);
-                new = RotateRight(new);
-            }     
-        }
-        else if(balance >= 1)
-        {
-            if(0 < CmpFunc(n_data, new->children[RIGHT]))
-            {
-                new = RotateLeft(new);
-            }
-            else
-            {
-               new->children[RIGHT] = RotateRight(new->children[RIGHT]);
-               new = RotateLeft(new);
-            }
-        }
-    }
-
-    new->height = ( 1 + MAX(GetChildHeight(new,LEFT), GetChildHeight(new,RIGHT)));
-   
-    return status;
-}
-*/

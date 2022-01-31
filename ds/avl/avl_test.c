@@ -58,7 +58,7 @@ int main(void)
 	
 	SizeHeight();
 	CreateDestroy();
-	/*FoolingAround();*/
+	FoolingAround();
 
 	return 0;
 }
