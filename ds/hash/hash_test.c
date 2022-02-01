@@ -26,8 +26,10 @@ int main(void)
    
     const void *key = GetKey("tanya");
     printf("key is %ld\n", (*(size_t **)&key));
+    printf("hash key is %ld\n", hash_func(key));
     hashy = HashCreate(100, &GetKey, &CompareData, &hash_func);
     
+    HashInsert(hashy, "tanya");
     
 
     HashDestroy(hashy);
@@ -46,7 +48,6 @@ static const void *GetKey(const void *data)
     size_t hash = 5381;
     int cc = 0;
 
-   
     while (cc = (*(char *)data))
     {
         hash = ((hash << 5) + (hash)) + cc;
@@ -58,10 +59,10 @@ static const void *GetKey(const void *data)
 
 static size_t hash_func(const void *key)
 {
-    size_t hash_index = 16; /* number of rooms*/
+    size_t hash_index = 0; /* number of rooms*/
     int cc = 0;
 
-    hash_index = ((*(size_t*)&key)%hash_index);
+    hash_index = ((*(size_t *)&key) % 100);
     
     return hash_index;
 }

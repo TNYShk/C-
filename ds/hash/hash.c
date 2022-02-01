@@ -113,11 +113,33 @@ int HashInsert(hash_t *hash, void *data)
 
     new_node = DListPushFront(hash->table[room], &pair);
 
-    return (DListGetData(new_node) == data);
+    return (DListGetData(DListBegin(hash->table[room])) == data);
 
 }
 
 
 void *HashFind(const hash_t *hash, const void *key);
+
+size_t HashSize(const hash_t *hash)
+{
+    size_t occupance = 0;
+    size_t rooms = 0;
+    
+    if(NULL != hash)
+    {
+        for(rooms = 0; rooms < hash->size; ++rooms)
+        {
+            occupance += DListSize(hash->table[rooms]);
+        }
+        
+    }
+    return occupance;
+}
+
+int HashIsEmpty(const hash_t *hash)
+{
+    assert(NULL != hash);
+    return (!HashSize(hash));
+}
 
 
