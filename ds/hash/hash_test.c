@@ -16,7 +16,7 @@
 static const void *GetKey(const void *data);
 static size_t hash_func(const void *key);
 static int CompareData(const void *key1, const void *key2);
-
+static int CompareData(const void *key1, const void *key2);
 
 
 int main(void)
@@ -33,12 +33,13 @@ int main(void)
     printf("hash key is %ld\n", hash_func(Fey));
     hashy = HashCreate(99, &GetKey, &CompareData, &hash_func);
     
+    (1 == HashIsEmpty(hashy))? printf("Empty Hash\n") : printf("NOT empty Hash\n");
     HashInsert(hashy, "tanya");
 
     HashInsert(hashy, "Fanya");
     printf("hash size is: %ld\n", HashSize(hashy));
-    
-   HashRemove(hashy, key);
+     (1 == HashIsEmpty(hashy))? printf("Empty Hash\n") : printf("NOT empty Hash\n");
+   /*HashRemove(hashy, key);*/
     printf("hash size is: %ld\n", HashSize(hashy));
    
 
@@ -79,5 +80,5 @@ static size_t hash_func(const void *key)
 
 static int CompareData(const void *key1, const void *key2)
 {
-    return (*(int *)key1 - *(int *)key2);
+    return (*(size_t *)key1 - *(size_t *)key2);
 }

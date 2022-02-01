@@ -45,6 +45,7 @@ typedef struct keva
 }keva_t;
 
 int MatchNum(const void *data, void *param);
+int CmpNodeD(const void *key1, void *key2);
 
 hash_t *HashCreate(size_t size, hash_get_key_func_t get_key, 
             hash_cmp_func_t cmp_func, hash_func_t hash_func)
@@ -113,11 +114,13 @@ int HashInsert(hash_t *hash, void *data)
     if(NULL == hash->table[room])
     {
        hash->table[room] = DListCreate();
+       
     }
     assert(data != HashFind(hash, new_key));
 
     DListPushBack(hash->table[room], data);
-    return (DListIsEqual(data, DListEnd(hash->table[room])));
+    assert(!DListIsEqual(DListBegin(hash->table[room]),DListEnd(hash->table[room]) ));
+    return (!DListIsEqual(DListBegin(hash->table[room]), DListEnd(hash->table[room])));
 
 }
 
@@ -132,18 +135,14 @@ void *HashFind(const hash_t *hash, const void *key)
     assert(NULL != key);
 
     room = hash->hash_func(key);
+    assert(NULL != hash->table[room]);
+
     runner = DListBegin(hash->table[room]);
     end = DListEnd(hash->table[room]);
+    runner = DListFind(runner,end, &CmpNodeD, (void *)key);
 
-    while (!DListIsEqual(runner, end) && (hash->cmp_func(key, hash->get_key(DListGetData(runner)))) )
-    {
-        runner = DListNext(runner);
-    }
 
     return (DListIsEqual(runner, end)) ? NULL : DListGetData(runner);
-
-
-
 }
 
 void HashRemove(hash_t *hash, const void *key)
@@ -161,15 +160,14 @@ void HashRemove(hash_t *hash, const void *key)
     runner = DListBegin(hash->table[room]);
     end = DListEnd(hash->table[room]);
 
-    while (!DListIsEqual(runner, end) && (hash->cmp_func(key, hash->get_key(DListGetData(runner)))) )
-    {
-        runner = DListNext(runner);
-    }
+    runner = DListFind(runner,end, &CmpNodeD, (void *)key);
 
-    if (!DListIsEqual(runner, end))
-    {
+   if (!DListIsEqual(runner, end))
+   {
         DListRemove(runner);
-    }
+   }
+
+   
 }
 
 
@@ -205,4 +203,11 @@ int MatchNum(const void *data, void *param)
     assert(NULL != param);
 
     return (*(size_t *)data == *(size_t *)param);
+}
+
+int CmpNodeD(const void *key1, void *key2)
+{   
+   
+
+    return (*(int *)key1 - *(int *)key2);
 }
