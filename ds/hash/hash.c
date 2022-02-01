@@ -19,8 +19,9 @@ typedef const void *(*hash_get_key_func_t)(const void *data);
 typedef size_t (*hash_func_t)(const void *key);
 
 typedef int (*hash_action_func_t)(void *value, void *param);
-*/
 typedef struct hash hash_t;
+*/
+
 struct hash
 {
     hash_cmp_func_t cmp_func;
@@ -43,7 +44,7 @@ hash_t *HashCreate(size_t size, hash_get_key_func_t get_key,
             hash_cmp_func_t cmp_func, hash_func_t hash_func)
 {
     hash_t *hash = NULL;
-    
+
     assert(0 != size);
     assert(NULL != get_key);
     assert(NULL != cmp_func);
@@ -55,7 +56,7 @@ hash_t *HashCreate(size_t size, hash_get_key_func_t get_key,
         return NULL;
     }
 
-    hash->table = DListCreate();
+    hash->table = (dlist_t **)calloc(size, sizeof(dlist_t *));
     if(NULL == hash->table)
     {
        HashDestroy(hash);
@@ -95,13 +96,15 @@ const void *GetKey(const void *data)
 {
     size_t key = 5381;
     int cc = 0;
-    kv_t pair = {0};
+    kv_t pair;
+
     while (cc = (++(*(char *)&data)))
     {
         key = ((key << 5) + key) + cc;
        
     }
-    pair = {*(void *)&key, data};
+    pair.key = (*(void **)&key);
+    pair.data = (*(void **)&data);
 
     return pair.key;
 }
