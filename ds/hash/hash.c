@@ -44,7 +44,7 @@ typedef struct keva
     
 }keva_t;
 
-
+int MatchNum(const void *data, void *param);
 
 hash_t *HashCreate(size_t size, hash_get_key_func_t get_key, 
             hash_cmp_func_t cmp_func, hash_func_t hash_func)
@@ -103,10 +103,7 @@ int HashInsert(hash_t *hash, void *data)
     const void *new_key = hash->get_key(data);
     keva_t pair = {0};
     size_t room = 0;
-    dlist_iter_t test;
-
-    /*assert(NULL == HashFind(hash, new_key));*/
-    
+   
     pair.key = new_key;
     pair.value = data;
     room = hash->hash_func(new_key);
@@ -117,16 +114,65 @@ int HashInsert(hash_t *hash, void *data)
     {
        hash->table[room] = DListCreate();
     }
+    assert(data != HashFind(hash, new_key));
 
-
-    test = DListPushBack(hash->table[room], &pair);
-    printf("size of dlist is %ld\n", DListSize(hash->table[room]));
-    return (DListIsEqual(test, DListEnd(hash->table[room])));
+    DListPushBack(hash->table[room], data);
+    return (DListIsEqual(data, DListEnd(hash->table[room])));
 
 }
 
 
-void *HashFind(const hash_t *hash, const void *key);
+void *HashFind(const hash_t *hash, const void *key)
+{
+    size_t room = 0;
+    dlist_iter_t runner = NULL;
+    dlist_iter_t end = NULL;
+
+    assert(NULL != hash);
+    assert(NULL != key);
+
+    room = hash->hash_func(key);
+    runner = DListBegin(hash->table[room]);
+    end = DListEnd(hash->table[room]);
+
+    while (!DListIsEqual(runner, end) && (hash->cmp_func(key, hash->get_key(DListGetData(runner)))) )
+    {
+        runner = DListNext(runner);
+    }
+
+    return (DListIsEqual(runner, end)) ? NULL : DListGetData(runner);
+
+
+
+}
+
+void HashRemove(hash_t *hash, const void *key)
+{
+    size_t room = 0;
+    dlist_iter_t runner = NULL;
+    dlist_iter_t end = NULL;
+
+    assert(NULL != hash);
+    assert(NULL != key);
+
+    room = hash->hash_func(key);
+    assert(room <= hash->size);
+
+    runner = DListBegin(hash->table[room]);
+    end = DListEnd(hash->table[room]);
+
+    while (!DListIsEqual(runner, end) && (hash->cmp_func(key, hash->get_key(DListGetData(runner)))) )
+    {
+        runner = DListNext(runner);
+    }
+
+    if (!DListIsEqual(runner, end))
+    {
+        DListRemove(runner);
+    }
+}
+
+
 
 size_t HashSize(const hash_t *hash)
 {
@@ -152,3 +198,11 @@ int HashIsEmpty(const hash_t *hash)
 }
 
 
+
+
+int MatchNum(const void *data, void *param)
+{   
+    assert(NULL != param);
+
+    return (*(size_t *)data == *(size_t *)param);
+}

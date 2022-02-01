@@ -26,6 +26,7 @@ int main(void)
    
     const void *key = GetKey("tanya");
     const void *Fey = GetKey("Fanya");
+    const void *test_key;
     printf("key is %ld\n", (*(size_t **)&key));
     printf("Fey is %ld\n", (*(size_t **)&Fey));
     printf("hash key is %ld\n", hash_func(key));
@@ -33,9 +34,13 @@ int main(void)
     hashy = HashCreate(99, &GetKey, &CompareData, &hash_func);
     
     HashInsert(hashy, "tanya");
+
     HashInsert(hashy, "Fanya");
     printf("hash size is: %ld\n", HashSize(hashy));
     
+   HashRemove(hashy, key);
+    printf("hash size is: %ld\n", HashSize(hashy));
+   
 
     HashDestroy(hashy);
 
@@ -74,5 +79,5 @@ static size_t hash_func(const void *key)
 
 static int CompareData(const void *key1, const void *key2)
 {
-    return (*(size_t *)key1 - *(size_t *)key2);
+    return (*(int *)key1 - *(int *)key2);
 }
