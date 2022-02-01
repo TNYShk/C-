@@ -25,11 +25,16 @@ int main(void)
     hash_t *hashy = NULL;
    
     const void *key = GetKey("tanya");
+    const void *Fey = GetKey("Fanya");
     printf("key is %ld\n", (*(size_t **)&key));
+    printf("Fey is %ld\n", (*(size_t **)&Fey));
     printf("hash key is %ld\n", hash_func(key));
-    hashy = HashCreate(100, &GetKey, &CompareData, &hash_func);
+    printf("hash key is %ld\n", hash_func(Fey));
+    hashy = HashCreate(99, &GetKey, &CompareData, &hash_func);
     
     HashInsert(hashy, "tanya");
+    HashInsert(hashy, "Fanya");
+    printf("hash size is: %ld\n", HashSize(hashy));
     
 
     HashDestroy(hashy);

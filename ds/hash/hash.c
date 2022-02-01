@@ -103,17 +103,25 @@ int HashInsert(hash_t *hash, void *data)
     const void *new_key = hash->get_key(data);
     keva_t pair = {0};
     size_t room = 0;
-    dlist_iter_t new_node;
+    dlist_iter_t test;
 
     /*assert(NULL == HashFind(hash, new_key));*/
     
     pair.key = new_key;
     pair.value = data;
     room = hash->hash_func(new_key);
+    
+    assert(room <= hash->size);
 
-    new_node = DListPushFront(hash->table[room], &pair);
+    if(NULL == hash->table[room])
+    {
+       hash->table[room] = DListCreate();
+    }
 
-    return (DListGetData(DListBegin(hash->table[room])) == data);
+
+    test = DListPushBack(hash->table[room], &pair);
+    printf("size of dlist is %ld\n", DListSize(hash->table[room]));
+    return (DListIsEqual(test, DListEnd(hash->table[room])));
 
 }
 
@@ -129,7 +137,8 @@ size_t HashSize(const hash_t *hash)
     {
         for(rooms = 0; rooms < hash->size; ++rooms)
         {
-            occupance += DListSize(hash->table[rooms]);
+            if(hash->table[rooms]!= NULL)
+                occupance += DListSize(hash->table[rooms]);
         }
         
     }
