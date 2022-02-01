@@ -33,8 +33,8 @@ struct hash
 
 typedef struct kv
 {
-    void *key;
-    void *data;
+    const void *key;
+    const void *data;
     
 }kv_t;
 
@@ -59,7 +59,7 @@ hash_t *HashCreate(size_t size, hash_get_key_func_t get_key,
     hash->table = (dlist_t **)calloc(size, sizeof(dlist_t *));
     if(NULL == hash->table)
     {
-       HashDestroy(hash);
+       free(hash);
 
         return NULL;
     }
@@ -81,6 +81,7 @@ void HashDestroy(hash_t *hash)
         {
             DListDestroy(hash->table[clear_rooms]);
         }
+        free(hash->table);
         
         memset(hash,0, sizeof(hash_t));
         free(hash);
@@ -92,33 +93,3 @@ void HashDestroy(hash_t *hash)
 
 
 
-const void *GetKey(const void *data)
-{
-    size_t key = 5381;
-    int cc = 0;
-    kv_t pair;
-
-    while (cc = (++(*(char *)&data)))
-    {
-        key = ((key << 5) + key) + cc;
-       
-    }
-    pair.key = (*(void **)&key);
-    pair.data = (*(void **)&data);
-
-    return pair.key;
-}
-
-static size_t hash_func(const void *key)
-{
-    size_t hash_index = 16; /* number of rooms*/
-    int cc = 0;
-
-    hash_index = ((*(size_t*)&key)%hash_index);
-    return hash_index;
-}
-
-int CompareData(const void *key1, const void *key2)
-{
-    return (*(size_t *)key1 - *(size_t *)key2);
-}
