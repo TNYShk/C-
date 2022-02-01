@@ -116,21 +116,24 @@ dlist_t *DListCreate(void)
 /*code re use, remove nodes */
 void DListDestroy(dlist_t *dll)
 {
-   	dlist_node_t *current_node = dll->head;
-	dlist_node_t *next_node = DListNext(current_node);
-	
-	while (NULL != next_node)
-	{ 
+	if(NULL != dll)
+	{
+	   	dlist_node_t *current_node = dll->head;
+		dlist_node_t *next_node = DListNext(current_node);
+		
+		while (NULL != next_node)
+		{ 
+			free(current_node);
+			current_node = next_node;
+			next_node = DListNext(current_node);
+		}
+		
 		free(current_node);
-		current_node = next_node;
-		next_node = DListNext(current_node);
+		current_node = NULL;
+	
+		free(dll);
+		dll = NULL;
 	}
-	
-	free(current_node);
-	current_node = NULL;
-	
-	free(dll);
-	dll = NULL;
 }
 
 

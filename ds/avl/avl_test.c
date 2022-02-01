@@ -205,17 +205,14 @@ void SizeHeight()
 	printf("\n");
 	assert(&num7 == AVLFind(avl,&num7));
 	printf("height is %ld\n",AVLHeight(avl));
+	printf("\tAVLFind PASSED\n");
 	assert(7 == AVLSize(avl));
 	PrintTreeNicely(avl);
+	
 	QueueDestroy(qt);
-
-	printf("\n");
-	
-	
-	
 	AVLDestroy(avl);
 	printf("\n\tTree Size & Height PASSED\n");
-	printf("\tAVLFind PASSED\n");
+	
 }
 
 void FoolingAround()
@@ -237,13 +234,12 @@ void FoolingAround()
 	assert(0 == AVLInsert(avl, &right1));
 	printf("\n\tFooling Around Test\n");
 	printf("\n");
-	printf("\nTree data in-order:\n");
+	printf("\nTree data in-order Print:\n");
 	
 	AVLForEach(avl, PrintChars,&blank,PRE_ORDER);
 	printf("\n");
 	printf("\n");
 	
-
 	AVLDestroy(avl);
 	
 }
