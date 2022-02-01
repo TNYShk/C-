@@ -22,6 +22,12 @@ typedef int (*hash_action_func_t)(void *value, void *param);
 typedef struct hash hash_t;
 */
 
+typedef enum status
+{
+    SUCCESS,
+    FAIL = -1
+}status_e;
+
 struct hash
 {
     hash_cmp_func_t cmp_func;
@@ -31,12 +37,12 @@ struct hash
     dlist_t **table;
 };
 
-typedef struct kv
+typedef struct keva
 {
     const void *key;
-    const void *data;
+    const void *value;
     
-}kv_t;
+}keva_t;
 
 
 
@@ -91,5 +97,27 @@ void HashDestroy(hash_t *hash)
     
 }
 
+int HashInsert(hash_t *hash, void *data)
+{
+   
+    const void *new_key = hash->get_key(data);
+    keva_t pair = {0};
+    size_t room = 0;
+    dlist_iter_t new_node;
+
+    /*assert(NULL == HashFind(hash, new_key));*/
+    
+    pair.key = new_key;
+    pair.value = data;
+    room = hash->hash_func(new_key);
+
+    new_node = DListPushFront(hash->table[room], &pair);
+
+    return (DListGetData(new_node) == data);
+
+}
+
+
+void *HashFind(const hash_t *hash, const void *key);
 
 

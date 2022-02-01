@@ -9,6 +9,7 @@
 #include <stdlib.h> /* calloc, free */
 #include <string.h> /* memset */
 #include <math.h> /* abs */
+#include <stdio.h>
 
 #include "hash.h" /* programs header*/
 
@@ -16,21 +17,22 @@ static const void *GetKey(const void *data);
 static size_t hash_func(const void *key);
 static int CompareData(const void *key1, const void *key2);
 
-typedef struct kv
-{
-    void *key;
-    void *data;
-    
-}kv_t;
 
 
 int main(void)
 {
     
     hash_t *hashy = NULL;
+   
+    const void *key = GetKey("tanya");
+    printf("key is %ld\n", (*(size_t **)&key));
+    hashy = HashCreate(100, &GetKey, &CompareData, &hash_func);
+    
+    
 
-    hashy = HashCreate(16, &GetKey, &CompareData, &hash_func);
     HashDestroy(hashy);
+
+    
     return 0;
 }
 
@@ -39,23 +41,19 @@ int main(void)
 
 
 
-
 static const void *GetKey(const void *data)
 {
-    size_t key = 5381;
+    size_t hash = 5381;
     int cc = 0;
-    kv_t pair;
 
-    while (cc = (++(*(char *)&data)))
+   
+    while (cc = (*(char *)data))
     {
-        key = ((key << 5) + key) + cc;
-       
+        hash = ((hash << 5) + (hash)) + cc;
+        ++(*(char **)&data);
     }
 
-    pair.key = (*(void **)&key);
-    pair.data = (*(void **)&data);
-
-    return pair.key;
+    return *(void**)&hash;
 }
 
 static size_t hash_func(const void *key)
