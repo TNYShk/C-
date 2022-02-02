@@ -26,7 +26,7 @@ int main(void)
    
     const void *key = GetKey("tanya");
     const void *Fey = GetKey("Fanya");
-    const void *test_key;
+    
     printf("key is %ld\n", (*(size_t **)&key));
     printf("Fey is %ld\n", (*(size_t **)&Fey));
     printf("hash key is %ld\n", hash_func(key));
@@ -39,7 +39,12 @@ int main(void)
     HashInsert(hashy, "Fanya");
     printf("hash size is: %ld\n", HashSize(hashy));
      (1 == HashIsEmpty(hashy))? printf("Empty Hash\n") : printf("NOT empty Hash\n");
-   /*HashRemove(hashy, key);*/
+    
+     HashRemove(hashy, (void *)key);
+
+
+   
+
     printf("hash size is: %ld\n", HashSize(hashy));
    
 

@@ -57,7 +57,7 @@ hash_t *HashCreate(size_t size, hash_get_key_func_t get_key,
     assert(NULL != cmp_func);
     assert(NULL != hash_func);
 
-    hash = (hash_t *)calloc(size, sizeof(hash_t));
+    hash = (hash_t *)malloc(sizeof(hash_t));
     if (NULL == hash)
     {
         return NULL;
@@ -104,7 +104,8 @@ int HashInsert(hash_t *hash, void *data)
     const void *new_key = hash->get_key(data);
     keva_t pair = {0};
     size_t room = 0;
-   
+    dlist_iter_t noob;
+
     pair.key = new_key;
     pair.value = data;
     room = hash->hash_func(new_key);
@@ -118,9 +119,9 @@ int HashInsert(hash_t *hash, void *data)
     }
     assert(data != HashFind(hash, new_key));
 
-    DListPushBack(hash->table[room], data);
+    noob = DListPushBack(hash->table[room], data);
     assert(!DListIsEqual(DListBegin(hash->table[room]),DListEnd(hash->table[room]) ));
-    return (!DListIsEqual(DListBegin(hash->table[room]), DListEnd(hash->table[room])));
+    return (DListIsEqual(noob, DListEnd(hash->table[room])));
 
 }
 
@@ -128,21 +129,21 @@ int HashInsert(hash_t *hash, void *data)
 void *HashFind(const hash_t *hash, const void *key)
 {
     size_t room = 0;
-    dlist_iter_t runner = NULL;
-    dlist_iter_t end = NULL;
+    dlist_t *level = NULL;
+    dlist_iter_t found;
 
     assert(NULL != hash);
     assert(NULL != key);
 
-    room = hash->hash_func(key);
-    assert(NULL != hash->table[room]);
+    level = hash->table[hash->hash_func(key)];
 
-    runner = DListBegin(hash->table[room]);
-    end = DListEnd(hash->table[room]);
-    runner = DListFind(runner,end, &CmpNodeD, (void *)key);
+    if(NULL != level)
+    {
+        found = DListFind(DListBegin(level), DListEnd(level), hash->cmp_func, key);
 
-
-    return (DListIsEqual(runner, end)) ? NULL : DListGetData(runner);
+        return (DListIsEqual(found, DListEnd(level))? NULL : DListGetData(found) );
+    }
+    return level;
 }
 
 void HashRemove(hash_t *hash, const void *key)
@@ -151,25 +152,26 @@ void HashRemove(hash_t *hash, const void *key)
     dlist_iter_t runner = NULL;
     dlist_iter_t end = NULL;
 
+
     assert(NULL != hash);
     assert(NULL != key);
 
     room = hash->hash_func(key);
     assert(room <= hash->size);
 
-    runner = DListBegin(hash->table[room]);
-    end = DListEnd(hash->table[room]);
+    if(hash->table[room] != NULL)
+    {
+        runner = DListBegin(hash->table[room]);
+        end = DListEnd(hash->table[room]);
 
-    runner = DListFind(runner,end, &CmpNodeD, (void *)key);
+        runner = DListFind(runner,end, hash->cmp_func, key);
 
-   if (!DListIsEqual(runner, end))
-   {
-        DListRemove(runner);
-   }
-
-   
+       if (!DListIsEqual(runner, end))
+       {
+            DListRemove(runner);
+       } 
+    }  
 }
-
 
 
 size_t HashSize(const hash_t *hash)
@@ -189,11 +191,43 @@ size_t HashSize(const hash_t *hash)
     return occupance;
 }
 
+
+
+
+
 int HashIsEmpty(const hash_t *hash)
 {
     assert(NULL != hash);
     return (!HashSize(hash));
 }
+
+
+int HashForEach(const hash_t *hash, hash_action_func_t action_func, void *param)
+{
+    status_e stat = SUCCESS;
+    size_t room = 0;
+
+    assert(NULL != hash);
+    assert(NULL != action_func);
+
+    for (room = 0; room < hash->size && SUCCESS == stat; ++room)
+    {
+        dlist_t *level = hash->table[room];
+        if (NULL != level)
+        {
+            stat = DListForEach(
+                DListBegin(level), DListEnd(level), action_func, param);
+        }
+        else
+        {
+            stat = FAIL;
+        }
+    }
+
+    return stat;
+}
+
+
 
 
 
@@ -208,6 +242,5 @@ int MatchNum(const void *data, void *param)
 int CmpNodeD(const void *key1, void *key2)
 {   
    
-
     return (*(int *)key1 - *(int *)key2);
 }
