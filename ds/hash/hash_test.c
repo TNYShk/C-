@@ -12,7 +12,7 @@
 
 #define WORDSDICT (102401)
 #define WORDLENMAX (30)
-#define PATH ("/home/tanya/git/ds/hash/words")
+
 
 
 void CreateDestroy();
@@ -35,7 +35,7 @@ int main(void)
     
     CreateDestroy();
     OccupyHotel();
-    
+    printf("Spell Check Test:\n");
    SpellCheck("Aaliyah\n");
    SpellCheck("AA\n");
     return 0;
@@ -76,7 +76,7 @@ static void SpellCheck(void *word)
         printf(" currently %ld rooms taken\n", HashSize(hashy));
         */
         spell = HashFind(hashy, GetKey(word));
-        (spell == NULL)? printf("word not found\n"): printf("found!! %s\n", (char *)spell);
+        (spell == NULL)? printf("word: %s not found\n", (char *)word): printf("found!! %s\n", (char *)spell);
        
 
         fclose(fp1);
