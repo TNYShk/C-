@@ -7,28 +7,84 @@
  **********************************************/
 #include <assert.h> /* assert */
 #include <stdio.h>
-
+#include <stdlib.h>
 #include "hash.h" /* programs header*/
+
+#define WORDSDICT (102401)
+#define WORDLENMAX (30)
+
+
 
 void CreateDestroy();
 void OccupyHotel();
-
-
 static const void *GetKey(const void *data);
 static size_t hash_func(const void *key);
-static int CompareData(const void *key1, const void *key2);
-static int PrintForEachString(void *value, void *param);
+int CompareData(const void *key1, const void *key2);
+int PrintForEachString(void *value, void *param);
+static void GetWords();
+static size_t hash_func99(const void *key);
 
+typedef struct dict
+{
+    const void *key;
+    void *data;
+}dict_t;
 
 int main(void)
 {
     
-    
-
     CreateDestroy();
     OccupyHotel();
     return 0;
 }
+
+
+
+static void GetWords()
+{
+    
+    int i = 0;
+    hash_t *hashy = NULL;
+    dict_t *dictionary = NULL;
+    hashy = HashCreate(99, &GetKey, &CompareData, &hash_func99);
+    
+    dictionary = (dict_t *)malloc(WORDSDICT * sizeof(dict_t));
+    if(NULL != dictionary)
+    {
+        FILE *fp1 = fopen("words.txt", "r");
+        
+        for(; i < WORDSDICT; ++i)
+        {
+            while(NULL != fgets(dictionary[i].data, WORDLENMAX, fp1))
+            {
+                puts(dictionary[i].data);
+                dictionary[i].key = GetKey(dictionary[i].data);
+                HashInsert(hashy, &(dictionary[i].data));
+            }
+        }
+        fclose(fp1);
+    }
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 void CreateDestroy()
 {
@@ -50,7 +106,7 @@ void OccupyHotel()
     hashy = HashCreate(99, &GetKey, &CompareData, &hash_func);
     (1 == HashIsEmpty(hashy))? printf("Empty Hash Hotel\n") : printf("NOT empty Hotel\n");
     
-    HashInsert(hashy, "tanya");
+    assert(0 == HashInsert(hashy, "tanya"));
     HashInsert(hashy, "Anya");
     HashInsert(hashy, "Fanya");
     HashInsert(hashy, "Aanya");
@@ -111,12 +167,22 @@ static size_t hash_func(const void *key)
     return hash_index;
 }
 
-static int CompareData(const void *key1, const void *key2)
+static size_t hash_func99(const void *key)
+{
+    size_t hash_index = 0; /* number of rooms*/
+    int cc = 0;
+
+    hash_index = ((*(size_t *)&key) % 100);
+    
+    return hash_index;
+}
+
+int CompareData(const void *key1, const void *key2)
 {
     return (*(size_t *)&key1 - *(size_t *)&key2);
 }
 
-static int PrintForEachString(void *value, void *param)
+int PrintForEachString(void *value, void *param)
 {
     (void)param;
 
