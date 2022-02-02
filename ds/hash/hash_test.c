@@ -11,8 +11,8 @@
 #include "hash.h" /* programs header*/
 
 #define WORDSDICT (102401)
-#define WORDLENMAX (30)
-
+#define WORDLENMAX (26)
+#define PATH ("/home/tanya/git/ds/hash/words")
 
 
 void CreateDestroy();
@@ -27,7 +27,7 @@ static size_t hash_func99(const void *key);
 typedef struct dict
 {
     const void *key;
-    char *data;
+    char data[WORDLENMAX];
 }dict_t;
 
 int main(void)
@@ -39,39 +39,41 @@ int main(void)
     return 0;
 }
 
-
+/* printf("read? %ld\n", fread(dictionary[i].data, WORDLENMAX, read, fp1));*/
 
 static void GetWords()
 {
     
-    int i = 0;
-    size_t read = 0;
+    size_t i = 0;
+   
     hash_t *hashy = NULL;
     dict_t *dictionary = NULL;
-    hashy = HashCreate(99, &GetKey, &CompareData, &hash_func99);
+    FILE *fp1 = fopen("words", "r"); 
     
-    dictionary = (dict_t *)malloc(WORDSDICT * sizeof(dict_t));
-    if(NULL != dictionary)
+    hashy = HashCreate(999, &GetKey, &CompareData, &hash_func99);
+    
+    dictionary = (dict_t *)calloc(WORDSDICT,sizeof(dict_t));
+    if(dictionary == NULL)
     {
-        FILE *fp1 = fopen("words.txt", "r");
-        
-        for(; i < WORDSDICT; ++i)
-        {   
-            while(WORDLENMAX == fread(dictionary[i].data, WORDLENMAX, read, fp1))
-            {
-                printf("here?\n");
-                dictionary[i].key = GetKey(dictionary[i].data);
-                HashInsert(hashy, &(dictionary[i].data));
-            }
-
-        }
-       
-        printf(" currently %ld rooms taken\n", HashSize(hashy));
-     fclose(fp1);
-    free(dictionary);
-    HashDestroy(hashy);
+        HashDestroy(hashy);
+        fclose(fp1);
     }
-    printf(" currently %ld rooms taken\n", HashSize(hashy));
+    else
+    {
+       
+        for(fgets(dictionary[i].data, WORDLENMAX,fp1); i < WORDSDICT; ++i )
+        {
+            HashInsert(hashy, &(dictionary[i].data));
+            dictionary[i].key = GetKey(dictionary[i].data);
+        }
+
+        printf(" currently %ld rooms taken\n", HashSize(hashy));
+        
+        fclose(fp1);
+        free(dictionary);
+        HashDestroy(hashy);
+    }
+   
     
 }
 

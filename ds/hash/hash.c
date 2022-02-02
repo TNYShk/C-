@@ -95,7 +95,7 @@ int HashInsert(hash_t *hash, void *data)
     
     size_t level = 0;
     dlist_iter_t noob;
-    keva_t pair = {0};
+   
 
     level = hash->hash_func(new_key);
 
@@ -111,10 +111,9 @@ int HashInsert(hash_t *hash, void *data)
        
     }
     assert(HashFind(hash, new_key) != data);
-    pair.key = new_key;
-    pair.value = data;
+   
 
-    noob = DListPushBack(hash->table[level], ((keva_t*)pair.value));
+    noob = DListPushBack(hash->table[level], data);
     assert(!DListIsEqual(DListBegin(hash->table[level]),DListEnd(hash->table[level]) ));
 
     return (DListIsEqual(noob, DListEnd(hash->table[level])));
