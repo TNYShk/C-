@@ -214,19 +214,16 @@ int HashForEach(const hash_t *hash, hash_action_func_t action_func, void *param)
     assert(NULL != hash);
     assert(NULL != action_func);
 
-    for (room = 0; room < hash->size && SUCCESS == stat; ++room)
+    for (room = 0; room < hash->size && (SUCCESS == stat); ++room)
     {
         dlist_t *level = hash->table[room];
+         
         if (NULL != level)
         {
             dlist_iter_t runner = DListBegin(level);
             dlist_iter_t end = DListEnd(level);
-
+            
             stat = DListForEach(runner, end, action_func, param);
-        }
-        else
-        {
-            stat = FAIL;
         }
     }
 

@@ -27,6 +27,7 @@ int main(void)
     const void *key = GetKey("tanya");
     const void *Fey = GetKey("Fanya");
     void *param = NULL;
+    int x = 0;
     printf("key is %ld\n", (*(size_t **)&key));
     printf("Fey is %ld\n", (*(size_t **)&Fey));
     printf("hash key is %ld\n", hash_func(key));
@@ -39,19 +40,30 @@ int main(void)
     HashInsert(hashy, "Fanya");
     HashInsert(hashy, "Aanya");
     HashInsert(hashy, "Banya");
+    HashInsert(hashy, "Tatyanna");
     printf("hash size is: %ld\n", HashSize(hashy));
+    printf("\n");
     (1 == HashIsEmpty(hashy))? printf("Empty Hash\n") : printf("NOT empty Hash\n");
-    
+    printf("\nCurrent Hotel Occupants:\n");
+    HashForEach(hashy, &PrintForEachString, &x );
+    printf("\n");
+    printf("\nRemoving 2 occupants\n");
     HashRemove(hashy, GetKey("tanya"));
     HashRemove(hashy, GetKey("Banya"));
-
-    HashForEach(hashy, &PrintForEachString, &param );
+    assert(HashSize(hashy) == 4);
+     printf("hash size is: %ld\n", HashSize(hashy));
+    printf("\nCurrent Hotel Occupants:\n");
+    HashForEach(hashy, &PrintForEachString, &x );
+    printf("\n\nHashFind\n");
     param = HashFind(hashy, GetKey("Anya"));
     printf("found? %s\n", *(char **)&param);
     assert(param != NULL);
 
-    printf("hash size is: %ld\n", HashSize(hashy));
    
+    param = HashFind(hashy, GetKey("tanya"));
+    assert(param == NULL);
+   
+    
 
     HashDestroy(hashy);
 
@@ -96,6 +108,7 @@ static int CompareData(const void *key1, const void *key2)
 static int PrintForEachString(void *value, void *param)
 {
     (void)param;
+
     printf("%s ", (char *)value);
 
     return 0;
