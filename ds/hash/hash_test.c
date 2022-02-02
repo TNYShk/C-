@@ -21,7 +21,7 @@ static const void *GetKey(const void *data);
 static size_t hash_func(const void *key);
 int CompareData(const void *key1, const void *key2);
 int PrintForEachString(void *value, void *param);
-static void GetWords();
+static void GetWords(void *word);
 static size_t hash_func99(const void *key);
 
 typedef struct dict
@@ -33,21 +33,24 @@ typedef struct dict
 int main(void)
 {
     
-    /*CreateDestroy();
-    OccupyHotel();*/
-    GetWords();
+    CreateDestroy();
+    OccupyHotel();
+    
+   /* GetWords("aaa");*/
     return 0;
 }
 
 /* printf("read? %ld\n", fread(dictionary[i].data, WORDLENMAX, read, fp1));*/
 
-static void GetWords()
+static void GetWords(void *word)
 {
     
     size_t i = 0;
    
     hash_t *hashy = NULL;
     dict_t *dictionary = NULL;
+    void *spell = NULL;
+
     FILE *fp1 = fopen("words", "r"); 
     
     hashy = HashCreate(999, &GetKey, &CompareData, &hash_func99);
@@ -69,6 +72,9 @@ static void GetWords()
 
         printf(" currently %ld rooms taken\n", HashSize(hashy));
         
+        spell = HashFind(hashy, GetKey(word));
+        (spell == NULL)? printf("bad word"): printf("found! %s\n", *(char **)&spell);
+
         fclose(fp1);
         free(dictionary);
         HashDestroy(hashy);
