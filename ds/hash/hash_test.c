@@ -61,10 +61,10 @@ static void SpellCheck(void *word)
     size_t i = 0;
     hash_t *hashy = NULL;
     dict_t *dictionary = NULL;
-    char c = ' ';
+    
     char string[WORDLENMAX] = {0};
     void *spell = NULL;
-    int x = 0;
+    
 
     FILE *fp1 = fopen("words", "r"); 
     
