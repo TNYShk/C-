@@ -35,12 +35,14 @@ int main(void)
     
     (1 == HashIsEmpty(hashy))? printf("Empty Hash\n") : printf("NOT empty Hash\n");
     HashInsert(hashy, "tanya");
-
+    HashInsert(hashy, "Anya");
     HashInsert(hashy, "Fanya");
+    HashInsert(hashy, "Aanya");
+    HashInsert(hashy, "Banya");
     printf("hash size is: %ld\n", HashSize(hashy));
      (1 == HashIsEmpty(hashy))? printf("Empty Hash\n") : printf("NOT empty Hash\n");
     
-     HashRemove(hashy, (void *)key);
+    HashRemove(hashy, GetKey("tanya"));
 
 
    
@@ -78,12 +80,12 @@ static size_t hash_func(const void *key)
     size_t hash_index = 0; /* number of rooms*/
     int cc = 0;
 
-    hash_index = ((*(size_t *)&key) % 100);
+    hash_index = ((*(size_t *)&key) % 10);
     
     return hash_index;
 }
 
 static int CompareData(const void *key1, const void *key2)
 {
-    return (*(size_t *)key1 - *(size_t *)key2);
+    return (*(size_t *)&key1 - *(size_t *)&key2);
 }
