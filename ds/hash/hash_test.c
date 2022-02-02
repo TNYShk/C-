@@ -27,14 +27,15 @@ static size_t hash_func99(const void *key);
 typedef struct dict
 {
     const void *key;
-    void *data;
+    char *data;
 }dict_t;
 
 int main(void)
 {
     
-    CreateDestroy();
-    OccupyHotel();
+    /*CreateDestroy();
+    OccupyHotel();*/
+    GetWords();
     return 0;
 }
 
@@ -44,6 +45,7 @@ static void GetWords()
 {
     
     int i = 0;
+    size_t read = 0;
     hash_t *hashy = NULL;
     dict_t *dictionary = NULL;
     hashy = HashCreate(99, &GetKey, &CompareData, &hash_func99);
@@ -54,19 +56,26 @@ static void GetWords()
         FILE *fp1 = fopen("words.txt", "r");
         
         for(; i < WORDSDICT; ++i)
-        {
-            while(NULL != fgets(dictionary[i].data, WORDLENMAX, fp1))
+        {   
+            while(WORDLENMAX == fread(dictionary[i].data, WORDLENMAX, read, fp1))
             {
-                puts(dictionary[i].data);
+                printf("here?\n");
                 dictionary[i].key = GetKey(dictionary[i].data);
                 HashInsert(hashy, &(dictionary[i].data));
             }
+
         }
-        fclose(fp1);
+       
+        printf(" currently %ld rooms taken\n", HashSize(hashy));
+     fclose(fp1);
+    free(dictionary);
+    HashDestroy(hashy);
     }
-
-
+    printf(" currently %ld rooms taken\n", HashSize(hashy));
+    
 }
+
+
 
 
 
