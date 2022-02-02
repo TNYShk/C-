@@ -6,13 +6,14 @@
  * Reviewer: Ori    	                      *
  **********************************************/
 #include <assert.h> /* assert */
-#include <stdio.h>
-#include <stdlib.h>
+#include <stdio.h> /* printf*/
+#include <stdlib.h> /*  fgets, fopen, fclose*/
+#include <string.h> /* strlen */
 #include "hash.h" /* programs header*/
 
 #define WORDSDICT (102401)
 #define WORDLENMAX (30)
-
+#define ESC (27)
 
 
 void CreateDestroy();
@@ -21,7 +22,7 @@ static const void *GetKey(const void *data);
 static size_t hash_func(const void *key);
 int CompareData(const void *key1, const void *key2);
 int PrintForEachString(void *value, void *param);
-static void SpellCheck(void *word);
+static void SpellCheck();
 static size_t hash_func99(const void *key);
 
 typedef struct dict
@@ -35,13 +36,15 @@ int main(void)
     
     CreateDestroy();
     OccupyHotel();
-    printf("Spell Check Test:\n");
-   SpellCheck("Aaliyah\n");
-   SpellCheck("AA\n");
+    
+    printf("\n\tSpell Check Test:\n");
+
+    SpellCheck();
+    
     return 0;
 }
 
-/* printf("read? %ld\n", fread(dictionary[i].data, WORDLENMAX, read, fp1));*/
+
 
 static void SpellCheck(void *word)
 {
@@ -49,13 +52,13 @@ static void SpellCheck(void *word)
     size_t i = 0;
     hash_t *hashy = NULL;
     dict_t *dictionary = NULL;
-    
+    char string[WORDLENMAX] = {0};
     void *spell = NULL;
     int x = 0;
 
     FILE *fp1 = fopen("words", "r"); 
     
-    hashy = HashCreate(10000, &GetKey, &CompareData, &hash_func99);
+    hashy = HashCreate(1000, &GetKey, &CompareData, &hash_func99);
     
     dictionary = (dict_t *)calloc(WORDSDICT,sizeof(dict_t));
     if(dictionary == NULL)
@@ -65,20 +68,25 @@ static void SpellCheck(void *word)
     }
     else
     {
-       
         for( ;i< WORDSDICT ; ++i)
         {
             fgets(dictionary[i].data, WORDLENMAX, fp1);
             HashInsert(hashy, &(dictionary[i].data));
             
         }
-        /*fgets(word, WORDLENMAX, stdin);
-        printf(" currently %ld rooms taken\n", HashSize(hashy));
-        */
-        spell = HashFind(hashy, GetKey(word));
-        (spell == NULL)? printf("word: %s not found\n", (char *)word): printf("found!! %s\n", (char *)spell);
-       
-
+            printf("\nEnter a word to search in linux dict, 2 tries:\n");
+            fgets(string, WORDLENMAX, stdin);
+            spell = HashFind(hashy, GetKey(string));
+            (spell == NULL)? printf("word: %s not found\n", (char *)word): printf("GOOD SPELLING!! %s\n", (char *)spell);
+        
+            printf("\nEnter a word to spell check!\n");
+            fgets(string, WORDLENMAX, stdin);
+            spell = HashFind(hashy, GetKey(string));
+            (spell == NULL)? printf("word: %s not found\n", string): printf("GOOD SPELLING!! %s\n", string);
+        printf("\nTest Complete GoodBye\n");
+        
+        
+        
         fclose(fp1);
         free(dictionary);
         HashDestroy(hashy);
@@ -86,22 +94,6 @@ static void SpellCheck(void *word)
    
     
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
