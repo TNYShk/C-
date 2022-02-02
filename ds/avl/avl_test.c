@@ -275,7 +275,6 @@ int DontPrintNodes(void *data, void *param)
 	 printf("Root: %d \n", (*(int*)param));
 	 printf("Node: %d ", (*(int*)data));
 	 
-
 	 return -1;
 }
 
@@ -287,7 +286,6 @@ void LevelBLevelPrint(avl_t *tree, queue_t *queue)
 
 	if (!AVLIsEmpty(tree))
 	{
-		
 		QueueEnqueue(queue, tree->root);
 		while (!QueueIsEmpty(queue))
 		{

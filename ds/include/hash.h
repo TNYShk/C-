@@ -5,16 +5,8 @@
 
 
 typedef struct hash hash_t;
-/*
-struct hash
-{
-	hash_cmp_func_t cmp_func;
-	hash_func_t hash_func;
-	hash_get_key_func_t get_key;
-	size_t size;
-	dlist_t **table;
-};
-*/
+
+
 typedef int (*hash_cmp_func_t)(const void *key1, const void *key2);
 
 typedef const void *(*hash_get_key_func_t)(const void *data);

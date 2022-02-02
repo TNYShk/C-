@@ -55,7 +55,7 @@ int main(void)
 
 
 
-static void SpellCheck(void *word)
+static void SpellCheck()
 {
 
     size_t i = 0;
@@ -171,10 +171,11 @@ static const void *GetKey(const void *data)
     int cc = 0;
     char *str = (char *)data;
 
-    while (cc = *str++)
+    while ('\0' != *str)
     {
+        cc = *str;
         hash = ((hash << 5) + (hash)) + cc;
-        
+        ++str;
     }
 
     return *(void**)&hash;
@@ -183,8 +184,7 @@ static const void *GetKey(const void *data)
 static size_t hash_func(const void *key)
 {
     size_t hash_index = 0; /* number of rooms*/
-    int cc = 0;
-
+    
     hash_index = ((*(size_t *)&key) % 10);
     
     return hash_index;
@@ -193,8 +193,7 @@ static size_t hash_func(const void *key)
 static size_t hash_func99(const void *key)
 {
     size_t hash_index = 0; /* number of rooms*/
-    int cc = 0;
-
+  
     hash_index = ((*(size_t *)&key) % 1000);
     
     return hash_index;

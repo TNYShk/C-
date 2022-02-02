@@ -150,12 +150,13 @@ size_t DListSize(const dlist_t *dll)
     size_t count = 0;
     dlist_iter_t runner = dll->head;
      
-    assert(NULL != dll);
-    
-    while (runner->next != dll->tail)
+    if(NULL != dll)
     {
-     	++count;
-     	runner = DListNext(runner);
+	    while (runner->next != dll->tail)
+	    {
+	     	++count;
+	     	runner = DListNext(runner);
+	    }
     }
     return count;
 }
@@ -173,7 +174,7 @@ dlist_iter_t DListInsert(dlist_iter_t where, void *data)
 		return RetrieveTail(where);
 	}
 	
-    node->data = data;
+    
 	node->prev = DListPrev(where);
 	node->next = where;
 	
@@ -258,9 +259,12 @@ dlist_iter_t DListBegin(const dlist_t *dll)
 
 dlist_iter_t DListEnd(const dlist_t *dll)
 {
-    assert(NULL != dll);
-
-    return dll->tail;
+    if(NULL != dll)
+    {
+    	 return dll->tail;
+    }
+    return NULL;
+   
 }
 
 
@@ -289,25 +293,27 @@ void *DListGetData(dlist_iter_t iter)
 
 int DListIsEqual(dlist_iter_t iter1, dlist_iter_t iter2)
 {
+   
+    if(iter1 != NULL && iter2 != NULL)
+    {
+    	return (iter1 == iter2);
+    }
+    return 0;
     
-    assert( NULL != iter1);
-    assert( NULL != iter2);
-
-    return (iter1 == iter2);
 }
 
 
 int DListForEach(dlist_iter_t from, dlist_iter_t to, action_func_t action_func, void *param)
 {
 
-    int status = FAIL;
+    int status = SUCCESS;
     dlist_iter_t current = NULL;
 
     assert ( NULL != from);
     assert (NULL != to);
   
     current = from;
-    while (!DListIsEqual(current, to))
+    while (!DListIsEqual(current, to)&& (status == SUCCESS))
     {
         status = action_func(current->data, param);
         current = DListNext(current);
@@ -316,7 +322,7 @@ int DListForEach(dlist_iter_t from, dlist_iter_t to, action_func_t action_func, 
     return status;
 }
 
-dlist_iter_t DListFind(dlist_iter_t from, dlist_iter_t to, match_func_t is_match, void *param)
+dlist_iter_t DListFind(dlist_iter_t from, dlist_iter_t to, match_func_t is_match, const void *param)
 {
 	
 	assert( NULL != from);
@@ -336,7 +342,7 @@ dlist_iter_t DListFind(dlist_iter_t from, dlist_iter_t to, match_func_t is_match
 }
 
 /* re use Find here*/
-int DListMultiFind(dlist_iter_t from, dlist_iter_t to, match_func_t is_match, void *param, dlist_t *result_list)
+int DListMultiFind(dlist_iter_t from, dlist_iter_t to, match_func_t is_match, const void *param, dlist_t *result_list)
 {
 	dlist_node_t *current_node = NULL;
 	int result = FAIL;
@@ -383,7 +389,7 @@ void DListSplice(dlist_iter_t where, dlist_iter_t from, dlist_iter_t to)
 
 
 /*test for each and find funcs */
-int MatchNum(const void *data, void *param)
+int MatchNum(const void *data, const void *param)
 {	
 	assert(NULL != param);
 

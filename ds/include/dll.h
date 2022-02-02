@@ -12,7 +12,7 @@
 
 typedef struct dlist dlist_t;
 typedef struct dlist_node * dlist_iter_t;
-typedef int (*match_func_t)(const void *data, void *param);
+typedef int (*match_func_t)(const void *data, const void *param);
 typedef int (*action_func_t)(void *data, void *param);
 
 /*
@@ -202,7 +202,7 @@ int DListIsEqual(dlist_iter_t iter1, dlist_iter_t iter2);
  * RETURN: matching Iterator, NULL if not found
  * O(n) time, O(1) memory */
 dlist_iter_t DListFind(dlist_iter_t from, dlist_iter_t to,
-	match_func_t is_match, void *param);
+	match_func_t is_match, const void *param);
 
 /*
  * DESCRIPTION: 
@@ -215,7 +215,7 @@ dlist_iter_t DListFind(dlist_iter_t from, dlist_iter_t to,
  * RETURN: Boolean val:  0 Success, -1 Fail
  * O(n) time, O(1) memory */
 int DListMultiFind(dlist_iter_t from, dlist_iter_t to,
-	match_func_t is_match, void *param, dlist_t *result_list);
+	match_func_t is_match, const void *param, dlist_t *result_list);
 
 /*
  * DESCRIPTION: 

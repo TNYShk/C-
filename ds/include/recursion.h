@@ -66,7 +66,7 @@ node_t *RecFlipList(node_t *node);
  * O(n^2) time, O(n) memory */
 void RecSort(stack_t *stack);
 
-size_t RecStrLen(const char *strq);
+size_t RecStrLen(const char *str);
 
 int RecStrCmp(const char *s1, const char *s2);
 

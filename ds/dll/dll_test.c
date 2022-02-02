@@ -23,7 +23,7 @@
 void TestOne();
 void TestTwo();
 
-int MatchNum(const void *data, void *param);
+int MatchNum(const void *data, const void *param);
 void TestFind(dlist_iter_t from, dlist_iter_t to, match_func_t is_match, void *data);
 int AddInt(void *data, void *param);
 
