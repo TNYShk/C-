@@ -13,17 +13,24 @@
 
 #define WORDSDICT (102401)
 #define WORDLENMAX (30)
+#define HIDE (system("stty -icanon -echo"))
+#define UNHIDE (system("stty icanon echo"))
 #define ESC (27)
 
 
 void CreateDestroy();
 void OccupyHotel();
-static const void *GetKey(const void *data);
-static size_t hash_func(const void *key);
+static void SpellCheck();
 int CompareData(const void *key1, const void *key2);
 int PrintForEachString(void *value, void *param);
-static void SpellCheck();
+
+/* hashing & indexing funcs */
+static const void *GetKey(const void *data);
+static size_t hash_func(const void *key);
 static size_t hash_func99(const void *key);
+
+
+
 
 typedef struct dict
 {
@@ -52,6 +59,7 @@ static void SpellCheck(void *word)
     size_t i = 0;
     hash_t *hashy = NULL;
     dict_t *dictionary = NULL;
+    char c = ' ';
     char string[WORDLENMAX] = {0};
     void *spell = NULL;
     int x = 0;
@@ -74,16 +82,18 @@ static void SpellCheck(void *word)
             HashInsert(hashy, &(dictionary[i].data));
             
         }
-            printf("\nEnter a word to search in linux dict, 2 tries:\n");
-            fgets(string, WORDLENMAX, stdin);
-            spell = HashFind(hashy, GetKey(string));
-            (spell == NULL)? printf("word: %s not found\n", (char *)word): printf("GOOD SPELLING!! %s\n", (char *)spell);
+        printf("Loaded dictionary! good luck\n");
         
-            printf("\nEnter a word to spell check!\n");
-            fgets(string, WORDLENMAX, stdin);
-            spell = HashFind(hashy, GetKey(string));
-            (spell == NULL)? printf("word: %s not found\n", string): printf("GOOD SPELLING!! %s\n", string);
-        printf("\nTest Complete GoodBye\n");
+            printf("\nEnter a word to search in linux dict, or ESC Enter :\n");
+            while (*(char *)string != ESC)
+            {
+                fgets(string, WORDLENMAX, stdin);
+                spell = HashFind(hashy, GetKey(string));
+                (spell == NULL)? printf("\nbad spelling: %s \n", string): 
+                printf("\n %s\nGOOD SPELLING!!\n", (char *)spell);
+            }
+        
+        printf("\n  Test Complete GoodBye\n");
         
         
         
