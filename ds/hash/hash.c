@@ -37,12 +37,7 @@ struct hash
     dlist_t **table;
 };
 
-typedef struct keva
-{
-    const void *key;
-    const void *value;
-    
-}keva_t;
+
 
 int MatchNum(const void *data, void *param);
 int CmpNodeD(const void *key1, void *key2);
@@ -106,10 +101,7 @@ int HashInsert(hash_t *hash, void *data)
     size_t level = 0;
     dlist_iter_t noob;
 
-   
     level = hash->hash_func(new_key);
-    printf("level is %ld\n", level);
-    printf("key is %ld\n", (*(size_t **)&new_key));
 
     assert(level <= hash->size);
 
@@ -122,7 +114,7 @@ int HashInsert(hash_t *hash, void *data)
        }
        
     }
-   /* assert(HashFind(hash, new_key) != data);*/
+    assert(HashFind(hash, new_key) != data);
 
     noob = DListPushBack(hash->table[level], data);
     assert(!DListIsEqual(DListBegin(hash->table[level]),DListEnd(hash->table[level]) ));
@@ -136,7 +128,8 @@ void *HashFind(const hash_t *hash, const void *key)
 {
     size_t room = 0;
     dlist_t *level = NULL;
-    dlist_iter_t found;
+    dlist_iter_t runner = NULL;
+    void *data = NULL;
 
     assert(NULL != hash);
     assert(NULL != key);
@@ -145,12 +138,24 @@ void *HashFind(const hash_t *hash, const void *key)
 
     if(NULL != level)
     {
-        found = DListFind(DListBegin(level), DListEnd(level), hash->cmp_func, key);
+        
+        dlist_iter_t end = DListEnd(level);
+        runner = DListBegin(level);
+        
+        while (!DListIsEqual(runner, end) && 
+            (0 != hash->cmp_func(hash->get_key(DListGetData(runner)), key)))
+        {
+              runner = DListNext(runner);  
+        }
+      
+      data = DListGetData(runner);
+   
     }
-
-    return (DListIsEqual(found, DListEnd(level))? NULL : DListGetData(found) );
+    
+    return (DListIsEqual(runner, DListEnd(level))? NULL : data );
     
 }
+
 
 void HashRemove(hash_t *hash, const void *key)
 {
@@ -194,9 +199,6 @@ size_t HashSize(const hash_t *hash)
 }
 
 
-
-
-
 int HashIsEmpty(const hash_t *hash)
 {
     assert(NULL != hash);
@@ -217,8 +219,10 @@ int HashForEach(const hash_t *hash, hash_action_func_t action_func, void *param)
         dlist_t *level = hash->table[room];
         if (NULL != level)
         {
-            stat = DListForEach(
-                DListBegin(level), DListEnd(level), action_func, param);
+            dlist_iter_t runner = DListBegin(level);
+            dlist_iter_t end = DListEnd(level);
+
+            stat = DListForEach(runner, end, action_func, param);
         }
         else
         {
@@ -233,16 +237,3 @@ int HashForEach(const hash_t *hash, hash_action_func_t action_func, void *param)
 
 
 
-
-int MatchNum(const void *data, void *param)
-{   
-    assert(NULL != param);
-
-    return (*(size_t *)data == *(size_t *)param);
-}
-
-int CmpNodeD(const void *key1, void *key2)
-{   
-   
-    return (*(int *)key1 - *(int *)key2);
-}

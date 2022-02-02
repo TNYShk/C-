@@ -16,7 +16,7 @@
 static const void *GetKey(const void *data);
 static size_t hash_func(const void *key);
 static int CompareData(const void *key1, const void *key2);
-static int CompareData(const void *key1, const void *key2);
+static int PrintForEachString(void *value, void *param);
 
 
 int main(void)
@@ -26,7 +26,7 @@ int main(void)
    
     const void *key = GetKey("tanya");
     const void *Fey = GetKey("Fanya");
-    
+    void *param = NULL;
     printf("key is %ld\n", (*(size_t **)&key));
     printf("Fey is %ld\n", (*(size_t **)&Fey));
     printf("hash key is %ld\n", hash_func(key));
@@ -40,12 +40,15 @@ int main(void)
     HashInsert(hashy, "Aanya");
     HashInsert(hashy, "Banya");
     printf("hash size is: %ld\n", HashSize(hashy));
-     (1 == HashIsEmpty(hashy))? printf("Empty Hash\n") : printf("NOT empty Hash\n");
+    (1 == HashIsEmpty(hashy))? printf("Empty Hash\n") : printf("NOT empty Hash\n");
     
     HashRemove(hashy, GetKey("tanya"));
+    HashRemove(hashy, GetKey("Banya"));
 
-
-   
+    HashForEach(hashy, &PrintForEachString, &param );
+    param = HashFind(hashy, GetKey("Anya"));
+    printf("found? %s\n", *(char **)&param);
+    assert(param != NULL);
 
     printf("hash size is: %ld\n", HashSize(hashy));
    
@@ -88,4 +91,12 @@ static size_t hash_func(const void *key)
 static int CompareData(const void *key1, const void *key2)
 {
     return (*(size_t *)&key1 - *(size_t *)&key2);
+}
+
+static int PrintForEachString(void *value, void *param)
+{
+    (void)param;
+    printf("%s ", (char *)value);
+
+    return 0;
 }
