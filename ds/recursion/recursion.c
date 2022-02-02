@@ -12,7 +12,7 @@
 
 #include "recursion.h" /* program header*/
 
-
+#define MAX_FIBO_INT (100)
 
 static void InSortedStack(stack_t *stack, int val);
 static int RecStrnCmp(const char *s1, const char *s2, size_t len);
@@ -35,16 +35,26 @@ int IterFibonacci(int element_index)
 
 int RecFibonacci(int element_index)
 {
-	assert(0 <= element_index );
+	int prev = 0, pprev = 0;
+	static int fibo_lut[MAX_FIBO_INT] = {0};
+	
+	assert(0 <= element_index);
 
 	if( (0 == element_index) || (1 == element_index) )
 	{
 		return element_index;
 	}
 
-	return ( RecFibonacci(element_index - 1) + RecFibonacci(element_index - 2) );
-}
+	prev = 0 != fibo_lut[element_index - 1]?
+				fibo_lut[element_index - 1]:
+				RecFibonacci(element_index -1);
 
+	pprev = 0 != fibo_lut[element_index - 2]?
+				fibo_lut[element_index - 2]:
+				RecFibonacci(element_index -2);
+
+	return ( prev + pprev );
+}
 
 node_t *RecFlipList(node_t *head)
 {
@@ -58,7 +68,6 @@ node_t *RecFlipList(node_t *head)
 	else
 	{
 		node_t *new = RecFlipList(head->next);
-
 		head->next->next = head;
 		head->next = NULL;
 
@@ -72,30 +81,48 @@ void RecSort(stack_t *stack)
 	int peek = 0;
 
 	assert(NULL != stack);
-
-	if(!StackIsEmpty(stack))
+	
+	if (StackIsEmpty(stack))
 	{
-		peek = *(int *)StackPeek(stack);
-		StackPop(stack);
-
-		RecSort(stack);
-		InSortedStack(stack, peek);
+		return;
 	}
+
+	peek = *(int *)StackPeek(stack);
+	StackPop(stack);
+
+	RecSort(stack);
+
+	InSortedStack(stack, peek);
+
 }
 
-
-
-
-size_t RecStrLen(const char *strq)
+static void InSortedStack(stack_t *stack, int number)
 {
-	assert(NULL != strq);
+	if (!(StackIsEmpty(stack)) && (number > (*(int *)StackPeek(stack))))
+	{
+		int peek = *(int *)StackPeek(stack);
+		StackPop(stack);
+		
+		InSortedStack(stack, number);
+		
+		StackPush(stack, &peek);
+		
+		return;
+	}
 
-	if ('\0' == *strq)
+	StackPush(stack, &number);
+}
+
+size_t RecStrLen(const char *str)
+{
+	assert(NULL != str);
+
+	if ('\0' == *str)
 	{
 		return 0;
 	}
 
-	return (1 + RecStrLen(++strq));
+	return (1 + RecStrLen(++str));
 }
 
 int RecStrCmp(const char *s1, const char *s2)
@@ -150,6 +177,7 @@ char *RecStrStr(const char *haystack, const char *needle)
 	  	return NULL;
 	}
 
+
     if (*haystack == *needle)
     {
      	if (!RecStrnCmp(haystack, needle, RecStrLen(needle)))
@@ -174,23 +202,22 @@ static int RecStrnCmp(const char *s1, const char *s2, size_t len)
 	return RecStrnCmp(++s1, ++s2,--len);
 }
 
-static void InSortedStack(stack_t *stack, int number)
-{
-	
-	if (!(StackIsEmpty(stack)) && (number > (*(int *)StackPeek(stack))))
-	{
-		int peek = *(int *)StackPeek(stack);
-		StackPop(stack);
-		
-		InSortedStack(stack, number);
-		
-		StackPush(stack, &peek);
-		
-		return;
-	}
 
-	StackPush(stack, &number);
+/* malloc memoization option- NOT COMPLETE
+int Fibonacci(int elem_idx)
+{
+	static int *fibo_lut = NULL;
+
+	if (NULL = fibo_lut)
+	{	
+		fibo_lut = (int *)calloc(elem_idx, sizeof(int));
+		if(NULL == fibo_lut)
+		{
+			return NULL;
+		}	
+	}
 }
+*/
 
 /*
 char *RecStrCat(char *dest, const char *src)
@@ -203,8 +230,8 @@ char *RecStrCat(char *dest, const char *src)
 		return RecStrCpy(dest,src);
 	}
 
-	RecStrCat(dest + 1, src); 
-	return dest;
+	return (RecStrCat(dest + 1, src) - 1); 
+	
 }*/
 
 /*
@@ -219,4 +246,30 @@ char *RecStrCat(char *dest, const char *src)
 }
 */
 
+/* NOT COMPLETE
+char *RecStrStr(const char *haystack, const char *needle)
+{
+	assert(NULL != haystack);
+	assert(NULL != needle);
 
+	if ('\0' == *needle)
+	{
+	  	return (char *)haystack;
+	}
+
+	if ('\0' == *haystack)
+	{
+	  	return NULL;
+	}
+	
+
+    if (*haystack == *needle)
+    {
+     	
+     	RecStrStr(haystack + 1, needle + 1);
+    }
+
+   return (RecStrStr(haystack + 1, needle)) ;
+}
+
+*/
