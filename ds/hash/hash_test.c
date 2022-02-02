@@ -1,17 +1,18 @@
 /**********************************************
  * HASH - Source File                         *
  * Developer: Tanya			                  *
- *          Jan 31, 2022                      *
+ *          Feb 01, 2022                      *
  *                                            *
- * Reviewer:        	                      *
+ * Reviewer: Ori    	                      *
  **********************************************/
 #include <assert.h> /* assert */
-#include <stdlib.h> /* calloc, free */
-#include <string.h> /* memset */
-#include <math.h> /* abs */
 #include <stdio.h>
 
 #include "hash.h" /* programs header*/
+
+void CreateDestroy();
+void OccupyHotel();
+
 
 static const void *GetKey(const void *data);
 static size_t hash_func(const void *key);
@@ -22,56 +23,66 @@ static int PrintForEachString(void *value, void *param);
 int main(void)
 {
     
+    
+
+    CreateDestroy();
+    OccupyHotel();
+    return 0;
+}
+
+void CreateDestroy()
+{
+
     hash_t *hashy = NULL;
-   
-    const void *key = GetKey("tanya");
-    const void *Fey = GetKey("Fanya");
+    hashy = HashCreate(10, &GetKey, &CompareData, &hash_func);
+    assert(1 == HashIsEmpty(hashy));
+    assert(0 == HashSize(hashy));
+    HashDestroy(hashy);
+
+}
+
+void OccupyHotel()
+{
+    hash_t *hashy = NULL;
     void *param = NULL;
     int x = 0;
-    printf("key is %ld\n", (*(size_t **)&key));
-    printf("Fey is %ld\n", (*(size_t **)&Fey));
-    printf("hash key is %ld\n", hash_func(key));
-    printf("hash key is %ld\n", hash_func(Fey));
+
     hashy = HashCreate(99, &GetKey, &CompareData, &hash_func);
+    (1 == HashIsEmpty(hashy))? printf("Empty Hash Hotel\n") : printf("NOT empty Hotel\n");
     
-    (1 == HashIsEmpty(hashy))? printf("Empty Hash\n") : printf("NOT empty Hash\n");
     HashInsert(hashy, "tanya");
     HashInsert(hashy, "Anya");
     HashInsert(hashy, "Fanya");
     HashInsert(hashy, "Aanya");
     HashInsert(hashy, "Banya");
     HashInsert(hashy, "Tatyanna");
-    printf("hash size is: %ld\n", HashSize(hashy));
-    printf("\n");
-    (1 == HashIsEmpty(hashy))? printf("Empty Hash\n") : printf("NOT empty Hash\n");
+    printf(" currently %ld rooms taken\n", HashSize(hashy));
+    assert(HashSize(hashy) == 6);
+
     printf("\nCurrent Hotel Occupants:\n");
     HashForEach(hashy, &PrintForEachString, &x );
     printf("\n");
-    printf("\nRemoving 2 occupants\n");
+
+    printf("\nCheckout, 2 guests leaving\n");
     HashRemove(hashy, GetKey("tanya"));
     HashRemove(hashy, GetKey("Banya"));
     assert(HashSize(hashy) == 4);
-     printf("hash size is: %ld\n", HashSize(hashy));
+
     printf("\nCurrent Hotel Occupants:\n");
     HashForEach(hashy, &PrintForEachString, &x );
-    printf("\n\nHashFind\n");
+    printf("\n\nCalling Guests to Lobby:\n");
     param = HashFind(hashy, GetKey("Anya"));
-    printf("found? %s\n", *(char **)&param);
+    printf("found! %s\n", *(char **)&param);
     assert(param != NULL);
 
-   
     param = HashFind(hashy, GetKey("tanya"));
     assert(param == NULL);
-   
+    printf("guest tanya not found -  left the building \n");
     
 
     HashDestroy(hashy);
 
-    
-    return 0;
 }
-
-
 
 
 

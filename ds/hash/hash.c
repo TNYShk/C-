@@ -1,32 +1,24 @@
 /**********************************************
  * HASH - Source File                         *
  * Developer: Tanya			                  *
- *          Jan 31, 2022                      *
+ *          Feb 01, 2022                      *
  *                                            *
- * Reviewer:        	                      *
+ * Reviewer: Ori    	                      *
  **********************************************/
 #include <assert.h> /* assert */
 #include <stdlib.h> /* calloc, free */
 #include <string.h> /* memset */
-#include <math.h> /* abs */
 
 #include "../include/hash.h" /* programs header*/
 #include "dll.h"
-/*
-typedef int (*hash_cmp_func_t)(const void *key1, const void *key2);
 
-typedef const void *(*hash_get_key_func_t)(const void *data);
-typedef size_t (*hash_func_t)(const void *key);
-
-typedef int (*hash_action_func_t)(void *value, void *param);
-typedef struct hash hash_t;
-*/
 
 typedef enum status
 {
     SUCCESS,
     FAIL = -1
 }status_e;
+
 
 struct hash
 {
@@ -37,10 +29,6 @@ struct hash
     dlist_t **table;
 };
 
-
-
-int MatchNum(const void *data, void *param);
-int CmpNodeD(const void *key1, void *key2);
 
 hash_t *HashCreate(size_t size, hash_get_key_func_t get_key, 
             hash_cmp_func_t cmp_func, hash_func_t hash_func)
@@ -126,7 +114,6 @@ int HashInsert(hash_t *hash, void *data)
 
 void *HashFind(const hash_t *hash, const void *key)
 {
-    size_t room = 0;
     dlist_t *level = NULL;
     dlist_iter_t runner = NULL;
     void *data = NULL;
@@ -190,7 +177,7 @@ size_t HashSize(const hash_t *hash)
     {
         for(rooms = 0; rooms < hash->size; ++rooms)
         {
-            if(hash->table[rooms]!= NULL)
+            if(hash->table[rooms] != NULL)
                 occupance += DListSize(hash->table[rooms]);
         }
         
