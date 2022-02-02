@@ -42,12 +42,14 @@ int main(void)
 {
     
     CreateDestroy();
+    printf("\n------------CreateDestroy TEST COMPLETE---------------\n");
     OccupyHotel();
-    
+    printf("\n-------------Other funcs TESTS COMPLETE----------------\n");
     printf("\n\tSpell Check Test:\n");
 
     SpellCheck();
-    
+    printf("\n-------------");
+    printf("---Test Complete GoodBye----------------------\n");
     return 0;
 }
 
@@ -92,17 +94,13 @@ static void SpellCheck(void *word)
                 (spell == NULL)? printf("\nbad spelling: %s \n", string): 
                 printf("\n %s\nGOOD SPELLING!!\n", (char *)spell);
             }
-        
-        printf("\n  Test Complete GoodBye\n");
-        
-        
-        
+         
         fclose(fp1);
         free(dictionary);
         HashDestroy(hashy);
     }
    
-    
+     
 }
 
 
@@ -132,11 +130,12 @@ void OccupyHotel()
     assert(0 == HashInsert(hashy, "tanya"));
     HashInsert(hashy, "Anya");
     HashInsert(hashy, "Fanya");
-    HashInsert(hashy, "Aanya");
+    HashInsert(hashy, "tatyana");
     HashInsert(hashy, "Banya");
+    HashInsert(hashy, "Elvis");
     HashInsert(hashy, "Tatyanna");
     printf(" currently %ld rooms taken\n", HashSize(hashy));
-    assert(HashSize(hashy) == 6);
+    assert(HashSize(hashy) == 7);
 
     printf("\nCurrent Hotel Occupants:\n");
     HashForEach(hashy, &PrintForEachString, &x );
@@ -144,19 +143,19 @@ void OccupyHotel()
 
     printf("\nCheckout, 2 guests leaving\n");
     HashRemove(hashy, GetKey("tanya"));
-    HashRemove(hashy, GetKey("Banya"));
-    assert(HashSize(hashy) == 4);
+    HashRemove(hashy, GetKey("Elvis"));
+    assert(HashSize(hashy) == 5);
 
     printf("\nCurrent Hotel Occupants:\n");
     HashForEach(hashy, &PrintForEachString, &x );
     printf("\n\nCalling Guests to Lobby:\n");
-    param = HashFind(hashy, GetKey("Anya"));
+    param = HashFind(hashy, GetKey("Tatyanna"));
     printf("found! %s\n", *(char **)&param);
     assert(param != NULL);
 
     param = HashFind(hashy, GetKey("tanya"));
     assert(param == NULL);
-    printf("guest tanya not found -  left the building \n");
+    printf("guest not found - Elvis has left the building \n");
     
 
     HashDestroy(hashy);
@@ -170,11 +169,12 @@ static const void *GetKey(const void *data)
 {
     size_t hash = 5381;
     int cc = 0;
+    char *str = (char *)data;
 
-    while (cc = (*(char *)data))
+    while (cc = *str++)
     {
         hash = ((hash << 5) + (hash)) + cc;
-        ++(*(char **)&data);
+        
     }
 
     return *(void**)&hash;
