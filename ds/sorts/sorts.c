@@ -14,15 +14,18 @@
 
 int BinarySearch(int *s_arr, int target, size_t length);
 int RecBinarySearch(int *s_arr, int target, size_t length);
-static void Swap(int *arr);
 int MergeSort(int *arr_to_sort, size_t num_elements);
+static void Swap(int *arr);
+int BubbleSort(int *arr_to_sort, size_t num_elements);
 static void PrintArr(int *arr, size_t len);
-
+static void RMS(int *arr, int *helper, size_t low, size_t len);
+static void Merge(int *arr, int *help, size_t low, size_t mid, size_t high);
+static void CopyArr(int *src, size_t len, int *dest);
 
 int main(void)
 {
     int arr[] = {1,4,7,8,9,11,15,16};
-    int arr1[] = {7,1,3,11,5,2,8,6};
+    int arr1[] = {7,1,3,11,5,2,8};
     int rec = 0;
     size_t leng = sizeof(arr)/sizeof(arr[0]);
 
@@ -46,13 +49,15 @@ int main(void)
     printf("index of 17 is %d\n", rec);
      rec = RecBinarySearch(arr, 9,leng);
     printf("index of 9 is %d\n", rec);
-     printf("\nRecursive Merge Sort\n");
-     printf("before:\n");
-    PrintArr(arr1, 8);
-    printf("after:\n");
-    MergeSort(arr1,8);
-    
-    PrintArr(arr1, 8);
+    printf("\nRecursive Merge Sort\n");
+    printf("before:\n");
+    PrintArr(arr1, 7);
+    MergeSort(arr1, 7);
+    PrintArr(arr1, 7);
+    /*printf("after:\n");
+    BubbleSort(arr1,8);
+    */
+  
   
     return 0;
 }
@@ -79,7 +84,7 @@ int BinarySearch(int *s_arr, int target, size_t length)
 
 int RecBinarySearch(int *s_arr, int target, size_t length)
 {
-    int index = length /2; 
+    int index = length / 2; 
 
     if (s_arr[index] == target)
     {
@@ -91,18 +96,96 @@ int RecBinarySearch(int *s_arr, int target, size_t length)
 
     if (s_arr[index] < target)
     {
-         return RecBinarySearch(s_arr + index, target, length - index );
-        
+        return RecBinarySearch(s_arr + index, target, length - index);
     }
    
-   return RecBinarySearch(s_arr, target, (length / 2));
+   return RecBinarySearch(s_arr, target, index);
     
 }
 
-/* works only for even num_elements*/
 int MergeSort(int *arr_to_sort, size_t num_elements)
 {
-     if (num_elements == 1)
+
+    int *helper = (int *)malloc(num_elements * sizeof(int));
+
+    if(NULL == helper)
+    {
+        return NOTTHERE;
+    }
+    CopyArr(arr_to_sort,num_elements, helper);
+    RMS(arr_to_sort, helper, 0, num_elements -1);
+      
+    free(helper);
+      return 0;
+
+    
+}
+
+static void RMS(int *arr, int *helper, size_t low, size_t len)
+{
+    size_t mid = (low + ((len - low) >> 1));
+
+    if (len == low)
+    {
+        return;
+    }
+
+    mid = (low + ((len - low) >> 1));
+
+    RMS(arr,helper, low, mid);
+    RMS(arr, helper, mid + 1, len);
+
+    Merge(arr, helper, low, mid, len);
+}
+
+static void Merge(int *arr, int *help, size_t low, size_t mid, size_t high)
+{
+    size_t right = mid + 1;
+    size_t i = low;
+    size_t k = i;
+
+    while (i<= mid && (right <= high))
+    {
+        if(arr[i] <= arr[right])
+        {
+            help[k++] = arr[i++];
+        }
+        else
+        {
+            help[k++] = arr[right++];
+        }
+    }
+
+    while(i <= mid)
+    {
+        help[k++] = arr[i++];
+    }
+
+    for(i = low; i <= high; ++i)
+    {
+        arr[i] = help[i];
+    }
+   
+}
+
+
+static void CopyArr(int *src, size_t len, int *dest)
+{
+    while(len)
+    {
+        *dest++ = *src++;
+        --len;
+    }
+}
+
+
+
+
+
+/* works only for even num_elements*/
+int BubbleSort(int *arr_to_sort, size_t num_elements)
+{
+    if (num_elements == 1)
     {
         Swap(++arr_to_sort);
         return 0;
@@ -110,9 +193,12 @@ int MergeSort(int *arr_to_sort, size_t num_elements)
     
     Swap(arr_to_sort);
     
-    MergeSort(++arr_to_sort, (num_elements -1));
-    return MergeSort(arr_to_sort, (num_elements /2));
+    BubbleSort(++arr_to_sort, (num_elements -1));
+    return BubbleSort(arr_to_sort, (num_elements / 2));
 }
+
+
+
 
 static void Swap(int *arr)
 {
