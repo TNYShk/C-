@@ -14,11 +14,15 @@
 
 int BinarySearch(int *s_arr, int target, size_t length);
 int RecBinarySearch(int *s_arr, int target, size_t length);
+static void Swap(int *arr);
+int MergeSort(int *arr_to_sort, size_t num_elements);
+static void PrintArr(int *arr, size_t len);
 
 
 int main(void)
 {
     int arr[] = {1,4,7,8,9,11,15,16};
+    int arr1[] = {7,4,3,11,1,2};
     int rec = 0;
     size_t leng = sizeof(arr)/sizeof(arr[0]);
 
@@ -42,6 +46,12 @@ int main(void)
     printf("index of 17 is %d\n", rec);
      rec = RecBinarySearch(arr, 9,leng);
     printf("index of 9 is %d\n", rec);
+     printf("\nRecursive Merge Sort\n");
+    MergeSort(arr1,6);
+    
+
+    PrintArr(arr1, 6);
+  
     return 0;
 }
 
@@ -85,4 +95,42 @@ int RecBinarySearch(int *s_arr, int target, size_t length)
     }
 
     return NOTTHERE;
+}
+
+int MergeSort(int *arr_to_sort, size_t num_elements)
+{
+    
+    if (num_elements == 1)
+    {
+        Swap(++arr_to_sort);
+        return 0;
+    }
+    
+    Swap(arr_to_sort);
+    
+    MergeSort(++arr_to_sort, (num_elements -1));
+    return MergeSort(arr_to_sort, (num_elements /2));
+   
+}
+
+static void Swap(int *arr)
+{
+    if(arr[0] > arr[1])
+    {
+        int temp = arr[1];
+        arr[1] = arr[0];
+        arr[0] = temp;
+    }
+    
+}
+
+static void PrintArr(int *arr, size_t len)
+{
+    size_t i = 0;
+
+    for(i = 0; i < len; ++i)
+    {
+        printf("%d ", arr[i]);
+    }
+    printf("\n");
 }
