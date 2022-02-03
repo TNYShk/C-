@@ -1,5 +1,5 @@
 /**********************************************
- * Comp_Sort - Source File                    *
+ * Comp_Sort - Test File                      *
  * Developer: Tanya			                  *
  * Written: 2022-1-12     Added R: Feb 3      *
  * Re-written Jan 16 post CR                  *
@@ -32,7 +32,7 @@ int main (void)
 	int arr[] = {4,2,3,8,1,15};
 	int arr2[] = {3,5,1,0,1,6};
 	int arr3[] = {1,2,5,0,11,-6};
-	int arr4[] = {7,1,3,11,5,2,8};
+	int arr4[] = {7,1,3,11,5,2,8,-9,100};
 	int arr5[] = {7,1,-3,11,5,29,8};
     
   
@@ -42,9 +42,10 @@ int main (void)
 
 	int fivek[FIVEK] = {1};
 	printf("\n\t--------------------MergeSort--------------------\n");
-	PrintArr(arr4,7);
-	MergeSort(arr4, 7);
-	PrintArr(arr4,7);
+	PrintArr(arr4,9);
+	MergeSort(arr4, 9);
+	PrintArr(arr4,9);
+	assert(1 == IsSorted(arr4,9));
 	/*
 	printf("\n\t--------------------MergeSort 500--------------------\n");
     InitArr(five_hund,500,RANGE);
@@ -58,6 +59,13 @@ int main (void)
 	PrintArr(arr5, 7);
     QuickSort(arr5,0,7, cmpfunc);
     PrintArr(arr5, 7);
+    printf("\n--------------------BinarySearch--------------------\n");
+    printf("looking for -3, index: %d\n ", BinarySearch(arr5,-3, 7));
+    printf("looking for 11, index: %d\n ", BinarySearch(arr5,11, 7));
+     printf("\n----------------RecBinarySearch--------------------\n");
+    printf("looking for 5, index: %d\n ", RecBinarySearch(arr5,5, 7));
+    printf("looking for -3, index: %d\n ", RecBinarySearch(arr5,-3, 7));
+    
     printf("\n\t--------------------QuickSort 5K--------------------\n");
     InitArr(five_k,5000,RANGE);
     start = clock();

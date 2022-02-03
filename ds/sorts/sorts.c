@@ -36,13 +36,14 @@ int main(void)
     int arr[] = {1,4,7,8,9,11,15,16};
     int arr1[] = {7,1,3,11,5,2,8};
     int rec = 0;
+    int ans = 0;
     size_t leng = sizeof(arr)/sizeof(arr[0]);
-    PrintArr(arr1, 7);
+    /*PrintArr(arr1, 7);
     QuickSort(arr1,0,7, cmpfunc);
     PrintArr(arr1, 7);
-
-    /*
-    int ans = BinarySearch(arr,16, leng);
+*/
+    
+    ans = BinarySearch(arr,16, leng);
     printf("array: 1,4,7,8,9,11,15,16 \n\n");
     printf("\nIterative Binary Search\n");
     printf("index of 16 is %d\n", ans);
@@ -52,7 +53,8 @@ int main(void)
     printf("index of 11 is %d\n", ans);
     ans = BinarySearch(arr,17, leng);
     printf("index of 17 is %d\n", ans);
- 
+     ans = BinarySearch(arr,9, leng);
+    printf("index of 9 is %d\n", ans);
     printf("\nRecursive Binary Search\n");
     rec = RecBinarySearch(arr, 7,leng);
     printf("index of 7 is %d\n", rec);
@@ -62,14 +64,18 @@ int main(void)
     printf("index of 17 is %d\n", rec);
      rec = RecBinarySearch(arr, 9,leng);
     printf("index of 9 is %d\n", rec);
+    rec = RecBinarySearch(arr, 16,leng);
+    printf("index of 16 is %d\n", rec);
+    /*
     printf("\nRecursive Merge Sort\n");
     printf("before:\n");
+    
     PrintArr(arr1, 7);
     MergeSort(arr1, 7);
+    
     PrintArr(arr1, 7);
-    printf("after:\n");
-    BubbleSort(arr1,8);
-    */
+   */
+    
   
   
     return 0;
@@ -82,34 +88,34 @@ void QuickSort(void *arr, size_t nmemb, size_t size, cmp_func_t cmp_fun)
 
 static void RQS(void *arr, size_t nmemb, size_t size, cmp_func_t cmp_fun)
 {
- if(0 < cmp_fun(&size,&nmemb))
+ 
+ if(0 < cmp_fun(&size, &nmemb))
   {
     size_t pivot = nmemb; 
-    size_t i = nmemb;
-    size_t j = size;
+    size_t left = nmemb;
+    size_t right = size;
     
-    while(0 < cmp_fun(&j,&i)) 
+    while(left < right)
     {
-      
-      while(*((int *)arr + i) <= *((int *)arr + pivot) && i <= size)
-        ++i;
+      /*while(*((int *)arr + left) <= *((int *)arr + pivot) && left <= size) */
+      while(0 <= cmp_fun(((int *)arr + pivot), ((int *)arr + left)) && left <= size)
+        ++left;
+     /* while(*((int *)arr + right)  > *((int *)arr + pivot) && right >= nmemb) */
+      while(0 < cmp_fun(((int *)arr + right), ((int *)arr + pivot)) && right >= nmemb)
+        --right;
      
-      while(*((int *)arr + j)  > *((int *)arr + pivot) && j >= nmemb)
-        --j;
-     
-      if(i < j) 
+      if(left < right) 
       {
-        PSwap(((int *)arr + i), ((int *)arr + j));
+        PSwap(((int *)arr + left), ((int *)arr + right));
       }
-    }
+    } 
 
-    PSwap(((int *)arr + j), ((int *)arr + pivot));
+    PSwap(((int *)arr + right), ((int *)arr + pivot));
    
-    RQS(arr, nmemb, j-1, cmp_fun);
-    RQS(arr, j+1, size, cmp_fun);
+    RQS(arr, nmemb, right - 1, cmp_fun);
+    RQS(arr, right + 1, size, cmp_fun);
   }
 }
-
 
 
 
@@ -131,16 +137,10 @@ int BinarySearch(int *s_arr, int target, size_t length)
 {
     int index = length / 2;
 
-    while (s_arr[index] != target && (index != ((int)length)-1))
+    while (s_arr[index] != target && (index != ((int)length) - 1))
     {
-        if (s_arr[index] > target)
-        {
-            index /= 2;
-        }
-        else
-        {
-            index = (index + length ) / 2;
-        }
+        (s_arr[index] > target)? (index /= 2) : (index = (index + length ) / 2);
+        
     }
     return ((s_arr[index] == target)? index : NOTTHERE);
 
@@ -154,17 +154,17 @@ int RecBinarySearch(int *s_arr, int target, size_t length)
 {
     int index = length / 2; 
 
+    if (index == 0 || length == 1)
+        return NOTTHERE;
+
     if (s_arr[index] == target)
     {
         return index;
     }
     
-    if (length == 1)
-        return NOTTHERE;
-
     if (s_arr[index] < target)
     {
-        return RecBinarySearch(s_arr + index, target, length - index);
+        return RecBinarySearch(s_arr + index, target, length - index );
     }
    
    return RecBinarySearch(s_arr, target, index);

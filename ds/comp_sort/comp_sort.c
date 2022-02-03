@@ -1,8 +1,8 @@
 /**********************************************
  * Comp_Sort - Source File                    *
  * Developer: Tanya			                  *
- *          Jan 12, 2022                      *
- *          Re-written Jan 16 post CR         *
+ * Written: 2022-1-12 + Added Rec: Feb 3      *
+ * Re-written Jan 16 post CR                  *
  * Reviewer:Amit Shlomo	                      *
  **********************************************/
 #include <stddef.h> /* size_t*/
@@ -77,16 +77,10 @@ int BinarySearch(int *s_arr, int target, size_t length)
 {
     int index = length / 2;
 
-    while (s_arr[index] != target && (index != ((int)length)-1))
+   while (s_arr[index] != target && (index != ((int)length) - 1))
     {
-        if (s_arr[index] > target)
-        {
-            index /= 2;
-        }
-        else
-        {
-            index = (index + length ) / 2;
-        }
+        (s_arr[index] > target)? (index /= 2) : (index = (index + length ) / 2);
+        
     }
     return ((s_arr[index] == target)? index : NOTTHERE);
 
@@ -113,6 +107,7 @@ int RecBinarySearch(int *s_arr, int target, size_t length)
     
 }
 
+
 void QuickSort(void *arr, size_t nmemb, size_t size, cmp_func_t cmp_fun)
 {
     RQS(arr, 0, size - 1, cmp_fun);
@@ -127,7 +122,7 @@ static void RQS(void *arr, size_t nmemb, size_t size, cmp_func_t cmp_fun)
     size_t left = nmemb;
     size_t right = size;
     
-    while(left < right) 
+    do
     {
       /*while(*((int *)arr + left) <= *((int *)arr + pivot) && left <= size) */
       while(0 <= cmp_fun(((int *)arr + pivot), ((int *)arr + left)) && left <= size)
@@ -140,7 +135,7 @@ static void RQS(void *arr, size_t nmemb, size_t size, cmp_func_t cmp_fun)
       {
         PSwap(((int *)arr + left), ((int *)arr + right));
       }
-    }
+    } while(left < right);
 
     PSwap(((int *)arr + right), ((int *)arr + pivot));
    
@@ -192,14 +187,7 @@ static void Merge(int *arr, int *help, size_t low, size_t mid, size_t high)
 
     while ((i <= mid) && (right <= high))
     {
-        if(arr[i] <= arr[right])
-        {
-            help[left++] = arr[i++];
-        }
-        else
-        {
-            help[left++] = arr[right++];
-        }
+        (arr[i] <= arr[right]) ? (help[left++] = arr[i++]) : (help[left++] = arr[right++]);
     }
 
     while(i <= mid)
