@@ -22,7 +22,7 @@ static void PrintArr(int *arr, size_t len);
 int main(void)
 {
     int arr[] = {1,4,7,8,9,11,15,16};
-    int arr1[] = {7,1,3,11,5,2};
+    int arr1[] = {7,1,3,11,5,2,8,6};
     int rec = 0;
     size_t leng = sizeof(arr)/sizeof(arr[0]);
 
@@ -47,10 +47,13 @@ int main(void)
      rec = RecBinarySearch(arr, 9,leng);
     printf("index of 9 is %d\n", rec);
      printf("\nRecursive Merge Sort\n");
-    MergeSort(arr1,6);
+     printf("before:\n");
+    PrintArr(arr1, 8);
+    printf("after:\n");
+    MergeSort(arr1,8);
     
 
-    PrintArr(arr1, 6);
+    PrintArr(arr1, 8);
   
     return 0;
 }
@@ -96,7 +99,7 @@ int RecBinarySearch(int *s_arr, int target, size_t length)
 
     return NOTTHERE;
 }
-
+/* works only for even num_elements*/
 int MergeSort(int *arr_to_sort, size_t num_elements)
 {
      if (num_elements == 1)
