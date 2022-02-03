@@ -244,7 +244,7 @@ static avl_node_t *InsertNode(avl_node_t *new, void *n_data, avl_cmp_func_t CmpF
 
 static avl_node_t *BalanceNode(avl_node_t *new)
 {
-    int scale = GetBalanceFactor(new); 
+    balancing_e scale = GetBalanceFactor(new); 
     
     if (1 < abs(scale))
     {

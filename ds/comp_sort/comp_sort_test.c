@@ -14,7 +14,7 @@
 
 #define RANGE (1000)
 #define FIVEK (5000)
-#define NOTTHERE (-1)
+
 
 static void PrintArr(int *arr, size_t length);
 static void InitArr(int *ar, size_t len, int max_num);

@@ -23,7 +23,6 @@ static void CopyArr(int *src, size_t len, int *dest);
 
 void BubbleSort(int *arr, size_t arr_size)
 {
-	
 	size_t i = 0;
 
 	assert (NULL != arr);
@@ -114,6 +113,11 @@ int RecBinarySearch(int *s_arr, int target, size_t length)
     
 }
 
+void QuickSort(void *arr, size_t nmemb, size_t size, cmp_func_t cmp)
+{
+
+}
+
 int MergeSort(int *arr_to_sort, size_t num_elements)
 {
     static int *helper = NULL;
@@ -123,8 +127,8 @@ int MergeSort(int *arr_to_sort, size_t num_elements)
         if(NULL == helper)
             return NOTTHERE;
     }
-
-    CopyArr(arr_to_sort, num_elements, helper);
+    memcpy(helper, arr_to_sort, sizeof(*arr_to_sort) * num_elements);
+   
     RMS(arr_to_sort, helper, 0, num_elements - 1);
       
     free(helper);
@@ -178,15 +182,6 @@ static void Merge(int *arr, int *help, size_t low, size_t mid, size_t high)
    
 }
 
-
-static void CopyArr(int *src, size_t len, int *dest)
-{
-    while(len)
-    {
-        *dest++ = *src++;
-        --len;
-    }
-}
 
 
 
