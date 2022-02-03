@@ -57,17 +57,13 @@ int main(void)
 
 static void SpellCheck()
 {
-
     size_t i = 0;
     hash_t *hashy = NULL;
     dict_t *dictionary = NULL;
-    
     char string[WORDLENMAX] = {0};
     void *spell = NULL;
     
-
     FILE *pFile = fopen("words", "r"); 
-    
     hashy = HashCreate(1000, &GetKey, &CompareData, &hash_func99);
     
     dictionary = (dict_t *)calloc(WORDSDICT,sizeof(dict_t));
@@ -84,9 +80,9 @@ static void SpellCheck()
             HashInsert(hashy, &(dictionary[i].data));
             
         }
-        printf("Loaded dictionary! good luck\n");
-        
+            printf("Loaded dictionary! good luck\n");
             printf("\nEnter a word to search in linux dict, or ESC Enter :\n");
+            
             while (*(char *)string != ESC)
             {
                 fgets(string, WORDLENMAX, stdin);
@@ -99,7 +95,6 @@ static void SpellCheck()
         free(dictionary);
         HashDestroy(hashy);
     }
-   
 }
 
 
@@ -108,7 +103,6 @@ static void SpellCheck()
 
 void CreateDestroy()
 {
-
     hash_t *hashy = NULL;
     hashy = HashCreate(10, &GetKey, &CompareData, &hash_func);
     assert(1 == HashIsEmpty(hashy));

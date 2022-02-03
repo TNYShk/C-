@@ -19,7 +19,6 @@ typedef enum status
     FAIL = -1
 }status_e;
 
-
 struct hash
 {
     hash_cmp_func_t cmp_func;
@@ -29,12 +28,6 @@ struct hash
     dlist_t **table;
 };
 
-typedef struct keva
-{
-    const void *key;
-    void *value;
-
-}keva_t;
 
 
 hash_t *HashCreate(size_t size, hash_get_key_func_t get_key, 
@@ -65,8 +58,10 @@ hash_t *HashCreate(size_t size, hash_get_key_func_t get_key,
     hash->hash_func = hash_func;
     hash->get_key = get_key;
     hash->cmp_func = cmp_func;
+    
     return hash;
 }
+
 
 void HashDestroy(hash_t *hash)
 {
@@ -78,25 +73,22 @@ void HashDestroy(hash_t *hash)
         {
             DListDestroy(hash->table[clear_rooms]);
         }
+
         free(hash->table);
         
         memset(hash,0, sizeof(hash_t));
         free(hash);
         hash = NULL;
-
     }
     
 }
 
 int HashInsert(hash_t *hash, void *data)
 {
-   
     const void *new_key = hash->get_key(data);
-    
     size_t level = 0;
-    dlist_iter_t noob;
+    dlist_iter_t iter;
    
-
     level = hash->hash_func(new_key);
 
     assert(level <= hash->size);
@@ -108,16 +100,12 @@ int HashInsert(hash_t *hash, void *data)
        {
             return FAIL;
        }
-       
     }
     assert(HashFind(hash, new_key) != data);
    
-
-    noob = DListPushBack(hash->table[level], data);
-    assert(!DListIsEqual(DListBegin(hash->table[level]),DListEnd(hash->table[level]) ));
-
-    return (DListIsEqual(noob, DListEnd(hash->table[level])));
-
+    iter = DListPushBack(hash->table[level], data);
+    
+    return (DListIsEqual(iter, DListEnd(hash->table[level])));
 }
 
 
@@ -134,7 +122,6 @@ void *HashFind(const hash_t *hash, const void *key)
 
     if(NULL != level)
     {
-        
         dlist_iter_t end = DListEnd(level);
         runner = DListBegin(level);
         
@@ -145,11 +132,9 @@ void *HashFind(const hash_t *hash, const void *key)
         }
       
       data = DListGetData(runner);
-        
     }
     
     return (DListIsEqual(runner, DListEnd(level))? NULL : data );
-    
 }
 
 
@@ -179,12 +164,6 @@ void HashRemove(hash_t *hash, const void *key)
     }  
 }
 
-
-
-
-
-
-
 size_t HashSize(const hash_t *hash)
 {
     size_t occupance = 0;
@@ -197,8 +176,8 @@ size_t HashSize(const hash_t *hash)
             if(hash->table[rooms] != NULL)
                 occupance += DListSize(hash->table[rooms]);
         }
-        
     }
+    
     return occupance;
 }
 
