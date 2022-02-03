@@ -49,7 +49,7 @@ int main(void)
 
     SpellCheck();
     printf("\n-------------");
-    printf("---Test Complete GoodBye----------------------\n");
+    printf("\t\n------------Test Complete GoodBye----------------------\n");
     return 0;
 }
 
@@ -66,7 +66,7 @@ static void SpellCheck()
     void *spell = NULL;
     
 
-    FILE *fp1 = fopen("words", "r"); 
+    FILE *pFile = fopen("words", "r"); 
     
     hashy = HashCreate(1000, &GetKey, &CompareData, &hash_func99);
     
@@ -74,13 +74,13 @@ static void SpellCheck()
     if(dictionary == NULL)
     {
         HashDestroy(hashy);
-        fclose(fp1);
+        fclose(pFile);
     }
     else
     {
         for( ;i< WORDSDICT ; ++i)
         {
-            fgets(dictionary[i].data, WORDLENMAX, fp1);
+            fgets(dictionary[i].data, WORDLENMAX, pFile);
             HashInsert(hashy, &(dictionary[i].data));
             
         }
@@ -92,15 +92,14 @@ static void SpellCheck()
                 fgets(string, WORDLENMAX, stdin);
                 spell = HashFind(hashy, GetKey(string));
                 (spell == NULL)? printf("\nbad spelling: %s \n", string): 
-                printf("\n %s\nGOOD SPELLING!!\n", (char *)spell);
+                    printf("\n %s\nGOOD SPELLING!!\n", (char *)spell);
             }
          
-        fclose(fp1);
+        fclose(pFile);
         free(dictionary);
         HashDestroy(hashy);
     }
    
-     
 }
 
 
