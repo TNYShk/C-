@@ -65,7 +65,7 @@ int main(void)
 
 int BinarySearch(int *s_arr, int target, size_t length)
 {
-    int index = length/2;
+    int index = length / 2;
 
     while (s_arr[index] != target && (index != ((int)length)-1))
     {
@@ -105,25 +105,24 @@ int RecBinarySearch(int *s_arr, int target, size_t length)
 
 int MergeSort(int *arr_to_sort, size_t num_elements)
 {
-
-    int *helper = (int *)malloc(num_elements * sizeof(int));
-
+    static int *helper = NULL;
     if(NULL == helper)
     {
-        return NOTTHERE;
+        helper = (int *)malloc(num_elements * sizeof(int));
+        if(NULL == helper)
+            return NOTTHERE;
     }
-    CopyArr(arr_to_sort,num_elements, helper);
-    RMS(arr_to_sort, helper, 0, num_elements -1);
+
+    CopyArr(arr_to_sort, num_elements, helper);
+    RMS(arr_to_sort, helper, 0, num_elements - 1);
       
     free(helper);
-      return 0;
-
-    
+    return 0;
 }
 
 static void RMS(int *arr, int *helper, size_t low, size_t len)
 {
-    size_t mid = (low + ((len - low) >> 1));
+    size_t mid = 0;
 
     if (len == low)
     {
@@ -142,23 +141,23 @@ static void Merge(int *arr, int *help, size_t low, size_t mid, size_t high)
 {
     size_t right = mid + 1;
     size_t i = low;
-    size_t k = i;
+    size_t left = i;
 
-    while (i<= mid && (right <= high))
+    while ((i <= mid) && (right <= high))
     {
         if(arr[i] <= arr[right])
         {
-            help[k++] = arr[i++];
+            help[left++] = arr[i++];
         }
         else
         {
-            help[k++] = arr[right++];
+            help[left++] = arr[right++];
         }
     }
 
     while(i <= mid)
     {
-        help[k++] = arr[i++];
+        help[left++] = arr[i++];
     }
 
     for(i = low; i <= high; ++i)

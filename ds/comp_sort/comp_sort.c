@@ -7,12 +7,18 @@
  **********************************************/
 #include <stddef.h> /* size_t*/
 #include <assert.h> /* assert*/
-
+#include <stdlib.h>
 #include "comp_sort.h" /* program header */
+
+#define NOTTHERE (-1)
 
 /* Service funcs */
 static void PSwap(int *i , int *j);
 static int FindMinIndex(int *arr, size_t len);
+static void RMS(int *arr, int *helper, size_t low, size_t len);
+static void Merge(int *arr, int *help, size_t low, size_t mid, size_t high);
+static void CopyArr(int *src, size_t len, int *dest);
+
 
 
 void BubbleSort(int *arr, size_t arr_size)
@@ -35,8 +41,6 @@ void BubbleSort(int *arr, size_t arr_size)
 	}
 	
 }
-
-
 
 void SelectionSort(int *arr, size_t arr_size)
 {
@@ -67,6 +71,121 @@ void InsertionSort(int *arr, size_t arr_size)
 			PSwap(&arr[inner_index - 1], &arr[inner_index]);
 		}
 	}
+}
+
+
+int BinarySearch(int *s_arr, int target, size_t length)
+{
+    int index = length / 2;
+
+    while (s_arr[index] != target && (index != ((int)length)-1))
+    {
+        if (s_arr[index] > target)
+        {
+            index /= 2;
+        }
+        else
+        {
+            index = (index + length ) / 2;
+        }
+    }
+    return ((s_arr[index] == target)? index : NOTTHERE);
+
+}
+
+int RecBinarySearch(int *s_arr, int target, size_t length)
+{
+    int index = length / 2; 
+
+    if (s_arr[index] == target)
+    {
+        return index;
+    }
+    
+    if (length == 1)
+        return NOTTHERE;
+
+    if (s_arr[index] < target)
+    {
+        return RecBinarySearch(s_arr + index, target, length - index);
+    }
+   
+   return RecBinarySearch(s_arr, target, index);
+    
+}
+
+int MergeSort(int *arr_to_sort, size_t num_elements)
+{
+    static int *helper = NULL;
+    if(NULL == helper)
+    {
+        helper = (int *)malloc(num_elements * sizeof(int));
+        if(NULL == helper)
+            return NOTTHERE;
+    }
+
+    CopyArr(arr_to_sort, num_elements, helper);
+    RMS(arr_to_sort, helper, 0, num_elements - 1);
+      
+    free(helper);
+    return 0;
+}
+
+static void RMS(int *arr, int *helper, size_t low, size_t len)
+{
+    size_t mid = 0;
+
+    if (len == low)
+    {
+        return;
+    }
+
+    mid = (low + ((len - low) >> 1));
+
+    RMS(arr,helper, low, mid);
+    RMS(arr, helper, mid + 1, len);
+
+    Merge(arr, helper, low, mid, len);
+}
+
+static void Merge(int *arr, int *help, size_t low, size_t mid, size_t high)
+{
+    size_t right = mid + 1;
+    size_t i = low;
+    size_t left = i;
+
+    while ((i <= mid) && (right <= high))
+    {
+        if(arr[i] <= arr[right])
+        {
+            help[left++] = arr[i++];
+        }
+        else
+        {
+            help[left++] = arr[right++];
+        }
+    }
+
+    while(i <= mid)
+    {
+        help[left++] = arr[i++];
+    }
+
+    for(i = low; i <= high; ++i)
+    {
+        arr[i] = help[i];
+    }
+   
+}
+
+
+static void CopyArr(int *src, size_t len, int *dest)
+{
+    while(len)
+    {
+        *dest++ = *src++;
+        --len;
+    }
 }
 
 

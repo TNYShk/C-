@@ -14,7 +14,7 @@
 
 #define RANGE (1000)
 #define FIVEK (5000)
-
+#define NOTTHERE (-1)
 
 static void PrintArr(int *arr, size_t length);
 static void InitArr(int *ar, size_t len, int max_num);
@@ -32,11 +32,15 @@ int main (void)
 	int arr[] = {4,2,3,8,1,15};
 	int arr2[] = {3,5,1,0,1,6};
 	int arr3[] = {1,2,5,0,11,-6};
+	int arr4[] = {7,1,3,11,5,2,8};
+
 	int fifty[50] = {0};
 
 	int fivek[FIVEK] = {1};
-
-
+	printf("\n\t--------------------MergeSort--------------------\n");
+	PrintArr(arr4,7);
+	MergeSort(arr4, 7);
+	PrintArr(arr4,7);
 	printf("\n\t--------------------Arrays Before Sort--------------------\n");
 	PrintArr(arr,6);
 	PrintArr(arr2,6);
