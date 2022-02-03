@@ -18,7 +18,7 @@ static int FindMinIndex(int *arr, size_t len);
 static void RMS(int *arr, int *helper, size_t low, size_t len);
 static void Merge(int *arr, int *help, size_t low, size_t mid, size_t high);
 static void CopyArr(int *src, size_t len, int *dest);
-
+static void RQS(void *arr, size_t nmemb, size_t size, cmp_func_t cmp_fun);
 
 
 void BubbleSort(int *arr, size_t arr_size)
@@ -113,10 +113,41 @@ int RecBinarySearch(int *s_arr, int target, size_t length)
     
 }
 
-void QuickSort(void *arr, size_t nmemb, size_t size, cmp_func_t cmp)
+void QuickSort(void *arr, size_t nmemb, size_t size, cmp_func_t cmp_fun)
 {
-
+    RQS(arr, 0, size - 1, cmp_fun);
 }
+
+static void RQS(void *arr, size_t nmemb, size_t size, cmp_func_t cmp_fun)
+{
+ if(0 < cmp_fun(&size,&nmemb))
+  {
+    size_t pivot = nmemb; 
+    size_t i = nmemb;
+    size_t j = size;
+    
+    while(0 < cmp_fun(&j,&i)) 
+    {
+      
+      while(*((int *)arr + i) <= *((int *)arr + pivot) && i <= size)
+        ++i;
+     
+      while(*((int *)arr + j)  > *((int *)arr + pivot) && j >= nmemb)
+        --j;
+     
+      if(i < j) 
+      {
+        PSwap(((int *)arr + i), ((int *)arr + j));
+      }
+    }
+
+    PSwap(((int *)arr + j), ((int *)arr + pivot));
+   
+    RQS(arr, nmemb, j-1, cmp_fun);
+    RQS(arr, j+1, size, cmp_fun);
+  }
+}
+
 
 int MergeSort(int *arr_to_sort, size_t num_elements)
 {

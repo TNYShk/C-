@@ -12,6 +12,9 @@
 
 #define NOTTHERE (-1)
 
+typedef int (*cmp_func_t)(const void *, const void *);
+
+
 int BinarySearch(int *s_arr, int target, size_t length);
 int RecBinarySearch(int *s_arr, int target, size_t length);
 int MergeSort(int *arr_to_sort, size_t num_elements);
@@ -21,6 +24,12 @@ static void PrintArr(int *arr, size_t len);
 static void RMS(int *arr, int *helper, size_t low, size_t len);
 static void Merge(int *arr, int *help, size_t low, size_t mid, size_t high);
 static void CopyArr(int *src, size_t len, int *dest);
+static void PSwap(int *i , int *j);
+void QuickSort(void *arr, size_t nmemb, size_t size, cmp_func_t cmp_fun);
+static void RQS(void *arr, size_t low, size_t high, cmp_func_t cmp_fun);
+int cmpfunc(const void *a, const void *b) ;
+
+
 
 int main(void)
 {
@@ -28,7 +37,11 @@ int main(void)
     int arr1[] = {7,1,3,11,5,2,8};
     int rec = 0;
     size_t leng = sizeof(arr)/sizeof(arr[0]);
+    PrintArr(arr1, 7);
+    QuickSort(arr1,0,7, cmpfunc);
+    PrintArr(arr1, 7);
 
+    /*
     int ans = BinarySearch(arr,16, leng);
     printf("array: 1,4,7,8,9,11,15,16 \n\n");
     printf("\nIterative Binary Search\n");
@@ -54,12 +67,63 @@ int main(void)
     PrintArr(arr1, 7);
     MergeSort(arr1, 7);
     PrintArr(arr1, 7);
-    /*printf("after:\n");
+    printf("after:\n");
     BubbleSort(arr1,8);
     */
   
   
     return 0;
+}
+
+void QuickSort(void *arr, size_t nmemb, size_t size, cmp_func_t cmp_fun)
+{
+    RQS(arr, 0, size - 1, cmp_fun);
+}
+
+static void RQS(void *arr, size_t nmemb, size_t size, cmp_func_t cmp_fun)
+{
+ if(0 < cmp_fun(&size,&nmemb))
+  {
+    size_t pivot = nmemb; 
+    size_t i = nmemb;
+    size_t j = size;
+    
+    while(0 < cmp_fun(&j,&i)) 
+    {
+      
+      while(*((int *)arr + i) <= *((int *)arr + pivot) && i <= size)
+        ++i;
+     
+      while(*((int *)arr + j)  > *((int *)arr + pivot) && j >= nmemb)
+        --j;
+     
+      if(i < j) 
+      {
+        PSwap(((int *)arr + i), ((int *)arr + j));
+      }
+    }
+
+    PSwap(((int *)arr + j), ((int *)arr + pivot));
+   
+    RQS(arr, nmemb, j-1, cmp_fun);
+    RQS(arr, j+1, size, cmp_fun);
+  }
+}
+
+
+
+
+
+static void PSwap(int *i , int *j)
+{
+    int holder = 0;
+
+    assert (NULL != j);
+    assert (NULL != i);
+    
+    holder = *j;
+    *j = *i;
+    *i =  holder;
 }
 
 
@@ -81,6 +145,10 @@ int BinarySearch(int *s_arr, int target, size_t length)
     return ((s_arr[index] == target)? index : NOTTHERE);
 
 }
+
+
+
+
 
 int RecBinarySearch(int *s_arr, int target, size_t length)
 {
@@ -218,4 +286,9 @@ static void PrintArr(int *arr, size_t len)
         printf("%d ", arr[i]);
     }
     printf("\n");
+}
+
+int cmpfunc(const void *a, const void *b) 
+{
+   return ( *(size_t *)a - *(size_t *)b );
 }

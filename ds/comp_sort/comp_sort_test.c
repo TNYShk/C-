@@ -33,6 +33,10 @@ int main (void)
 	int arr2[] = {3,5,1,0,1,6};
 	int arr3[] = {1,2,5,0,11,-6};
 	int arr4[] = {7,1,3,11,5,2,8};
+	int arr5[] = {7,1,-3,11,5,29,8};
+    
+  
+
 
 	int fifty[50] = {0};
 
@@ -41,6 +45,11 @@ int main (void)
 	PrintArr(arr4,7);
 	MergeSort(arr4, 7);
 	PrintArr(arr4,7);
+	printf("\n\t--------------------QuickSort--------------------\n");
+	PrintArr(arr5, 7);
+    QuickSort(arr5,0,7, cmpfunc);
+    PrintArr(arr5, 7);
+
 	printf("\n\t--------------------Arrays Before Sort--------------------\n");
 	PrintArr(arr,6);
 	PrintArr(arr2,6);

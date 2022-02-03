@@ -286,7 +286,6 @@ static avl_node_t *RotateNode(avl_node_t *node, int side)
     node->children[!side] = rotator->children[side];
     rotator->children[side] = node;
     
-  
     node->height = (1 + MAX(GetChildHeight(node,LEFT), GetChildHeight(node,RIGHT)));
     rotator->height = (1 + MAX(GetChildHeight(rotator,LEFT), GetChildHeight(rotator,RIGHT)));
    
