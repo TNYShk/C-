@@ -120,31 +120,32 @@ void QuickSort(void *arr, size_t nmemb, size_t size, cmp_func_t cmp_fun)
 
 static void RQS(void *arr, size_t nmemb, size_t size, cmp_func_t cmp_fun)
 {
- if(0 < cmp_fun(&size,&nmemb))
+ 
+ if(0 < cmp_fun(&size, &nmemb))
   {
     size_t pivot = nmemb; 
-    size_t i = nmemb;
-    size_t j = size;
+    size_t left = nmemb;
+    size_t right = size;
     
-    while(0 < cmp_fun(&j,&i)) 
+    while(left < right) 
     {
-      
-      while(*((int *)arr + i) <= *((int *)arr + pivot) && i <= size)
-        ++i;
+      /*while(*((int *)arr + left) <= *((int *)arr + pivot) && left <= size) */
+      while(0 <= cmp_fun(((int *)arr + pivot), ((int *)arr + left)) && left <= size)
+        ++left;
+     /* while(*((int *)arr + right)  > *((int *)arr + pivot) && right >= nmemb) */
+      while(0 < cmp_fun(((int *)arr + right), ((int *)arr + pivot)) && right >= nmemb)
+        --right;
      
-      while(*((int *)arr + j)  > *((int *)arr + pivot) && j >= nmemb)
-        --j;
-     
-      if(i < j) 
+      if(left < right) 
       {
-        PSwap(((int *)arr + i), ((int *)arr + j));
+        PSwap(((int *)arr + left), ((int *)arr + right));
       }
     }
 
-    PSwap(((int *)arr + j), ((int *)arr + pivot));
+    PSwap(((int *)arr + right), ((int *)arr + pivot));
    
-    RQS(arr, nmemb, j-1, cmp_fun);
-    RQS(arr, j+1, size, cmp_fun);
+    RQS(arr, nmemb, right - 1, cmp_fun);
+    RQS(arr, right + 1, size, cmp_fun);
   }
 }
 
@@ -177,7 +178,7 @@ static void RMS(int *arr, int *helper, size_t low, size_t len)
 
     mid = (low + ((len - low) >> 1));
 
-    RMS(arr,helper, low, mid);
+    RMS(arr, helper, low, mid);
     RMS(arr, helper, mid + 1, len);
 
     Merge(arr, helper, low, mid, len);
