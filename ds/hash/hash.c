@@ -166,15 +166,23 @@ void HashRemove(hash_t *hash, const void *key)
     {
         dlist_iter_t runner = DListBegin(level);
         dlist_iter_t end = DListEnd(level);
-
-        dlist_iter_t found = DListFind(runner, end, hash->cmp_func, key);
-
-       if (!DListIsEqual(found, end))
+    
+    while (!DListIsEqual(runner, end) && 
+            (0 != hash->cmp_func(hash->get_key(DListGetData(runner)), key)))
+        {
+              runner = DListNext(runner);  
+        }
+      if (!DListIsEqual(runner, end))
        {
-            DListRemove(found);
-       } 
+            DListRemove(runner);
+       }  
     }  
 }
+
+
+
+
+
 
 
 size_t HashSize(const hash_t *hash)
