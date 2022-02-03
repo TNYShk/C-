@@ -37,7 +37,7 @@ int main (void)
     
   
 
-
+	int five_hund[5000] = {0};
 	int fifty[50] = {0};
 
 	int fivek[FIVEK] = {1};
@@ -49,6 +49,15 @@ int main (void)
 	PrintArr(arr5, 7);
     QuickSort(arr5,0,7, cmpfunc);
     PrintArr(arr5, 7);
+    printf("\n\t--------------------QuickSort 5K--------------------\n");
+    InitArr(five_hund,5000,RANGE);
+    start = clock();
+	QuickSort(five_hund,0,5000, cmpfunc);
+	end = clock();
+	assert(1 == IsSorted(five_hund,5000));
+	printf("sorted array, QuickSort took %ld m.sec to run \n", end - start);
+
+
 
 	printf("\n\t--------------------Arrays Before Sort--------------------\n");
 	PrintArr(arr,6);
