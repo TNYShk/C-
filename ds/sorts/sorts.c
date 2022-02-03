@@ -22,7 +22,7 @@ static void PrintArr(int *arr, size_t len);
 int main(void)
 {
     int arr[] = {1,4,7,8,9,11,15,16};
-    int arr1[] = {7,4,3,11,1,2};
+    int arr1[] = {7,1,3,11,5,2};
     int rec = 0;
     size_t leng = sizeof(arr)/sizeof(arr[0]);
 
@@ -99,8 +99,7 @@ int RecBinarySearch(int *s_arr, int target, size_t length)
 
 int MergeSort(int *arr_to_sort, size_t num_elements)
 {
-    
-    if (num_elements == 1)
+     if (num_elements == 1)
     {
         Swap(++arr_to_sort);
         return 0;
@@ -110,6 +109,7 @@ int MergeSort(int *arr_to_sort, size_t num_elements)
     
     MergeSort(++arr_to_sort, (num_elements -1));
     return MergeSort(arr_to_sort, (num_elements /2));
+
    
 }
 
