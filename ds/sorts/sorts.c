@@ -52,7 +52,6 @@ int main(void)
     printf("after:\n");
     MergeSort(arr1,8);
     
-
     PrintArr(arr1, 8);
   
     return 0;
@@ -80,25 +79,26 @@ int BinarySearch(int *s_arr, int target, size_t length)
 
 int RecBinarySearch(int *s_arr, int target, size_t length)
 {
-    
     int index = length /2; 
 
     if (s_arr[index] == target)
     {
         return index;
     }
+    
+    if (length == 1)
+        return NOTTHERE;
 
-    if (s_arr[index] > target)
+    if (s_arr[index] < target)
     {
-        return RecBinarySearch(s_arr, target, (length/2));
+         return RecBinarySearch(s_arr + index, target, length - index );
+        
     }
-    else if(s_arr[index] > target)
-    {
-        return RecBinarySearch(s_arr, target, ((index + length ) / 2));
-    }
-
-    return NOTTHERE;
+   
+   return RecBinarySearch(s_arr, target, (length / 2));
+    
 }
+
 /* works only for even num_elements*/
 int MergeSort(int *arr_to_sort, size_t num_elements)
 {
@@ -112,8 +112,6 @@ int MergeSort(int *arr_to_sort, size_t num_elements)
     
     MergeSort(++arr_to_sort, (num_elements -1));
     return MergeSort(arr_to_sort, (num_elements /2));
-
-   
 }
 
 static void Swap(int *arr)
@@ -124,7 +122,6 @@ static void Swap(int *arr)
         arr[1] = arr[0];
         arr[0] = temp;
     }
-    
 }
 
 static void PrintArr(int *arr, size_t len)
