@@ -11,7 +11,20 @@
 #include <string.h> /*memcpy */
 #include "comp_sort.h" /* program header */
 
-#define NOTTHERE (-1)
+
+
+
+
+typedef enum status
+{
+	MALLOC_ERROR = -2,
+	NOTTHERE = -1,
+	SUCCESS = 0
+}status_e;
+
+
+
+
 
 /* Service funcs */
 static void PSwap(int *i , int *j);
@@ -124,10 +137,9 @@ static void RQS(void *arr, size_t nmemb, size_t size, cmp_func_t cmp_fun)
     
     do
     {
-      /*while(*((int *)arr + left) <= *((int *)arr + pivot) && left <= size) */
       while(0 <= cmp_fun(((int *)arr + pivot), ((int *)arr + left)) && left <= size)
         ++left;
-     /* while(*((int *)arr + right)  > *((int *)arr + pivot) && right >= nmemb) */
+     
       while(0 < cmp_fun(((int *)arr + right), ((int *)arr + pivot)) && right >= nmemb)
         --right;
      
@@ -135,6 +147,7 @@ static void RQS(void *arr, size_t nmemb, size_t size, cmp_func_t cmp_fun)
       {
         PSwap(((int *)arr + left), ((int *)arr + right));
       }
+
     } while(left < right);
 
     PSwap(((int *)arr + right), ((int *)arr + pivot));
@@ -147,19 +160,19 @@ static void RQS(void *arr, size_t nmemb, size_t size, cmp_func_t cmp_fun)
 
 int MergeSort(int *arr_to_sort, size_t num_elements)
 {
-    static int *helper = NULL;
+    int *helper = (int *)calloc(num_elements ,sizeof(int));
     if(NULL == helper)
     {
-        helper = (int *)malloc(num_elements * sizeof(int));
-        if(NULL == helper)
-            return NOTTHERE;
+        return MALLOC_ERROR;
     }
     memcpy(helper, arr_to_sort, sizeof(*arr_to_sort) * num_elements);
    
     RMS(arr_to_sort, helper, 0, num_elements - 1);
       
     free(helper);
-    return 0;
+    helper = NULL;
+
+    return SUCCESS;
 }
 
 static void RMS(int *arr, int *helper, size_t low, size_t len)
@@ -190,16 +203,13 @@ static void Merge(int *arr, int *help, size_t low, size_t mid, size_t high)
         (arr[i] <= arr[right]) ? (help[left++] = arr[i++]) : (help[left++] = arr[right++]);
     }
 
-    while(i <= mid)
+    if(i <= mid)
     {
-        help[left++] = arr[i++];
+        memcpy(help + left, arr + i, sizeof(*arr) * (mid - i + 1));
+        
     }
 
-    for(i = low; i <= high; ++i)
-    {
-        arr[i] = help[i];
-    }
-   
+   memcpy(arr + low, help + low, sizeof(*help) * (high - low + 1));
 }
 
 

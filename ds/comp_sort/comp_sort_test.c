@@ -16,6 +16,9 @@
 #define FIVEK (5000)
 
 
+
+
+
 static void PrintArr(int *arr, size_t length);
 static void InitArr(int *ar, size_t len, int max_num);
 void InitArrOne(int *ar, size_t len);
@@ -37,7 +40,7 @@ int main (void)
     
   
 	int five_hund[500] = {1};
-	int five_k[5000] = {0};
+	int five_k[FIVEK] = {0};
 	int fifty[50] = {0};
 
 	int fivek[FIVEK] = {1};
@@ -46,15 +49,15 @@ int main (void)
 	MergeSort(arr4, 9);
 	PrintArr(arr4,9);
 	assert(1 == IsSorted(arr4,9));
-	/*
-	printf("\n\t--------------------MergeSort 500--------------------\n");
-    InitArr(five_hund,500,RANGE);
+	
+	printf("\n\t--------------------MergeSort 5K--------------------\n");
+    InitArr(five_k,5000,400);
     start = clock();
-	MergeSort(five_hund,500);
+	MergeSort(five_k,5000);
 	end = clock();
-	assert(1 == IsSorted(five_hund,500));
+	assert(1 == IsSorted(five_k,5000));
 	printf("sorted array, MergeSort took %ld m.sec to run \n", end - start);
-	*/
+	
 	printf("\n\t--------------------QuickSort--------------------\n");
 	PrintArr(arr5, 7);
     QuickSort(arr5,0,7, cmpfunc);
