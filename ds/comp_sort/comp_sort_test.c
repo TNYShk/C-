@@ -36,14 +36,30 @@ int main (void)
 	int arr2[] = {3,5,1,0,1,6};
 	int arr3[] = {1,2,5,0,11,-6};
 	int arr4[] = {7,1,3,11,5,2,8,-9,100};
-	int arr5[] = {7,1,-3,11,5,29,8};
-    
-  
-	int five_hund[500] = {1};
+	int arr5[] = {-3,1,5,7,8,11,29};
+	int arr6[] = {7,1,-3,11,5,29,8};
+    int *rec = NULL;
+  	size_t len = sizeof(arr5)/sizeof(arr5[0]);
 	int five_k[FIVEK] = {0};
 	int fifty[50] = {0};
-
 	int fivek[FIVEK] = {1};
+
+	printf("\n--------------------BinarySearch--------------------\n");
+	PrintArr(arr5,len);
+    printf("\nlooking for 12, index: %d\n", BinarySearch(arr5,12, 7));
+    printf("looking for  5, index: %d\n", BinarySearch(arr5,5, 7));
+    printf("looking for 11, index: %d\n", BinarySearch(arr5,11, 7));
+    printf("looking for -3, index: %d\n", BinarySearch(arr5,-3, 7));
+     printf("\n----------------RecBinarySearch--------------------\n");
+    rec = RecBinarySearch(arr5,12, len);
+    (rec - arr5 < 0)? printf("12 not there!\n"): printf("index : %ld\n", rec - arr5);
+    rec = RecBinarySearch(arr5,5, len);
+    (rec - arr5 < 0)? printf("5 not there!\n"): printf("array[%ld] == 5\n", rec - arr5);
+    rec = RecBinarySearch(arr5,11, len);
+    (rec - arr5 < 0)? printf("11 not there!\n"): printf("array[%ld] == 11\n", rec - arr5);
+    rec = RecBinarySearch(arr5,-3, len);
+    (rec - arr5 < 0)? printf("-3 not there!\n"): printf("array[%ld] == -3\n", rec - arr5);
+    
 	printf("\n\t--------------------MergeSort--------------------\n");
 	PrintArr(arr4,9);
 	MergeSort(arr4, 9);
@@ -59,15 +75,10 @@ int main (void)
 	printf("sorted array, MergeSort took %ld m.sec to run \n", end - start);
 	
 	printf("\n\t--------------------QuickSort--------------------\n");
-	PrintArr(arr5, 7);
-    QuickSort(arr5,0,7, cmpfunc);
-    PrintArr(arr5, 7);
-    printf("\n--------------------BinarySearch--------------------\n");
-    printf("looking for -3, index: %d\n ", BinarySearch(arr5,-3, 7));
-    printf("looking for 11, index: %d\n ", BinarySearch(arr5,11, 7));
-     printf("\n----------------RecBinarySearch--------------------\n");
-    printf("looking for 5, index: %d\n ", RecBinarySearch(arr5,5, 7));
-    printf("looking for -3, index: %d\n ", RecBinarySearch(arr5,-3, 7));
+	PrintArr(arr6, 7);
+    QuickSort(arr6,0,7, cmpfunc);
+    PrintArr(arr6, 7);
+   	assert(1 == IsSorted(arr6,7));
     
     printf("\n\t--------------------QuickSort 5K--------------------\n");
     InitArr(five_k,5000,RANGE);

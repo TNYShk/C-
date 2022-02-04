@@ -10,20 +10,28 @@
 #include <string.h> /* memset */
 #include <stdio.h>
 
-#define NOTTHERE (-1)
+
+typedef enum status
+{
+    MALLOC_ERROR = -2,
+    NOTTHERE = -9,
+    SUCCESS = 0
+}status_e;
+
+
 
 typedef int (*cmp_func_t)(const void *, const void *);
 
 
 int BinarySearch(int *s_arr, int target, size_t length);
-int RecBinarySearch(int *s_arr, int target, size_t length);
+int *RecBinarySearch(int *s_arr, int target, size_t length);
 int MergeSort(int *arr_to_sort, size_t num_elements);
 static void Swap(int *arr);
 int BubbleSort(int *arr_to_sort, size_t num_elements);
 static void PrintArr(int *arr, size_t len);
 static void RMS(int *arr, int *helper, size_t low, size_t len);
 static void Merge(int *arr, int *help, size_t low, size_t mid, size_t high);
-static void CopyArr(int *src, size_t len, int *dest);
+
 static void PSwap(int *i , int *j);
 void QuickSort(void *arr, size_t nmemb, size_t size, cmp_func_t cmp_fun);
 static void RQS(void *arr, size_t low, size_t high, cmp_func_t cmp_fun);
@@ -35,14 +43,15 @@ int main(void)
 {
     int arr[] = {1,4,7,8,9,11,15,16};
     int arr1[] = {7,1,3,11,5,2,8};
-    int rec = 0;
+    int arr2[] = {7,-5,2,5,12};
+    int *rec = NULL;
     int ans = 0;
     size_t leng = sizeof(arr)/sizeof(arr[0]);
-    /*PrintArr(arr1, 7);
-    QuickSort(arr1,0,7, cmpfunc);
-    PrintArr(arr1, 7);
-*/
-    
+    PrintArr(arr2, 5);
+    QuickSort(arr2,0,5, cmpfunc);
+    PrintArr(arr2, 5);
+
+     
     ans = BinarySearch(arr,16, leng);
     printf("array: 1,4,7,8,9,11,15,16 \n\n");
     printf("\nIterative Binary Search\n");
@@ -55,18 +64,19 @@ int main(void)
     printf("index of 17 is %d\n", ans);
      ans = BinarySearch(arr,9, leng);
     printf("index of 9 is %d\n", ans);
+    
     printf("\nRecursive Binary Search\n");
     rec = RecBinarySearch(arr, 7,leng);
-    printf("index of 7 is %d\n", rec);
+    printf("index of 7 is %ld\n", rec - arr);
     rec = RecBinarySearch(arr, 4,leng);
-    printf("index of 4 is %d\n", rec);
-    rec = RecBinarySearch(arr, 17,leng);
-    printf("index of 17 is %d\n", rec);
+    printf("index of 4 is %ld\n", rec - arr);
+    rec = RecBinarySearch(arr, 18,leng);
+    printf("index of 18 is %ld\n", rec - arr);
      rec = RecBinarySearch(arr, 9,leng);
-    printf("index of 9 is %d\n", rec);
+    printf("index of 9 is %ld\n", rec - arr);
     rec = RecBinarySearch(arr, 16,leng);
-    printf("index of 16 is %d\n", rec);
-    /*
+    printf("index of 16 is %ld\n", rec - arr);
+   
     printf("\nRecursive Merge Sort\n");
     printf("before:\n");
     
@@ -74,7 +84,7 @@ int main(void)
     MergeSort(arr1, 7);
     
     PrintArr(arr1, 7);
-   */
+   
     
   
   
@@ -150,42 +160,40 @@ int BinarySearch(int *s_arr, int target, size_t length)
 
 
 
-int RecBinarySearch(int *s_arr, int target, size_t length)
+int *RecBinarySearch(int *s_arr, int target, size_t length)
 {
-    int index = length / 2; 
-
-    if (index == 0 || length == 1)
-        return NOTTHERE;
-
-    if (s_arr[index] == target)
+    size_t index = length / 2;
+    int *where = s_arr + index;
+   
+    if (*where == target)
     {
-        return index;
+        return where;
+    }
+
+    if (index == 0)
+    {
+        return (s_arr - *where);
     }
     
-    if (s_arr[index] < target)
-    {
-        return RecBinarySearch(s_arr + index, target, length - index );
-    }
-   
-   return RecBinarySearch(s_arr, target, index);
+    return (*where < target) ? RecBinarySearch(where, target, length - index): 
+                                RecBinarySearch(s_arr, target, index);
     
 }
 
 int MergeSort(int *arr_to_sort, size_t num_elements)
 {
-    static int *helper = NULL;
+    int *helper = (int *)malloc(num_elements * sizeof(int));
     if(NULL == helper)
     {
-        helper = (int *)malloc(num_elements * sizeof(int));
-        if(NULL == helper)
-            return NOTTHERE;
+        return MALLOC_ERROR;
     }
 
-    CopyArr(arr_to_sort, num_elements, helper);
+    memcpy(helper, arr_to_sort, sizeof(*arr_to_sort) * num_elements);
     RMS(arr_to_sort, helper, 0, num_elements - 1);
       
     free(helper);
-    return 0;
+    helper = NULL;
+    return SUCCESS;
 }
 
 static void RMS(int *arr, int *helper, size_t low, size_t len)
@@ -211,39 +219,26 @@ static void Merge(int *arr, int *help, size_t low, size_t mid, size_t high)
     size_t i = low;
     size_t left = i;
 
+
     while ((i <= mid) && (right <= high))
     {
-        if(arr[i] <= arr[right])
-        {
-            help[left++] = arr[i++];
-        }
-        else
-        {
-            help[left++] = arr[right++];
-        }
+        
+        (arr[i] <= arr[right]) ? (help[left++] = arr[i++]) : (help[left++] = arr[right++]);
+       
     }
 
-    while(i <= mid)
+    if(i <= mid)
     {
-        help[left++] = arr[i++];
+        memcpy(help + left, arr + i, sizeof(*arr) * (mid - i + 1));
     }
 
-    for(i = low; i <= high; ++i)
-    {
-        arr[i] = help[i];
-    }
+    memcpy(arr + low, help + low, sizeof(*help) * (high - low + 1));
+     
    
 }
 
 
-static void CopyArr(int *src, size_t len, int *dest)
-{
-    while(len)
-    {
-        *dest++ = *src++;
-        --len;
-    }
-}
+
 
 
 

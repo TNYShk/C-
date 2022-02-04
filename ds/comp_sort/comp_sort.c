@@ -99,25 +99,23 @@ int BinarySearch(int *s_arr, int target, size_t length)
 
 }
 
-int RecBinarySearch(int *s_arr, int target, size_t length)
+int *RecBinarySearch(int *s_arr, int target, size_t length)
 {
-    int index = length / 2; 
-
-    if (s_arr[index] == target)
-    {
-        return index;
-    }
-    
-    if (length == 1)
-        return NOTTHERE;
-
-    if (s_arr[index] < target)
-    {
-        return RecBinarySearch(s_arr + index, target, length - index);
-    }
+    size_t index = length / 2;
+    int *where = s_arr + index;
    
-   return RecBinarySearch(s_arr, target, index);
+    if (*where == target)
+    {
+        return where;
+    }
+
+    if (0 == index)
+    {
+        return (s_arr - *where);
+    }
     
+    return (*where < target) ? RecBinarySearch(where, target, length - index): 
+                                RecBinarySearch(s_arr, target, index); 
 }
 
 
@@ -206,7 +204,6 @@ static void Merge(int *arr, int *help, size_t low, size_t mid, size_t high)
     if(i <= mid)
     {
         memcpy(help + left, arr + i, sizeof(*arr) * (mid - i + 1));
-        
     }
 
    memcpy(arr + low, help + low, sizeof(*help) * (high - low + 1));
