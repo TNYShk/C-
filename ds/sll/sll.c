@@ -1,8 +1,3 @@
-#include <stdio.h> /* printf, size_t  */
-#include <stdlib.h> /* memory allocation  */
-#include <assert.h> /* assert() */
-
-
 /***********************************
  * Single Linked List WS		   *
  *           Dec 18,2021 		   *
@@ -11,10 +6,11 @@
  *                                 *
  * Reviewer: Nurit                 *
  ***********************************/
+#include <stdio.h> /* printf, size_t  */
+#include <stdlib.h> /* memory allocation  */
+#include <assert.h> /* assert() */
 
-
-
-#include "../include/sll.h"
+#include "../include/sll.h" /* progrem header*/
 
 enum stats
 {
@@ -58,15 +54,18 @@ slist_t *SListCreate(void)
 	slist_iter_t dummy = NULL;
 
 	slist = (slist_t *)malloc(sizeof(slist_t));
-	dummy = InitNode(dummy,slist);
+	if(NULL == slist)
+		return NULL;
 
-	if( (NULL == slist) || (NULL == dummy) )
+	dummy = InitNode(dummy,slist);
+	if (NULL == dummy) 
 	{
 		free(slist);
 		slist = NULL;
 		
 		return NULL;
 	}
+
 	slist->head = dummy;
 	slist->tail = dummy;
 	
@@ -137,6 +136,7 @@ slist_iter_t SListInsertAfter(slist_iter_t where, void *data)
 	{
 		node_after = where;
 		node_after->next = SListNext(where);
+		
 		while (NULL != node_after->next)
 		{
 			node_after = SListNext(node_after);
@@ -156,7 +156,7 @@ slist_iter_t SListInsertAfter(slist_iter_t where, void *data)
 }
 
 
-void *SListGetData( slist_iter_t iterator)
+void *SListGetData(slist_iter_t iterator)
 {
 	assert (NULL != iterator);
 
@@ -253,12 +253,13 @@ slist_iter_t SListFind(const slist_iter_t from, const slist_iter_t to, match_fun
 {
     slist_iter_t temp_result = NULL;
     size_t counter = 0;
+    
     assert(NULL != from);
     assert(NULL != to);
  
     temp_result = from;
     
-    while (temp_result!= NULL)
+    while (NULL != temp_result)
     {
        if(is_match(temp_result->data, param))
        {

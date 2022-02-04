@@ -42,7 +42,7 @@ void SelectionSort(int *arr, size_t arr_size);
  * RETURN: None
  *complexity: time: O(n^2) space: O(1)*/
 void InsertionSort(int *arr, size_t arr_size);
-
+/* */
 int BinarySearch(int *s_arr, int target, size_t length);
 int *RecBinarySearch(int *s_arr, int target, size_t length);
 int MergeSort(int *arr_to_sort, size_t num_elements);

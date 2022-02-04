@@ -19,7 +19,7 @@
 
 int CompareData(const void *left, const void *right);
 int AddNum(void *data, void *param);
-int MatchNums(const void *data, void *param);
+int MatchNums(const void *data, const void *param);
 static void PrintSListForward(const sort_list_t *slist);
 int PrintListData(void *data, void *param);
 
@@ -205,7 +205,7 @@ int CompareData(const void *left, const void *right)
 }
 
 
-int MatchNums(const void *data, void *param)
+int MatchNums(const void *data, const void *param)
 {   
     return (*(size_t *)data == *(size_t *)param);
 }

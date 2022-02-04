@@ -7,8 +7,9 @@
  **********************************************/
 #include <stddef.h> /* size_t*/
 #include <assert.h> /* assert*/
-#include <stdlib.h>
+#include <stdlib.h> /* calloc, malloc, free*/
 #include <string.h> /*memcpy */
+
 #include "comp_sort.h" /* program header */
 
 
@@ -24,14 +25,14 @@ typedef enum status
 
 
 
-
-
 /* Service funcs */
 static void PSwap(int *i , int *j);
 static int FindMinIndex(int *arr, size_t len);
 static void RMS(int *arr, int *helper, size_t low, size_t len);
 static void Merge(int *arr, int *help, size_t low, size_t mid, size_t high);
 static void RQS(void *arr, size_t nmemb, size_t size, cmp_func_t cmp_fun);
+/*****************/
+
 
 
 void BubbleSort(int *arr, size_t arr_size)
@@ -62,7 +63,6 @@ void SelectionSort(int *arr, size_t arr_size)
 
 	assert(NULL != arr);
 	
-
    for(i = 0; runner < end; ++runner, ++i)
    {
     	int min = FindMinIndex(runner, arr_size - i);
@@ -96,8 +96,8 @@ int BinarySearch(int *s_arr, int target, size_t length)
         
     }
     return ((s_arr[index] == target)? index : NOTTHERE);
-
 }
+
 
 int *RecBinarySearch(int *s_arr, int target, size_t length)
 {
