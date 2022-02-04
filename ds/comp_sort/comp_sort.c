@@ -88,11 +88,11 @@ void InsertionSort(int *arr, size_t arr_size)
 
 int BinarySearch(int *s_arr, int target, size_t length)
 {
-    int index = length / 2;
+    int index = length >> 1;
 
    while (s_arr[index] != target && (index != ((int)length) - 1))
     {
-        (s_arr[index] > target)? (index /= 2) : (index = (index + length ) / 2);
+        (s_arr[index] > target)? (index >>= 1) : (index = (index + length ) >> 1);
         
     }
     return ((s_arr[index] == target)? index : NOTTHERE);
@@ -101,7 +101,7 @@ int BinarySearch(int *s_arr, int target, size_t length)
 
 int *RecBinarySearch(int *s_arr, int target, size_t length)
 {
-    size_t index = length / 2;
+    size_t index = length >> 1;
     int *where = s_arr + index;
    
     if (*where == target)
@@ -163,6 +163,7 @@ int MergeSort(int *arr_to_sort, size_t num_elements)
     {
         return MALLOC_ERROR;
     }
+
     memcpy(helper, arr_to_sort, sizeof(*arr_to_sort) * num_elements);
    
     RMS(arr_to_sort, helper, 0, num_elements - 1);
