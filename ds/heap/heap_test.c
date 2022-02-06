@@ -44,7 +44,9 @@ int main(void)
     ptr = HeapPeek(hippie);
     printf("\n\tstill peeking: %d\n", *(int*)ptr);
     printf("size? %ld\n", HeapSize(hippie) );
-    
+   
+
+
     HeapPop(hippie);
     ptr = HeapPeek(hippie);
     printf("\n\tstill peeking: %d\n", *(int*)ptr);
@@ -59,4 +61,5 @@ int CompareData(const void *data1, const void *data2)
 {
     return *((int *)data1) - *((int *)data2);
 }
+
 

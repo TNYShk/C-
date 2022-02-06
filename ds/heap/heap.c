@@ -32,7 +32,8 @@ static void *GetRightChild(vector_t *vec, size_t idx);
 static void *GetLeftChild(vector_t *vec, size_t idx);
 static void *GetParent(vector_t *vec, size_t idx);
 static void GenericSwap(char *left, char *right, size_t size);
-
+static void PrintHeap(heap_t *heap);
+static void PSwap(void **left, void **right);
 
 heap_t *HeapCreate(heap_cmp_func_t cmp_fun)
 {
@@ -81,8 +82,8 @@ int HeapPush(heap_t *heap, void *data)
     cur = HeapSize(heap);
 
     VectorPushBack(heap->vec, data);
-    HeapifyUp(heap, VectorSize(heap->vec) );
-
+    HeapifyUp(heap, HeapSize(heap) - 1);
+    PrintHeap(heap);
     return (cur == HeapSize(heap));
 }
 
@@ -90,15 +91,15 @@ void HeapPop(heap_t *heap)
 {
     if(!HeapIsEmpty(heap))
     {
-        void *last = VectorGetAccessToElement(heap->vec, VectorSize(heap->vec) - 1 );
+        void *last = VectorGetAccessToElement(heap->vec, VectorSize(heap->vec) );
 
         void *first = VectorGetAccessToElement(heap->vec, 0);
-        printf("vector size %ld\n", VectorSize(heap->vec));
+       
         printf("furst elem is %d\n", *(int *)first);
         printf("last elem is %d\n", *(int *)last);
         
-        GenericSwap(first, last, ELEM_S);
-
+        /*GenericSwap(first, last, ELEM_S);
+*/
         printf("after swap first elem is %d\n", *(int *)first);
         printf("after swap last elem is %d\n", *(int *)last);
         
@@ -111,7 +112,7 @@ void HeapPop(heap_t *heap)
         printf("last elem is %d\n", *(int *)last);
         VectorPopBack(heap->vec);
        
-        HeapifyDown(heap, 0);
+        HeapifyDown(heap, 1);
         
     }
 }
@@ -136,6 +137,14 @@ void *HeapPeek(const heap_t *heap)
 
 }
 
+static void PSwap(void **left, void **right)
+{
+    void *tmp = *left;
+    *left = *right;
+    *right = tmp;
+}
+
+
 
 
 static void GenericSwap(char *left, char *right, size_t size)
@@ -158,7 +167,7 @@ static void HeapifyUp(heap_t *heap, size_t new_idx)
    
     if ( 0 > heap->cmp_func(VectorGetAccessToElement(heap->vec, new_idx), parent_data) )
     {
-        GenericSwap(VectorGetAccessToElement(heap->vec, new_idx), parent_data, ELEM_S);
+        PSwap(VectorGetAccessToElement(heap->vec, new_idx), parent_data);
         HeapifyUp(heap, parent_idx);
     }
 
@@ -183,12 +192,12 @@ static void HeapifyDown(heap_t *heap, size_t idx)
     
     if(0 < where)
     {
-        GenericSwap(VectorGetAccessToElement(heap->vec, idx),right_child, ELEM_S); 
+        PSwap(VectorGetAccessToElement(heap->vec, idx),right_child); 
         HeapifyDown(heap,((idx * 2) + 2)); 
     }
     else
     {
-        GenericSwap( VectorGetAccessToElement(heap->vec, idx),left_child, ELEM_S);
+        PSwap(VectorGetAccessToElement(heap->vec, idx),left_child);
         HeapifyDown(heap,((idx * 2) + 1));   
     }
 }
@@ -221,4 +230,14 @@ static void *GetRightChild(vector_t *vec, size_t idx)
         return VectorGetAccessToElement(vec, ((idx * 2) + 2));
     }
     return NULL;
+}
+
+static void PrintHeap(heap_t *heap)
+{
+    size_t i = 0;
+    printf("\n");
+    for (; i < HeapSize(heap); ++i)
+    {
+        printf("%d, ", *(int *)VectorGetAccessToElement(heap->vec, i));
+    }
 }
