@@ -10,7 +10,7 @@
 #include <stdlib.h> /* calloc, malloc, free*/
 #include <string.h> /*memcpy */
 
-#include "comp_sort.h" /* program header */
+#include "../include/comp_sort.h" /* program header */
 
 
 
@@ -30,6 +30,9 @@ static void PSwap(int *i , int *j);
 static int FindMinIndex(int *arr, size_t len);
 static void RMS(int *arr, int *helper, size_t low, size_t len);
 static void Merge(int *arr, int *help, size_t low, size_t mid, size_t high);
+static void GSwap(void *i , void *j, size_t size);
+static void RecQS(void *arr, int size, int left, int right, cmp_func_t cmp_fun);
+void IntQuickSort(void *arr, size_t nmemb, size_t size, cmp_func_t cmp_fun);
 static void RQS(void *arr, size_t nmemb, size_t size, cmp_func_t cmp_fun);
 /*****************/
 
@@ -119,7 +122,49 @@ int *RecBinarySearch(int *s_arr, int target, size_t length)
 }
 
 
-void QuickSort(void *arr, size_t nmemb, size_t size, cmp_func_t cmp_fun)
+void QuickSort(void *arr, size_t nmemb, size_t elem_sz, cmp_func_t cmp_fun)
+{
+    RecQS(arr, elem_sz, 0,nmemb -1, cmp_fun );
+}
+
+static void RecQS(void *arr, int size, int left, int right, cmp_func_t cmp_fun)
+{
+    void  *helper = NULL, *a_left = NULL, *a_right = NULL;
+    int i = 0;
+    int last = left;
+    int mid = (right + left) >> 1;
+
+    if (left >= right)
+        return;
+
+    a_left = ((char *)arr + (left * size));
+    a_right = ((char *)arr + (mid * size));
+    
+    GSwap(a_left, a_right, size);
+
+    for(i = left + 1; i <= right; ++i)
+    {
+        void *temp = ((char *)arr + (i * size));
+
+        if(0 < cmp_fun(a_left,temp))
+        {
+            ++last;
+            helper = ((char *)arr + (last * size));
+            
+            GSwap(temp, helper, size);
+        }
+    }
+    helper = ((char *)arr + (last * size));
+    
+    GSwap(a_left, helper, size);
+
+    RecQS(arr, size, left,     last -1, cmp_fun);
+    RecQS(arr, size, last + 1, right,   cmp_fun);
+}
+
+
+
+void IntQuickSort(void *arr, size_t nmemb, size_t size, cmp_func_t cmp_fun)
 {
     RQS(arr, 0, size - 1, cmp_fun);
 }
@@ -154,6 +199,7 @@ static void RQS(void *arr, size_t nmemb, size_t size, cmp_func_t cmp_fun)
     RQS(arr, right + 1, size, cmp_fun);
   }
 }
+
 
 
 int MergeSort(int *arr_to_sort, size_t num_elements)
@@ -196,7 +242,7 @@ static void Merge(int *arr, int *help, size_t low, size_t mid, size_t high)
     size_t right = mid + 1;
     size_t i = low;
     size_t left = i;
-
+	
     while ((i <= mid) && (right <= high))
     {
         (arr[i] <= arr[right]) ? (help[left++] = arr[i++]) : (help[left++] = arr[right++]);
@@ -211,6 +257,22 @@ static void Merge(int *arr, int *help, size_t low, size_t mid, size_t high)
 }
 
 
+static void GSwap(void *i , void *j, size_t size)
+{
+	char *buffer = (char *)malloc(size * sizeof(char));
+
+	assert (NULL != j);
+	assert (NULL != i);
+	
+    memcpy(buffer, i, size);
+    memcpy(i,j,size);
+    memcpy(j,buffer,size);
+
+    free(buffer);
+    buffer = NULL;
+	
+	
+}
 
 
 static void PSwap(int *i , int *j)

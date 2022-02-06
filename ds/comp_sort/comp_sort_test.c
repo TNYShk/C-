@@ -10,7 +10,7 @@
 #include <stdlib.h> /* qsort*/
 #include <time.h> /* clock, time_t*/
 
-#include "comp_sort.h" /*program header */
+#include "../include/comp_sort.h" /* program header */ 
 
 #define RANGE (1000)
 #define FIVEK (5000)
@@ -76,14 +76,22 @@ int main (void)
 	
 	printf("\n\t--------------------QuickSort--------------------\n");
 	PrintArr(arr6, 7);
-    QuickSort(arr6,0,7, cmpfunc);
+    QuickSort(arr6,7,sizeof(int), cmpfunc);
     PrintArr(arr6, 7);
    	assert(1 == IsSorted(arr6,7));
     
     printf("\n\t--------------------QuickSort 5K--------------------\n");
     InitArr(five_k,5000,RANGE);
     start = clock();
-	QuickSort(five_k,0,5000, cmpfunc);
+	QuickSort(five_k,5000,sizeof(int), cmpfunc);
+	end = clock();
+	assert(1 == IsSorted(five_k,5000));
+	printf("sorted array, QuickSort took %ld m.sec to run \n", end - start);
+
+	printf("\n\t--------------------IntQuickSort 5K--------------------\n");
+    InitArr(five_k,5000,RANGE);
+    start = clock();
+	IntQuickSort(five_k,0,5000, cmpfunc);
 	end = clock();
 	assert(1 == IsSorted(five_k,5000));
 	printf("sorted array, QuickSort took %ld m.sec to run \n", end - start);
@@ -100,7 +108,7 @@ int main (void)
 	printf("5K qsort tested!\n");
 	printf("5K - qsort took %ld m.sec to run \n", end - start);
 	
-
+	
 	printf("\n\t--------------------Arrays Before Sort--------------------\n");
 	PrintArr(arr,6);
 	PrintArr(arr2,6);
@@ -119,7 +127,7 @@ int main (void)
 
 	InitArr(fifty, 50, RANGE);
 	BubbleSort(fifty,50);
-	/*PrintArr(fifty,50);*/
+	
 	assert(1 == IsSorted(fifty,50));
 	
 	printf("--------------------Buble Sort 5k elements --------------\n");
@@ -145,7 +153,7 @@ printf("\n--------------------Selection Sort--------------------\n");
 	PrintArr(fifty, 50);
 	assert(1 == IsSorted(fifty,50));
 	
-	/*PrintArr(fifty, 50);*/
+	
 	
 	printf("--------------------Selection Sort 5k elements --------------\n");
 	InitArr(fivek,FIVEK, RANGE);
@@ -220,7 +228,7 @@ static void PrintArr(int *arr, size_t length)
 
 int cmpfunc(const void *a, const void *b) 
 {
-   return ( *(size_t *)a - *(size_t *)b );
+   return ( *(size_t*)a - *(size_t *)b );
 }
 
 int IsSorted(int *arr, size_t length)

@@ -11,8 +11,8 @@
 #include <stdlib.h> /*memory allocation & free */
 #include <string.h> /* testing strlen, strcmp, strstr*/
 
-#include "avl.h"
-#include "queue.h"
+#include "../include/avl.h"
+#include "../include/queue.h"
 
 typedef struct avl_node avl_node_t;
 
