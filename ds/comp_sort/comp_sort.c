@@ -31,9 +31,10 @@ static int FindMinIndex(int *arr, size_t len);
 static void RMS(int *arr, int *helper, size_t low, size_t len);
 static void Merge(int *arr, int *help, size_t low, size_t mid, size_t high);
 static void GSwap(void *i , void *j, size_t size);
-static void RecQS(void *arr, int size, int left, int right, cmp_func_t cmp_fun);
+static void RecQS(void *arr, size_t size, int left, int right, cmp_func_t cmp_fun);
 void IntQuickSort(void *arr, size_t nmemb, size_t size, cmp_func_t cmp_fun);
 static void RQS(void *arr, size_t nmemb, size_t size, cmp_func_t cmp_fun);
+static int Partition(char *arr, size_t size, int left, int right, cmp_func_t cmp_fun);
 /*****************/
 
 
@@ -127,15 +128,27 @@ void QuickSort(void *arr, size_t nmemb, size_t elem_sz, cmp_func_t cmp_fun)
     RecQS(arr, elem_sz, 0,nmemb -1, cmp_fun );
 }
 
-static void RecQS(void *arr, int size, int left, int right, cmp_func_t cmp_fun)
+static void RecQS(void *arr, size_t size, int left, int right, cmp_func_t cmp_fun)
 {
-    void  *helper = NULL, *a_left = NULL, *a_right = NULL;
+    int pivot = 0;
+
+    if (left >= right)
+    {
+        return;
+    }
+
+    pivot = Partition(arr,size,left,right, cmp_fun);
+
+    RecQS(arr, size, left,      pivot -1, cmp_fun);
+    RecQS(arr, size, pivot + 1, right,   cmp_fun);
+}
+
+static int Partition (char *arr, size_t size, int left, int right, cmp_func_t cmp_fun)
+{
+    void  *pivot = NULL, *a_left = NULL, *a_right = NULL;
     int i = 0;
     int last = left;
     int mid = (right + left) >> 1;
-
-    if (left >= right)
-        return;
 
     a_left = ((char *)arr + (left * size));
     a_right = ((char *)arr + (mid * size));
@@ -149,17 +162,16 @@ static void RecQS(void *arr, int size, int left, int right, cmp_func_t cmp_fun)
         if(0 < cmp_fun(a_left,temp))
         {
             ++last;
-            helper = ((char *)arr + (last * size));
+            pivot = ((char *)arr + (last * size));
             
-            GSwap(temp, helper, size);
+            GSwap(temp, pivot, size);
         }
     }
-    helper = ((char *)arr + (last * size));
+    pivot = ((char *)arr + (last * size));
     
-    GSwap(a_left, helper, size);
+    GSwap(a_left, pivot, size);
 
-    RecQS(arr, size, left,     last -1, cmp_fun);
-    RecQS(arr, size, last + 1, right,   cmp_fun);
+    return last;
 }
 
 
