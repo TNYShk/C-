@@ -49,7 +49,10 @@ int main (void)
     printf("\nlooking for 12, index: %d\n", BinarySearch(arr5,12, 7));
     printf("looking for  5, index: %d\n", BinarySearch(arr5,5, 7));
     printf("looking for 11, index: %d\n", BinarySearch(arr5,11, 7));
-    printf("looking for -3, index: %d\n", BinarySearch(arr5,-3, 7));
+    printf("looking for -3, index: %d\n\n", BinarySearch(arr5,-3, 7));
+    PrintArr(arr2,6);
+    printf("looking for 6, index: %d\n", BinarySearch(arr2,6, 6));
+    printf("looking for 0, index: %d\n", BinarySearch(arr2,0, 6));
      printf("\n----------------RecBinarySearch--------------------\n");
     rec = RecBinarySearch(arr5,12, len);
     (rec - arr5 < 0)? printf("12 not there!\n"): printf("index : %ld\n", rec - arr5);
@@ -59,6 +62,11 @@ int main (void)
     (rec - arr5 < 0)? printf("11 not there!\n"): printf("array[%ld] == 11\n", rec - arr5);
     rec = RecBinarySearch(arr5,-3, len);
     (rec - arr5 < 0)? printf("-3 not there!\n"): printf("array[%ld] == -3\n", rec - arr5);
+    PrintArr(arr2,6);
+    rec = RecBinarySearch(arr2,0, 6);
+    (rec - arr2 < 0)? printf("0 not there!\n"): printf("array[%ld] == 0\n", rec - arr2);
+    rec = RecBinarySearch(arr2,6, 6);
+    (rec - arr2 < 0)? printf("6 not there!\n"): printf("array[%ld] == 6\n", rec - arr2);
     
 	printf("\n\t--------------------MergeSort--------------------\n");
 	PrintArr(arr4,9);

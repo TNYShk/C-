@@ -146,31 +146,34 @@ static void RecQS(void *arr, size_t size, int left, int right, cmp_func_t cmp_fu
 
 static int Partition(char *arr, size_t size, int left, int right, cmp_func_t cmp_fun)
 {
-    void  *a_pivot = NULL, *a_left = NULL, *a_right = NULL;
+    void  *arr_help = NULL;
+    void *arr_left = NULL;
+    void *arr_right = NULL;
+
     int i = 0;
     int last = left;
     int mid = (right + left) >> 1;
 
-    a_left = (arr + (left * size));
-    a_right = (arr + (mid * size));
+    arr_left = (arr + (left * size));
+    arr_right = (arr + (mid * size));
     
-    GenericSwap(a_left, a_right, size);
+    GenericSwap(arr_left, arr_right, size);
 
     for(i = left + 1; i <= right; ++i)
     {
-        void *temp = (arr + (i * size));
+        void *pivot_p = (arr + (i * size));
 
-        if(0 < cmp_fun(a_left,temp))
+        if(0 < cmp_fun(arr_left,pivot_p))
         {
             ++last;
-            a_pivot = (arr + (last * size));
+            arr_help = (arr + (last * size));
             
-            GenericSwap(temp, a_pivot, size);
+            GenericSwap(pivot_p, arr_help, size);
         }
     }
-    a_pivot = (arr + (last * size));
+    arr_help = (arr + (last * size));
     
-    GenericSwap(a_left, a_pivot, size);
+    GenericSwap(arr_left, arr_help, size);
 
     return last;
 }
@@ -222,6 +225,7 @@ int MergeSort(int *arr_to_sort, size_t num_elements)
     {
         return MALLOC_ERROR;
     }
+    assert(NULL != arr_to_sort);
 
     memcpy(helper, arr_to_sort, sizeof(*arr_to_sort) * num_elements);
    
@@ -258,7 +262,8 @@ static void Merge(int *arr, int *help, size_t low, size_t mid, size_t high)
 	
     while ((i <= mid) && (right <= high))
     {
-        (arr[i] <= arr[right]) ? (help[left++] = arr[i++]) : (help[left++] = arr[right++]);
+        (arr[i] <= arr[right])? (help[left++] = arr[i++]) : 
+                                (help[left++] = arr[right++]);
     }
 
     if(i <= mid)
