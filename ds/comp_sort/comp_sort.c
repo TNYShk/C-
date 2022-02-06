@@ -30,7 +30,7 @@ static void PSwap(int *i , int *j);
 static int FindMinIndex(int *arr, size_t len);
 static void RMS(int *arr, int *helper, size_t low, size_t len);
 static void Merge(int *arr, int *help, size_t low, size_t mid, size_t high);
-static void GSwap(void *i , void *j, size_t size);
+
 static void RecQS(void *arr, size_t size, int left, int right, cmp_func_t cmp_fun);
 void IntQuickSort(void *arr, size_t nmemb, size_t size, cmp_func_t cmp_fun);
 static void RQS(void *arr, size_t nmemb, size_t size, cmp_func_t cmp_fun);
@@ -140,35 +140,35 @@ static void RecQS(void *arr, size_t size, int left, int right, cmp_func_t cmp_fu
 
     pivot = Partition(arr,size,left,right, cmp_fun);
 
-    RecQS(arr, size, left,      pivot -1, cmp_fun);
+    RecQS(arr, size, left,      pivot - 1, cmp_fun);
     RecQS(arr, size, pivot + 1, right,   cmp_fun);
 }
 
-static int Partition (char *arr, size_t size, int left, int right, cmp_func_t cmp_fun)
+static int Partition(char *arr, size_t size, int left, int right, cmp_func_t cmp_fun)
 {
     void  *pivot = NULL, *a_left = NULL, *a_right = NULL;
     int i = 0;
     int last = left;
     int mid = (right + left) >> 1;
 
-    a_left = ((char *)arr + (left * size));
-    a_right = ((char *)arr + (mid * size));
+    a_left = (arr + (left * size));
+    a_right = (arr + (mid * size));
     
     GenericSwap(a_left, a_right, size);
 
     for(i = left + 1; i <= right; ++i)
     {
-        void *temp = ((char *)arr + (i * size));
+        void *temp = (arr + (i * size));
 
         if(0 < cmp_fun(a_left,temp))
         {
             ++last;
-            pivot = ((char *)arr + (last * size));
+            pivot = (arr + (last * size));
             
             GenericSwap(temp, pivot, size);
         }
     }
-    pivot = ((char *)arr + (last * size));
+    pivot = (arr + (last * size));
     
     GenericSwap(a_left, pivot, size);
 
@@ -270,24 +270,11 @@ static void Merge(int *arr, int *help, size_t low, size_t mid, size_t high)
 }
 
 
-static void GSwap(void *i , void *j, size_t size)
-{
-	char *buffer = (char *)malloc(size * sizeof(char));
 
-	assert (NULL != j);
-	assert (NULL != i);
-	
-    memcpy(buffer, i, size);
-    memcpy(i,j,size);
-    memcpy(j,buffer,size);
-
-    free(buffer);
-    buffer = NULL;
-}
 
 static void GenericSwap(char *left, char *right, size_t size)
 {
-    while(size)
+    while(0 < size)
     {
         char tmp = *left;
         *left = *right;
