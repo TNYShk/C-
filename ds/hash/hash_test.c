@@ -194,7 +194,7 @@ static size_t hash_func99(const void *key)
 
 int CompareData(const void *key1, const void *key2)
 {
-    return (*(size_t *)&key1 - *(size_t *)&key2);
+    return (*(size_t **)&key1 - *(size_t **)&key2);
 }
 
 int PrintForEachString(void *value, void *param)
