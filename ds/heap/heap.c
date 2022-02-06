@@ -26,14 +26,12 @@ struct heap
 
 
 
-static void HeapifyDown(vector_t *vec,size_t idx, heap_cmp_func_t cmp_fun);
+static void HeapifyDown(heap_t *heap,size_t idx);
 static void HeapifyUp(heap_t *heap, size_t new_idx);
 static void *GetRightChild(vector_t *vec, size_t idx);
 static void *GetLeftChild(vector_t *vec, size_t idx);
 static void *GetParent(vector_t *vec, size_t idx);
 static void GenericSwap(char *left, char *right, size_t size);
-
-
 
 
 heap_t *HeapCreate(heap_cmp_func_t cmp_fun)
@@ -76,8 +74,9 @@ void HeapDestroy(heap_t *heap)
 int HeapPush(heap_t *heap, void *data)
 {
     int status = 0;
-   status =  VectorPushBack(heap->vec, data);
-   HeapifyUp(heap, VectorSize(heap->vec) );
+    status =  VectorPushBack(heap->vec, data);
+    HeapifyUp(heap, VectorSize(heap->vec) );
+
 }
 
 
@@ -117,7 +116,7 @@ static void GenericSwap(char *left, char *right, size_t size)
 static void HeapifyUp(heap_t *heap, size_t new_idx)
 {
     size_t parent_idx = ((new_idx - 1) >> 1);
-    void *parent_data = VectorGetAccessToElement(heap->vec, parent_idx);
+    void *parent_data = GetParent(heap->vec, parent_idx);
    
     if ( heap->cmp_func(VectorGetAccessToElement(heap->vec, new_idx), parent_data) < 0 )
     {
@@ -127,25 +126,27 @@ static void HeapifyUp(heap_t *heap, size_t new_idx)
 
 }
 
-static void HeapifyDown(vector_t *vec,size_t idx, heap_cmp_func_t cmp_fun)
+static void HeapifyDown(heap_t *heap, size_t idx)
 {
     void *left_child = NULL, *right_child = NULL;
+    size_t left_idx = (idx * 2) + 1;
+    size_t right_idx = (idx * 2) + 2;
 
-    left_child = GetLeftChild(vec, idx);
-    right_child = GetRightChild(vec,idx);
+    left_child = GetLeftChild(heap->vec, idx);
+    right_child = GetRightChild(heap->vec,idx);
     
-    if(0 ==  cmp_fun(left_child, right_child))
+    if(0 ==  heap->cmp_func(left_child, right_child))
         return ;
 
-    if(0 < cmp_fun(left_child, right_child))
+    if(0 < heap->cmp_func(left_child, right_child))
     {
-      GenericSwap(VectorGetAccessToElement(vec, idx),GetRightChild(vec,idx), ELEM_S); 
-      HeapifyDown(vec,((idx * 2) + 2), cmp_fun); 
+      GenericSwap(VectorGetAccessToElement(heap->vec, idx),right_child, ELEM_S); 
+      HeapifyDown(heap,right_idx); 
     }
     else
     {
-        GenericSwap( VectorGetAccessToElement(vec, idx),GetLeftChild(vec,idx), ELEM_S);
-        HeapifyDown(vec,((idx * 2) + 1), cmp_fun);   
+        GenericSwap( VectorGetAccessToElement(heap->vec, idx),left_child, ELEM_S);
+        HeapifyDown(heap,left_idx);   
     }
 
     
