@@ -34,11 +34,18 @@ int main(void)
     HeapPush(hippie, &a);
     ptr = HeapPeek(hippie);
     printf("\n\tpeeking: %d\n", *(int*)ptr);
-    HeapPush(hippie, &b);
+    assert(0 == HeapPush(hippie, &b) );
+  
     ptr = HeapPeek(hippie);
     printf("\n\tstill peeking: %d\n", *(int*)ptr);
     printf("size? %ld\n", HeapSize(hippie) );
+    
     HeapPush(hippie, &c);
+    ptr = HeapPeek(hippie);
+    printf("\n\tstill peeking: %d\n", *(int*)ptr);
+    printf("size? %ld\n", HeapSize(hippie) );
+    
+    HeapPop(hippie);
     ptr = HeapPeek(hippie);
     printf("\n\tstill peeking: %d\n", *(int*)ptr);
     printf("size? %ld\n", HeapSize(hippie) );
