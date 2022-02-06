@@ -40,6 +40,7 @@ int main(void)
 	printf("\n\telement3 is: %ld\n", *(size_t*)ptr);
 	ptr2 = VectorGetAccessToElement(vitor,1);
 	printf("\n\telement1: %ld\n", *(size_t*)ptr2);
+
 	ptr2 = VectorGetAccessToElement(vitor,2);
 	printf("\n\telement2: %ld\n", *(size_t*)ptr2);
 	
@@ -48,7 +49,8 @@ int main(void)
 
 	printf("\t\t----------------------Pop--Pop----------------------------\n");
 	VectorPopBack(vitor);
-	
+	ptr2 = VectorGetAccessToElement(vitor,3);
+	printf("\n\telement3: %ld\n", *(size_t*)ptr2);
 	printf("\ncurrent taken elements: %ld\n",VectorSize(vitor));
 	VectorPopBack(vitor);
 	printf("\ncurrent taken elements: %ld\n",VectorSize(vitor));
