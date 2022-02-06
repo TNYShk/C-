@@ -9,14 +9,15 @@
 #include <stdlib.h> /* calloc, free */
 #include <string.h> /* memset */
 
-#include "../include/hash.h" /* programs header*/
+#include "hash.h" /* programs header*/
 #include "dll.h"
 
 
 typedef enum status
 {
-    SUCCESS,
-    FAIL = -1
+    FAIL = -1,
+    SUCCESS = 0
+    
 }status_e;
 
 struct hash
@@ -65,29 +66,28 @@ hash_t *HashCreate(size_t size, hash_get_key_func_t get_key,
 
 void HashDestroy(hash_t *hash)
 {
-    if(NULL != hash)
+    size_t clear_rooms = 0;
+    assert (NULL != hash);
+
+    for(clear_rooms = 0; clear_rooms < hash->size; ++clear_rooms)
     {
-        size_t clear_rooms = 0;
-
-        for(clear_rooms = 0; clear_rooms < hash->size; ++clear_rooms)
-        {
-            DListDestroy(hash->table[clear_rooms]);
-        }
-
-        free(hash->table);
-        
-        memset(hash,0, sizeof(hash_t));
-        free(hash);
-        hash = NULL;
+        DListDestroy(hash->table[clear_rooms]);
     }
-    
+
+    free(hash->table);
+        
+    memset(hash,0, sizeof(hash_t));
+    free(hash);
+    hash = NULL;
 }
 
 int HashInsert(hash_t *hash, void *data)
 {
     const void *new_key = hash->get_key(data);
     size_t level = 0;
-    dlist_iter_t iter;
+    dlist_iter_t iter = NULL;
+
+    assert(NULL != data);
    
     level = hash->hash_func(new_key);
 

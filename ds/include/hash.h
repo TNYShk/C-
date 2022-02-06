@@ -24,14 +24,14 @@ typedef int (*hash_action_func_t)(void *value, void *param);
  * array to sort
  * size_t length of the array 
  * 
- * RETURN: 1 if Sorted, 0 if not sorted, FAIL (-1) if malloc failed
+ * RETURN: SUCCESS is 0 , FAIL (-1) if malloc failed
  * Complexity: time O(1) or O(m) (your choice), space O(m)*/
 hash_t *HashCreate(size_t size, hash_get_key_func_t get_key, 
 			hash_cmp_func_t cmp_func, hash_func_t hash_func);
 
 /*
  * DESCRIPTION: 
- * Algorithm sorts given array, by counting instances of elements
+ * Destroy Hash
  * 
  * PARAMS: 
  * array to sort

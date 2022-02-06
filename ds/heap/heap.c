@@ -27,7 +27,7 @@ struct heap
 
 
 static void HeapifyDown(vector_t *vec,size_t idx, heap_cmp_func_t cmp_fun);
-static void HeapifyUp(vector_t *vec,size_t new_idx, heap_cmp_func_t cmp_fun);
+static void HeapifyUp(heap_t *heap, size_t new_idx);
 static void *GetRightChild(vector_t *vec, size_t idx);
 static void *GetLeftChild(vector_t *vec, size_t idx);
 static void *GetParent(vector_t *vec, size_t idx);
@@ -77,7 +77,7 @@ int HeapPush(heap_t *heap, void *data)
 {
     int status = 0;
    status =  VectorPushBack(heap->vec, data);
-   HeapifyUp(heap->vec, VectorSize(heap->vec), heap->cmp_func);
+   HeapifyUp(heap, VectorSize(heap->vec) );
 }
 
 
@@ -96,7 +96,7 @@ void *HeapPeek(const heap_t *heap)
 {
     assert(NULL != heap);
 
-    return VectorGetAccessToElement(heap->vec, 1);
+    return VectorGetAccessToElement(heap->vec,0);
 
 }
 
@@ -114,13 +114,17 @@ static void GenericSwap(char *left, char *right, size_t size)
 }
 
 
-static void HeapifyUp(vector_t *vec,size_t new_idx, heap_cmp_func_t cmp_fun)
+static void HeapifyUp(heap_t *heap, size_t new_idx)
 {
-    if (cmp_fun(VectorGetAccessToElement(vec, new_idx),GetParent(vec,new_idx)) < 0 )
+    size_t parent_idx = ((new_idx - 1) >> 1);
+    void *parent_data = VectorGetAccessToElement(heap->vec, parent_idx);
+   
+    if ( heap->cmp_func(VectorGetAccessToElement(heap->vec, new_idx), parent_data) < 0 )
     {
-        GenericSwap(VectorGetAccessToElement(vec, new_idx),GetParent(vec,new_idx), ELEM_S);
-        HeapifyUp(vec, ((new_idx -1)>>1), cmp_fun);
+        GenericSwap(VectorGetAccessToElement(heap->vec, new_idx), parent_data, ELEM_S);
+        HeapifyUp(heap, parent_idx);
     }
+
 }
 
 static void HeapifyDown(vector_t *vec,size_t idx, heap_cmp_func_t cmp_fun)
@@ -150,8 +154,13 @@ static void HeapifyDown(vector_t *vec,size_t idx, heap_cmp_func_t cmp_fun)
 
 static void *GetParent(vector_t *vec, size_t idx)
 {
-    assert(0 <= idx);
-    return VectorGetAccessToElement(vec, ((idx - 1)>>1));
+
+    if(0 < idx)
+    {
+        size_t parent_idx = ((idx - 1) >> 1) & -sizeof(size_t);
+        return VectorGetAccessToElement(vec, parent_idx);
+    }
+    return VectorGetAccessToElement(vec, (idx + 1));
 }
 
 static void *GetLeftChild(vector_t *vec, size_t idx)
