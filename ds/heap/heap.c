@@ -93,6 +93,7 @@ void HeapPop(heap_t *heap)
         void *last = VectorGetAccessToElement(heap->vec, VectorSize(heap->vec) - 1 );
 
         void *first = VectorGetAccessToElement(heap->vec, 0);
+        printf("vector size %ld\n", VectorSize(heap->vec));
         printf("furst elem is %d\n", *(int *)first);
         printf("last elem is %d\n", *(int *)last);
         
@@ -100,17 +101,17 @@ void HeapPop(heap_t *heap)
 
         printf("after swap first elem is %d\n", *(int *)first);
         printf("after swap last elem is %d\n", *(int *)last);
-       
-        printf("after memcpy first elem is %d\n", *(int *)first);
-        printf("after memcpy last elem is %d\n", *(int *)last);
+        
      
         last = VectorGetAccessToElement(heap->vec, 1);
         printf("last elem is %d\n", *(int *)last);
         last = VectorGetAccessToElement(heap->vec, 2);
         printf("last elem is %d\n", *(int *)last);
+        last = VectorGetAccessToElement(heap->vec, 3);
+        printf("last elem is %d\n", *(int *)last);
         VectorPopBack(heap->vec);
        
-        HeapifyDown(heap, 1);
+        HeapifyDown(heap, 0);
         
     }
 }
@@ -173,8 +174,10 @@ static void HeapifyDown(heap_t *heap, size_t idx)
     if (NULL == left_child || right_child == NULL)
         return;
 
-    where = heap->cmp_func(left_child, right_child);
 
+    where = heap->cmp_func(left_child, right_child);
+    if(0 == where)
+        return;
     printf("left child %d\n", *(int *)left_child);
      printf("right child %d\n", *(int *)right_child);
     
