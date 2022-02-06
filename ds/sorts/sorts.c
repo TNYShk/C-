@@ -35,7 +35,7 @@ static void Merge(int *arr, int *help, size_t low, size_t mid, size_t high);
 static void PSwap(int *i , int *j);
 void QuickSort(void *arr, size_t nmemb, size_t size, cmp_func_t cmp_fun);
 static void RQS(void *arr, size_t low, size_t high, cmp_func_t cmp_fun);
-int cmpfunc(const void *a, const void *b) ;
+int cmpfunc(const void *a, const void *b);
 
 
 
@@ -176,8 +176,7 @@ int *RecBinarySearch(int *s_arr, int target, size_t length)
     }
     
     return (*where < target) ? RecBinarySearch(where, target, length - index): 
-                                RecBinarySearch(s_arr, target, index);
-    
+                                RecBinarySearch(s_arr, target, index); 
 }
 
 int MergeSort(int *arr_to_sort, size_t num_elements)

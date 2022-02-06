@@ -44,10 +44,16 @@ vector_t *VectorCreate(size_t element_size, size_t cap)
 	assert(0 < element_size);
 	
 	vector = (vector_t *)malloc(sizeof(vector_t));
-	vector->start = calloc(cap, element_size);
-
-	if (NULL == vector || NULL == vector->start )
+	if(NULL == vector)
 	{
+		return NULL;
+	}
+
+	vector->start = calloc(cap, element_size);
+	if (NULL == vector->start )
+	{
+		free (vector);
+		vector = NULL;
 		return NULL;
 	}
 	

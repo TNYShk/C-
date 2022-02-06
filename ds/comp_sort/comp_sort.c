@@ -146,7 +146,7 @@ static void RecQS(void *arr, size_t size, int left, int right, cmp_func_t cmp_fu
 
 static int Partition(char *arr, size_t size, int left, int right, cmp_func_t cmp_fun)
 {
-    void  *pivot = NULL, *a_left = NULL, *a_right = NULL;
+    void  *a_pivot = NULL, *a_left = NULL, *a_right = NULL;
     int i = 0;
     int last = left;
     int mid = (right + left) >> 1;
@@ -163,14 +163,14 @@ static int Partition(char *arr, size_t size, int left, int right, cmp_func_t cmp
         if(0 < cmp_fun(a_left,temp))
         {
             ++last;
-            pivot = (arr + (last * size));
+            a_pivot = (arr + (last * size));
             
-            GenericSwap(temp, pivot, size);
+            GenericSwap(temp, a_pivot, size);
         }
     }
-    pivot = (arr + (last * size));
+    a_pivot = (arr + (last * size));
     
-    GenericSwap(a_left, pivot, size);
+    GenericSwap(a_left, a_pivot, size);
 
     return last;
 }
