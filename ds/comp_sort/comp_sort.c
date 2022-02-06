@@ -35,6 +35,7 @@ static void RecQS(void *arr, size_t size, int left, int right, cmp_func_t cmp_fu
 void IntQuickSort(void *arr, size_t nmemb, size_t size, cmp_func_t cmp_fun);
 static void RQS(void *arr, size_t nmemb, size_t size, cmp_func_t cmp_fun);
 static int Partition(char *arr, size_t size, int left, int right, cmp_func_t cmp_fun);
+static void GenericSwap(char *left, char *right, size_t sz);
 /*****************/
 
 
@@ -153,7 +154,7 @@ static int Partition (char *arr, size_t size, int left, int right, cmp_func_t cm
     a_left = ((char *)arr + (left * size));
     a_right = ((char *)arr + (mid * size));
     
-    GSwap(a_left, a_right, size);
+    GenericSwap(a_left, a_right, size);
 
     for(i = left + 1; i <= right; ++i)
     {
@@ -164,12 +165,12 @@ static int Partition (char *arr, size_t size, int left, int right, cmp_func_t cm
             ++last;
             pivot = ((char *)arr + (last * size));
             
-            GSwap(temp, pivot, size);
+            GenericSwap(temp, pivot, size);
         }
     }
     pivot = ((char *)arr + (last * size));
     
-    GSwap(a_left, pivot, size);
+    GenericSwap(a_left, pivot, size);
 
     return last;
 }
@@ -282,9 +283,21 @@ static void GSwap(void *i , void *j, size_t size)
 
     free(buffer);
     buffer = NULL;
-	
-	
 }
+
+static void GenericSwap(char *left, char *right, size_t size)
+{
+    while(size)
+    {
+        char tmp = *left;
+        *left = *right;
+        *right = tmp;
+        ++left;
+        ++right;
+        --size;
+    }
+}
+
 
 
 static void PSwap(int *i , int *j)
