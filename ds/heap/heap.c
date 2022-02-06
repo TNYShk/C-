@@ -7,14 +7,14 @@
 ***********************************/
 #include <stdlib.h> /*  size_t dynamic memory allocation */
 #include <stdio.h>   /*  standard library               */
-#include <string.h>   /*  memmove                      */
+#include <string.h>   /*  memset                      */
 #include <assert.h>    /* assert                      */ 
 
 #include "dynamic_vector.h"
 #include "heap.h"
 
 #define VCAP (10)
-#define ELEM_S (sizeof(size_t))
+#define ELEM_S (sizeof(void *))
 
 
 
@@ -65,3 +65,13 @@ void HeapDestroy(heap_t *heap)
 
 
 
+int HeapIsEmpty(const heap_t *heap)
+{
+    assert (NULL != heap);
+    return !VectorSize(heap->vec);
+}
+
+size_t HeapSize(const heap_t *heap)
+{
+    return (heap == NULL)? 0: VectorSize(heap->vec);
+}
