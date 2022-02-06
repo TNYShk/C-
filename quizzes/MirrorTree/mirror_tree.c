@@ -62,23 +62,21 @@ int main(void)
     assert(0 == AVLIsEmpty(avl));
     /*assert(0 != AVLInsert(avl, &num2)); WORKS, assert same number */
     assert(0 == AVLInsert(avl, &num3));
-    printf("\nbalanced tree height is %ld\n", AVLHeight(avl));
+   
     assert(0 == AVLInsert(avl, &num4));
     assert(0 == AVLInsert(avl, &num5));
     assert(0 == AVLInsert(avl, &num6));
     assert(6 == AVLSize(avl));
     assert(0 == AVLForEach(avl, PrintNodes, &num, IN_ORDER));
-    printf("\nsize of tree is %ld\n",AVLSize(avl) );
-    printf("\ntree height is %ld\n", AVLHeight(avl));
+    
     MirrorTree(avl->root);
+    printf("\n Mirrored Tree! here:\n");
     assert(0 == AVLForEach(avl, PrintNodes, &num, IN_ORDER));
     printf("\n");
     AVLDestroy(avl);
 
     return 0;
 }
-
-
 
 
 void MirrorTree(avl_node_t *root)
