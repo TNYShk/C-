@@ -28,6 +28,7 @@ int main(void)
     CreateDestroy();
     HeapSiz();
     RemoveTest();
+    HeapTest();
     return 0;
 }
 
@@ -99,7 +100,7 @@ static void RemoveTest()
     assert(0 == HeapPush(hippie, &d));
     
     assert(4 == HeapSize(hippie));
-
+    printf("\nRemoving\n");
 
     rem = HeapRemove(hippie, &IsMatch, &b);
     assert(*(int*)rem == b);
@@ -108,7 +109,7 @@ static void RemoveTest()
     HeapRemove(hippie, &IsMatch, &c);
     rr = HeapRemove(hippie, &IsMatch, &e);
     assert(*(int*)rr == e);
-    
+
 
     assert(1 == HeapSize(hippie));
     printf("\nHeap Remove PASSED?\n");
@@ -134,12 +135,11 @@ void HeapTest()
     
     printf("\nPushing Elements\n");
     HeapPush(hippie, &a);
-    ptr = HeapPeek(hippie);
-    printf("\n\tpeeking: %d\n", *(int*)ptr);
+   
+    printf("\n\tpeeking: %d\n", *(int*)HeapPeek(hippie));
     
     assert(0 == HeapPush(hippie, &b));
-    ptr = HeapPeek(hippie);
-    printf("\n\tpeeking into root: %d\n", *(int*)ptr);
+    printf("\n\tpeeking: %d\n", *(int*)HeapPeek(hippie));
     printf("pushed, size? %ld\n", HeapSize(hippie) );
     
     HeapPush(hippie, &c);
