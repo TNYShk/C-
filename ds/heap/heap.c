@@ -198,43 +198,40 @@ static void HeapifyUp(heap_t *heap, size_t new_idx)
 }
 
 
-/*
+
 static void HeapifyDown(heap_t *heap, size_t idx)
 {
-    void **left_child = NULL, **right_child = NULL;
-    int where = 0;
-    void **data = NULL;
+    size_t left = (idx << 1) + 1;
+    size_t right = (idx << 1) + 2;
+    size_t n = HeapSize(heap) ;
+    size_t cur = idx;
+    void **left_child = NULL, **right_child = NULL, **data = NULL;
+    
+    assert(NULL != heap);
 
-    left_child = GetLeftChild(heap->vec, idx);
-    right_child = GetRightChild(heap->vec,idx);
-    data = (void **)VectorGetAccessToElement(heap->vec, idx);
-
-    if (left_child == NULL )
-    {                     
-        return;
-    }
-     if (*right_child == NULL)
-    {                     
-        PSwap(data,left_child);
-    }
-
-    where = heap->cmp_func(*left_child, *right_child);
-    if(0 == where)
-        return;
-
-    if(0 < where)
+    left_child = VectorGetAccessToElement(heap->vec, left);
+    right_child = VectorGetAccessToElement(heap->vec, right);
+    data = VectorGetAccessToElement(heap->vec, idx);
+    
+    if(left <= n && heap->cmp_func(*left_child, data ) < 0)
     {
-        PSwap(data,right_child); 
-        HeapifyDown(heap,((idx * 2) + 2)); 
+        cur = left;
     }
-    else
+    if(right <= n && heap->cmp_func(*right_child, data ) < 0)
     {
-        PSwap(data,left_child);
-        HeapifyDown(heap,((idx * 2) + 1));   
+        cur = right;
     }
+    
+    if (cur != idx)
+    {
+        PSwap(data,VectorGetAccessToElement(heap->vec, cur)); 
+        HeapifyDown(heap, cur);
+    }
+    
 }
 
-*/
+
+/* Ephraim's:
 
 static void HeapifyDown(heap_t *heap, size_t idx)
 {
@@ -268,7 +265,7 @@ static void HeapifyDown(heap_t *heap, size_t idx)
         HeapifyDown(heap, cur_idx);
     }
 }
-
+*/
 
 static void **GetLeftChild(vector_t *vec, size_t idx)
 {

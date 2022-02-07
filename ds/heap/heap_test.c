@@ -28,7 +28,7 @@ int main(void)
     CreateDestroy();
     HeapSiz();
     RemoveTest();
-    HeapPeekTest();
+    /*HeapPeekTest();*/
     return 0;
 }
 
@@ -136,8 +136,9 @@ void HeapPeekTest()
     printf("\nPushing Elements\n");
     assert(0 == HeapPush(hippie, &a));
     printf("\npeeking: %d\n", *(int **)HeapPeek(hippie));
-    assert(0 == HeapPush(hippie, &b));
-    printf("\npeeking: %d\n", *(int**)HeapPeek(hippie));
+    assert(0 == *(int **)HeapPush(hippie, &b));
+    
+    printf("\npeeking: %d\n", **(int**)HeapPeek(hippie));
     printf("pushed, size? %ld\n", HeapSize(hippie) );
     assert(2 == HeapSize(hippie));
 
