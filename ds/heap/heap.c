@@ -139,14 +139,18 @@ void *HeapRemove(heap_t *heap, heap_is_match_func_t match_func, void *param)
     {
        ++idx;
     }
-    PSwap(VectorGetAccessToElement(heap->vec, idx), last);
+    if (match_func(VectorGetAccessToElement(heap->vec, idx), param))
+    {
+        GenericSwap(VectorGetAccessToElement(heap->vec, idx), last,ELEM_S);
 
-    removed_data = VectorGetAccessToElement(heap->vec, (HeapSize(heap) - 1));
-    VectorPopBack(heap->vec);
+        removed_data = VectorGetAccessToElement(heap->vec, (HeapSize(heap) - 1));
+        VectorPopBack(heap->vec);
 
-    HeapifyDown(heap,idx);
+        HeapifyDown(heap,idx);
+    }
+    
     PrintHeap(heap);
-    return removed_data;
+    return ((removed_data == NULL)? param: removed_data);
 }
 
 
@@ -206,7 +210,7 @@ static void HeapifyDown(heap_t *heap, size_t idx)
      if (right_child == NULL)
     {                     
         
-        PSwap(VectorGetAccessToElement(heap->vec, idx),left_child);
+        GenericSwap(VectorGetAccessToElement(heap->vec, idx),left_child, ELEM_S);
         return;
     }
 
@@ -218,12 +222,12 @@ static void HeapifyDown(heap_t *heap, size_t idx)
     
     if(0 < where)
     {
-        PSwap(VectorGetAccessToElement(heap->vec, idx),right_child); 
+        GenericSwap(VectorGetAccessToElement(heap->vec, idx),right_child,ELEM_S); 
         HeapifyDown(heap,((idx * 2) + 2)); 
     }
     else
     {
-        PSwap(VectorGetAccessToElement(heap->vec, idx),left_child);
+        GenericSwap(VectorGetAccessToElement(heap->vec, idx),left_child,ELEM_S);
         HeapifyDown(heap,((idx * 2) + 1));   
     }
 }

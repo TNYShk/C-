@@ -25,6 +25,7 @@ int main(void)
     int b = 6;
     int c = 2;
     int d = 4;
+    int e = 16;
     void *ptr = NULL;
     void *p2 = NULL;
     hippie = HeapCreate(&CompareData);
@@ -49,21 +50,28 @@ int main(void)
     printf("\n\tstill peeking: %d\n", *(int*)ptr);
     printf("size? %ld\n", HeapSize(hippie) );
    
+    HeapPop(hippie);
+    printf("size? %ld\n", HeapSize(hippie) );
     ptr = HeapRemove(hippie, &IsMatch, &b);
     printf("\n\tremoved %d\n", *(int*)ptr);
-     printf("size? %ld\n", HeapSize(hippie) );
-     HeapPush(hippie, &d);
     printf("size? %ld\n", HeapSize(hippie) );
+    
+    HeapPush(hippie, &d);
+    printf("pushed, size is %ld\n", HeapSize(hippie) );
     ptr = HeapPeek(hippie);
     printf("\n\tpeeking into root: %d\n", *(int*)ptr);
 
-   
+
+    p2 = HeapRemove(hippie, &IsMatch, &e);
+    printf("\n\tremoved? %d\n", *(int*)p2);
+     printf("size? %ld\n", HeapSize(hippie) );
+   /*
     printf("\nPoping root\n");
     HeapPop(hippie);
     ptr = HeapPeek(hippie);
     printf("\n\tstill peeking: %d\n", *(int*)ptr);
     printf("size? %ld\n", HeapSize(hippie) );
-    
+    */
    
     HeapDestroy(hippie);
     
