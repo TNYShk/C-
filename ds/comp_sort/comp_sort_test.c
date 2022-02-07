@@ -10,13 +10,10 @@
 #include <stdlib.h> /* qsort*/
 #include <time.h> /* clock, time_t*/
 
-#include "../include/comp_sort.h" /* program header */ 
+#include "comp_sort.h" /* program header */ 
 
 #define RANGE (1000)
 #define FIVEK (5000)
-
-
-
 
 
 static void PrintArr(int *arr, size_t length);
@@ -38,6 +35,9 @@ int main (void)
 	int arr4[] = {7,1,3,11,5,2,8,-9,100};
 	int arr5[] = {-3,1,5,7,8,11,29};
 	int arr6[] = {7,1,-3,11,5,29,8};
+	int arr_ziv[] = {1,4,9,11,15,20,25,29};
+	int arr_ziv1[] = {-3,0,10,22,24,26,30,33,35,37};
+	int i = 0;
     int *rec = NULL;
   	size_t len = sizeof(arr5)/sizeof(arr5[0]);
 	int five_k[FIVEK] = {0};
@@ -52,8 +52,27 @@ int main (void)
     printf("looking for -3, index: %d\n\n", BinarySearch(arr5,-3, 7));
     PrintArr(arr2,6);
     printf("looking for 6, index: %d\n", BinarySearch(arr2,6, 6));
-    printf("looking for 0, index: %d\n", BinarySearch(arr2,0, 6));
-     printf("\n----------------RecBinarySearch--------------------\n");
+    printf("looking for 0, index: %d\n\n", BinarySearch(arr2,0, 6));
+   	PrintArr(arr_ziv1,10);
+   	printf("looking for -3, index: %d\n", BinarySearch(arr_ziv1,-3,10));
+   	printf("looking for 0, index: %d\n", BinarySearch(arr_ziv1,0,10));
+   	printf("looking for 10, index: %d\n", BinarySearch(arr_ziv1,10,10));
+   	printf("looking for 22, index: %d\n", BinarySearch(arr_ziv1,22,10));
+   	printf("looking for 24, index: %d\n", BinarySearch(arr_ziv1,24,10));
+   	printf("looking for 26, index: %d\n", BinarySearch(arr_ziv1,26,10));
+   	printf("looking for 30, index: %d\n", BinarySearch(arr_ziv1,30,10));
+   	printf("looking for 33, index: %d\n", BinarySearch(arr_ziv1,33,10));
+   	printf("looking for 35, index: %d\n", BinarySearch(arr_ziv1,35,10));
+   	printf("looking for 37, index: %d\n", BinarySearch(arr_ziv1,37,10));
+   	printf("looking for 40, index: %d\n\n", BinarySearch(arr_ziv1,40,10));
+
+   	PrintArr(arr_ziv,8);
+   	printf("looking for -3, index: %d\n", BinarySearch(arr_ziv,-3,8));	
+   	printf("looking for 4, index: %d\n", BinarySearch(arr_ziv,4,8));	
+   	printf("looking for 9, index: %d\n", BinarySearch(arr_ziv,9,8));	
+    printf("\n----------------RecBinarySearch--------------------\n");
+    
+    
     rec = RecBinarySearch(arr5,12, len);
     (rec - arr5 < 0)? printf("12 not there!\n"): printf("index : %ld\n", rec - arr5);
     rec = RecBinarySearch(arr5,5, len);

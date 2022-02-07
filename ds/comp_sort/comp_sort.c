@@ -93,14 +93,24 @@ void InsertionSort(int *arr, size_t arr_size)
 
 int BinarySearch(int *s_arr, int target, size_t length)
 {
-    int index = length >> 1;
+    int *left = s_arr;
+    int *right = s_arr + length -1;
+    int *where = s_arr + (length >> 1);
 
-   while (s_arr[index] != target && (index != ((int)length) - 1))
+    while((target != *where) && (left < right))
     {
-        (s_arr[index] > target)? (index >>= 1) : (index = (index + length ) >> 1);
-        
+        if(target > *where)
+        {
+            left = where + 1;
+        }  
+        else
+        {
+            right = where - 1;
+        }
+
+        where = left + (right - left)/2;
     }
-    return ((s_arr[index] == target)? index : NOTTHERE);
+   return (target == *where)? (where - s_arr): NOTTHERE;
 }
 
 
@@ -257,18 +267,18 @@ static void RMS(int *arr, int *helper, size_t low, size_t len)
 static void Merge(int *arr, int *help, size_t low, size_t mid, size_t high)
 {
     size_t right = mid + 1;
-    size_t i = low;
-    size_t left = i;
+    size_t lefty = low;
+    size_t i = lefty;
 	
-    while ((i <= mid) && (right <= high))
+    while ((lefty <= mid) && (right <= high))
     {
-        (arr[i] <= arr[right])? (help[left++] = arr[i++]) : 
-                                (help[left++] = arr[right++]);
+        (arr[lefty] <= arr[right])? (help[i++] = arr[lefty++]) : 
+                                (help[i++] = arr[right++]);
     }
 
-    if(i <= mid)
+    if(lefty <= mid)
     {
-        memcpy(help + left, arr + i, sizeof(*arr) * (mid - i + 1));
+        memcpy(help + i, arr + lefty, sizeof(*arr) * (mid - lefty + 1));
     }
 
    memcpy(arr + low, help + low, sizeof(*help) * (high - low + 1));
