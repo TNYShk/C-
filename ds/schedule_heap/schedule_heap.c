@@ -12,9 +12,9 @@
 #include <unistd.h> /* sleep         */
 
 #include "task.h" /*task related header  */
-#include "scheduler_heap.h" /*scheduler header  */
+#include "scheduler.h" /*scheduler header  */
 
-#include "pq_heap.h" /* for the scheduler */
+#include "pq.h" /* for the scheduler */
 
 
 

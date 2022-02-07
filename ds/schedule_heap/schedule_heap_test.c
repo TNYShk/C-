@@ -3,8 +3,8 @@
 #include <assert.h> /* assert() */
 
 #include "task.h" /*task related header  */
-#include "scheduler_heap.h" /*scheduler header  */
-#include "pq_heap.h" /* for the scheduler */
+#include "scheduler.h" /*scheduler header  */
+#include "pq.h" /* for the scheduler */
 
 
 typedef struct remove

@@ -3,14 +3,14 @@
  * Developer: Tanya                           *
  * Written: 2021-12-23                        *
  *                                            *
- * Reviewer:  Ori Marom                       *
+ * Reviewer:                                  *
  **********************************************/
 
 #include <stdio.h>  /* printf, size_t      */
 #include <assert.h> /* assert()          */
 
 
-#include "pq_heap.h"
+#include "pq.h"
 #include "heap.h"
 
 
