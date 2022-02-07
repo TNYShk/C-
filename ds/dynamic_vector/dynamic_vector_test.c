@@ -21,7 +21,7 @@ int main(void)
 	test2 = 5;
 
 	test = VectorPushBack(vitor,&test2);
-	(test == 0) ? printf("\nyey! great success! pushed \n") : printf("oops! no pushing!\n");
+	(test == 0) ? printf("\nyey! great success! pushed %ld \n",test2) : printf("oops! no pushing!\n");
 	test2 = 6;
 	
 	test = VectorPushBack(vitor,&test2);
@@ -36,12 +36,12 @@ int main(void)
 	
 	
 	printf("\t\t------------------Printing--element--values------------------\n");
-	ptr = VectorGetAccessToElement(vitor,3);
+	ptr = VectorGetAccessToElement(vitor,2);
 	printf("\n\telement3 is: %ld\n", *(size_t*)ptr);
-	ptr2 = VectorGetAccessToElement(vitor,1);
+	ptr2 = VectorGetAccessToElement(vitor,0);
 	printf("\n\telement1: %ld\n", *(size_t*)ptr2);
 
-	ptr2 = VectorGetAccessToElement(vitor,2);
+	ptr2 = VectorGetAccessToElement(vitor,1);
 	printf("\n\telement2: %ld\n", *(size_t*)ptr2);
 	
 
@@ -49,8 +49,7 @@ int main(void)
 
 	printf("\t\t----------------------Pop--Pop----------------------------\n");
 	VectorPopBack(vitor);
-	ptr2 = VectorGetAccessToElement(vitor,3);
-	printf("\n\telement3: %ld\n", *(size_t*)ptr2);
+	
 	printf("\ncurrent taken elements: %ld\n",VectorSize(vitor));
 	VectorPopBack(vitor);
 	printf("\ncurrent taken elements: %ld\n",VectorSize(vitor));
@@ -70,21 +69,21 @@ int main(void)
 	printf("\ncurrent taken elements %ld\n",VectorSize(vitor));
 	
 	test = VectorPushBack(vitor,&f);
-	ptr2 = VectorGetAccessToElement(vitor,4);
+	ptr2 = VectorGetAccessToElement(vitor,3);
 	
-	(test == 0) ? printf("\nyey! great success! pushed \n") : printf("oops! no pushing!\n");
+	(test == 0) ? printf("\nyey! great success! %f pushed \n",f) : printf("oops! no pushing!\n");
 	
 	printf("\ncurrent taken elements: %ld\n",VectorSize(vitor));
 	printf("\n\tcapacity is now %ld\n",VectorCapacity(vitor));
 	
 	printf("\t\t-----------------Printing--element--values---------------\n");
-	ptr = VectorGetAccessToElement(vitor,3);
+	ptr = VectorGetAccessToElement(vitor,2);
 	printf("\n\telement3 is: %ld\n", *(size_t*)ptr);
-	ptr2 = VectorGetAccessToElement(vitor,1);
+	ptr2 = VectorGetAccessToElement(vitor,0);
 	printf("\n\telement1: %ld\n", *(size_t*)ptr2);
-	ptr2 = VectorGetAccessToElement(vitor,2);
+	ptr2 = VectorGetAccessToElement(vitor,1);
 	printf("\n\telement2: %ld\n", *(size_t*)ptr2);
-	ptr2 = VectorGetAccessToElement(vitor,4);
+	ptr2 = VectorGetAccessToElement(vitor,3);
 	printf("\n\telement4: %f\n", *(float *)ptr2);
 
 
@@ -93,12 +92,12 @@ int main(void)
 	test2 = 26;
 	test = VectorPushBack(vitor,&test2);
 	(test == 0) ? printf("\nyey! great success! pushed \n") : printf("oops! no pushing!\n");
-	ptr2 = VectorGetAccessToElement(vitor,5);
+	ptr2 = VectorGetAccessToElement(vitor,4);
 	printf("\n\tThe 5'th Element: %ld\n", *(size_t*)ptr2);
 	test2 = 200;
 	test = VectorPushBack(vitor,&test2);
 	(test == 0) ? printf("\nyey! great success! pushed \n") : printf("oops! no pushing!\n");
-	ptr2 = VectorGetAccessToElement(vitor,6);
+	ptr2 = VectorGetAccessToElement(vitor,5);
 	printf("\n\telement6: %ld\n", *(size_t*)ptr2);
 	printf("\ncurrent taken elements: %ld\n",VectorSize(vitor));
 	printf("\n\tcapacity is now %ld\n",VectorCapacity(vitor));
