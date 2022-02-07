@@ -15,7 +15,7 @@
 
 
 int CompareData(const void *data1, const void *data2);
-
+int IsMatch(const void *element, const void *param);
 
 
 int main(void)
@@ -24,7 +24,9 @@ int main(void)
     int a =  5;
     int b = 6;
     int c = 2;
+    int d = 4;
     void *ptr = NULL;
+    void *p2 = NULL;
     hippie = HeapCreate(&CompareData);
    
     assert(1 == HeapIsEmpty(hippie));
@@ -47,12 +49,21 @@ int main(void)
     printf("\n\tstill peeking: %d\n", *(int*)ptr);
     printf("size? %ld\n", HeapSize(hippie) );
    
+    ptr = HeapRemove(hippie, &IsMatch, &b);
+    printf("\n\tremoved %d\n", *(int*)ptr);
+     printf("size? %ld\n", HeapSize(hippie) );
+     HeapPush(hippie, &d);
+    printf("size? %ld\n", HeapSize(hippie) );
+    ptr = HeapPeek(hippie);
+    printf("\n\tpeeking into root: %d\n", *(int*)ptr);
 
+   
     printf("\nPoping root\n");
     HeapPop(hippie);
     ptr = HeapPeek(hippie);
     printf("\n\tstill peeking: %d\n", *(int*)ptr);
     printf("size? %ld\n", HeapSize(hippie) );
+    
    
     HeapDestroy(hippie);
     
@@ -61,7 +72,12 @@ int main(void)
 
 int CompareData(const void *data1, const void *data2)
 {
-    return *((int *)data1) - *((int *)data2);
+    return *(int *)data1 - *(int *)data2;
+}
+
+int IsMatch(const void *element, const void *param)
+{
+    return (CompareData(element,param) == 0);
 }
 
 

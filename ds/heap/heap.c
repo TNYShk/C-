@@ -10,11 +10,13 @@
 #include <string.h>   /*  memset                      */
 #include <assert.h>    /* assert                      */ 
 
-#include "dynamic_vector.h"
 #include "heap.h"
+#include "dynamic_vector.h"
+
 
 #define VCAP (10)
 #define ELEM_S (sizeof(size_t))
+#define HEAPROOT (0)
 
 
 
@@ -82,30 +84,29 @@ int HeapPush(heap_t *heap, void *data)
     cur = HeapSize(heap);
 
     VectorPushBack(heap->vec, data);
-    HeapifyUp(heap, VectorSize(heap->vec) - 1);
+    HeapifyUp(heap, HeapSize(heap) - 1);
     PrintHeap(heap);
     return (cur == HeapSize(heap));
 }
 
 void HeapPop(heap_t *heap)
 {
-    if(!HeapIsEmpty(heap))
-    {
-        void *last = VectorGetAccessToElement(heap->vec, VectorSize(heap->vec) );
+    void *last = NULL;
+    void *root = NULL;
 
-        void *first = VectorGetAccessToElement(heap->vec, 0);
+    assert(NULL != heap);
+    
+    last = VectorGetAccessToElement(heap->vec, HeapSize(heap) -1);
+    root = VectorGetAccessToElement(heap->vec, HEAPROOT);
+    printf("last is %d\n", *(int *)last);
+    PSwap(root, last);
+    printf("post swap last is %d\n", *(int *)last);
+    VectorPopBack(heap->vec);
        
-        PSwap(first, last);
-
-        PrintHeap(heap);
-        
-     
-
-        VectorPopBack(heap->vec);
+    HeapifyDown(heap, HEAPROOT);
        
-        HeapifyDown(heap, 0);
         
-    }
+    
 }
 
 
@@ -127,6 +128,29 @@ void *HeapPeek(const heap_t *heap)
     return VectorGetAccessToElement(heap->vec,0);
 
 }
+
+void *HeapRemove(heap_t *heap, heap_is_match_func_t match_func, void *param)
+{
+    size_t idx = 0;
+    void *last = VectorGetAccessToElement(heap->vec, HeapSize(heap) -1);
+    void *removed_data = NULL;
+
+    while(!match_func(VectorGetAccessToElement(heap->vec, idx), param) && (idx < HeapSize(heap)))
+    {
+       ++idx;
+    }
+    PSwap(VectorGetAccessToElement(heap->vec, idx), last);
+
+    removed_data = VectorGetAccessToElement(heap->vec, (HeapSize(heap) - 1));
+    VectorPopBack(heap->vec);
+
+    HeapifyDown(heap,idx);
+    PrintHeap(heap);
+    return removed_data;
+}
+
+
+
 
 static void PSwap(void **left, void **right)
 {
@@ -154,12 +178,12 @@ static void GenericSwap(char *left, char *right, size_t size)
 static void HeapifyUp(heap_t *heap, size_t new_idx)
 {
     size_t parent_idx = ((new_idx - 1) >> 1);
-    void *parent_data = GetParent(heap->vec, parent_idx);
+    void *parent_data = NULL;
    
-
     if(0 == new_idx)
         return;
 
+    parent_data = VectorGetAccessToElement(heap->vec, parent_idx);
     if ( 0 > heap->cmp_func(VectorGetAccessToElement(heap->vec, new_idx), parent_data) )
     {
         PSwap(VectorGetAccessToElement(heap->vec, new_idx), parent_data);
@@ -175,8 +199,16 @@ static void HeapifyDown(heap_t *heap, size_t idx)
     
     left_child = GetLeftChild(heap->vec, idx);
     right_child = GetRightChild(heap->vec,idx);
-    if (NULL == left_child || right_child == NULL)
+    if (left_child == NULL)
+    {                     
         return;
+    }
+     if (right_child == NULL)
+    {                     
+        
+        PSwap(VectorGetAccessToElement(heap->vec, idx),left_child);
+        return;
+    }
 
 
     where = heap->cmp_func(left_child, right_child);
@@ -195,6 +227,7 @@ static void HeapifyDown(heap_t *heap, size_t idx)
         HeapifyDown(heap,((idx * 2) + 1));   
     }
 }
+
 
 
 static void *GetParent(vector_t *vec, size_t idx)
@@ -235,3 +268,9 @@ static void PrintHeap(heap_t *heap)
         printf("%d, ", *(int *)VectorGetAccessToElement(heap->vec, i));
     }
 }
+
+static int IsMatch(const void *element, const void *param)
+{
+    return (CompareData(element,param) == 0);
+}
+
