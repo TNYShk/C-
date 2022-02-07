@@ -154,6 +154,6 @@ void TestPeekAndDequeueTest(pq_t *pq)
     {
         data = PQPeek(pq); 
         PQDequeue(pq);
-        printf("Peek queue. Element is: %d. After dequeue. size is: %lu\n", *(int **)data, PQSize(pq));
+        printf("Peek queue. Element is: %d. After dequeue. size is: %lu\n", *(int *)data, PQSize(pq));
     }
 } 
