@@ -207,16 +207,15 @@ static void HeapifyDown(heap_t *heap, size_t idx)
 
     left_child = GetLeftChild(heap->vec, idx);
     right_child = GetRightChild(heap->vec,idx);
-    data = VectorGetAccessToElement(heap->vec, idx);
+    data = (void **)VectorGetAccessToElement(heap->vec, idx);
 
-    if (left_child == NULL)
+    if (left_child == NULL )
     {                     
         return;
     }
-     if (right_child == NULL)
+     if (*right_child == NULL)
     {                     
         PSwap(data,left_child);
-        return;
     }
 
     where = heap->cmp_func(*left_child, *right_child);

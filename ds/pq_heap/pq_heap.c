@@ -13,7 +13,7 @@
 
 
 #include "heap.h"
-#include "pq.h"
+#include "pq_heap.h"
 
 
 struct pqueue

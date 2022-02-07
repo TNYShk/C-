@@ -10,7 +10,7 @@
 #include <assert.h> /* assert()          */
 
 
-#include "pq.h"
+#include "pq_heap.h"
 #include "heap.h"
 
 
