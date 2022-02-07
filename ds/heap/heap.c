@@ -14,7 +14,7 @@
 #include "dynamic_vector.h"
 
 
-#define VCAP (10)
+#define VCAP (4)
 #define ELEM_S (sizeof(size_t))
 #define HEAPROOT (0)
 
@@ -158,9 +158,9 @@ void *HeapRemove(heap_t *heap, heap_is_match_func_t match_func, void *param)
 
 static void PSwap(void **left, void **right)
 {
-    void *tmp = *left;
+    void *holder = *left;
     *left = *right;
-    *right = tmp;
+    *right = holder;
 }
 
 
@@ -195,6 +195,8 @@ static void HeapifyUp(heap_t *heap, size_t new_idx)
     }
 
 }
+
+
 
 static void HeapifyDown(heap_t *heap, size_t idx)
 {

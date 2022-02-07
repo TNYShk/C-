@@ -28,7 +28,7 @@ int main(void)
     int e = 16;
     void *ptr = NULL;
     void *p2 = NULL;
-    hippie = HeapCreate(&CompareData);
+    hippie = HeapCreate(CompareData);
    
     assert(1 == HeapIsEmpty(hippie));
 
@@ -49,9 +49,9 @@ int main(void)
     ptr = HeapPeek(hippie);
     printf("\n\tstill peeking: %d\n", *(int*)ptr);
     printf("size? %ld\n", HeapSize(hippie) );
-   
     HeapPop(hippie);
     printf("size? %ld\n", HeapSize(hippie) );
+   
     ptr = HeapRemove(hippie, &IsMatch, &b);
     printf("\n\tremoved %d\n", *(int*)ptr);
     printf("size? %ld\n", HeapSize(hippie) );
