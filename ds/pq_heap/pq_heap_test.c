@@ -25,7 +25,7 @@ void TestPeekAndDequeueTest(pq_t *pq);
 
 int main(void)
 {
-   TestOne();
+  TestOne();
    TestTwo();
 
     return 0;
@@ -55,6 +55,8 @@ void TestOne()
     PQEnqueue(test, &huns);
     printf("size is %ld\n", PQSize(test));
     
+    printf("\t--------------Dequeue ALL --------------------\n");
+    TestPeekAndDequeueTest(test);
     
     printf("\t--------------inserting 2 more--------------------\n");
     PQEnqueue(test, &hund);
@@ -133,9 +135,9 @@ void TestTwo()
 
 
 
-int CompareData(const void *left, const void *right)
+int CompareData(const void *data1, const void *data2)
 {
-    return (*(size_t *)left - *(size_t *)right);
+    return *(int *)data1 - *(int *)data2;
 }
 
 int MatchData(const void *data, const void *param)
@@ -152,6 +154,6 @@ void TestPeekAndDequeueTest(pq_t *pq)
     {
         data = PQPeek(pq); 
         PQDequeue(pq);
-        printf("Peek queue. Element is: %ld. After dequeue. size is: %lu\n", *(size_t *)data, PQSize(pq));
+        printf("Peek queue. Element is: %d. After dequeue. size is: %lu\n", *(int **)data, PQSize(pq));
     }
 } 

@@ -151,10 +151,8 @@ void *HeapRemove(heap_t *heap, heap_is_match_func_t match_func, void *param)
     }
     
     PrintHeap(heap);
-    return ((removed_data == NULL)? param: removed_data);
+    return ((removed_data == NULL)? NULL: removed_data);
 }
-
-
 
 
 
@@ -200,7 +198,7 @@ static void HeapifyUp(heap_t *heap, size_t new_idx)
 }
 
 
-
+/*
 static void HeapifyDown(heap_t *heap, size_t idx)
 {
     void **left_child = NULL, **right_child = NULL;
@@ -237,6 +235,40 @@ static void HeapifyDown(heap_t *heap, size_t idx)
     }
 }
 
+*/
+
+static void HeapifyDown(heap_t *heap, size_t idx)
+{
+    size_t len = HeapSize(heap);
+    size_t left = (idx << 1) + 1;
+    size_t right = (idx << 1) + 2;
+    
+    size_t cur_idx = idx;
+
+    void **min_data = NULL;
+    void **data = NULL;
+
+    min_data = VectorGetAccessToElement(heap->vec, cur_idx);
+    if (len > left && (data = VectorGetAccessToElement(heap->vec, left), heap->cmp_func(*data, *min_data) < 0))
+    {
+        cur_idx = left;
+        min_data = data;
+    }
+    if (len > right &&
+        (data = VectorGetAccessToElement(heap->vec, right),
+            heap->cmp_func(*data, *min_data) < 0))
+    {
+        cur_idx = right;
+        min_data = data;
+    }
+
+    if (idx != cur_idx)
+    {
+        data = VectorGetAccessToElement(heap->vec, idx);
+        PSwap(data, min_data);
+        HeapifyDown(heap, cur_idx);
+    }
+}
 
 
 static void **GetLeftChild(vector_t *vec, size_t idx)

@@ -50,6 +50,7 @@ void PQDestroy(pq_t *pq)
 	
 	HeapDestroy(pq->heap);
 	pq->heap = NULL;
+
 	memset(pq, 0, sizeof(pq_t));
 
 	free(pq);
@@ -88,6 +89,7 @@ void *PQDequeue(pq_t *pq)
 	assert (NULL != pq);
 
 	peek = HeapPeek(pq->heap);
+	HeapPop(pq->heap);
 	return peek;
 }
 
@@ -110,7 +112,6 @@ void PQClear(pq_t *pq)
 
 void *PQErase(pq_t *pq, pq_match_func_t match_func, void *param)
 {
-	
 	
 	void *data = NULL;
 
