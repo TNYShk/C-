@@ -31,13 +31,15 @@ int main(void)
 
     (1 == HeapIsEmpty(hippie))? printf("Empty Heap\n") : printf("NOT empty Heap\n");
     printf("size? %ld\n", HeapSize(hippie));
+    
+    printf("\nPushing Elements\n");
     HeapPush(hippie, &a);
     ptr = HeapPeek(hippie);
     printf("\n\tpeeking: %d\n", *(int*)ptr);
-    assert(0 == HeapPush(hippie, &b) );
+    assert(0 == HeapPush(hippie, &b));
   
     ptr = HeapPeek(hippie);
-    printf("\n\tstill peeking: %d\n", *(int*)ptr);
+    printf("\n\tpeeking into root: %d\n", *(int*)ptr);
     printf("size? %ld\n", HeapSize(hippie) );
     
     HeapPush(hippie, &c);
@@ -46,7 +48,7 @@ int main(void)
     printf("size? %ld\n", HeapSize(hippie) );
    
 
-
+    printf("\nPoping root\n");
     HeapPop(hippie);
     ptr = HeapPeek(hippie);
     printf("\n\tstill peeking: %d\n", *(int*)ptr);

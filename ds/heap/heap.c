@@ -82,7 +82,7 @@ int HeapPush(heap_t *heap, void *data)
     cur = HeapSize(heap);
 
     VectorPushBack(heap->vec, data);
-    HeapifyUp(heap, HeapSize(heap) - 1);
+    HeapifyUp(heap, VectorSize(heap->vec) - 1);
     PrintHeap(heap);
     return (cur == HeapSize(heap));
 }
@@ -95,24 +95,15 @@ void HeapPop(heap_t *heap)
 
         void *first = VectorGetAccessToElement(heap->vec, 0);
        
-        printf("furst elem is %d\n", *(int *)first);
-        printf("last elem is %d\n", *(int *)last);
-        
-        /*GenericSwap(first, last, ELEM_S);
-*/
-        printf("after swap first elem is %d\n", *(int *)first);
-        printf("after swap last elem is %d\n", *(int *)last);
+        PSwap(first, last);
+
+        PrintHeap(heap);
         
      
-        last = VectorGetAccessToElement(heap->vec, 1);
-        printf("last elem is %d\n", *(int *)last);
-        last = VectorGetAccessToElement(heap->vec, 2);
-        printf("last elem is %d\n", *(int *)last);
-        last = VectorGetAccessToElement(heap->vec, 3);
-        printf("last elem is %d\n", *(int *)last);
+
         VectorPopBack(heap->vec);
        
-        HeapifyDown(heap, 1);
+        HeapifyDown(heap, 0);
         
     }
 }
@@ -165,6 +156,10 @@ static void HeapifyUp(heap_t *heap, size_t new_idx)
     size_t parent_idx = ((new_idx - 1) >> 1);
     void *parent_data = GetParent(heap->vec, parent_idx);
    
+
+    if(0 == new_idx)
+        return;
+
     if ( 0 > heap->cmp_func(VectorGetAccessToElement(heap->vec, new_idx), parent_data) )
     {
         PSwap(VectorGetAccessToElement(heap->vec, new_idx), parent_data);
@@ -187,8 +182,7 @@ static void HeapifyDown(heap_t *heap, size_t idx)
     where = heap->cmp_func(left_child, right_child);
     if(0 == where)
         return;
-    printf("left child %d\n", *(int *)left_child);
-     printf("right child %d\n", *(int *)right_child);
+
     
     if(0 < where)
     {
