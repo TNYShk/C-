@@ -201,71 +201,38 @@ static void HeapifyUp(heap_t *heap, size_t new_idx)
 
 static void HeapifyDown(heap_t *heap, size_t idx)
 {
+    void **left_child = NULL, **right_child = NULL, **data = NULL;
+
     size_t left = (idx << 1) + 1;
     size_t right = (idx << 1) + 2;
-    size_t n = HeapSize(heap) ;
-    size_t cur = idx;
-    void **left_child = NULL, **right_child = NULL, **data = NULL;
-    
+    size_t length = HeapSize(heap) ;
+    size_t nex_idx = idx;
+
     assert(NULL != heap);
 
     left_child = VectorGetAccessToElement(heap->vec, left);
     right_child = VectorGetAccessToElement(heap->vec, right);
-    data = VectorGetAccessToElement(heap->vec, idx);
+    data =         VectorGetAccessToElement(heap->vec, idx);
     
-    if(left <= n && heap->cmp_func(*left_child, data ) < 0)
+    if(left < length && heap->cmp_func(*left_child, *data ) < 0)
     {
-        cur = left;
+        nex_idx = left;
     }
-    if(right <= n && heap->cmp_func(*right_child, data ) < 0)
+    if(right < length && heap->cmp_func(*right_child, *data ) < 0)
     {
-        cur = right;
+        nex_idx = right;
     }
     
-    if (cur != idx)
+    if (nex_idx != idx)
     {
-        PSwap(data,VectorGetAccessToElement(heap->vec, cur)); 
-        HeapifyDown(heap, cur);
+        PSwap(data,VectorGetAccessToElement(heap->vec, nex_idx)); 
+        HeapifyDown(heap, nex_idx);
     }
     
 }
 
 
-/* Ephraim's:
 
-static void HeapifyDown(heap_t *heap, size_t idx)
-{
-    size_t len = HeapSize(heap);
-    size_t left = (idx << 1) + 1;
-    size_t right = (idx << 1) + 2;
-    
-    size_t cur_idx = idx;
-
-    void **min_data = NULL;
-    void **data = NULL;
-
-    min_data = VectorGetAccessToElement(heap->vec, cur_idx);
-    if (len > left && (data = VectorGetAccessToElement(heap->vec, left), heap->cmp_func(*data, *min_data) < 0))
-    {
-        cur_idx = left;
-        min_data = data;
-    }
-    if (len > right &&
-        (data = VectorGetAccessToElement(heap->vec, right),
-            heap->cmp_func(*data, *min_data) < 0))
-    {
-        cur_idx = right;
-        min_data = data;
-    }
-
-    if (idx != cur_idx)
-    {
-        data = VectorGetAccessToElement(heap->vec, idx);
-        PSwap(data, min_data);
-        HeapifyDown(heap, cur_idx);
-    }
-}
-*/
 
 static void **GetLeftChild(vector_t *vec, size_t idx)
 {

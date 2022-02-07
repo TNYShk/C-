@@ -28,11 +28,9 @@ int main(void)
     CreateDestroy();
     HeapSiz();
     RemoveTest();
-    /*HeapPeekTest();*/
+    HeapPeekTest();
     return 0;
 }
-
-
 
 
 
@@ -135,16 +133,16 @@ void HeapPeekTest()
     
     printf("\nPushing Elements\n");
     assert(0 == HeapPush(hippie, &a));
-    printf("\npeeking: %d\n", *(int **)HeapPeek(hippie));
-    assert(0 == *(int **)HeapPush(hippie, &b));
+    printf("\npeeking: %d\n", *(int *)HeapPeek(hippie));
+    assert(0 == HeapPush(hippie, &b));
     
-    printf("\npeeking: %d\n", **(int**)HeapPeek(hippie));
+    printf("\npeeking: %d\n", *(int*)HeapPeek(hippie));
     printf("pushed, size? %ld\n", HeapSize(hippie) );
     assert(2 == HeapSize(hippie));
 
     assert(0 == HeapPush(hippie, &c));
  
-    printf("\nstill peeking: %d\n", *(int **)HeapPeek(hippie));
+    printf("\nstill peeking: %d\n", *(int *)HeapPeek(hippie));
     printf("\npushed, size %ld\n", HeapSize(hippie) );
     assert(3 == HeapSize(hippie));
     HeapPop(hippie);
@@ -152,13 +150,13 @@ void HeapPeekTest()
     printf("\npop, size? %ld\n", HeapSize(hippie) );
     assert(2 == HeapSize(hippie));
     ptr = HeapRemove(hippie, &IsMatch, &b);
-    printf("\nremoved %d\n", *(int**)ptr);
+    printf("\nremoved %d\n", *(int*)ptr);
     printf("\nsize? %ld\n", HeapSize(hippie) );
     
     assert(0 == HeapPush(hippie, &d));
 
     printf("\npushed, size is %ld\n", HeapSize(hippie) );
-    printf("\npeeking into root: %d\n", *(int **)HeapPeek(hippie));
+    printf("\npeeking into root: %d\n", *(int *)HeapPeek(hippie));
 
     p2 = HeapRemove(hippie, &IsMatch, &e);
     assert(p2 == NULL);
@@ -167,7 +165,7 @@ void HeapPeekTest()
     printf("\nPoping root\n");
     HeapPop(hippie);
     
-    printf("\nstill peeking: %d\n", *(int **)HeapPeek(hippie));
+    printf("\nstill peeking: %d\n", *(int *)HeapPeek(hippie));
     printf("size? %ld\n", HeapSize(hippie) );
     HeapPop(hippie);
     printf("last pop,\nsize %ld\n", HeapSize(hippie) );
