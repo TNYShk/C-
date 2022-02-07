@@ -83,6 +83,7 @@ static void RemoveTest()
 {
     heap_t *hippie = NULL;
     void *rem = NULL;
+    void *rr = NULL;
     int a =  5;
     int b = 6;
     int c = 2;
@@ -105,6 +106,8 @@ static void RemoveTest()
     rem = HeapRemove(hippie, &IsMatch, &a);
     assert(*(int*)rem == a);
     HeapRemove(hippie, &IsMatch, &c);
+    rr = HeapRemove(hippie, &IsMatch, &e);
+    assert(*(int*)rr == e);
     
 
     assert(1 == HeapSize(hippie));

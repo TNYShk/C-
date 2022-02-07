@@ -79,9 +79,9 @@ void *VectorGetAccessToElement(vector_t *vec_ptr, size_t index)
 {
 	
 	assert (NULL != vec_ptr);
-	assert (index >= 0);
 	
-	return ((char *)vec_ptr->start + (vec_ptr->elem_size * index )); 
+	
+	return ((char *)vec_ptr->start + (index * vec_ptr->elem_size)); 
 }
 
 
@@ -112,11 +112,16 @@ void VectorPopBack(vector_t *vec_ptr)
 {
 	assert(NULL != vec_ptr);
 
-	if (vec_ptr->capacity - vec_ptr->size >= vec_ptr->size)
-	{
-		vec_ptr = VectorReserve(vec_ptr, vec_ptr->size + ANDONE);
-	}
-	--(vec_ptr->size);
+    if (0 == vec_ptr->size)
+    {
+        return;
+    }
+
+    if (--vec_ptr->size < vec_ptr->capacity >> 2)
+    {
+        VectorReserve(vec_ptr, vec_ptr->capacity >> 1);
+    }
+
 }
 
 /* if vec_ptr is NULL, return value is undefined and its users problem?*/
@@ -134,7 +139,7 @@ size_t VectorCapacity(const vector_t *vec_ptr)
 
 vector_t *VectorReserve(vector_t *vec_ptr, size_t new_size)
 {
-	void *start = NULL;
+	void *real_start = NULL;
 	
 	assert(NULL != vec_ptr);
 
@@ -143,15 +148,15 @@ vector_t *VectorReserve(vector_t *vec_ptr, size_t new_size)
 		++new_size;
 	}
 		
-	start = realloc(vec_ptr->start, sizeof(vec_ptr->elem_size) * new_size);
+	real_start = realloc(vec_ptr->start, (vec_ptr->elem_size * new_size));
 	
-	if (NULL == start)
+	if (NULL == real_start)
 	{
 		return vec_ptr;
 	}
 	
 	vec_ptr->capacity = new_size; 
-	vec_ptr->start = start;
+	vec_ptr->start = real_start;
 
 	return vec_ptr;
 }
