@@ -12,7 +12,7 @@
 
 
 #include "heap.h"
-
+#include "utils.h"
 
 int CompareData(const void *data1, const void *data2);
 int IsMatch(const void *element, const void *param);
@@ -42,7 +42,11 @@ static void CreateDestroy()
     hippie = HeapCreate(CompareData);
     assert(1 == HeapIsEmpty(hippie));
     assert(0 == HeapSize(hippie));
+    CONDITION_TEST(1, HeapIsEmpty(hippie));
+    CONDITION_TEST(0, HeapSize(hippie));
     HeapDestroy(hippie);
+    hippie = NULL;
+    TEST_IS_NULL(hippie);
     printf("\nCreate Destroy PASSED\n");
 }
 
@@ -72,6 +76,7 @@ static void HeapSiz()
         HeapPop(hippie);
          HeapPop(hippie);
     assert(0 == HeapSize(hippie));
+    CONDITION_TEST(0, HeapSize(hippie));
     printf("\nHeap Pop PASSED\n");
     HeapDestroy(hippie);
 
@@ -96,7 +101,7 @@ static void RemoveTest()
     assert(0 == HeapPush(hippie, &b));
     assert(0 == HeapPush(hippie, &c));
     assert(0 == HeapPush(hippie, &d));
-    
+    CONDITION_TEST(4, HeapSize(hippie));
     assert(4 == HeapSize(hippie));
     printf("\nRemoving\n");
 
@@ -107,9 +112,10 @@ static void RemoveTest()
     HeapRemove(hippie, &IsMatch, &c);
     rr = HeapRemove(hippie, &IsMatch, &e);
     assert(rr == NULL);
-
+     TEST_IS_NULL(rr);
 
     assert(1 == HeapSize(hippie));
+    CONDITION_TEST(1, HeapSize(hippie));
     printf("\nHeap Remove PASSED?\n");
     HeapDestroy(hippie);
 }
@@ -160,6 +166,7 @@ void HeapPeekTest()
 
     p2 = HeapRemove(hippie, &IsMatch, &e);
     assert(p2 == NULL);
+     TEST_IS_NULL(p2);
     printf("\nsize? %ld\n", HeapSize(hippie) );
    
     printf("\nPoping root\n");
@@ -171,6 +178,8 @@ void HeapPeekTest()
     printf("last pop,\nsize %ld\n", HeapSize(hippie) );
     assert(1 == HeapIsEmpty(hippie));
     assert(0 == HeapSize(hippie));
+    CONDITION_TEST(0, HeapSize(hippie));
+    CONDITION_TEST(1, HeapIsEmpty(hippie));
     printf("\nHeap Peek Test SUCCESS\n\n\t GOODBYE\n");
 
     HeapDestroy(hippie);
