@@ -146,7 +146,7 @@ void *HeapRemove(heap_t *heap, heap_is_match_func_t match_func, void *param)
 
         removed_data = *(void **)VectorGetAccessToElement(heap->vec, (HeapSize(heap) - 1));
         VectorPopBack(heap->vec);
-
+        HeapifyUp(heap,idx);
         HeapifyDown(heap,idx);
     }
     
