@@ -1,17 +1,17 @@
 /**********************************
  * Heap - Source Code          	  *
  * Developer: Tanya               *
- * Feb 10, 2022                   *
+ * Feb 8, 2022                    *
  *                                *
- *      reviewed by               *
+ *      reviewed by   Zohar       *
 ***********************************/
 #include <stdlib.h> /*  size_t dynamic memory allocation */
 #include <stdio.h>   /*  standard library               */
 #include <string.h>   /*  memset                      */
 #include <assert.h>    /* assert                      */ 
 
-#include "heap.h"
-#include "dynamic_vector.h"
+#include "heap.h" /* lib api */
+#include "dynamic_vector.h" /* lib api */
 
 
 #define VCAP (16)
@@ -29,13 +29,10 @@ struct heap
 
 static void HeapifyDown(heap_t *heap,size_t idx);
 static void HeapifyUp(heap_t *heap, size_t idx);
-static void **GetRightChild(vector_t *vec, size_t idx);
-static void **GetLeftChild(vector_t *vec, size_t idx);
 
+static void PSwap(void **left, void **right);
 static void GenericSwap(char *left, char *right, size_t size);
 static void PrintHeap(heap_t *heap);
-static void PSwap(void **left, void **right);
-
 
 
 
@@ -55,6 +52,7 @@ heap_t *HeapCreate(heap_cmp_func_t cmp_fun)
     if (NULL == heap->vec)
     {
         free(heap);
+        heap = NULL;
         return NULL;
     }
 
@@ -88,10 +86,13 @@ int HeapPush(heap_t *heap, void *data)
     VectorPushBack(heap->vec, &data);
     HeapifyUp(heap, HeapSize(heap) - 1);
     
-    PrintHeap(heap);
+ #ifdef DEBUG
+     PrintHeap(heap);
+#endif
 
     return (cur == HeapSize(heap));
 }
+
 
 void HeapPop(heap_t *heap)
 {
@@ -105,8 +106,7 @@ void HeapPop(heap_t *heap)
    
     PSwap(root, last);
     VectorPopBack(heap->vec);
-    HeapifyDown(heap, HEAPROOT);
-       
+    HeapifyDown(heap, HEAPROOT);    
 }
 
 
@@ -119,6 +119,7 @@ int HeapIsEmpty(const heap_t *heap)
 
 size_t HeapSize(const heap_t *heap)
 {
+    
     return (heap == NULL)? 0: VectorSize(heap->vec);
 }
 
@@ -133,9 +134,13 @@ void *HeapPeek(const heap_t *heap)
 void *HeapRemove(heap_t *heap, heap_is_match_func_t match_func, void *param)
 {
     size_t idx = 0;
-    void **last = VectorGetAccessToElement(heap->vec, HeapSize(heap) -1);
+    void **last = NULL;
     void *removed_data = NULL;
 
+    assert(0 != HeapSize(heap));
+
+    last = VectorGetAccessToElement(heap->vec, HeapSize(heap) -1);
+    
     while(!match_func(*(void **)VectorGetAccessToElement(heap->vec, idx), param) && (idx < HeapSize(heap)))
     {
        ++idx;
@@ -145,37 +150,20 @@ void *HeapRemove(heap_t *heap, heap_is_match_func_t match_func, void *param)
         PSwap(VectorGetAccessToElement(heap->vec, idx), last);
 
         removed_data = *(void **)VectorGetAccessToElement(heap->vec, (HeapSize(heap) - 1));
+        
         VectorPopBack(heap->vec);
         HeapifyUp(heap,idx);
         HeapifyDown(heap,idx);
     }
-    
-    PrintHeap(heap);
+
+#ifdef DEBUG
+     PrintHeap(heap);
+#endif
+   
     return removed_data;
 }
 
 
-
-static void PSwap(void **left, void **right)
-{
-    void *holder = *left;
-    *left = *right;
-    *right = holder;
-}
-
-
-static void GenericSwap(char *left, char *right, size_t size)
-{
-    while(0 < size)
-    {
-        char tmp = *left;
-        *left = *right;
-        *right = tmp;
-        ++left;
-        ++right;
-        --size;
-    }
-}
 
 static void HeapifyUp(heap_t *heap, size_t new_idx)
 {
@@ -185,7 +173,9 @@ static void HeapifyUp(heap_t *heap, size_t new_idx)
     void **data = NULL;
     
     if(0 == new_idx)
+    {
         return;
+    }
 
     data = VectorGetAccessToElement(heap->vec, new_idx);
     parent_data = VectorGetAccessToElement(heap->vec, parent_idx);
@@ -196,8 +186,6 @@ static void HeapifyUp(heap_t *heap, size_t new_idx)
         HeapifyUp(heap, parent_idx);
     }
 }
-
-
 
 static void HeapifyDown(heap_t *heap, size_t idx)
 {
@@ -220,7 +208,8 @@ static void HeapifyDown(heap_t *heap, size_t idx)
     }
     if(right < length && heap->cmp_func(*right_child, *data ) < 0)
     {
-        nex_idx = right;
+        if (heap->cmp_func(*right_child, *left_child ) < 0)
+            nex_idx = right;
     }
     
     if (nex_idx != idx)
@@ -231,26 +220,25 @@ static void HeapifyDown(heap_t *heap, size_t idx)
     
 }
 
-
-
-
-static void **GetLeftChild(vector_t *vec, size_t idx)
+static void PSwap(void **left, void **right)
 {
-    if(idx < VectorSize(vec))
-    {
-        return VectorGetAccessToElement(vec, ((idx * 2) + 1));
-    }
-    return NULL;
-    
+    void *holder = *left;
+    *left = *right;
+    *right = holder;
 }
 
-static void **GetRightChild(vector_t *vec, size_t idx)
+
+static void GenericSwap(char *left, char *right, size_t size)
 {
-    if(idx < VectorSize(vec))
+    while(0 < size)
     {
-        return VectorGetAccessToElement(vec, ((idx * 2) + 2));
+        char tmp = *left;
+        *left = *right;
+        *right = tmp;
+        ++left;
+        ++right;
+        --size;
     }
-    return NULL;
 }
 
 static void PrintHeap(heap_t *heap)
