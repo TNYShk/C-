@@ -85,12 +85,13 @@ dhcp_t *DHCPCreate(const char *network_address, unsigned int subnet_mask_size)
 	test = inet_pton(AF_INET, network_address, &death->network_address);
 
 	death->network_address = bswap_32(death->network_address);
-	printf("test %d\n", test);
+	printf("inet_pton test %d\n", test);
 
 	printf("%u\n",death->network_address );
 	test = InitLeft(death->tree->root, death->tree->height);
-
+	printf("post Linit test %d\n", test);
 	test = InitRight(death->tree->root, death->tree->height);
+	printf("post Rinit test %d\n", test);
 
 	return death;
 }
@@ -130,6 +131,19 @@ static void Destroy(trie_node_t *root)
 
 static status_t InitLeft(trie_node_t *root, size_t height)
 {
+	if(height == 0)
+	{
+		root->isTaken = TAKEN;
+		return SUCCESS;
+	}
+
+	root->child[LEFT] = (trie_node_t *)calloc(1, sizeof(trie_node_t));
+	if (root->child[LEFT] == NULL)
+		return FAILURE;
+
+	return InitLeft(root->child[LEFT], --height);
+
+	/*
 	while(height > 0)
 	{
 		root->child[LEFT] = (trie_node_t*)calloc( 1,sizeof(trie_node_t));
@@ -138,13 +152,37 @@ static status_t InitLeft(trie_node_t *root, size_t height)
 	}
 	root->isTaken = TAKEN;
 	return SUCCESS;
-	
+	*/
 }
 
 
 static status_t InitRight(trie_node_t *root, size_t height)
 {
 	
+	if(height == 1)
+	{
+		
+		root->child[LEFT] = (trie_node_t *)calloc(1, sizeof(trie_node_t));
+		if(root->child[LEFT] != NULL)
+		{
+			root->child[RIGHT] = (trie_node_t *)calloc(1, sizeof(trie_node_t));
+			root->child[RIGHT]->isTaken = TAKEN;
+			root->child[LEFT]->isTaken = TAKEN;
+			root->isTaken = TAKEN;
+		}
+		
+		return (root->child[RIGHT] == NULL);
+	}
+
+	root->child[RIGHT] = (trie_node_t *)calloc(1, sizeof(trie_node_t));
+	if (root->child[RIGHT] == NULL)
+		return FAILURE;
+
+	return InitRight(root->child[RIGHT], --height);
+
+
+
+/*
 	while(height > 1)
 	{
 		root->child[RIGHT] = (trie_node_t*)calloc( 1,sizeof(trie_node_t));
@@ -161,7 +199,7 @@ static status_t InitRight(trie_node_t *root, size_t height)
 	return SUCCESS;
 
 
-	
+*/	
 }
 
 
