@@ -14,45 +14,42 @@
 
 #include "dhcp.h"
 
-#define BITS (32)
+#define BITS (sizeof(char) * 32)
 #define TAKEN (1)
 
 
 
 enum child
 {
-    ZERO,
-    ONE,
+    LEFT,
+    RIGHT,
     NUM_OF_CHILDREN
 };
 
 struct dhcp
 {
-	struct trie *root;
+	struct trie *tree;
 	unsigned int subnet_mask_size; /* /22 */
 	uint32_t network_address;
-
 };
 
 typedef struct trie
 {
-	struct trie_node *node;
-	unsigned int height;
-	
-
+	struct trie_node *root;
+	size_t height;
 }trie_t;
 
 typedef struct trie_node
 {
-	char isTaken;
+	int isTaken;
 	struct trie_node *child[NUM_OF_CHILDREN];
 
 }trie_node_t;
 
 
 static void Destroy(trie_node_t *trie);
-static void InitLeft(dhcp_t *dhcp, trie_node_t *root, unsigned int height);
-static void InitRight(dhcp_t *dhcp, trie_node_t *root, unsigned int height);
+static status_t InitLeft(trie_node_t *root, size_t height);
+static status_t InitRight(trie_node_t *root, size_t height);
 
 
 dhcp_t *DHCPCreate(const char *network_address, unsigned int subnet_mask_size)
@@ -64,24 +61,36 @@ dhcp_t *DHCPCreate(const char *network_address, unsigned int subnet_mask_size)
 	if (NULL == death)
 		return NULL;
 
-	death->root = (trie_t *)calloc(1, sizeof(trie_t));
-	if(death->root == NULL)
+	death->tree = (trie_t *)calloc(1, sizeof(trie_t));
+	if(death->tree == NULL)
 	{
 		free(death);
 		death = NULL;
 		return NULL;
 	}
+	death->tree->root = (trie_node_t *)calloc(1, sizeof(trie_node_t));
+	if(death->tree->root == NULL)
+	{
+		free(death->tree);
+		death->tree = NULL;
+
+		free(death);
+		death = NULL;
+		return NULL;
+	}
+
 	death->subnet_mask_size = subnet_mask_size;
-	death->root->height = BITS - subnet_mask_size;
+	death->tree->height = BITS - subnet_mask_size;
 
 	test = inet_pton(AF_INET, network_address, &death->network_address);
 
 	death->network_address = bswap_32(death->network_address);
 	printf("test %d\n", test);
 
-	printf("%d\n",death->network_address );
-	InitLeft(death, death->root->node, death->root->height);
-	InitRight(death,death->root->node, death->root->height);
+	printf("%u\n",death->network_address );
+	test = InitLeft(death->tree->root, death->tree->height);
+
+	test = InitRight(death->tree->root, death->tree->height);
 
 	return death;
 }
@@ -90,10 +99,12 @@ void DHCPDestroy(dhcp_t *dhcp)
 {
 	assert(NULL != dhcp);
 	
-	Destroy(dhcp->root->node->child[ZERO]);
-	Destroy(dhcp->root->node->child[ONE]);
+	Destroy(dhcp->tree->root->child[LEFT]);
+	Destroy(dhcp->tree->root->child[RIGHT]);
 	
-	dhcp->root = NULL;
+	free(dhcp->tree->root);
+	free(dhcp->tree);
+	dhcp->tree = NULL;
 	memset(dhcp,0,sizeof(dhcp_t));
 
 	free(dhcp);
@@ -102,57 +113,55 @@ void DHCPDestroy(dhcp_t *dhcp)
 
 
 
-static void Destroy(trie_node_t *trie)
+static void Destroy(trie_node_t *root)
 {
-    if (NULL == trie)
+    if (NULL == root)
     {
         return;
     }
 
-    Destroy(trie->child[ZERO]);
-    Destroy(trie->child[ONE]);
+    Destroy(root->child[LEFT]);
+    Destroy(root->child[RIGHT]);
     
-    free(trie);
-    trie = NULL;
+    free(root);
+    root = NULL;
 }
 
 
-static void InitLeft(dhcp_t *dhcp, trie_node_t *root, unsigned int height)
+static status_t InitLeft(trie_node_t *root, size_t height)
 {
-	int cur_height = height;
-	if(cur_height == 0)
+	while(height > 0)
 	{
-		root->isTaken = TAKEN;
-		return;
+		root->child[LEFT] = (trie_node_t*)calloc( 1,sizeof(trie_node_t));
+		root = root->child[LEFT];
+		--height;
 	}
-
-	root->child[ZERO] = (trie_node_t*)calloc(1, sizeof(trie_node_t));
-	if(root->child[ZERO] == NULL)
-	{
-		free(root);
-		return ;
-	}
-
-	InitLeft(dhcp, root->child[ZERO], --cur_height);
+	root->isTaken = TAKEN;
+	return SUCCESS;
+	
 }
 
 
-static void InitRight(dhcp_t *dhcp, trie_node_t *root, unsigned int height)
+static status_t InitRight(trie_node_t *root, size_t height)
 {
-	int cur_height = height;
-
-	if (cur_height == 1)
+	
+	while(height > 1)
 	{
-		root->child[ZERO] = (trie_node_t *)calloc(1, sizeof(trie_node_t));
-		root->child[ZERO]->isTaken = TAKEN;
-
-		root->child[ONE] = (trie_node_t *)calloc(1, sizeof(trie_node_t));
-		root->child[ONE]->isTaken = TAKEN;
-		
-		root->isTaken = TAKEN;
-		return;
+		root->child[RIGHT] = (trie_node_t*)calloc( 1,sizeof(trie_node_t));
+		root = root->child[RIGHT];
+		--height;
 	}
-	InitRight(dhcp, root->child[ONE], --cur_height);
+	root->child[LEFT] = (trie_node_t*)calloc(1,sizeof(trie_node_t));
+	root->child[RIGHT] = (trie_node_t*)calloc(1,sizeof(trie_node_t));
+	
+	root->child[RIGHT]->isTaken = TAKEN;
+	root->child[LEFT]->isTaken = TAKEN;
+	root->isTaken = TAKEN;
+
+	return SUCCESS;
+
+
+	
 }
 
 
