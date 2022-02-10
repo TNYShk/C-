@@ -9,6 +9,7 @@
 #include <stdlib.h> /* calloc, free */
 #include <string.h> /* memset */
 #include <stdio.h>
+#include <math.h>
 #include <arpa/inet.h>
 #include <byteswap.h>
 
@@ -50,13 +51,16 @@ typedef struct trie_node
 static void Destroy(trie_node_t *trie);
 static status_t InitLeft(trie_node_t *root, size_t height);
 static status_t InitRight(trie_node_t *root, size_t height);
-
+static size_t CountRec(trie_node_t *root, size_t height, int side);
+static size_t CountRight(trie_node_t *root, size_t height);
 
 dhcp_t *DHCPCreate(const char *network_address, unsigned int subnet_mask_size)
 {
 	status_t test = SUCCESS;
-	
 	dhcp_t *death = NULL;
+
+	assert(30 > subnet_mask_size);
+
 	death = (dhcp_t *)calloc(1, sizeof(dhcp_t));
 	if (NULL == death)
 		return NULL;
@@ -83,16 +87,17 @@ dhcp_t *DHCPCreate(const char *network_address, unsigned int subnet_mask_size)
 	death->tree->height = BITS - subnet_mask_size;
 
 	test = inet_pton(AF_INET, network_address, &death->network_address);
+	assert(test);
 
 	death->network_address = bswap_32(death->network_address);
-	printf("inet_pton test %d\n", test);
 
 	printf("%u\n",death->network_address );
 	test = InitLeft(death->tree->root, death->tree->height);
-	printf("post Linit test %d\n", test);
+	assert(test == SUCCESS);
+	
 	test = InitRight(death->tree->root, death->tree->height);
-	printf("post Rinit test %d\n", test);
-
+	assert(test == SUCCESS);
+	
 	return death;
 }
 
@@ -106,10 +111,50 @@ void DHCPDestroy(dhcp_t *dhcp)
 	free(dhcp->tree->root);
 	free(dhcp->tree);
 	dhcp->tree = NULL;
+	
 	memset(dhcp,0,sizeof(dhcp_t));
 
 	free(dhcp);
 	dhcp = NULL;
+}
+
+
+size_t DHCPCountFree(const dhcp_t *dhcp)
+{
+	size_t max_available = pow(2,BITS - dhcp->subnet_mask_size);
+	
+	return max_available -= CountRec(dhcp->tree->root, dhcp->tree->height,RIGHT) + CountRec(dhcp->tree->root, dhcp->tree->height,LEFT);
+
+}
+
+
+
+static size_t CountRec(trie_node_t *root, size_t height, int side)
+{
+	size_t counter = 0;
+	
+	if (height == 1)
+	{
+		if(root->child[side] != NULL )
+		{
+			if(root->child[side]->isTaken == TAKEN)
+			{
+				++counter;	
+			} 
+		}
+		if(root->child[!side] != NULL )
+		{
+			if(root->child[!side]->isTaken == TAKEN)
+				++counter;
+		}
+		return counter;
+	}
+
+	counter += CountRec(root->child[side], --height, side) ;
+	
+
+	return counter;
+
 }
 
 
@@ -183,23 +228,27 @@ static status_t InitRight(trie_node_t *root, size_t height)
 
 
 /*
-	while(height > 1)
+/*
+static size_t CountRight(trie_node_t *root, size_t height)
+{
+	size_t counter = 0;
+	
+	while(height > 0)
 	{
-		root->child[RIGHT] = (trie_node_t*)calloc( 1,sizeof(trie_node_t));
+		if(root->isTaken == TAKEN)
+	{
+		++counter;
+	}
 		root = root->child[RIGHT];
+
 		--height;
 	}
-	root->child[LEFT] = (trie_node_t*)calloc(1,sizeof(trie_node_t));
-	root->child[RIGHT] = (trie_node_t*)calloc(1,sizeof(trie_node_t));
-	
-	root->child[RIGHT]->isTaken = TAKEN;
-	root->child[LEFT]->isTaken = TAKEN;
-	root->isTaken = TAKEN;
-
-	return SUCCESS;
+	return counter;
 
 
-*/	
+}
+*/
+
 }
 
 
