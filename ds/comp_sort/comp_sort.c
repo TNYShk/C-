@@ -3,14 +3,14 @@
  * Developer: Tanya			                  *
  * Written: 2022-1-12 + Added Rec: Feb 3      *
  * Re-written Jan 16 post CR                  *
- * Reviewer:Amit Shlomo	                      *
+ * Reviewer:Amit Shlomo	 Ziv                  *
  **********************************************/
 #include <stddef.h> /* size_t*/
 #include <assert.h> /* assert*/
 #include <stdlib.h> /* calloc, malloc, free*/
 #include <string.h> /*memcpy */
 
-#include "../include/comp_sort.h" /* program header */
+#include "comp_sort.h" /* program header */
 
 
 
