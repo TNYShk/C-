@@ -15,6 +15,36 @@
 #include "dhcp.h"
 #include "../include/utils.h"
 
+typedef struct trie_node trie_node_t;
+
+enum child
+{
+    LEFT,
+    RIGHT,
+    NUM_OF_CHILDREN
+};
+
+struct dhcp
+{
+    struct trie *tree;
+    unsigned int subnet_mask_size; /* /22 */
+    uint32_t network_address; /* after inet_pton ans bswap 1401034532*/
+    uint32_t mask;
+};
+
+typedef struct trie
+{
+    struct trie_node *root;
+    uint32_t height;
+}trie_t;
+
+struct trie_node
+{
+    char isTaken;
+    trie_node_t *child[NUM_OF_CHILDREN];
+
+};
+static status_t IsIPValid(dhcp_t *dhcp, const char *ip_address);
 
 int main(void)
 {
@@ -23,8 +53,9 @@ int main(void)
     new = DHCPCreate("216.202.192.66", 29);
 
     printf("free count: %ld\n", DHCPCountFree(new));
-    DHCPFreeIP(new,"216.202.192.65");
-   
+    /*DHCPFreeIP(new,"216.202.192.66");
+     printf("free count: %ld\n", DHCPCountFree(new));
+   /*printf("%d\n", IsIPValid(new, "216.202.192.0"));*/
    
     DHCPDestroy(new);
     
@@ -32,6 +63,30 @@ int main(void)
 
     return 0;
 }
+
+   
+   
+static status_t IsIPValid(dhcp_t *dhcp, const char *ip_address)
+{
+    unsigned int convert_ip = 0;                        
+    unsigned int net_adr = (dhcp->network_address) & (dhcp->mask);
+
+    status_t test = inet_pton(AF_INET, ip_address, &convert_ip);
+    printf("mask is %u\n",(dhcp->mask));
+    assert(1 == test);
+   
+    convert_ip = ntohl(convert_ip);
+    printf("swapped %u\n", convert_ip);
+    printf("net_adr %u\n", net_adr);
+   
+    convert_ip &= (dhcp->mask);
+    printf("XOR %u\n", (convert_ip ^ net_adr));
+    
+    return ((convert_ip ^ net_adr) == 0);
+
+
+}
+
 
 
 
@@ -80,6 +135,25 @@ uint32_t ans = 4194303;
 
 11011000 -11001010 - 11000000 - 01000010
 11111111  11111111   11111100 - 00000000
+
+11011000 216
+11001010 202
+11000000 192
+01000010 66
+
+11011000 216
+11001010 202
+11000000 192
+01000000 64
+
+
+
+
+
+1000010 66
+11000000 192
+11001010 202
+11011000 216
 
 11011000 216
 11001010 202
