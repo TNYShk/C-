@@ -44,15 +44,45 @@ struct trie_node
     trie_node_t *child[NUM_OF_CHILDREN];
 
 };
-static status_t IsIPValid(dhcp_t *dhcp, const char *ip_address);
+
 
 int main(void)
 {
     dhcp_t *new = NULL;
     
-    new = DHCPCreate("216.202.192.66", 29);
+    char *req1_address = "192.200.95.9";
+    char *req2_address = "192.200.95.6";
+    char result1[16] = {0};
+    char result2[16] = {0};
+    char result3[16] = {0};
+    char result4[16] = {0};
+
+    new = DHCPCreate("192.200.95.0", 24);
+
 
     printf("free count: %ld\n", DHCPCountFree(new));
+  DHCPAllocateIP(new, req1_address, result1);
+  printf("\nResult1 = %s\n", result1);
+   printf("free count: %ld\n", DHCPCountFree(new));
+   DHCPAllocateIP(new, req2_address, result2);
+   printf("\nResult2 = %s\n", result2);
+   DHCPAllocateIP(new, NULL, result3);
+    printf("\nResult3 = %s\n", result3);
+    printf("free count: %ld\n", DHCPCountFree(new));
+    DHCPFreeIP(new,"192.200.95.0");
+    printf("free count: %ld\n", DHCPCountFree(new));
+    DHCPAllocateIP(new, NULL, result3);
+    printf("\nResult3 = %s\n", result3);
+     DHCPAllocateIP(new, NULL, result4);
+    printf("\nResult4 = %s\n", result4);
+     printf("free count: %ld\n", DHCPCountFree(new));
+    /* 
+    DHCPAllocateIP(new, req2_address, result2);
+    DHCPAllocateIP(new, NULL, result3);
+    printf("\nResult1 = %s\n", result1);
+    
+    printf("\nResult3 = %s\n", result3);
+     printf("free count: %ld\n", DHCPCountFree(new));
     /*DHCPFreeIP(new,"216.202.192.66");
      printf("free count: %ld\n", DHCPCountFree(new));
    /*printf("%d\n", IsIPValid(new, "216.202.192.0"));*/
@@ -66,26 +96,6 @@ int main(void)
 
    
    
-static status_t IsIPValid(dhcp_t *dhcp, const char *ip_address)
-{
-    unsigned int convert_ip = 0;                        
-    unsigned int net_adr = (dhcp->network_address) & (dhcp->mask);
-
-    status_t test = inet_pton(AF_INET, ip_address, &convert_ip);
-    printf("mask is %u\n",(dhcp->mask));
-    assert(1 == test);
-   
-    convert_ip = ntohl(convert_ip);
-    printf("swapped %u\n", convert_ip);
-    printf("net_adr %u\n", net_adr);
-   
-    convert_ip &= (dhcp->mask);
-    printf("XOR %u\n", (convert_ip ^ net_adr));
-    
-    return ((convert_ip ^ net_adr) == 0);
-
-
-}
 
 
 
