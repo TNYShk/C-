@@ -23,10 +23,14 @@ int main(void)
 {
    
     TestZiv();
-
+    printf("\n\ttest1\n");
+    Test();
 
     return 0;
 }
+
+
+
 void Test()
 {
     dhcp_t *new = NULL;
@@ -38,8 +42,8 @@ void Test()
     char result3[50] = {0};
     char result4[50] = {0};
 
-    new = DHCPCreate("216.202.192.66", 29);
-    printf("Created! 216.202.192.66/29 \n");
+    new = DHCPCreate("216.202.192.66", 24);
+    printf("Created! 216.202.192.66/24 \n");
 
     printf("free count: %ld\n", DHCPCountFree(new));
 
@@ -61,7 +65,7 @@ void Test()
     printf("\n3.4 Resulted IP = %s\n", result4);
     printf("free count: %ld\n", DHCPCountFree(new));
 
-    DHCPAllocateIP(new, "216.202.192.0", result4);
+    DHCPAllocateIP(new, "240.202.192.0", result4);
     printf("\n4 Resulted IP = %s\n", result4);
     printf("free count: %ld\n", DHCPCountFree(new));
     /* 
@@ -83,22 +87,26 @@ void TestZiv()
     char *network_address = "216.202.192.66";
     char *req1_address = "216.202.192.66";
     char *req2_address = "216.202.192.66";
-    /*char *req3_address = "192.200.95.9";*/
-    char result1[16] = {0};
-    char result2[16] = {0};
-    char result3[16] = {0};
+    char *req3_address = "192.200.95.9";
+    char result1[50] = {0};
+    char result2[50] = {0};
+    char result3[50] = {0};
 
 
     dhcp = DHCPCreate(network_address,29);
+    printf("created! free count: %ld\n", DHCPCountFree(dhcp));
 
     DHCPAllocateIP(dhcp, req1_address, result1);
     DHCPAllocateIP(dhcp, req2_address, result2);
     DHCPAllocateIP(dhcp, NULL, result3);
+     printf("\nResult3 = %s\n", result3);
+     DHCPAllocateIP(dhcp, req3_address, result3);
 
     printf("\nResult1 = %s\n", result1);
     printf("\nResult2 = %s\n", result2);
     printf("\nResult3 = %s\n", result3);
-
+   
+    printf("alllocated ! free count: %ld\n", DHCPCountFree(dhcp));
     DHCPDestroy(dhcp);
 }
    
