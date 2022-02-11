@@ -72,7 +72,7 @@ dhcp_t *DHCPCreate(const char *network_address, unsigned int subnet_mask_size)
 
 	status_t test = SUCCESS;
 	dhcp_t *death = NULL;
-	unsigned int mask = -1;
+	
 	uint32_t inet = 0;
 
 	assert(30 > subnet_mask_size);
@@ -109,11 +109,9 @@ dhcp_t *DHCPCreate(const char *network_address, unsigned int subnet_mask_size)
 
 	death->network_address = ntohl(inet);
 	
-	mask = (-1)<<(death->tree->height);
-	death->mask = mask;
-	/*printf("mask %u\n",death->mask );
-	printf("network adrs %u\n",death->network_address );
-	*/
+	death->mask = ((-1)<<(death->tree->height));
+
+	
 	test = InitLeft(death->tree->root, death->tree->height);
 	assert(test == SUCCESS);
 	
@@ -126,6 +124,7 @@ dhcp_t *DHCPCreate(const char *network_address, unsigned int subnet_mask_size)
 void DHCPDestroy(dhcp_t *dhcp)
 {
 	assert(NULL != dhcp);
+	
 	
 	Destroy(dhcp->tree->root->child[LEFT]);
 	Destroy(dhcp->tree->root->child[RIGHT]);
@@ -224,7 +223,7 @@ status_t DHCPFreeIP(dhcp_t *dhcp, const char *ip_address_to_free)
 	 
 	for(; high > 0; --high)
 	{
-		gowhere = ( convert_ip >> (high - 1) ) & 1;
+		gowhere = ( convert_ip >> (high -1 ) ) & 1;
 		printf("gowhere? %d\n", gowhere);
 		if(NULL == dhcp->tree->root->child[gowhere])
 		{

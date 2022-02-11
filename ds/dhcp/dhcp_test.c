@@ -24,7 +24,7 @@ int main(void)
    
     TestZiv();
     printf("\n\ttest1\n");
-    Test();
+    /*Test();*/
 
     return 0;
 }
@@ -97,16 +97,20 @@ void TestZiv()
     printf("created! free count: %ld\n", DHCPCountFree(dhcp));
 
     DHCPAllocateIP(dhcp, req1_address, result1);
+     printf("\nResult1 = %s\n", result1);
     DHCPAllocateIP(dhcp, req2_address, result2);
-    DHCPAllocateIP(dhcp, NULL, result3);
-     printf("\nResult3 = %s\n", result3);
-     DHCPAllocateIP(dhcp, req3_address, result3);
-
-    printf("\nResult1 = %s\n", result1);
     printf("\nResult2 = %s\n", result2);
+    
+    DHCPAllocateIP(dhcp, NULL, result3);
     printf("\nResult3 = %s\n", result3);
+
+    DHCPAllocateIP(dhcp, req3_address, result3);
+    printf("\nResult = %s\n", result3);
    
     printf("alllocated ! free count: %ld\n", DHCPCountFree(dhcp));
+
+    DHCPFreeIP(dhcp, result2);
+    printf("! free count: %ld\n", DHCPCountFree(dhcp));
     DHCPDestroy(dhcp);
 }
    
