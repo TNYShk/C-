@@ -51,15 +51,16 @@ struct dhcp
 	uint32_t mask;
 };
 
-typedef status_t (*req_func_t)(trie_node_t *node, uint32_t *requested_ip_address, uint32_t height);
-static status_t IPProvided(trie_node_t *node, uint32_t *requested_ip_address, uint32_t height);
-static status_t NoIPProvided(trie_node_t *node, uint32_t *requested_ip_address, uint32_t height);
-static status_t RecIPProvide(trie_node_t *node, uint32_t *requested_ip_address, uint32_t height);
+typedef status_t (*req_func_t)(trie_node_t *node, uint32_t *requested_ip_address, uint32_t height, status_t *);
+static status_t IPProvided(trie_node_t *node, uint32_t *requested_ip_address, uint32_t height, status_t *);
+static status_t NoIPProvided(trie_node_t *node, uint32_t *requested_ip_address, uint32_t height, status_t *);
+static status_t RecIPProvide(trie_node_t *node, uint32_t *requested_ip_address, uint32_t height, status_t *);
 static status_t InitLeft(trie_node_t *root, uint32_t height);
 static status_t InitRight(trie_node_t *root, uint32_t height);
 static void Destroy(trie_node_t *trie);
 static size_t CountRec(trie_node_t *root, uint32_t height);
-static status_t IsIPValid(dhcp_t *dhcp, const char *ip_address);
+static status_t IsIPValid(dhcp_t *dhcp, const char *ip_address, uint32_t *convert_ip);
+static status_t IsIpValid(dhcp_t *dhcp, uint32_t requested_ip_address);
 static void UpdateAllocated(trie_node_t *root);
 
 
@@ -82,16 +83,15 @@ dhcp_t *DHCPCreate(const char *network_address, unsigned int subnet_mask_size)
 		return NULL;
 
 	death->tree = (trie_t *)calloc(1, sizeof(trie_t));
-	if(NULL == death->tree)
+	if (NULL == death->tree)
 	{
 		free(death);
 		death = NULL;
 		return NULL;
 	}
 	death->tree->root = (trie_node_t *)calloc(1,sizeof(trie_node_t));
-	if(NULL == death->tree->root)
+	if (NULL == death->tree->root)
 	{
-		
 		free(death->tree);
 		death->tree = NULL;
 		
@@ -153,39 +153,40 @@ size_t DHCPCountFree(const dhcp_t *dhcp)
 status_t DHCPAllocateIP(dhcp_t *dhcp, const char *requested_ip_address, char *result_ip_address)
 {
 	status_t alloc_stat = SUCCESS;
-	unsigned int is_provided = 0;
-	uint32_t req_ip = 0;
+	int is_provided = 0;
+	uint32_t net_adrs = (dhcp->network_address)&(dhcp->mask);
+	unsigned int req_ip_adrs = 0;
 	req_func_t IP_LUT[] = {&NoIPProvided, &IPProvided};
 
 	assert(NULL != dhcp);
   	assert(NULL != result_ip_address);
 
+  	if(dhcp->tree->root->isTaken)
+  	{
+  		printf("full!\n");
+  		return FAILURE;
+  	}
 
   	if ((is_provided = (NULL != requested_ip_address)))
   	{
-  		if (1 != IsIPValid(dhcp, requested_ip_address))
-  		{
-  			return FAILURE;
-  		}
-  		
-  		if(RIGHT != inet_pton(AF_INET, requested_ip_address, &req_ip))
-		{
-			return FAILURE;
-		}
-		req_ip = ntohl(req_ip);
-  	}
+  		assert(1 == inet_pton(AF_INET, requested_ip_address, &req_ip_adrs));
+    	req_ip_adrs = bswap_32(req_ip_adrs);
+    	assert(IsIpValid(dhcp, req_ip_adrs));
+    }
 
-  	alloc_stat = IP_LUT[is_provided](dhcp->tree->root, &req_ip, (dhcp->tree->height) -1);
+    alloc_stat = IP_LUT[is_provided](dhcp->tree->root, &req_ip_adrs, (dhcp->tree->height) -1, &alloc_stat);
   	if (SUCCESS != alloc_stat)
   	{
   		return alloc_stat;
   	}
-  	is_provided = (dhcp->network_address)&(dhcp->mask);
+  	
 
-  	req_ip |= is_provided;
-  	req_ip = ntohl(req_ip);
+  	req_ip_adrs |= net_adrs;
+  	req_ip_adrs = bswap_32(req_ip_adrs);
 
-  	return (SUCCESS == inet_ntop(AF_INET, &req_ip, result_ip_address, BITS >>1));
+  		
+
+  	return (SUCCESS == inet_ntop(AF_INET, &req_ip_adrs, result_ip_address, BITS >>1));
 
 }
 
@@ -197,8 +198,12 @@ status_t DHCPFreeIP(dhcp_t *dhcp, const char *ip_address_to_free)
 	uint32_t convert_ip = 0;
 	size_t high = dhcp->tree->height;
 
-	printf("isIpvalid?  %d\n", IsIPValid(dhcp, ip_address_to_free));
-	assert(1 == IsIPValid(dhcp, ip_address_to_free));
+	if (1 != IsIPValid(dhcp, ip_address_to_free, &convert_ip))
+  	{
+  		printf("invalid! %s\n",ip_address_to_free);
+
+  		return FAILURE;
+  	}
 
 	if(RIGHT != inet_pton(AF_INET, ip_address_to_free, &convert_ip))
 	{
@@ -223,66 +228,62 @@ status_t DHCPFreeIP(dhcp_t *dhcp, const char *ip_address_to_free)
 }
 
 
-static status_t IPProvided(trie_node_t *node, uint32_t *requested_ip_address, uint32_t height)
+static status_t IPProvided(trie_node_t *node, uint32_t *requested_ip_address, uint32_t height, status_t *stat)
 {
-    status_t stat = SUCCESS;
+    
+   	*stat = RecIPProvide(node, requested_ip_address, height, stat);
 
-   	stat = RecIPProvide(node, requested_ip_address, height);
-
-    if (OCCUPIED == stat)
+    if (OCCUPIED == *stat)
     {
-        NoIPProvided(node, requested_ip_address, height);
+        *stat = NoIPProvided(node, requested_ip_address, height, stat);
     }
 
-    return stat;
+    return *stat;
 }
 
-static status_t RecIPProvide(trie_node_t *node, uint32_t *requested_ip_address, uint32_t height)
+static status_t RecIPProvide(trie_node_t *node, uint32_t *requested_ip_address, uint32_t height, status_t *stat)
 {
-    uint32_t which_child = ((*requested_ip_address>>height) & 1);
-    status_t stat = SUCCESS;
-
+    uint32_t where = (*requested_ip_address>>height) & 1;
+    
     if (0 == height)
     {
         node->isTaken = TAKEN;
         return SUCCESS;
     }
 
-    if (NULL == node->child[which_child])
+    if (NULL == node->child[where])
     {
-        node->child[which_child] = (trie_node_t *)calloc(1, sizeof(trie_node_t));
-        if (NULL ==node->child[which_child])
+        node->child[where] = (trie_node_t *)calloc(1, sizeof(trie_node_t));
+        if (NULL ==node->child[where])
         {
             return FAILURE;
         }
     }
 
-    else if (node->child[which_child]->isTaken == TAKEN)
+    else if (node->child[where]->isTaken)
     {
         return OCCUPIED;
     }
 
-   RecIPProvide(node->child[which_child],requested_ip_address, --height);
-   if (SUCCESS == stat)
+   *stat = RecIPProvide(node->child[where],requested_ip_address, --height, stat);
+   if (SUCCESS == *stat)
    {
         UpdateAllocated(node);
    }
 
-   return stat;
+   return *stat;
 }
 
-static status_t NoIPProvided(trie_node_t *node, uint32_t *requested_ip_address, uint32_t height)
+static status_t NoIPProvided(trie_node_t *node, uint32_t *requested_ip_address, uint32_t height, status_t *stat)
 {
-    status_t stat = SUCCESS;                                                 
-    
+                                                   
     if (0 == height)
     {
         node->isTaken = TAKEN;
-       
+   
         return SUCCESS;
     }
 
-   /* child[OFF] doesnt exist -> create + keep going;*/
     if (NULL == node->child[LEFT])
     {
         node->child[LEFT] = (trie_node_t *)calloc(1, sizeof(trie_node_t));
@@ -292,17 +293,18 @@ static status_t NoIPProvided(trie_node_t *node, uint32_t *requested_ip_address, 
         }
     }
 
-    /*child[OFF] exists + !is_allocated -> keep going;*/
+   
     if (!(node->child[LEFT]->isTaken))
     {
         *requested_ip_address &= ~(1 << (height));
-        stat = NoIPProvided(node->child[LEFT], requested_ip_address, --height);
+       
+        *stat = NoIPProvided(node->child[LEFT], requested_ip_address, height -1, stat);
         
         UpdateAllocated(node);
-        return stat;
+        return *stat;
     }
 
-    /*child[OFF] exists + is_allocated + child[RIGHT] doesnt exist -> create + keep going;*/
+    
     else if (NULL == node->child[RIGHT])
     {
         node->child[RIGHT] = (trie_node_t *)calloc(1, sizeof(trie_node_t));
@@ -310,35 +312,30 @@ static status_t NoIPProvided(trie_node_t *node, uint32_t *requested_ip_address, 
         {
             return FAILURE;
         }
-
     }
 
-    /*child[OFF] exists + is_allocated + child[RIGHT] exists -> keep going;*/
+   
     *requested_ip_address |= (1 << (height));
-    stat = NoIPProvided(node->child[LEFT], requested_ip_address, --height);
-    UpdateAllocated(node);
-    return stat;
-}
-
-static void UpdateAllocated(trie_node_t *root)
-{
-    size_t count = 0;
-
-    if((root->child[LEFT] != NULL) && (TAKEN == root->child[LEFT]->isTaken)) 
-    {
-        ++count;
-    }
-    if((root->child[RIGHT] != NULL) && (TAKEN == root->child[RIGHT]->isTaken)) 
-    {
-        ++count;
-    }
-    (count == 2)? (root->isTaken = TAKEN) : (root->isTaken = 0);
     
+    *stat = NoIPProvided(node->child[LEFT], requested_ip_address, height -1, stat);
+    
+    UpdateAllocated(node);
+    return *stat;
 }
 
+static void UpdateAllocated(trie_node_t *node)
+{
+    if((NULL != node->child[LEFT]) && (node->child[LEFT]->isTaken)) 
+    {
+    	if((NULL != node->child[RIGHT]) && (node->child[RIGHT]->isTaken)) 
+    	{
+    		node->isTaken = TAKEN;
+    	}
+    }
+    node->isTaken = !TAKEN;   
+}
 
-
-
+/*
 static status_t IsIPValid(dhcp_t *dhcp, const char *ip_address)
 {
     uint32_t convert_ip = 0;                        
@@ -353,8 +350,29 @@ static status_t IsIPValid(dhcp_t *dhcp, const char *ip_address)
     
     return ((convert_ip ^ net_adr) == 0);
 
+}*/
+
+static status_t IsIPValid(dhcp_t *dhcp, const char *ip_address, uint32_t *convert_ip)
+{          
+    uint32_t net_adr = (dhcp->network_address) & (dhcp->mask);
+
+    if (1 != inet_pton(AF_INET, ip_address, convert_ip))
+    	return FAILURE;
+    
+    *convert_ip = ntohl(*convert_ip);
+
+    *convert_ip &= (dhcp->mask);
+    
+    return ((*convert_ip ^ net_adr) == 0);
 
 }
+
+static status_t IsIpValid(dhcp_t *dhcp, uint32_t requested_ip_address)
+{
+    uint32_t masked_ip = requested_ip_address & dhcp->mask;
+    return (0 == (masked_ip ^ (dhcp->network_address & dhcp->mask)));
+}
+
 
 static size_t CountRec(trie_node_t *root, uint32_t height)
 {
@@ -364,8 +382,6 @@ static size_t CountRec(trie_node_t *root, uint32_t height)
 	{
 		return (1 << height);
 	}
-
-	
 
 	if(NULL != root->child[LEFT])
 	{
