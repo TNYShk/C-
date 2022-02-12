@@ -214,10 +214,8 @@ status_t DHCPFreeIP(dhcp_t *dhcp, const char *ip_address_to_free)
 	{
 		return FAILURE;
 	}
-	/*convert_ip &=  ~(dhcp->mask);
+	convert_ip &=  ~(dhcp->mask);
 	convert_ip = bswap_32(convert_ip);
-	*/
-	
 	
 	return RecFreeIP(dhcp->tree->root, &convert_ip, dhcp->tree->height);
 	
@@ -242,7 +240,7 @@ status_t DHCPFreeIP(dhcp_t *dhcp, const char *ip_address_to_free)
 static status_t RecFreeIP(trie_node_t *node, uint32_t *ip_to_free, uint32_t height)
 {
 	uint32_t gowhere = 0;
-	status_t stat = FAILURE ;
+	status_t stat = SUCCESS ;
 
 	if (NULL == node)
 	{
@@ -257,10 +255,7 @@ static status_t RecFreeIP(trie_node_t *node, uint32_t *ip_to_free, uint32_t heig
 			node->isTaken = !TAKEN;
 			return SUCCESS;
 		}
-		else
-		{
-			return DOUBLE_FREE;
-		}
+		return DOUBLE_FREE;
 		
 	}
 
@@ -327,7 +322,7 @@ static status_t NoIPProvided(trie_node_t *node, uint32_t *requested_ip_address, 
     if (0 == height)
     {
         node->isTaken = TAKEN;
-   
+   	 	UpdateAllocated(node);
         return SUCCESS;
     }
 
@@ -423,7 +418,6 @@ static size_t CountRec(trie_node_t *root, uint32_t height)
 		counter += CountRec(root->child[RIGHT], height -1);
 	}
 
-	
 	return counter;
 
 
