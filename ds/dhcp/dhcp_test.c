@@ -116,6 +116,7 @@ void TestAllocate()
     char result2[50] = {0};
     char result3[50] = {0};
     char result4[50] = {0};
+    char result5[50] = {0};
 
     dhcp = DHCPCreate(network_address,24);
     printf("created! free count: %ld\n", DHCPCountFree(dhcp));
@@ -146,8 +147,15 @@ void TestAllocate()
     printf("\nResult4 = %s\n", result4);
      printf("alllocated ! free count: %ld\n", DHCPCountFree(dhcp));
 
-    DHCPFreeIP(dhcp,"216.202.192.66" );
-    printf("???? free count: %ld\n", DHCPCountFree(dhcp));
+   
+     DHCPAllocateIP(dhcp, NULL, result5);
+    printf("\nResult5 = %s\n", result5);
+     printf("alllocated ! free count: %ld\n", DHCPCountFree(dhcp));
+
+     DHCPFreeIP(dhcp, "216.202.192.4");
+    printf("freed? count: %ld\n", DHCPCountFree(dhcp));
+
+
     DHCPDestroy(dhcp);
 }
    
