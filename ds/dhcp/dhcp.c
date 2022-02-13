@@ -144,7 +144,7 @@ void DHCPDestroy(dhcp_t *dhcp)
 
 size_t DHCPCountFree(const dhcp_t *dhcp)
 {
-	size_t max_available = 1<<(dhcp->tree->height);
+	size_t max_available = 1<<(BITS - dhcp->subnet_mask_size);
 	
 	return max_available -= CountRec(dhcp->tree->root, dhcp->tree->height);
 }
@@ -220,7 +220,7 @@ status_t DHCPFreeIP(dhcp_t *dhcp, const char *ip_address_to_free)
     assert((-2 & ~(dhcp->mask)) != (convert_ip &  ~(dhcp->mask)));
 
 
-	return RecFreeIP(dhcp->tree->root, &convert_ip, dhcp->tree->height-1);
+	return RecFreeIP(dhcp->tree->root, &convert_ip, dhcp->tree->height);
 	
 
 	/*
@@ -261,7 +261,7 @@ static status_t RecFreeIP(trie_node_t *node, uint32_t *ip_to_free, uint32_t heig
 		return DOUBLE_FREE;
 	}
 
-	gowhere = (*ip_to_free >> (height - 1)) & 1;
+	gowhere = (*ip_to_free >> (height -1)) & 1;
 	stat = RecFreeIP(node->child[gowhere], ip_to_free, height -1);
 
 	UpdateAllocated(node);
@@ -288,8 +288,8 @@ static status_t RecIPProvide(trie_node_t *node, uint32_t *requested_ip_address, 
 {
     uint32_t where = (*requested_ip_address >> height -1) & 1;
     status_t stat = SUCCESS;
-
-    if (0 == height)
+    printf("curr height: %u\n", height);
+    if (0 == height +1)
     {
         node->isTaken = TAKEN;
         
@@ -323,7 +323,7 @@ static status_t RecIPProvide(trie_node_t *node, uint32_t *requested_ip_address, 
 static status_t NoIPProvided(trie_node_t *node, uint32_t *requested_ip_address, uint32_t height)
 {
     status_t stat = SUCCESS;                                               
-    if (0 == height)
+    if (0 == height +1)
     {
        node->isTaken = TAKEN;
         return SUCCESS;
