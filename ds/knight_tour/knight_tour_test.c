@@ -9,7 +9,7 @@ static void PrintMoves(unsigned char *tour);
 int main(void)
 {
     
-	unsigned char idx = 27;
+	unsigned char idx = 5;
 	unsigned char tour[64] = {0};
 
 	KnightsTour(idx, tour);
