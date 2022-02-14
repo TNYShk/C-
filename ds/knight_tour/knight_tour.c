@@ -31,41 +31,42 @@ static const char YLUT[] = {1, -1, 1, -1, 2, -2, 2, -2};
 static int IsInside(uint32_t x_pos,uint32_t y_pos);
 static void Position2Coor(uint32_t *x_pos, uint32_t *y_pos, unsigned char pos);
 static void Coor2Pos(uint32_t x_pos, uint32_t y_pos, unsigned char *pos);
-static status_t RecKnightsTour(bits_arr64_t, uint32_t pos, unsigned char *tour);
+static status_t RecKnightsTour(bits_arr64_t board, uint32_t x_pos, uint32_t y_pos, unsigned char *tour);
 
 
 void KnightsTour(unsigned char pos, unsigned char *tour)
 {
     bits_arr64_t board = 0;
-    
+    uint32_t x_pos = 0; 
+    uint32_t y_pos = 0;
+
+
 
     assert(NULL != tour);
     assert(64 > pos);
 
     board = BitArrayResetAll(board);
-  
-    RecKnightsTour(board, pos, tour);
+     tour[0] = pos;
+    Position2Coor(&x_pos, &y_pos, pos);
+    RecKnightsTour(board, x_pos, y_pos, tour);
 }
 
-static status_t RecKnightsTour(bits_arr64_t board, uint32_t pos, unsigned char *tour)
+static status_t RecKnightsTour(bits_arr64_t board, uint32_t x_pos, uint32_t y_pos, unsigned char *tour)
 {
     status_t status = FAIL;
     uint32_t move = 0;
-    uint32_t x_pos = 0; 
-    uint32_t y_pos = 0;
+    unsigned char pos = 0;
+    Coor2Pos(x_pos, y_pos, &pos);
 
     Position2Coor(&x_pos, &y_pos, pos);
-    printf("x is %d, y is %d\n", x_pos, y_pos);
-    printf("is inside? %d\n",IsInside(x_pos,y_pos) );
     
     if( (0 == IsInside(x_pos,y_pos)) || BitArrayGetVal(board,pos))
     {
-        printf("fail?\n");
         return FAIL;
     }
 
     board = BitArraySetOn(board, pos);
-    printf("pos is %d\n", pos);
+   
     *tour = pos;
      
      if(64 == BitArrayCountOn(board))
@@ -76,11 +77,10 @@ static status_t RecKnightsTour(bits_arr64_t board, uint32_t pos, unsigned char *
 
      for (move = 0; move <  BOARD && (SUCCESS!=status) ; ++move)
      {
-        unsigned char next_pos = 0;
-        Coor2Pos(x_pos + XLUT[move], y_pos + YLUT[move], &next_pos);
-      
-
-        status = RecKnightsTour(board, next_pos, tour + 1);
+        uint32_t next_x = x_pos + XLUT[move];
+        uint32_t next_y = y_pos + YLUT[move];
+    
+        status = RecKnightsTour(board, next_x, next_y, tour + 1);
      }
 
      return status;
