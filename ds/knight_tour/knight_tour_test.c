@@ -18,10 +18,10 @@ void TestKnight();
 int main(void)
 {
 	
-     TestWarnsdorff();
-     /*dont run
-     TestKnight();
-   	*/
+    TestWarnsdorff();
+      /*dont run
+     TestKnight();*/
+   	
     return 0;
 }
 

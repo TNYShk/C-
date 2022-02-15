@@ -152,7 +152,7 @@ static status_t WarnsdorffRec(bits_arr64_t board, unsigned char pos, unsigned ch
 
 static status_t RecKnightsTour(bits_arr64_t board, uint32_t x_pos, uint32_t y_pos, unsigned char *tour)
 {
-    status_t status = SUCCESS;
+    status_t status = FAIL;
     uint32_t idx = 0;
     unsigned char pos = 0;
     Coor2Pos(x_pos, y_pos, &pos);
@@ -161,19 +161,20 @@ static status_t RecKnightsTour(bits_arr64_t board, uint32_t x_pos, uint32_t y_po
     {
         return SUCCESS;
     }
+    if (0 == BitArrayGetVal(board,pos) )
+    {
+        return FAIL;
+    }
 
     board = BitArraySetOff(board, pos);
     *tour = pos;
   
-    for (idx = 0; idx <  BOARD; ++idx)
+    for (idx = 0; idx < BOARD && (status != SUCCESS); ++idx)
     {
-        unsigned char next_pos = 0;
         uint32_t next_x = x_pos + XLUT[idx];
         uint32_t next_y = y_pos + YLUT[idx];
         
-        Coor2Pos(next_x, next_y, &next_pos);
-
-        if (IsInside(next_x, next_y) && (BitArrayGetVal(board, next_pos) != 0))
+        if (IsInside(next_x, next_y))
         {
             status = RecKnightsTour(board, next_x, next_y, tour + 1);
         }
