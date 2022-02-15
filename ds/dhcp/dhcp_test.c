@@ -153,13 +153,12 @@ void TestAllocate()
      printf("alllocated ! free count: %ld\n", DHCPCountFree(dhcp));
 
     DHCPFreeIP(dhcp, result2);
-    printf("freed? count: %ld\n", DHCPCountFree(dhcp));
     DHCPFreeIP(dhcp, result2);
     printf("freed? count: %ld\n", DHCPCountFree(dhcp));
 
-      DHCPAllocateIP(dhcp, req2_address, result2);
+    DHCPAllocateIP(dhcp, req2_address, result2);
     printf("\nResult2 = %s\n", result2);
-     printf("alllocated ! free count: %ld\n", DHCPCountFree(dhcp));
+    printf("alllocated ! free count: %ld\n", DHCPCountFree(dhcp));
 
 
     DHCPDestroy(dhcp);
@@ -169,4 +168,3 @@ void TestAllocate()
 
 
 
-/

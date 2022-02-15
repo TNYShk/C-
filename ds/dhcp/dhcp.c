@@ -227,6 +227,13 @@ static status_t RecFreeIP(trie_node_t *node, uint32_t *ip_to_free, uint32_t heig
 	uint32_t gowhere = (*ip_to_free >> height) & 1;
 	status_t stat = SUCCESS;
 
+	
+	if (NULL == node)
+	{
+		printf("IP wasnt allocated to begin with!\n");
+		return FAILURE;
+	}
+
 
 	if (0 == height + 1)
 	{
@@ -235,20 +242,13 @@ static status_t RecFreeIP(trie_node_t *node, uint32_t *ip_to_free, uint32_t heig
 			node->isTaken = !TAKEN;
 			return SUCCESS;
 		}
+		printf("Double FREE nothing to free!\n");
 		return DOUBLE_FREE;
-	}
-
-	if (NULL == node->child[gowhere])
-	{
-		printf("IP wasnt allocated to begin with!\n");
-		return FAILURE;
 	}
 	 
 	stat = RecFreeIP(node->child[gowhere], ip_to_free, height -1);
-	if(SUCCESS == stat)
-    {
-		UpdateAllocated(node);
-	}
+	UpdateAllocated(node);
+	
 	return stat;
 
 }
@@ -272,13 +272,11 @@ static status_t RecIPProvide(trie_node_t *node, uint32_t *requested_ip_address, 
     uint32_t where = (*requested_ip_address >> height) & 1;
     status_t stat = SUCCESS;
     
-    
-    if (0 == height +1)
+    if (0 == height + 1)
     {
         node->isTaken = TAKEN;
         return SUCCESS;
     }
-
 
     if (NULL == node->child[where])
     {
@@ -289,16 +287,14 @@ static status_t RecIPProvide(trie_node_t *node, uint32_t *requested_ip_address, 
         }
     }
 
-    else if (node->child[where]->isTaken)
+   if (node->child[where]->isTaken)
     {
         return OCCUPIED;
     }
 
-  stat = RecIPProvide(node->child[where],requested_ip_address, --height);
-  if(SUCCESS == stat)
-  {
-  	UpdateAllocated(node);
-  }
+ 	stat = RecIPProvide(node->child[where],requested_ip_address, --height);
+ 	UpdateAllocated(node);
+  
   
    return stat;
 }
@@ -349,7 +345,7 @@ static status_t NoIPProvided(trie_node_t *node, uint32_t *requested_ip_address, 
     
     if (0 == height + 1)
     {
-       node->isTaken = TAKEN;
+       	node->isTaken = TAKEN;
         return SUCCESS;
     }
 
@@ -365,7 +361,6 @@ static status_t NoIPProvided(trie_node_t *node, uint32_t *requested_ip_address, 
     if (node->child[LEFT]->isTaken != TAKEN)
     {
         *requested_ip_address &= ~(1 << height);
-
         stat = NoIPProvided(node->child[LEFT], requested_ip_address, height - 1); 
         UpdateAllocated(node);
         return stat;
@@ -406,10 +401,7 @@ static status_t IsIPValid(dhcp_t *dhcp, const char *ip_address)
     	return FAILURE;
     
     convert_ip = ntohl(convert_ip);
-
-    convert_ip &= mask;
-    
-    return ((convert_ip ^ net_adr) == 0);
+    return (((convert_ip &= mask) ^ net_adr) == 0);
 
 }
 
@@ -444,7 +436,6 @@ static size_t CountRec(trie_node_t *root, uint32_t height)
 	}
 
 	return counter;
-
 }
 
 
@@ -529,7 +520,15 @@ static status_t InitRight(trie_node_t *root, uint32_t height)
 
 	
 
+
+}
+
+
+
+
 	/*
+static status_t InitRight(trie_node_t *root, uint32_t height)
+{
 	if(height == 1)
 	{
 		root->child[LEFT] = (trie_node_t *)calloc(1, sizeof(trie_node_t));
@@ -554,15 +553,9 @@ static status_t InitRight(trie_node_t *root, uint32_t height)
 		return FAILURE;
 
 	return InitRight(root->child[RIGHT], height - 1);
+
+	}
 	*/
-
-}
-
-
-
-/*
-unsigned int try = -1;
-try <<= death->tree->height;
 
 
 /*
@@ -613,13 +606,4 @@ subnet:
 255.240.0.0     /12
 255.224.0.0     /11
 
-
-
-128.0.0.0      /1
-
-Create dhcp:
-1. based on given param, extract trie height (32 - subnet_mask_size)
-2. store network adrs 255.255.252? 216.202.
-int gowhere = (1<<(height -1))&numtocheck;
 */
-
