@@ -1,25 +1,25 @@
 /**********************************************
  * AVL - Source File                          *
  * Developer: Tanya			                  *
- *          Jan 31, 2022                      *
+ *          Feb 15, 2022                      *
  *                                            *
- * Reviewer: Nurit  	                      *
+ * Reviewer: Ephraim  	                      *
  **********************************************/
 #include <assert.h> /* assert */
 #include <stdlib.h> /* calloc, free */
 #include <string.h> /* memset */
-#include <stdio.h>
 
-#include <arpa/inet.h>
-#include <byteswap.h>
+#include <arpa/inet.h> /*IP - str conversion */
+#include <byteswap.h> /* endiannes*/
 
 #include "dhcp.h"
-#include "utils.h"     /* utils library */
-#define BITS (sizeof(char) * 32)
+
+
+#define BITS (sizeof(char) * sizeof(int) * sizeof(size_t))
 #define TAKEN (1)
 #define OCCUPIED (5)
-#define RESERVED_ADDRESS(mask_size) ((1u << (BITS - (mask_size))) - 1u)
-#define RESERVED_ADDRESS2(mask_size) ((1u << (BITS - (mask_size))) - 2u)
+#define SERVER_ADRS(mask_size) ((1u << (BITS - (mask_size))) - 1u)
+#define BROADCAST_ADR(mask_size) ((1u << (BITS - (mask_size))) - 2u)
 
 
 
@@ -47,11 +47,12 @@ typedef struct trie
 struct dhcp
 {
 	trie_t *tree;
-	unsigned int subnet_mask_size; /* /24 */
-	uint32_t network_address; /* after inet_pton ans bswap 1401034532*/
-
+	unsigned int subnet_mask_size; 
+	uint32_t network_address; 
 };
 
+
+/* Service Funcs */
 typedef status_t (*req_func_t)(trie_node_t *node, uint32_t *requested_ip_address, uint32_t height);
 static status_t IPProvided(trie_node_t *node, uint32_t *requested_ip_address, uint32_t height);
 static status_t NoIPProvided(trie_node_t *node, uint32_t *requested_ip_address, uint32_t height);
@@ -154,18 +155,11 @@ status_t DHCPAllocateIP(dhcp_t *dhcp, const char *requested_ip_address, char *re
 
   	if(dhcp->tree->root->isTaken)
   	{
-  		printf("full!\n");
   		return FAILURE;
   	}
 
   	if ((is_provided = (NULL != requested_ip_address)))
   	{
-  		if(!IsIPValid(dhcp,requested_ip_address))
-  		{
-  			sprintf(result_ip_address, "%s not of pool!",requested_ip_address);
-  			return FAILURE;
-  		}
-
   		assert(1 == inet_pton(AF_INET, requested_ip_address, &req_ip_adrs));
     	req_ip_adrs = bswap_32(req_ip_adrs);
     	assert(IsIpValid(dhcp, req_ip_adrs));
@@ -182,7 +176,6 @@ status_t DHCPAllocateIP(dhcp_t *dhcp, const char *requested_ip_address, char *re
   	req_ip_adrs = bswap_32(req_ip_adrs);
 
   	
-
   	return (SUCCESS == inet_ntop(AF_INET, &req_ip_adrs, result_ip_address, BITS >> 1));
 
 }
@@ -203,8 +196,6 @@ status_t DHCPFreeIP(dhcp_t *dhcp, const char *ip_address_to_free)
 	
 	if (1 != IsIPValid(dhcp, ip_address_to_free))
   	{
-  		printf("invalid! %s\n",ip_address_to_free);
-
   		return FAILURE;
   	}
 
@@ -216,8 +207,8 @@ status_t DHCPFreeIP(dhcp_t *dhcp, const char *ip_address_to_free)
 	assert(IsIpValid(dhcp, convert_ip));
 
 	assert(0 != (mask & convert_ip));
-    assert(RESERVED_ADDRESS(dhcp->subnet_mask_size) != (mask & convert_ip));
-    assert(RESERVED_ADDRESS2(dhcp->subnet_mask_size) != (mask & convert_ip));
+    assert(SERVER_ADRS(dhcp->subnet_mask_size) != (mask & convert_ip));
+    assert(BROADCAST_ADR(dhcp->subnet_mask_size) != (mask & convert_ip));
 
 	return RecFreeIP(dhcp->tree->root, &convert_ip, dhcp->tree->height -1);
 }
@@ -227,13 +218,10 @@ static status_t RecFreeIP(trie_node_t *node, uint32_t *ip_to_free, uint32_t heig
 	uint32_t gowhere = (*ip_to_free >> height) & 1;
 	status_t stat = SUCCESS;
 
-	
 	if (NULL == node)
 	{
-		printf("IP wasnt allocated to begin with!\n");
 		return FAILURE;
 	}
-
 
 	if (0 == height + 1)
 	{
@@ -242,7 +230,6 @@ static status_t RecFreeIP(trie_node_t *node, uint32_t *ip_to_free, uint32_t heig
 			node->isTaken = !TAKEN;
 			return SUCCESS;
 		}
-		printf("Double FREE nothing to free!\n");
 		return DOUBLE_FREE;
 	}
 	 
@@ -252,7 +239,6 @@ static status_t RecFreeIP(trie_node_t *node, uint32_t *ip_to_free, uint32_t heig
 	return stat;
 
 }
-
 
 static status_t IPProvided(trie_node_t *node, uint32_t *requested_ip_address, uint32_t height)
 {
@@ -295,49 +281,9 @@ static status_t RecIPProvide(trie_node_t *node, uint32_t *requested_ip_address, 
  	stat = RecIPProvide(node->child[where],requested_ip_address, --height);
  	UpdateAllocated(node);
   
-  
-   return stat;
+   	return stat;
 }
-/*
-static status_t NoIPProvided(trie_node_t *node, uint32_t *requested_ip_address, uint32_t height)
-{
-    uint32_t gowhere = 0;
-    trie_node_t *new = NULL;
-    status_t stat = SUCCESS;                                               
-  
-  	if (node->isTaken)
-  	{
-  		return FAILURE;
-  	}
 
-  	if(height == 0)
-  	{
-  		node->isTaken = TAKEN;
-  		return SUCCESS;
-  	}
-
-  	gowhere = (*requested_ip_address >> (height -1)) & 1;
-  	if (NULL == node->child[gowhere])
-  	{
-  		node->child[gowhere] = (trie_node_t *)calloc(1, sizeof(trie_node_t));
-  		new = node->child[gowhere];
-  		if(new == NULL)
-  		{
-  			return FAILURE;
-  		}
-  	}
-
-  	stat = NoIPProvided(new, requested_ip_address, height -1);
-  	if(FAILURE == stat)
-  	{
-  		*requested_ip_address = (((*requested_ip_address >> (height - 1))) + 1) << (height -1);
-  		stat = NoIPProvided(new, requested_ip_address, height);
-  	}
-    
-    UpdateAllocated(node);
-    return stat;
-}
-*/
 
 static status_t NoIPProvided(trie_node_t *node, uint32_t *requested_ip_address, uint32_t height)
 {
@@ -402,7 +348,6 @@ static status_t IsIPValid(dhcp_t *dhcp, const char *ip_address)
     
     convert_ip = ntohl(convert_ip);
     return (((convert_ip &= mask) ^ net_adr) == 0);
-
 }
 
 static status_t IsIpValid(dhcp_t *dhcp, uint32_t requested_ip_address)
@@ -417,9 +362,6 @@ static size_t CountRec(trie_node_t *root, uint32_t height)
 {
 	size_t counter = 0;
 	
-	if (NULL == root)
-		return 0;
-
 	if (root->isTaken == TAKEN)
 	{
 		return (1 << height);

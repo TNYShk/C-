@@ -137,8 +137,7 @@ void TestAllocate()
     printf("\nno_ip Result3 = %s\n", result3);
      printf("alllocated ! free count: %ld\n", DHCPCountFree(dhcp));
     
-    DHCPAllocateIP(dhcp, bad_adr, result3);
-    printf("\nbadip, Result = %s\n", result3);
+    
    
     printf("free count: %ld\n", DHCPCountFree(dhcp));
 
