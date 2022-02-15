@@ -1,27 +1,50 @@
-#include <assert.h>
-#include <stdio.h>
+/**********************************
+ * Knights - C File               *
+ * Developer: Tanya               *
+ * Written:   15/02/2022          *
+ *                                *
+ * Reviewer:                      *
+ **********************************/
+#include <assert.h> /* asserts*/
+#include <stdio.h> /*Printing */
+#include <string.h> /* memset() */
 
-#include "knight_tour.h"
+#include "knight_tour.h" /* program header*/
 
-static void PrintMoves(unsigned char *tour);
+void PrintMoves(unsigned char *tour);
 void TestWarnsdorff();
 void TestKnight();
 
 int main(void)
 {
-	TestKnight();
-     /*TestWarnsdorff();
-   */
+	
+     TestWarnsdorff();
+     /*dont run
+     TestKnight();
+   	*/
     return 0;
 }
 
 void TestWarnsdorff()
 {
+    int i = 0;
     unsigned char idx = 63;	
-     unsigned char tour[64] = {0};
-     Warnsdorff(idx, tour);
-       
+    unsigned char tour[64] = {0};
+    Warnsdorff(idx, tour);
     PrintMoves(tour);
+
+    for(i = 0; i < 64; ++i)
+    {
+    	printf("\n\nidx %d\n", i);
+    	memset(tour, 0 , sizeof(size_t) * sizeof(size_t));
+    	Warnsdorff(i, tour);   
+    	PrintMoves(tour);
+    }
+    printf("\n");
+
+
+   
+
 }
 
 void TestKnight()
@@ -39,7 +62,7 @@ void TestKnight()
 
 
 
-static void PrintMoves(unsigned char *tour)
+void PrintMoves(unsigned char *tour)
 {
 	int idx = 0;
 
