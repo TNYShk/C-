@@ -60,34 +60,31 @@ static status_t RecKnightsTour(bits_arr64_t board, uint32_t x_pos, uint32_t y_po
     
     Position2Coor(&x_pos, &y_pos, pos);
    
-    if( 0 == IsInside(x_pos,y_pos))
-    {
-        return FAIL;
-    }
-     if(BitArrayGetVal(board,pos))
+    if(BitArrayGetVal(board,pos))
     {
         return FAIL;
     }
 
-    board = BitArraySetOn(board, pos);
-   
-    *tour = pos;
      
      if(64 == BitArrayCountOn(board))
      {
-        printf("here\n");
         return SUCCESS;
      }
+     
+    board = BitArraySetOn(board, pos);
+    *tour = pos;
 
-     for (move = 0; move <  BOARD  ; ++move)
+     for (move = 0; move <  BOARD && (status == FAIL) ; ++move)
      {
         uint32_t next_x = x_pos + XLUT[move];
         uint32_t next_y = y_pos + YLUT[move];
-        if (status != SUCCESS)
+
+        if (IsInside(next_x, next_y))
         {
+             printf("x is %d y is: %d\n",next_x,next_y );
             status = RecKnightsTour(board, next_x, next_y, tour + 1);
         }
-      
+     
      }
 
      return status;
@@ -96,8 +93,8 @@ static status_t RecKnightsTour(bits_arr64_t board, uint32_t x_pos, uint32_t y_po
 
 static int IsInside(uint32_t x_pos,uint32_t y_pos)
 {
-   /* return ((x_pos >= 0 && y_pos >= 0) && (x_pos < BOARD && y_pos < BOARD));*/
-    return ((x_pos < BOARD) && (y_pos < BOARD));
+    return ((x_pos >= 0 && y_pos >= 0) && (x_pos < BOARD && y_pos < BOARD));
+    /*return ((x_pos < BOARD) && (y_pos < BOARD));*/
 }
 
 static void Position2Coor(uint32_t *x_pos, uint32_t *y_pos, unsigned char pos)
