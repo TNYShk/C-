@@ -156,14 +156,14 @@ static status_t RecKnightsTour(bits_arr64_t board, uint32_t x_pos, uint32_t y_po
     uint32_t idx = 0;
     unsigned char pos = 0;
     Coor2Pos(x_pos, y_pos, &pos);
-    
-    board = BitArraySetOff(board, pos);
-    *tour = pos;
 
     if (0 == BitArrayCountOn(board))
     {
         return SUCCESS;
     }
+
+    board = BitArraySetOff(board, pos);
+    *tour = pos;
   
     for (idx = 0; idx <  BOARD; ++idx)
     {
