@@ -1,5 +1,5 @@
 /**********************************************
- * DHCP - C File                               *
+ * Knights - C File                               *
  * Developer: Tanya                            *
  * Written:   14/02/2022                       *
  *                                             *
@@ -17,16 +17,19 @@
 #include "bit_array.h"
 
 #define BOARD (8)
- 
+#define CORK (sizeof(char) * 69)
+
 typedef enum status
 {
     SUCCESS = 0,
-    FAIL = 1
+    FAIL = -1
 }status_t;
 
                                 
 static const char XLUT[] = {2, 2, -2, -2, 1, 1, -1, -1};
 static const char YLUT[] = {1, -1, 1, -1, 2, -2, 2, -2};
+static char MoveBook[64][9] = {0};
+
 
 
 
@@ -35,6 +38,9 @@ static void Position2Coor(uint32_t *x_pos, uint32_t *y_pos, unsigned char pos);
 static void Coor2Pos(uint32_t x_pos, uint32_t y_pos, unsigned char *pos);
 static status_t RecKnightsTour(bits_arr64_t board, uint32_t x_pos, uint32_t y_pos, unsigned char *tour);
 
+static status_t WarnsdorffRec(bits_arr64_t board, unsigned char pos, unsigned char *tour);
+static void InitMoveBook();
+static int Comparefunc(const void *knight,const void *knight2);
 
 void KnightsTour(unsigned char pos, unsigned char *tour)
 {
@@ -45,56 +51,143 @@ void KnightsTour(unsigned char pos, unsigned char *tour)
     assert(NULL != tour);
     assert(64 > pos);
 
-    board = BitArrayResetAll(board);
-    tour[0] = pos;
+    board = BitArraySetAll(board);
+   
     Position2Coor(&x_pos, &y_pos, pos);
-    RecKnightsTour(board, x_pos, y_pos, tour + 1);
+
+    Warnsdorff(pos, tour);
 }
+
+
+void Warnsdorff(unsigned char pos, unsigned char *tour)
+{
+    bits_arr64_t board = 0;
+
+    assert(NULL != tour);
+    assert(64 > pos);
+
+    board = BitArraySetAll(board);
+  
+    InitMoveBook();
+
+    WarnsdorffRec(board, pos, tour);
+}
+
+
+
+static void InitMoveBook()
+{
+    size_t knight_shinning = 0;
+    size_t idx = 0;
+    uint32_t xx =  0;
+    uint32_t yy = 0;
+
+
+    for(knight_shinning = 0; knight_shinning < (BOARD * BOARD); ++knight_shinning)
+    {
+        size_t movebook_idx = 0;
+       
+        Position2Coor(&xx, &yy, knight_shinning);
+
+        for(idx = 0; idx < BOARD; ++idx)
+        {
+            uint32_t next_x = xx + XLUT[idx];
+            uint32_t next_y = yy + YLUT[idx];
+            
+            if (IsInside(next_x, next_y))
+            {
+                unsigned char pos = 0;
+                Coor2Pos(next_x, next_y, &pos);
+                MoveBook[knight_shinning][movebook_idx] = pos;
+                ++movebook_idx;
+            }
+        }
+        MoveBook[knight_shinning][movebook_idx] = CORK;
+        qsort(MoveBook[knight_shinning],movebook_idx, sizeof(char), &Comparefunc);
+    }
+}
+static int Comparefunc(const void *knight,const void *knight2)
+{
+    const char NumOfNeighborsLUT[64] = 
+    {
+        2, 3, 4, 4, 4, 4, 3, 2,
+        3, 4, 6, 6, 6, 6, 4, 3,
+        4, 6, 8, 8, 8, 8, 6, 4,
+        4, 6, 8, 8, 8, 8, 6, 4, 
+        4, 6, 8, 8, 8, 8, 6, 4,
+        4, 6, 8, 8, 8, 8, 6, 4, 
+        3, 4, 6, 6, 6, 6, 4, 3,
+        2, 3, 4, 4, 4, 4, 3, 2
+    };
+
+    return (NumOfNeighborsLUT[*(char *)knight] - NumOfNeighborsLUT[*(char *)knight2]);
+}
+
+static status_t WarnsdorffRec(bits_arr64_t board, unsigned char pos, unsigned char *tour)
+{
+    size_t move = 0;
+    status_t stat = !SUCCESS;
+    
+    if (0 == BitArrayGetVal(board, pos))
+    {
+        return FAIL;
+    }
+  
+    if (0 == BitArrayCountOn(board))
+    {
+        return SUCCESS;
+    }
+   
+    board = BitArraySetOff(board, pos);
+    *tour = pos;
+
+    for( ;((stat != SUCCESS) && (MoveBook[pos][move] != CORK)); ++move)
+    {
+        stat = WarnsdorffRec(board, MoveBook[pos][move], tour + 1);
+    }
+
+    return stat;
+}
+
+
+
+
 
 static status_t RecKnightsTour(bits_arr64_t board, uint32_t x_pos, uint32_t y_pos, unsigned char *tour)
 {
-    status_t status = FAIL;
+    status_t status = SUCCESS;
     uint32_t move = 0;
     unsigned char pos = 0;
     Coor2Pos(x_pos, y_pos, &pos);
     
-    Position2Coor(&x_pos, &y_pos, pos);
-   
-    if(BitArrayGetVal(board,pos))
-    {
-        return FAIL;
-    }
-
-     
-     if(64 == BitArrayCountOn(board))
-     {
-        return SUCCESS;
-     }
-     
-    board = BitArraySetOn(board, pos);
+    board = BitArraySetOff(board, pos);
     *tour = pos;
 
-     for (move = 0; move <  BOARD && (status == FAIL) ; ++move)
-     {
+    if (0 == BitArrayCountOn(board))
+    {
+        return SUCCESS;
+    }
+  
+    for (move = 0; move <  BOARD; ++move)
+    {
+        unsigned char next_pos = 0;
         uint32_t next_x = x_pos + XLUT[move];
         uint32_t next_y = y_pos + YLUT[move];
+        
+        Coor2Pos(next_x, next_y, &next_pos);
 
-        if (IsInside(next_x, next_y))
+        if (IsInside(next_x, next_y) && (BitArrayGetVal(board, next_pos) != 0))
         {
-             printf("x is %d y is: %d\n",next_x,next_y );
             status = RecKnightsTour(board, next_x, next_y, tour + 1);
         }
-     
-     }
+    }
 
-     return status;
-
+    return status;
 }
 
 static int IsInside(uint32_t x_pos,uint32_t y_pos)
 {
-    return ((x_pos >= 0 && y_pos >= 0) && (x_pos < BOARD && y_pos < BOARD));
-    /*return ((x_pos < BOARD) && (y_pos < BOARD));*/
+    return ((x_pos < BOARD) && (y_pos < BOARD));
 }
 
 static void Position2Coor(uint32_t *x_pos, uint32_t *y_pos, unsigned char pos)
@@ -108,55 +201,9 @@ static void Coor2Pos(uint32_t x_pos, uint32_t y_pos, unsigned char *pos)
 {
     *pos = (y_pos << 3) + x_pos;
 }
-/*
-static Warnsdorffs(bits_arr64_t board, uint32_t x_pos, uint32_t y_pos,unsigned char *tour)
-{
-    uint32_t x = x_pos, y = x_pos;
-    int i = 0;
-    unsigned char pos = 0;
-    Coor2Pos(x_pos, y_pos, &pos);
-    board = BitArraySetOn(board, pos);
 
-    for (i = 0; i< 64; ++i)
-    {
-        if (Move_process(board,&x_pos, &y_pos, tour) == 0)
-        {
-            return SUCCESS;
-        }
-    }
-    if (Neighbour(x_pos, y_pos, x, y) == 0)
-    {
-        return SUCCESS;
-    }
-    Printresult(tour)
-}
 
-static void Printresult(unsigned char *tour)
-{
-    int i = 0, j = 0;
-    for (i = 0; i < BOARD; ++i)
-    {
-        for (j = 0; j < BOARD; ++j)
-        {
-            printf("%d\t", tour[j * BOARD + i]);
-        }
-        printf("\n");
-    }
-}
 
-static status_t Move_process(bits_arr64_t board, uint32_t *x_pos, uint32_t *y_pos,unsigned char *tour)
-{
-    int start = rand() % BOARD, count = 0, i = 0, flag = -1, c = 0, min = (BOARD + 1);
-    int next_x = 0, next_y = 0;
-    for (count = 0; count < BOARD; ++count)
-    {
-        unsigned char pos = 0;
-        i = (start + count ) % BOARD;
 
-        next_x = *x_pos + XLUT[i];
-        next_y = *y_pos + YLUT[i];
-         Coor2Pos(next_x, next_y, &pos);
-        if (BitArrayGetVal(board, pos))
-    }
-}
-*/
+
+

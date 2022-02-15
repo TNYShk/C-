@@ -4,12 +4,30 @@
 #include "knight_tour.h"
 
 static void PrintMoves(unsigned char *tour);
-
+void TestWarnsdorff();
+void TestKnight();
 
 int main(void)
 {
-    
-	unsigned char idx = 1;
+	TestKnight();
+     /*TestWarnsdorff();
+   */
+    return 0;
+}
+
+void TestWarnsdorff()
+{
+    unsigned char idx = 63;	
+     unsigned char tour[64] = {0};
+     Warnsdorff(idx, tour);
+       
+    PrintMoves(tour);
+}
+
+void TestKnight()
+{
+
+	unsigned char idx = 63;
 	unsigned char tour[64] = {0};
 
 	KnightsTour(idx, tour);
@@ -17,8 +35,8 @@ int main(void)
 	PrintMoves(tour);
     printf("\n");
 
-    return 0;
 }
+
 
 
 static void PrintMoves(unsigned char *tour)
