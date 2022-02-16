@@ -156,6 +156,10 @@ void TestAllocate()
     printf("\nResult2 = %s\n", result2);
     printf("alllocated ! free count: %ld\n", DHCPCountFree(dhcp));
 
+    DHCPFreeIP(dhcp, "216.202.192.1");
+    printf("freed? count: %ld\n", DHCPCountFree(dhcp));
+
+    
 
     DHCPDestroy(dhcp);
 }

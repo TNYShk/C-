@@ -66,7 +66,7 @@ static status_t IsIpValid(dhcp_t *dhcp, uint32_t requested_ip_address);
 static void UpdateAllocated(trie_node_t *root);
 static status_t RecFreeIP(trie_node_t *node, uint32_t *ip_to_free, uint32_t height);
 static void InetPtonNtohl(const char *adrs, uint32_t *ip_result);
-
+static void NotHollyTrinityIP(dhcp_t *dhcp,uint32_t convert_ip);
 /* 
 make a single IPValid func to convert string to int and check it, instrad of inet_pton
 
@@ -82,7 +82,9 @@ dhcp_t *DHCPCreate(const char *network_address, unsigned int subnet_mask_size)
 
 	death = (dhcp_t *)calloc(1, sizeof(dhcp_t));
 	if (NULL == death)
+	{
 		return NULL;
+	}
 
 	death->tree = (trie_t *)calloc(1, sizeof(trie_t));
 	if (NULL == death->tree)
@@ -105,7 +107,6 @@ dhcp_t *DHCPCreate(const char *network_address, unsigned int subnet_mask_size)
 
 	InetPtonNtohl(network_address, &inet);
 	
-
     death->subnet_mask_size = subnet_mask_size; 
 	death->tree->height = BITS - death->subnet_mask_size;
     death->network_address = inet & (-1)<<death->tree->height;
@@ -122,8 +123,6 @@ dhcp_t *DHCPCreate(const char *network_address, unsigned int subnet_mask_size)
 	
 	return death;
 }
-
-
 
 void DHCPDestroy(dhcp_t *dhcp)
 {
@@ -177,10 +176,8 @@ status_t DHCPAllocateIP(dhcp_t *dhcp, const char *requested_ip_address, char *re
   	}
   
   	req_ip_adrs |= dhcp->network_address;
-  	
   	req_ip_adrs = bswap_32(req_ip_adrs);
 
-  	
   	return (SUCCESS == inet_ntop(AF_INET, &req_ip_adrs, result_ip_address, BITS >> 1));
 
 }
@@ -188,7 +185,6 @@ status_t DHCPAllocateIP(dhcp_t *dhcp, const char *requested_ip_address, char *re
 size_t DHCPCountFree(const dhcp_t *dhcp)
 {
 	size_t max_available = 1<<(BITS - dhcp->subnet_mask_size);
-	
 	return max_available -= CountRec(dhcp->tree->root, dhcp->tree->height);
 }
 
@@ -196,8 +192,6 @@ size_t DHCPCountFree(const dhcp_t *dhcp)
 status_t DHCPFreeIP(dhcp_t *dhcp, const char *ip_address_to_free)
 {
 	uint32_t convert_ip = 0;
-	uint32_t mask = (1 << (BITS - dhcp->subnet_mask_size)) - 1;
-    
 	
 	if (GREATSUCCESS != IsIPValid(dhcp, ip_address_to_free))
   	{
@@ -206,11 +200,21 @@ status_t DHCPFreeIP(dhcp_t *dhcp, const char *ip_address_to_free)
   	InetPtonNtohl(ip_address_to_free, &convert_ip);
 	assert(IsIpValid(dhcp, convert_ip));
 
+	NotHollyTrinityIP(dhcp, convert_ip);
+	
+	return RecFreeIP(dhcp->tree->root, &convert_ip, dhcp->tree->height);
+}
+
+
+
+
+static void NotHollyTrinityIP(dhcp_t *dhcp,uint32_t convert_ip)
+{
+	uint32_t mask = (1 << (BITS - dhcp->subnet_mask_size)) - 1;
+	
 	assert(0 != (mask & convert_ip));
     assert(SERVER_ADRS(dhcp->subnet_mask_size) != (mask & convert_ip));
     assert(BROADCAST_ADR(dhcp->subnet_mask_size) != (mask & convert_ip));
-
-	return RecFreeIP(dhcp->tree->root, &convert_ip, dhcp->tree->height);
 }
 
 static status_t RecFreeIP(trie_node_t *node, uint32_t *ip_to_free, uint32_t height)
@@ -393,6 +397,7 @@ static void Destroy(trie_node_t *root)
     Destroy(root->child[LEFT]);
     Destroy(root->child[RIGHT]);
     
+    memset(root, 0, sizeof(trie_node_t));
     free(root);
     root = NULL;
 }
@@ -441,6 +446,5 @@ static status_t InitRightSubTrie(trie_node_t *root, uint32_t height)
 	root->isTaken = OCCUPIED;
 
 	return (NULL == root);
-
 }
 
