@@ -16,7 +16,7 @@ OBJS := $(SRCS:.c=.o)
 CLEAN_SRC := $(filter-out $(wildcard *_test.c), $(SRCS))
 CLEAN_OBJ :=  $(CLEAN_SRC:.c=.o)
 
-DEPS :=  bit_array
+DEPS :=  bit_array 
 DEPLIB := $(addsuffix .so, $(addprefix lib,$(DEPS)))
 
 

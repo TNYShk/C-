@@ -33,7 +33,7 @@ void TestWarnsdorff()
     Warnsdorff(idx, tour);
     PrintMoves(tour);
 
-    for(i = 0; i < 64; ++i)
+    for(i = 62; i >= 0; --i)
     {
     	printf("\n\nidx %d\n", i);
     	memset(tour, 0 , sizeof(size_t) * sizeof(size_t));
