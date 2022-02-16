@@ -1,5 +1,5 @@
 /**********************************************
- * AVL - Source File                          *
+ * DHCP - Source File                         *
  * Developer: Tanya			                  *
  *          Feb 15, 2022                      *
  *                                            *
@@ -18,6 +18,7 @@
 #define BITS (sizeof(char) * sizeof(int) * sizeof(size_t))
 #define TAKEN (1)
 #define OCCUPIED (5)
+#define GREATSUCCESS (1)
 #define SERVER_ADRS(mask_size) ((1u << (BITS - (mask_size))) - 1u)
 #define BROADCAST_ADR(mask_size) ((1u << (BITS - (mask_size))) - 2u)
 
@@ -34,7 +35,6 @@ typedef struct trie_node
 {
 	char isTaken;
 	struct trie_node *child[NUM_OF_CHILDREN];
-
 }trie_node_t;
 
 typedef struct trie
@@ -43,11 +43,10 @@ typedef struct trie
 	uint32_t height;
 }trie_t;
 
-
 struct dhcp
 {
 	trie_t *tree;
-	unsigned int subnet_mask_size; 
+	uint32_t subnet_mask_size; 
 	uint32_t network_address; 
 };
 
@@ -57,16 +56,21 @@ typedef status_t (*req_func_t)(trie_node_t *node, uint32_t *requested_ip_address
 static status_t IPProvided(trie_node_t *node, uint32_t *requested_ip_address, uint32_t height);
 static status_t NoIPProvided(trie_node_t *node, uint32_t *requested_ip_address, uint32_t height);
 static status_t RecIPProvide(trie_node_t *node, uint32_t *requested_ip_address, uint32_t height);
-static status_t InitLeft(trie_node_t *root, uint32_t height);
-static status_t InitRight(trie_node_t *root, uint32_t height);
+
+static status_t InitLeftSubTrie(trie_node_t *root, uint32_t height);
+static status_t InitRightSubTrie(trie_node_t *root, uint32_t height);
 static void Destroy(trie_node_t *trie);
 static size_t CountRec(trie_node_t *root, uint32_t height);
 static status_t IsIPValid(dhcp_t *dhcp, const char *ip_address);
 static status_t IsIpValid(dhcp_t *dhcp, uint32_t requested_ip_address);
 static void UpdateAllocated(trie_node_t *root);
 static status_t RecFreeIP(trie_node_t *node, uint32_t *ip_to_free, uint32_t height);
+static void InetPtonNtohl(const char *adrs, uint32_t *ip_result);
 
+/* 
+make a single IPValid func to convert string to int and check it, instrad of inet_pton
 
+*/
 
 dhcp_t *DHCPCreate(const char *network_address, unsigned int subnet_mask_size)
 {
@@ -99,25 +103,27 @@ dhcp_t *DHCPCreate(const char *network_address, unsigned int subnet_mask_size)
 		return NULL;
 	}
 
-	assert(1 == inet_pton(AF_INET, network_address, &inet));
-    inet = ntohl(inet);
+	InetPtonNtohl(network_address, &inet);
+	
 
     death->subnet_mask_size = subnet_mask_size; 
 	death->tree->height = BITS - death->subnet_mask_size;
     death->network_address = inet & (-1)<<death->tree->height;
 
-	if (SUCCESS != InitLeft(death->tree->root, death->tree->height))
+	if (SUCCESS != InitLeftSubTrie(death->tree->root, death->tree->height))
 	{
 		DHCPDestroy(death);
 	}
 	
-	if (SUCCESS != InitRight(death->tree->root, death->tree->height))
+	if (SUCCESS != InitRightSubTrie(death->tree->root, death->tree->height))
 	{
 		DHCPDestroy(death);
 	}
 	
 	return death;
 }
+
+
 
 void DHCPDestroy(dhcp_t *dhcp)
 {
@@ -160,8 +166,7 @@ status_t DHCPAllocateIP(dhcp_t *dhcp, const char *requested_ip_address, char *re
 
   	if ((is_provided = (NULL != requested_ip_address)))
   	{
-  		assert(1 == inet_pton(AF_INET, requested_ip_address, &req_ip_adrs));
-    	req_ip_adrs = bswap_32(req_ip_adrs);
+		InetPtonNtohl(requested_ip_address, &req_ip_adrs);
     	assert(IsIpValid(dhcp, req_ip_adrs));
     }
     
@@ -194,23 +199,18 @@ status_t DHCPFreeIP(dhcp_t *dhcp, const char *ip_address_to_free)
 	uint32_t mask = (1 << (BITS - dhcp->subnet_mask_size)) - 1;
     
 	
-	if (1 != IsIPValid(dhcp, ip_address_to_free))
+	if (GREATSUCCESS != IsIPValid(dhcp, ip_address_to_free))
   	{
   		return FAILURE;
   	}
-
-	if(1 != inet_pton(AF_INET, ip_address_to_free, &convert_ip))
-	{
-		return FAILURE;
-	}
-	convert_ip = bswap_32(convert_ip);
+  	InetPtonNtohl(ip_address_to_free, &convert_ip);
 	assert(IsIpValid(dhcp, convert_ip));
 
 	assert(0 != (mask & convert_ip));
     assert(SERVER_ADRS(dhcp->subnet_mask_size) != (mask & convert_ip));
     assert(BROADCAST_ADR(dhcp->subnet_mask_size) != (mask & convert_ip));
 
-	return RecFreeIP(dhcp->tree->root, &convert_ip, dhcp->tree->height -1);
+	return RecFreeIP(dhcp->tree->root, &convert_ip, dhcp->tree->height);
 }
 
 static status_t RecFreeIP(trie_node_t *node, uint32_t *ip_to_free, uint32_t height)
@@ -223,7 +223,7 @@ static status_t RecFreeIP(trie_node_t *node, uint32_t *ip_to_free, uint32_t heig
 		return FAILURE;
 	}
 
-	if (0 == height + 1)
+	if (0 == height)
 	{
 		if (node->isTaken)
 		{
@@ -237,7 +237,12 @@ static status_t RecFreeIP(trie_node_t *node, uint32_t *ip_to_free, uint32_t heig
 	UpdateAllocated(node);
 	
 	return stat;
+}
 
+static void InetPtonNtohl(const char *adrs, uint32_t *ip_result)
+{
+	assert(1 == inet_pton(AF_INET, adrs, ip_result));
+	*ip_result = ntohl(*ip_result);
 }
 
 static status_t IPProvided(trie_node_t *node, uint32_t *requested_ip_address, uint32_t height)
@@ -278,7 +283,7 @@ static status_t RecIPProvide(trie_node_t *node, uint32_t *requested_ip_address, 
         return OCCUPIED;
     }
 
- 	stat = RecIPProvide(node->child[where],requested_ip_address, --height);
+ 	stat = RecIPProvide(node->child[where],requested_ip_address, height - 1);
  	UpdateAllocated(node);
   
    	return stat;
@@ -343,10 +348,7 @@ static status_t IsIPValid(dhcp_t *dhcp, const char *ip_address)
     uint32_t mask = (-1)<< (BITS - dhcp->subnet_mask_size);                      
     uint32_t net_adr = (dhcp->network_address) & mask;
 
-    if (1 != inet_pton(AF_INET, ip_address, &convert_ip))
-    	return FAILURE;
-    
-    convert_ip = ntohl(convert_ip);
+    InetPtonNtohl(ip_address, &convert_ip);
     return (((convert_ip &= mask) ^ net_adr) == 0);
 }
 
@@ -396,7 +398,7 @@ static void Destroy(trie_node_t *root)
 }
 
 
-static status_t InitLeft(trie_node_t *root, uint32_t height)
+static status_t InitLeftSubTrie(trie_node_t *root, uint32_t height)
 {
 	if(height == 0)
 	{
@@ -408,32 +410,12 @@ static status_t InitLeft(trie_node_t *root, uint32_t height)
 	if (NULL == root->child[LEFT])
 		return FAILURE;
 
-	return InitLeft(root->child[LEFT], height -1);
+	return InitLeftSubTrie(root->child[LEFT], height -1);
 	
-
-	
-	/*
-
-	uint32_t idx = 0;
-	for (idx = 0; idx < height ;++ idx)
-	{
-		root->child[LEFT] = (trie_node_t *)calloc(1, sizeof(trie_node_t));
-		if(NULL == root->child[LEFT])
-		{
-			return FAILURE;
-		}
-
-		root = root->child[LEFT];
-	}
-	root->isTaken = TAKEN;
-	
-	return (root->isTaken != TAKEN);
-
-	*/
 }
 
 
-static status_t InitRight(trie_node_t *root, uint32_t height)
+static status_t InitRightSubTrie(trie_node_t *root, uint32_t height)
 {
 	size_t idx = 0;
 
@@ -460,92 +442,5 @@ static status_t InitRight(trie_node_t *root, uint32_t height)
 
 	return (NULL == root);
 
-	
-
-
 }
 
-
-
-
-	/*
-static status_t InitRight(trie_node_t *root, uint32_t height)
-{
-	if(height == 1)
-	{
-		root->child[LEFT] = (trie_node_t *)calloc(1, sizeof(trie_node_t));
-		if(NULL != root->child[LEFT])
-		{
-			root->child[RIGHT] = (trie_node_t *)calloc(1, sizeof(trie_node_t));
-			if(NULL == root->child[RIGHT])
-			{
-				free(root->child[LEFT]);
-				return FAILURE;
-			}
-			root->child[RIGHT]->isTaken = TAKEN;
-			root->child[LEFT]->isTaken = TAKEN;
-			root->isTaken = TAKEN;
-		}
-		
-		return (NULL == root->child[RIGHT]);
-	}
-
-	root->child[RIGHT] = (trie_node_t *)calloc(1, sizeof(trie_node_t));
-	if (NULL == root->child[RIGHT])
-		return FAILURE;
-
-	return InitRight(root->child[RIGHT], height - 1);
-
-	}
-	*/
-
-
-/*
-static size_t CountRight(trie_node_t *root, size_t height)
-{
-	size_t counter = 0;
-	
-	while(height > 0)
-	{
-		if(root->isTaken == TAKEN)
-	{
-		++counter;
-	}
-		root = root->child[RIGHT];
-
-		--height;
-	}
-	return counter;
-
-
-}
-*/
-
-
-
-
-
-
-/*
-subnet:
-255.255.254.248 /29
-255.255.255.240 /28
-255.255.255.224 /27
-255.255.255.192 /26
-255.255.255.128 /25
-255.255.255.0   /24 
-255.255.254.0   /23
-255.255.252.0   /22 
-255.255.248.0   /21
-255.255.240.0   /20
-255.255.224.0   /19
-255.255.192.0   /18
-255.255.128.0   /17
-255.255.0.0     /16
-255.254.0.0     /15
-255.252.0.0     /14
-255.248.0.0     /13
-255.240.0.0     /12
-255.224.0.0     /11
-
-*/
