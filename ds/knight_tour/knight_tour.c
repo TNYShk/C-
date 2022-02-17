@@ -24,9 +24,8 @@ typedef enum status
     FAIL = -1
 }status_t;
 
-                                
-static const char XLUT[] = {2, 2, -2, -2, 1, 1, -1, -1};
-static const char YLUT[] = {1, -1, 1, -1, 2, -2, 2, -2};
+                              
+static const char moves[] = {2 ,2 ,-2 ,-2 ,-1 ,1 ,-1 ,1 };
 static char idxBook[CHESSBOARD][9] = {0};
 
 
@@ -89,10 +88,12 @@ static void InitidxBook(void)
        
         Position2Coor(&move_x, &move_y, knight_shining_armor);
 
+
+
         for(idx = 0; idx < BOARD; ++idx)
         {
-            uint32_t next_x = move_x + XLUT[idx];
-            uint32_t next_y = move_y + YLUT[idx];
+            uint32_t next_x = move_x + moves[idx];
+            uint32_t next_y = move_y + moves[BOARD-1-idx];
             
             if (IsInside(next_x, next_y))
             {
@@ -173,8 +174,8 @@ static status_t RecKnightsTour(bits_arr64_t board, uint32_t x_pos, uint32_t y_po
   
     for (idx = 0; idx < BOARD && (status != SUCCESS); ++idx)
     {
-        uint32_t next_x = x_pos + XLUT[idx];
-        uint32_t next_y = y_pos + YLUT[idx];
+        uint32_t next_x = x_pos + moves[idx];
+        uint32_t next_y = y_pos + moves[BOARD - 1 - idx];
         
         if (IsInside(next_x, next_y))
         {
