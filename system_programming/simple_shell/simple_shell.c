@@ -52,14 +52,11 @@ int main (int argc, char *argv[])
 	static char sentence[MAXLENG] = {0};
 	status_t run_flag = SYSTEM;
 	
-	char *operation = NULL;
 	if(NULL == argv[1])
 	{	
 		printf("try again!\nEnter name of history file");
 		return EXIT;
 	}
-
-	operation = argv[1];
 
 	InitStruct(shelly);
 
@@ -72,7 +69,7 @@ int main (int argc, char *argv[])
 		{
 			if (0 == shelly[i].cmp(shelly[i].name,sentence))
 			{
-				run_flag = shelly[i].action(sentence,operation);
+				run_flag = shelly[i].action(sentence,argv[1]);
 
 				break;
 			}
@@ -102,7 +99,6 @@ static void InitStruct(shell_t *array)
 	array[NOTHING].cmp = DoNothing;
 	array[NOTHING].action = DoSystem;
 
-;
 
 }
 
@@ -118,8 +114,8 @@ int DoNothing(const char *str,const char *file)
 int DoExit(char *dowhat, char *name)
 {	
 	(void)dowhat;
-	(void)name;
-	return EXIT;
+	
+	return EXIT != remove(name);
 }
 
 int DoSystem(char *dowhat, char *name)
@@ -130,7 +126,7 @@ int DoSystem(char *dowhat, char *name)
 	assert(NULL != dowhat);
 	assert(NULL != name);
 
-	pFile = fopen (name,"aw");
+	pFile = fopen(name,"aw");
 	
 	printf("In System, enter commands:\n");
 
@@ -151,45 +147,48 @@ int DoSystem(char *dowhat, char *name)
 
 
 
+
 int DoFork(char *dowhat, char *name)
 {	
 	int status = 0;
 	char **str_arr = NULL;
-	char **temp = NULL;
+	char **head = NULL;
 	FILE *pFile;
 
 	assert(NULL != dowhat);
 
-	
+	pFile = fopen(name,"aw");
+    
     while (FORK)
     {
-        printf("In Fork,enter commands:\n");
-        pFile = fopen (name,"aw");
+        printf("Fork, enter commands:\n");
+
         dowhat = fgets(dowhat, MAXLENG, stdin);
-        fputs (dowhat,pFile);
+
         if(0 == strcmp("exit\n", dowhat))
         {
-            fclose(pFile);
             break;
         }
-        
+        fputs (dowhat,pFile);
+
         str_arr = (char **)calloc(strlen(dowhat), sizeof(char *));
         if (NULL == str_arr)
         {
-        	int error = 147;
-        	fprintf(pFile,"Malloc Error %d\n",error);
-        	return -1;
+        	errno;
+        	fprintf(pFile,"error no: %d\n",errno);
+        	break;
         }
 
-        temp = str_arr;
+        head = str_arr;
         
         *str_arr++ = strtok(dowhat, " \n");
         while (NULL != (*str_arr++ = strtok(NULL, " \n")));
-        
+       
+
         if (0 == fork())
         {
             errno = 0;
-            if (-1 == execvp(*temp, temp) && errno != 0)
+            if (-1 == execvp(*head, head) && errno != 0)
             {
                 fprintf(pFile,"error no: %d\n",errno);
                 printf("try again\n");
@@ -199,9 +198,11 @@ int DoFork(char *dowhat, char *name)
         {
             wait(&status);
         }
-        free(temp);
-        temp = NULL;
+        free(head);
+        head = NULL;
     }
-    memset(dowhat, 0, MAXLENG);
+
+ 	fclose(pFile);
+ 	memset(dowhat, 0, MAXLENG);
     return 0;
 }
