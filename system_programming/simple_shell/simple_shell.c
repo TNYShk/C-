@@ -20,9 +20,6 @@ typedef int (*action_func)(char *dowhat, char *name);
 #define MAXLENG (4096)
 
 
-
-
-
 typedef struct shell
 {
 	char *name;
@@ -50,7 +47,6 @@ int DoFork(char *dowhat, char *name);
 
 int main (int argc, char *argv[])
 {
-	
 	static shell_t shelly[STATES] = {0};
 	static char sentence[MAXLENG];
 	status_t run_flag = SYSTEM;
@@ -100,8 +96,6 @@ static void InitStruct(shell_t *array)
 	array[FORK].name = "fork\n";
 	array[FORK].cmp = strcmp;
 	array[FORK].action = DoFork;
-
-
 }
 
 
@@ -112,7 +106,6 @@ int DoExit(char *dowhat, char *name)
 	(void)dowhat;
 	(void)name;
 	return EXIT;
-	
 }
 
 int DoSystem(char *dowhat, char *name)
@@ -136,6 +129,8 @@ int DoSystem(char *dowhat, char *name)
 }
 
 
+
+
 int DoFork(char *dowhat, char *name)
 {	
 	int status = 0;
@@ -145,7 +140,7 @@ int DoFork(char *dowhat, char *name)
 
 	assert(NULL != dowhat);
 
-    while (1)
+    while (FORK)
     {
         printf("enter an input\n");
 
@@ -180,9 +175,7 @@ int DoFork(char *dowhat, char *name)
         }
         free(head);
         head = NULL;
-
     }
-
 
     return 0;
 }
