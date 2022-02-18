@@ -16,10 +16,11 @@ int Is_2AND6_On(unsigned char cc);
 int Is_2_or_6_On(unsigned char cc);
 int Is_2or6_On(unsigned char cc);
 void Swap3_5(unsigned char *cc);
+void Swap3AND5(unsigned char *cc);
 void SwapInt(int *a, int *b);
 void SwapIntPtr(int **a, int **b);
 void VoidSwap(void **p1, void **p2);
-int *OneDArr(int *, size_t size);
+
 
 
 
@@ -27,24 +28,45 @@ int main(void)
 {
 
     int *test = NULL;
-    size_t size = 6;
+
     unsigned char threefour = 34;
-    unsigned char threeseven = 0;
-    test = OneDArr(test, size);
-    assert (NULL != test);
+    unsigned char threeseven = 4;
+    unsigned char *ptr = &threeseven;
    
-    (IsBits2_6_On(threefour) == 1)? printf("in #%d, bits 2 && 6 are ON!\n",threefour): 
-                                                    printf("in #%d, bits 2 && 6 are OFF!\n",threefour);
-    
 
-  
 
+    printf("v1: before swap its %d\n",threeseven);
+    Swap3_5(&threeseven);
+    printf("v2: after swap its %d\n", threeseven);
+
+    printf("v2: before swap its %d\n",threeseven);
+    Swap3AND5(&threeseven);
+    printf("v2: after swap its %d\n", threeseven);
+
+    (Is_2AND6_On(threefour) == 1)? printf("\nv1: in #%d, bits 2 && 6 are ON!\n",threefour): 
+                                                    printf("v1: in #%d, bits 2 && 6 are OFF!\n",threefour);
+
+    (IsBits2_6_On(threefour) == 1)? printf("v2: in #%d, bits 2 && 6 are ON!\n",threefour): 
+                                                    printf("v2: in #%d, bits 2 && 6 are OFF!\n",threefour);
+
+
+    (Is_2_or_6_On(threeseven) == 1)? printf("v1: in #%d, bits 2 OR 6 are ON!\n",threeseven): 
+                                                    printf("v1: in #%d, bits 2 OR 6 are OFF!\n",threeseven);
+
+    (Is_2or6_On(threeseven) == 1)? printf("v2: in #%d, bits 2 OR 6 are ON!\n",threeseven): 
+                                                    printf("v2: in #%d, bits 2 OR 6 are OFF!\n",threeseven);                                                
     return 0;
 }
+
+
 
 int IsBits2_6_On(unsigned char cc)
 {
     return ( (cc >> 1) & (cc >> 5)) & 1;
+}
+int Is_2AND6_On(unsigned char cc)
+{
+    return  (34 == (cc & 34));
 }
 
 int Is_2_or_6_On(unsigned char cc)
@@ -57,17 +79,29 @@ int Is_2or6_On(unsigned char cc)
     return ( (2 == (cc & 2)) || (32 == (cc & 32)) );
 }
 
-int Is_2AND6_On(unsigned char cc)
-{
-    return ( (34 == (cc & 34))  );
-}
-
 
 void Swap3_5(unsigned char *cc)
 {
-    unsigned char temp = ((*cc >> 2)^(*cc >> 4)) &1;
-    *cc ^= ( (temp << 2) | (temp << 4));
+    unsigned char temp = ((*cc >> 2)^(*cc >> 4))&1;
+   
+    *cc ^=  (temp << 2) | (temp << 4);
+   
 }
+
+void Swap3AND5(unsigned char *cc)
+{
+    char d = (*cc & 20);
+    switch(d)
+    {
+        case(20):
+            break;
+        case(4):
+        case(16):
+            *cc^=20;
+    }
+    
+}
+
 
 
 void SwapInt(int *a, int *b)
@@ -80,6 +114,7 @@ void SwapInt(int *a, int *b)
     *b ^= *a;
     *a ^= *b;
 }
+
 
 void SwapIntPtr(int **a, int **b)
 {
@@ -95,24 +130,4 @@ void VoidSwap(void **p1, void **p2)
     *p2 = temp;
 }
 
-int *OneDArr(int *ar, size_t size)
-{
-    int *arr = NULL;
-    size_t idx = size;
-    ar = (int *)malloc(size * sizeof(int));
-    if (NULL == ar)
-        return NULL;
-    
-    arr = ar;
-
-    for(idx = 0; idx < size; ++idx)
-    {
-        arr[idx] = idx * size;
-        printf("%d ",arr[idx]);
-    }
-    printf("\n");
-    free(arr);
-    arr = NULL;
-    return ar;
-}
 
