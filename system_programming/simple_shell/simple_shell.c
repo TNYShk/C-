@@ -13,6 +13,7 @@
 #include <sys/types.h>  /* pid_t */
 #include <sys/wait.h> /* wait()*/
 #include <errno.h> /* errno */
+#include <signal.h> /*kill() */
 
 #define FAILURE (-1)
 
@@ -156,6 +157,7 @@ int DoFork(char *dowhat, char *name)
 	char **str_arr = NULL;
 	char **head = NULL;
 	FILE *pFile;
+	pid_t child;
 
 	assert(NULL != dowhat);
 
@@ -169,6 +171,7 @@ int DoFork(char *dowhat, char *name)
 
         if(0 == strcmp("exit\n", dowhat))
         {
+            kill(child, SIGKILL);
             break;
         }
         fputs (dowhat,pFile);
@@ -185,9 +188,9 @@ int DoFork(char *dowhat, char *name)
         
         *str_arr++ = strtok(dowhat, " \n");
         while (NULL != (*str_arr++ = strtok(NULL, " \n")));
-       
-
-        if (0 == fork())
+       	
+       	child = fork();
+        if (0 == child)
         {
             errno = 0;
             if (FAILURE == execvp(*head, head) && errno != 0)
