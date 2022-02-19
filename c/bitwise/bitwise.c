@@ -70,28 +70,29 @@ static void Swap(int *start, int *end)
 /* private func for printing mirrored binary numbers */
 static void MirrorBytes(unsigned int n,int swap)
 {
-
-	int bin[INTBIT]={0};
-	int i;
+	int bin[INTBIT] = {0};
+	int i = 0;
 	unsigned int k = 1<<31;
 	unsigned int ans = 0;
 	int m = INTBIT;
-	int *ptr;
-	int *start;
+	int *ptr = NULL;
+	int *start = NULL;
+	
 	ptr = bin;
 	
-	for(i=0; i<m; ++i)
+	for(i = 0; i < m; ++i)
 	{
-		bin[INTBIT-1-i] = n%2;
+		bin[INTBIT - 1 - i] = n % 2;
 		n /= 2;
 		printf("%d",bin[i]);
-		ans += bin[INTBIT-1-i]*k;
-		k = k>>1;
+		ans += bin[INTBIT - 1 - i] * k;
+		k = k >> 1;
 		
 	}
 	printf("\nwhich is %u mirrored\n",ans);
-	start=bin+m-1;
-	if(swap)
+	start = bin + m - 1;
+	
+	if (swap)
 	{
 		Swap(ptr,start);
 	
@@ -176,7 +177,7 @@ int IsBothIdxOn(unsigned char c)
 checks if 2nd bit OR 6th bit are on */
 int IsOneOfIdxOn(unsigned char c)
 {
-	return !!(34 & c)
+	return !!(34 & c);
 	/*return ( (2 == (c & 2)) || (32 == (c & 32)) );*/
 }
 

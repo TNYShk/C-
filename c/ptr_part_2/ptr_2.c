@@ -41,8 +41,9 @@ char *StrCpy(char *destination, const char *source)
 
 char *StrnCpy(char *dest, const char *src, size_t n)
 {
-	char *ptr_dest = dest+n;
+	char *ptr_dest = dest + n;
 	char *ptr_s = dest;
+	
 	while (dest < ptr_dest) 
 	{
 		if ('\0' != *src)

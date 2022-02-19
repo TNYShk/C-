@@ -8,7 +8,7 @@
 
 int main()
 {
-	char c=5;
+	char c = 5;
 	
 	unsigned int ar[]={19,71,15,11,111};
 	
@@ -17,20 +17,20 @@ int main()
 	PrintThreeBitsOnElements(ar,size);
 	Pow2(1,7);
 	printf("IsBothIdxOn %d\n", IsBothIdxOn(c));
-	c=100;
+	c = 100;
 	printf("char %c IsBothIdxOn %d\n",c, IsBothIdxOn(c));
 	printf("char %c either 2nd or 6th bit on %d\n",c, IsOneOfIdxOn(c));;
-	c=3;
+	c = 3;
 	printf("3 BitSwapByIdx %d\n", BitSwapByIdx(c));;
-	c=48;
+	c = 48;
 	printf("BitSwapByIdx %d\n", BitSwapByIdx(c));;
 	printf("ClosestDividedByHex %u\n", ClosestDividedByHex(22));
 	
 	MirrorByte(18);
 	printf("\n");
 
-	printf("on bits are %lu\n",CounterBits(54));
-	
+	printf("in #54, ON bits are: %lu\n",CounterBits(54));
+	printf("Print Float bits:\n");
 	FloatPrintBits(18.2);
 
 	MirrorByte(20);

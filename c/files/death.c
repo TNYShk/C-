@@ -44,29 +44,29 @@ int main(int argc, char *argv[])
 {
 	
 	int isRunning = 1;
-	static char sentence[MAXLENG];
+	static char sentence[MAXLENG] = {0};
 	static death_t array[FIVE];
 	
-	char *filename = NULL;
-	if(NULL == argv[1]){
+	if(NULL == argv[1])
+	{
 		printf("restart! forgot file name\n");
 		return 0;
 	}
 
-	filename = argv[1];
+	
 
 	InitStruct(array);
 	
 	while(isRunning)
 	{ 
-		int i;
+		int i = 0;
 		fgets (sentence,MAXLENG,stdin);
 		
-		for(i = 0;i<FIVE;i++)
+		for(i = 0; i < FIVE; ++i)
 		{ 
-			if(0 == array[i].compare(array[i].name,sentence))
+			if(0 == array[i].compare(array[i].name, sentence))
 			{
-				isRunning = array[i].action(sentence,filename);
+				isRunning = array[i].action(sentence, argv[1]);
 
 				break;
 			}
@@ -80,11 +80,13 @@ int main(int argc, char *argv[])
 
 int doWrite(char *s, char *file)
 {
-	FILE * pFile;
+	FILE *pFile;
 	assert (NULL != file);
+	
 	pFile = fopen (file,"a");
 	fputs (s,pFile);
 	fclose(pFile);
+	
 	return 1;
 }
 
@@ -123,6 +125,7 @@ int CountLines(char *sent, char *file)
 	int count = 0;
 	FILE * pFile;
 	pFile = fopen (file,"r");
+	
 	if(NULL != pFile){
 	for(cc = getc(pFile); cc != EOF; cc = getc(pFile))
 	{
@@ -177,7 +180,7 @@ int fCopy(FILE * fsrc,FILE *fdest)
 {
 	char buffer[MAXLENG];
 	size_t len;
-	while((len = fread(buffer,sizeof(char), sizeof(buffer),fsrc)) >0)
+	while(0 < (len = fread(buffer,sizeof(char), sizeof(buffer),fsrc)))
 	{
 		if(fwrite(buffer,sizeof(char), len, fdest) != len)
 			return EOF;

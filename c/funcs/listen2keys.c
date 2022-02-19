@@ -20,7 +20,7 @@ static void PrintA(void);
 
 void iAT(void)
 {
-	char cc=' ';
+	char cc = ' ';
 	HIDE;
 
 	while (cc != ESC)
