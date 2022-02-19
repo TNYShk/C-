@@ -19,7 +19,7 @@ create a function: size_t GetNonRepeatingRandom()
 #include <stdlib.h> /* rand(), srand*/
 
 
-#define RANGE (10)
+#define RANGE (100)
 
 size_t Random();
 static void InitLut(size_t *array);
@@ -29,32 +29,27 @@ size_t GetRandomNonRepeatNums();
 int main(void)
 {
     size_t i = 0;
-    size_t LUT[RANGE] = {0};
-    InitLut(LUT);
 
-    for(; i < RANGE; ++i)
-    {
-        printf("%ld ", LUT[i]);
-        if((i != 0) && (i %10 == 0))
-            printf("\n");
-    }
 
     printf("\n\n");
      printf("ver 1:\n");
-    for(i = 1; i <= 100; ++i)
-    {
-         printf("%ld ", Random());
-         if(i %10 == 0)
-            printf("\n");
-    }
-    printf("\n\n\n");
-    printf("ver 2:\n");
     for(i = 1; i <= 100; ++i)
     {
          printf("%ld ", GetRandomNonRepeatNums());
          if(i %10 == 0)
             printf("\n");
     }
+    printf("\n\n\n");
+    printf("ver 2:\n");
+
+      for(i = 1; i <= 100; ++i)
+    {
+         printf("%ld ", Random());
+         if(i %10 == 0)
+            printf("\n");
+    }
+
+    
     printf("\n\n\n");
 
 
@@ -92,23 +87,20 @@ size_t GetRandomNonRepeatNums()
 {
     static size_t random[RANGE] = {0};
     static size_t count = 0;
-    size_t ans = 0;
     size_t idx = 0;
 
     if (count == 0)
     {
         count = RANGE;
         InitLut(random);
-        
     }
     
     idx = rand() % count;
-    ans = random[idx];
-     --count;
-    Swap(&random[idx], &random[count]);
    
+    Swap(random + idx, random + count -1);
+     --count;
         
-    return ans;
+    return random[count];
 }
     
 

@@ -143,7 +143,7 @@ int DoSystem(char *dowhat, char *name)
 	}
 	fclose(pFile);
 	memset(dowhat, 0, MAXLENG);
-	return return_value;
+	return (EXIT != remove(name));
 	
 }
 
