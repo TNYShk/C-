@@ -140,7 +140,7 @@ int FindMissingNum(int *arr, int length)
 
 	assert(NULL != arr);
 
-	total = ((length-1) / 2) * (length);
+	total = ((length - 1) / 2) * (length);
 	
 	for(; i< length; ++i)
 	{

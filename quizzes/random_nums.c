@@ -1,25 +1,64 @@
+/* 06/02/2022 quiz
+create a function: size_t GetNonRepeatingRandom()
 
+1. each times the function is called, it returns a RANDOM number between 0-99.
+2. the numbers would NEVER REPEAT themselves for the first 100 function calls.
+3. after the function has been called 100 times, it is "reset" and a new cycle of non repeating random numbers start.
+
+4. you should use the C rand() function. you may read the man to learn how to use it if you don't.
+
+*/
+
+
+
+#include <assert.h>
 #include <stddef.h> /* size_t*/
 #include <stdio.h> /*print */
 #include <time.h>
 #include <string.h>
+#include <stdlib.h> /* rand(), srand*/
 
 
-#define RANGE (100)
+#define RANGE (10)
 
 size_t Random();
-
+static void InitLut(size_t *array);
+static void Swap(size_t *a, size_t *b);
+size_t GetRandomNonRepeatNums();
 
 int main(void)
 {
-    int i = 0;
-    for(i=0; i < 200; ++i)
+    size_t i = 0;
+    size_t LUT[RANGE] = {0};
+    InitLut(LUT);
+
+    for(; i < RANGE; ++i)
     {
-         printf(" %ld, ", Random());
+        printf("%ld ", LUT[i]);
+        if((i != 0) && (i %10 == 0))
+            printf("\n");
+    }
+
+    printf("\n\n");
+     printf("ver 1:\n");
+    for(i = 1; i <= 100; ++i)
+    {
+         printf("%ld ", Random());
          if(i %10 == 0)
             printf("\n");
     }
-   printf("\n");
+    printf("\n\n\n");
+    printf("ver 2:\n");
+    for(i = 1; i <= 100; ++i)
+    {
+         printf("%ld ", GetRandomNonRepeatNums());
+         if(i %10 == 0)
+            printf("\n");
+    }
+    printf("\n\n\n");
+
+
+
     return 0;
 }
 
@@ -27,13 +66,12 @@ int main(void)
 size_t Random()
 {
     static int LUT[RANGE] = {0};
-    static size_t counter = 0;
-    size_t ans = rand() % RANGE;
+    static size_t counter = 1;
     
-    if (counter == RANGE)
+    if (counter % RANGE == 0)
     {
-        counter = 0;
-        memset(LUT,0,sizeof(int)* RANGE);
+        counter = 1;
+        memset(LUT, 0, sizeof(int) * RANGE);
         srand(time(0));
     }
     else
@@ -53,13 +91,46 @@ size_t Random()
 size_t GetRandomNonRepeatNums()
 {
     static size_t random[RANGE] = {0};
+    static size_t count = 0;
+    size_t ans = 0;
+    size_t idx = 0;
 
-    ra
+    if (count == 0)
+    {
+        count = RANGE;
+        InitLut(random);
+        
+    }
+    
+    idx = rand() % count;
+    ans = random[idx];
+     --count;
+    Swap(&random[idx], &random[count]);
+   
+        
+    return ans;
+}
+    
 
 
+    
+
+
+
+
+static void InitLut(size_t *array)
+{
+    size_t idx = 0;
+    for(; idx < RANGE; ++idx)
+    {
+        *(array + idx) = idx;
+    }
 }
 
-static int *InitLut(int *, size_t len)
+static void Swap(size_t *a, size_t *b)
 {
+    size_t temp = *b;
+    *b = *a;
+    *a = temp;
 
 }

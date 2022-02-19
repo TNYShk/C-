@@ -9,7 +9,7 @@
 #include <stdlib.h> /*qsort */
 #include <assert.h> /* assert() */
 #include <stdio.h>
-
+#include <string.h>
 
 int IsBits2_6_On(unsigned char cc);
 int Is_2AND6_On(unsigned char cc);
@@ -21,20 +21,28 @@ void SwapInt(int *a, int *b);
 void SwapIntPtr(int **a, int **b);
 void VoidSwap(void **p1, void **p2);
 
-
+int *CreateArray(size_t length);
+void ResetArray(int *array, size_t length);
 
 
 int main(void)
 {
 
     int *test = NULL;
-
+    int *ptr = NULL;
     unsigned char threefour = 34;
     unsigned char threeseven = 4;
-    unsigned char *ptr = &threeseven;
    
+    test = CreateArray(6);
+    assert(NULL != test);
+    ptr = test;
 
+    (*(int *)&ptr[1]) = 26;
+    printf("created array, 2nd elem is %d\n", (*(int *)&test[1]));
 
+    ResetArray(test, 6);
+    printf("reseted array, 2nd elem is %d\n", test[1]);
+   
     printf("v1: before swap its %d\n",threeseven);
     Swap3_5(&threeseven);
     printf("v2: after swap its %d\n", threeseven);
@@ -55,6 +63,8 @@ int main(void)
 
     (Is_2or6_On(threeseven) == 1)? printf("v2: in #%d, bits 2 OR 6 are ON!\n",threeseven): 
                                                     printf("v2: in #%d, bits 2 OR 6 are OFF!\n",threeseven);                                                
+    
+
     return 0;
 }
 
@@ -83,9 +93,7 @@ int Is_2or6_On(unsigned char cc)
 void Swap3_5(unsigned char *cc)
 {
     unsigned char temp = ((*cc >> 2)^(*cc >> 4))&1;
-   
     *cc ^=  (temp << 2) | (temp << 4);
-   
 }
 
 void Swap3AND5(unsigned char *cc)
@@ -101,7 +109,6 @@ void Swap3AND5(unsigned char *cc)
     }
     
 }
-
 
 
 void SwapInt(int *a, int *b)
@@ -130,4 +137,23 @@ void VoidSwap(void **p1, void **p2)
     *p2 = temp;
 }
 
+int *CreateArray(size_t length)
+{
+    int *temp  = NULL;
+    int *array = (int *)calloc(length, sizeof(int));
+    if (NULL == array)
+        return NULL;
+
+    temp = array;
+   
+    free(temp);
+    return array; 
+
+}
+
+void ResetArray(int *array, size_t length)
+{
+    memset(array, 0, length * sizeof(int) );
+
+}
 
