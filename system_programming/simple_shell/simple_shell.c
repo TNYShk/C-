@@ -124,8 +124,7 @@ int DoExit(char *dowhat, char *name)
 int DoSystem(char *dowhat, char *name)
 {	
 	FILE *pFile;
-	status_t return_value = 0;
-
+	
 	assert(NULL != dowhat);
 	assert(NULL != name);
 
@@ -137,7 +136,7 @@ int DoSystem(char *dowhat, char *name)
 
 	while (0 != strcmp("exit\n", dowhat))
 	{
-		return_value = system(dowhat);
+		system(dowhat);
 		dowhat = fgets(dowhat, MAXLENG, stdin);
 		fputs (dowhat,pFile);
 	}
@@ -209,5 +208,6 @@ int DoFork(char *dowhat, char *name)
 
  	fclose(pFile);
  	memset(dowhat, 0, MAXLENG);
-    return 0;
+ 	remove(name);
+   return 0;
 }
