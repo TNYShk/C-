@@ -5,14 +5,16 @@
  *                                 *
  * Reviewer:  	                   *
 ************************************/
-#include <stdio.h> /*for all I/O funcs */
-#include <stdlib.h> /*size_t */
+#include <stdio.h> /* I/O funcs */
+#include <stdlib.h> /*system() */
 #include <string.h> /* strcmp */
 #include <assert.h> /*assert */
-#include <unistd.h>
+#include <unistd.h> /* fork(), execvp*/
 #include <sys/types.h>  /* pid_t */
-#include <sys/wait.h>
+#include <sys/wait.h> /* wait()*/
 #include <errno.h> /* errno */
+
+#define FAILURE (-1)
 
 typedef int (*compare_func)(const char *,const char *s);
 typedef int (*action_func)(char *dowhat, char *name);
@@ -54,7 +56,7 @@ int main (int argc, char *argv[])
 	
 	if(NULL == argv[1])
 	{	
-		printf("try again!\nEnter name of history file");
+		printf("please provide a name\n");
 		return EXIT;
 	}
 
@@ -97,7 +99,7 @@ static void InitStruct(shell_t *array)
 
 	array[NOTHING].name = " ";
 	array[NOTHING].cmp = DoNothing;
-	array[NOTHING].action = DoSystem;
+	array[NOTHING].action = DoFork;
 
 
 }
@@ -115,13 +117,13 @@ int DoExit(char *dowhat, char *name)
 {	
 	(void)dowhat;
 	
-	return EXIT != remove(name);
+	return (EXIT != remove(name));
 }
 
 int DoSystem(char *dowhat, char *name)
 {	
 	FILE *pFile;
-	int return_value = 0;
+	status_t return_value = 0;
 
 	assert(NULL != dowhat);
 	assert(NULL != name);
@@ -188,10 +190,10 @@ int DoFork(char *dowhat, char *name)
         if (0 == fork())
         {
             errno = 0;
-            if (-1 == execvp(*head, head) && errno != 0)
+            if (FAILURE == execvp(*head, head) && errno != 0)
             {
                 fprintf(pFile,"error no: %d\n",errno);
-                printf("try again\n");
+                printf("Invalid\n");
             }
         }
         else

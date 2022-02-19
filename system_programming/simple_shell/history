@@ -126,3 +126,19 @@ exot
 error no: 2
 pwd
 exot
+free
+pstree
+ps aux | head
+ps | tail
+ps aux | tail
+ps |tail
+ps aux
+ps aux | head
+ps aux
+pwd
+ls
+quit
+error no: 2
+pwd
+ls
+quit
