@@ -88,12 +88,10 @@ static void InitidxBook(void)
        
         Position2Coor(&move_x, &move_y, knight_shining_armor);
 
-
-
         for(idx = 0; idx < BOARD; ++idx)
         {
             uint32_t next_x = move_x + moves[idx];
-            uint32_t next_y = move_y + moves[BOARD-1-idx];
+            uint32_t next_y = move_y + moves[BOARD - 1 - idx];
             
             if (IsInside(next_x, next_y))
             {
@@ -110,7 +108,7 @@ static void InitidxBook(void)
 
 static int GenCmp(const void *left, const void *right)
 {
-    static const char NumOfNeighborsLUT[] = 
+    static const char PossibleMovesLUT[] = 
     {
         2, 3, 4, 4, 4, 4, 3, 2,
         3, 4, 6, 6, 6, 6, 4, 3,
@@ -122,7 +120,7 @@ static int GenCmp(const void *left, const void *right)
         2, 3, 4, 4, 4, 4, 3, 2
     };
 
-    return (NumOfNeighborsLUT[(int)(*(char *)left)] - NumOfNeighborsLUT[(int)(*(char *)right)]);
+    return (PossibleMovesLUT[(int)(*(char *)left)] - PossibleMovesLUT[(int)(*(char *)right)]);
 }
 
 static status_t WarnsdorffRec(bits_arr64_t board, unsigned char pos, unsigned char *tour)
@@ -185,6 +183,9 @@ static status_t RecKnightsTour(bits_arr64_t board, uint32_t x_pos, uint32_t y_po
 
     return status;
 }
+
+ 
+
 
 static int IsInside(uint32_t x_pos,uint32_t y_pos)
 {
