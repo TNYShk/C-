@@ -93,7 +93,6 @@ int HeapPush(heap_t *heap, void *data)
     return (cur == HeapSize(heap));
 }
 
-
 void HeapPop(heap_t *heap)
 {
     void **last = NULL;
@@ -109,7 +108,6 @@ void HeapPop(heap_t *heap)
     HeapifyDown(heap, HEAPROOT);    
 }
 
-
 int HeapIsEmpty(const heap_t *heap)
 {
     assert (NULL != heap);
@@ -119,7 +117,6 @@ int HeapIsEmpty(const heap_t *heap)
 
 size_t HeapSize(const heap_t *heap)
 {
-    
     return (heap == NULL)? 0: VectorSize(heap->vec);
 }
 

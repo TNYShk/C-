@@ -17,12 +17,15 @@
 #define LONG_LEN (CHAR_BIT * (sizeof(unsigned long))) /* 64*/
 #define LONE (1ul)
 
+#define SET_INDEX(index) (1UL << index)
+
 #define m1 (0x5555555555555555)
 #define m2 (0x3333333333333333)
 #define m4 (0x0f0f0f0f0f0f0f0f)
 #define m8 (0x00ff00ff00ff00ff)
 #define m16 (0x0000ffff0000ffff)
 #define h01 (0x0101010101010101)
+#define DWORD (0x00000000FFFFFFFF)
 
 static const unsigned int lut_ar[] = {0,1,1,2,1,2,2,3,1,2,2,3,2,3,3,4};
 
@@ -74,7 +77,8 @@ bits_arr64_t BitArraySetBit(bits_arr64_t bit_array, unsigned int index, bit_t va
 bit_t BitArrayGetVal(bits_arr64_t bit_array, unsigned int index)
 {
 	assert (LONG_LEN > index);
-	return ((bit_array >> index) & LONE);
+	/*return ((bit_array >> index) & LONE);*/
+	return !!(bit_array & SET_INDEX(index));
 }
 
 bits_arr64_t BitArrayFlip(bits_arr64_t bit_array, unsigned int index)
@@ -108,7 +112,19 @@ size_t BitArrayCountOn(bits_arr64_t var)
 	
 	return answer;
 }
+/*
+size_t BitArrayCountOn(bits_arr64_t bitarr)
+{
+	bitarr = (bitarr & m1 ) + ((bitarr >> 1 ) & m1 );
+	bitarr = (bitarr & m2) + ((bitarr >> 2) & m2);
+	bitarr = (bitarr & m4) + ((bitarr >> 3) & m4);
+	bitarr = (bitarr & m8) + ((bitarr >> 8) & m8);
+	bitarr = (bitarr & m16) + ((bitarr >> 16) & m16);
+	bitarr = (bitarr & DWORD) + ((bitarr >> 32) & DWORD);
 
+	return bitarr;
+}
+*/
 
 
 size_t BitArrayCountOff(bits_arr64_t var)

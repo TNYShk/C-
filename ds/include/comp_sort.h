@@ -100,4 +100,6 @@ int MergeSort(int *arr_to_sort, size_t num_elements);
  */
 void QuickSort(void *arr, size_t nmemb, size_t size, cmp_func_t cmp);
 
+void IntQuickSort(void *arr, size_t nmemb, size_t size, cmp_func_t cmp_fun);
+
 #endif /*__COMP_SORT_H__ */
