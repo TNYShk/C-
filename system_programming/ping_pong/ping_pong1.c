@@ -5,6 +5,7 @@
  *                                 *
  * Reviewer:                       *
 ************************************/
+#define _POSIX_C_SOURCE 1
 #define _POSIX_SOURCE
 #define _XOPEN_SOURCE (700)
 #define errExit(msg) do { perror(msg); exit(EXIT_FAILURE); } while (0)
@@ -39,8 +40,8 @@ void ParentSigHandler(pid_t pid)
 
     for (y = 0; y < MAX_PINGS; ++y)
     {
+        sleep(1);
         write(STDOUT_FILENO, "Ping ", 6);
-        
         kill(pid, SIGUSR1);
 
         if (sigsuspend(&saveMask) == FAIL && errno != EINTR)
@@ -63,7 +64,7 @@ void ChildSigHandler(void)
       
         write(STDOUT_FILENO, "Pong!\n", 6);
         kill(getppid(), SIGUSR1);
-
+        sleep(2);
     }
 
     return;
