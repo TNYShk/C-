@@ -1,93 +1,100 @@
+/***********************************
+ * Ping Pong - Source File         *
+ * Developer: Tanya                *
+ *          Feb 20, 2022           *
+ *                                 *
+ * Reviewer:                       *
+************************************/
+
 #define _POSIX_SOURCE
+#define _XOPEN_SOURCE (700)
 #define errExit(msg) do { perror(msg); exit(EXIT_FAILURE); } while (0)
-#include <sys/types.h> 
-#include <stdio.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <signal.h>
-#include <sys/wait.h> /* wait */
-#include <errno.h>
+
+#include <errno.h> /* errno*/
+#include <signal.h> /*sigaction */
+#include <stdlib.h> /* exit()*/
+#include <stdio.h> /* perror */
+#include <time.h> /* nanosleep*/
+#include <unistd.h> /*fork() */
+#include <sys/types.h> /* pid_t */
+#include <sys/time.h> /*sig_atomic_t */
+
+
+#define MAX_PINGS (10)
+#define FAIL (-1)
+
+
+static sig_atomic_t sig_num;
 
 
 
-sigset_t saveMask, blockMask;
-
-
-void ChildSigHandler(void);
-void ParentSigHandler(pid_t pid);
-void SigHandle(int signum);
-
-
-void SigHandle(int signum)
+static void SignalHandler(int sig)
 {
-	(void)signum;
+    sig_num = sig;
 }
 
-void ParentSigHandler(pid_t pid)
+static void ChildSigHandler(void)
 {
-	int y = 0;
+   struct timespec sleep;
+    sleep.tv_sec = 1;
+    sleep.tv_nsec = 0;
+    
+    while(1)
+    {
+        pause();
+        write(STDOUT_FILENO, "Pong!\n", 6);
+        nanosleep(&sleep, 0);
+        kill(getppid(), SIGUSR2);
+    }
+}
 
-    for (y = 0; y < 10; ++y)
+static void ParentSigHandler(pid_t pid)
+{
+    int pings = 0;
+    struct timespec sleep;
+    sleep.tv_sec = 1;
+    sleep.tv_nsec = 0;
+
+    for (; pings < MAX_PINGS; ++pings)
     {
         write(STDOUT_FILENO, "Ping ", 6);
-        
+        nanosleep(&sleep, 0);
         kill(pid, SIGUSR1);
-
-        if (sigsuspend(&saveMask) == -1 && errno != EINTR)
-            errExit("sigsuspend");
+        pause();
     }
-
-    return;
+  kill(pid, SIGTERM);   
 }
-
-void ChildSigHandler(void)
-{
-	int x = 0;
-
-    for(x = 0; x < 10; ++x)
-    {
-        if (sigsuspend(&saveMask) == -1 && errno != EINTR)
-        {
-            errExit("sigsuspend");
-        }
-
-        write(STDOUT_FILENO, "Pong!\n", 6);
-   
-        kill(getppid(), SIGUSR1);
-    }
-
-    return;
-}
-
 
 int main(void)
 {
-    struct sigaction sa = {0};
+    struct sigaction sa;
     pid_t pid = 0;
 
-    sigemptyset(&blockMask);
-    sigaddset(&blockMask, SIGUSR1);
-
-    if (sigprocmask(SIG_BLOCK, &blockMask, &saveMask) == -1)
-        errExit("sigprocmask");
-
-   
-   
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = 0;
-    sa.sa_handler = SigHandle;
+    sa.sa_handler = SignalHandler;
 
-    if (sigaction(SIGUSR1, &sa, NULL) == -1)
-        errExit("sigaction");
+    if (sigaction(SIGUSR1, &sa, NULL) == FAIL)
+    {
+        errExit("Failed to set SIGUSR1 handler");
+    }
+
+    if (sigaction(SIGUSR2, &sa, NULL) == FAIL)
+    {
+        errExit("Failed to set SIGUSR2 handler");
+    }
 
     pid = fork();
 
-    if (pid == 0)
+    if (pid < 0)
+    {
+        errExit("Failed to fork()");
+    }
+
+    else if (pid == 0)
         ChildSigHandler();
     else
         ParentSigHandler(pid);
 
     return 0;
 }
-
-
