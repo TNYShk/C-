@@ -10,17 +10,18 @@
 
 
 
+sigset_t saveMask, blockMask;
+
 
 void ChildSigHandler(void);
 void ParentSigHandler(pid_t pid);
 void SigHandle(int signum);
 
+
 void SigHandle(int signum)
 {
 	(void)signum;
 }
-sigset_t saveMask, blockMask;
-
 
 void ParentSigHandler(pid_t pid)
 {
@@ -30,7 +31,6 @@ void ParentSigHandler(pid_t pid)
     {
         write(STDOUT_FILENO, "Ping ", 6);
         
-
         kill(pid, SIGUSR1);
 
         if (sigsuspend(&saveMask) == -1 && errno != EINTR)
@@ -56,13 +56,13 @@ void ChildSigHandler(void)
         kill(getppid(), SIGUSR1);
     }
 
-    return ;
+    return;
 }
 
 
 int main(void)
 {
-    struct sigaction sa;
+    struct sigaction sa = {0};
     pid_t pid = 0;
 
     sigemptyset(&blockMask);
