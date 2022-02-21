@@ -8,6 +8,7 @@
 #include <stdlib.h>   /* exit()*/
 #include <sys/wait.h> /* wait */
 #include <errno.h>    /* errno */
+#include <string.h>  /* strlen */
 
 #define errExit(msg) do { perror(msg); exit(EXIT_FAILURE); } while (0)
 
@@ -21,9 +22,7 @@ void PingPong1(void);
 
 void PingPong1(void)
 {
-
     struct sigaction sa = {0};
-	char *str[] = {"./extra", NULL};
 	sa.sa_handler = SignalHandler;
 
 	child = fork();
@@ -34,20 +33,19 @@ void PingPong1(void)
 
     if (SIGACTION_FAILURE == sigaction(SIGUSR2, &sa, NULL) )
     {
-        errExit("Failed to set SIGUSR1 handler");
+        errExit("Failed to set SIGUSR2 handler");
     }
 
     if (0 == child) 
     {
-        if (-1 == execvp(*str,str))
+        if (-1 == execlp("./extra","./extra",NULL))
         {
         	 errExit("Failed execvp");
         }
     }
     else 
     {
-    	int i = 0;
-       for(; i < 3; ++i)
+        while(TRUE)
         {
             write(STDOUT_FILENO, "Pong!\n", 6);
             pause();
