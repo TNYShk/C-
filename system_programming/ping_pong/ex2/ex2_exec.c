@@ -1,4 +1,11 @@
-#define _POSIX_C_SOURCE 199309L
+/***********************************
+ * ex2. Ping Pong - Source File    *
+ * Developer: Tanya                *
+ *          Feb 21, 2022           *
+ *                                 *
+ * Reviewer:  Ofer                 *
+************************************/
+#define _POSIX_C_SOURCE (199309L)
 #define _POSIX_SOURCE
 #define _XOPEN_SOURCE (700)
 #include <signal.h> /* sigaction, kill */
@@ -9,9 +16,7 @@
 #include <errno.h>    /* errno */
 #include <string.h>  /* strlen */
 
-
 #define errExit(msg) do { perror(msg); exit(EXIT_FAILURE); } while (0)
-
 #define SIGACTION_FAILURE (-1)
 #define TRUE (1)
 

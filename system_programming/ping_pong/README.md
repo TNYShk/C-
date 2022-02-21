@@ -17,7 +17,7 @@ the folder contains 3 separate programs, divided into folders
 
 ```
 # ex1. 3 versions for basic ping pong!
->cleanpingpong.c -  mentor's version
+> cleanpingpong.c -  mentor's version
 > pingpong.c - as requested using SUGUSR1,SUGUSR2
 > pingpong1.c - using sig_() funcs, and SIGUSR1
 

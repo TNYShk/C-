@@ -3,13 +3,12 @@
  * Developer: Tanya                *
  *          Feb 20, 2022           *
  *                                 *
- * Reviewer:                       *
+ * Reviewer:  Ofer                 *
 ************************************/
-#define _POSIX_C_SOURCE 199309L
+#define _POSIX_C_SOURCE (199309L)
 #define _POSIX_SOURCE
 #define _XOPEN_SOURCE (700)
 #define errExit(msg) do { perror(msg); exit(EXIT_FAILURE); } while (0)
-
 #include <sys/types.h>  /* pid_t */
 #include <stdio.h>     /* perror */
 #include <unistd.h>   /*fork() */
@@ -44,7 +43,7 @@ void ParentSigHandler(pid_t pid)
         write(STDOUT_FILENO, "Ping ", 6);
         kill(pid, SIGUSR1);
 
-        if (sigsuspend(&saveMask) == FAIL && errno != EINTR)
+        if (FAIL == sigsuspend(&saveMask) && errno != EINTR)
             errExit("sigsuspend");
     }
 
@@ -79,14 +78,14 @@ int main(void)
     sigemptyset(&blockMask);
     sigaddset(&blockMask, SIGUSR1);
 
-    if (sigprocmask(SIG_BLOCK, &blockMask, &saveMask) == FAIL)
+    if (FAIL == sigprocmask(SIG_BLOCK, &blockMask, &saveMask))
         errExit("sigprocmask");
 
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = 0;
     sa.sa_handler = SigHandle;
 
-    if (sigaction(SIGUSR1, &sa, NULL) == FAIL)
+    if (FAIL == sigaction(SIGUSR1, &sa, NULL))
         errExit("sigaction");
 
     pid = fork();
