@@ -64,7 +64,8 @@ static void SignalHandler(int signum)
 
 int main(void)
 {
+    char *str = "killall extra";
     PingPong1();
-
+    system(str);
     return 0;
 }

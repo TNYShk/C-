@@ -24,7 +24,7 @@ void PingPong(void)
 	
 	sa.sa_handler = SignalHandler;
   
-    if (sigaction(SIGUSR1, &sa, NULL) == SIGACTION_FAILURE)
+    if (SIGACTION_FAILURE == sigaction(SIGUSR1, &sa, NULL))
     {
         errExit("Failed to set SIGUSR1 handler");
     }
