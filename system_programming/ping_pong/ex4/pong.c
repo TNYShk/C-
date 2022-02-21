@@ -1,7 +1,7 @@
 #define _POSIX_C_SOURCE 199309L
 #define _POSIX_SOURCE
 #define _XOPEN_SOURCE (700)
-#include <signal.h> /* signal, kill */
+#include <signal.h> /* sigaction, kill */
 #include <sys/types.h> /* child_pid_t */
 #include <stdio.h>     /* perror */
 #include <unistd.h>   /*fork() */
@@ -18,7 +18,6 @@ static void ChildHandlerFunc(int signal, siginfo_t *info, void *ucontext)
 {
     (void)signal;
     (void)ucontext; 
-    write(STDOUT_FILENO, "PONG\n", 5);
     kill(info->si_pid, SIGUSR1);
 }
 
@@ -26,13 +25,13 @@ int main()
 {
     struct sigaction sa = {0};
     sa.sa_sigaction = &ChildHandlerFunc;
+    sa.sa_flags |= SA_SIGINFO;
 
-    if (SIGACTION_FAILURE == sigaction(SIGUSR1, &sa, NULL))
+    if (SIGACTION_FAILURE == sigaction(SIGUSR2, &sa, NULL))
     {
         errExit("Failed to set SIGUSR1 handler");
     }
   
-
     while (TRUE)
     {
         write(STDOUT_FILENO, "PONG\n", 5);
