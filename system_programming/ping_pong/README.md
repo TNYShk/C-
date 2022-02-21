@@ -4,7 +4,7 @@
  ***
 the folder contains 3 separate programs, divided into folders
 1. ex1 - clean ping pong, pingpong, pingpong1 -  3 version of excerise 1 using only fork().
-2. ex2 - ping pong using fork() * knife* & (exec())
+2. ex2 - ping pong using fork() *knife* & exec()
 4. ex4 - 2 separate files ping ponging each other
 
  ```
