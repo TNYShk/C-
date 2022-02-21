@@ -27,7 +27,6 @@
 static sig_atomic_t sig_num;
 
 
-
 static void SignalHandler(int sig)
 {
     sig_num = sig;
@@ -67,19 +66,19 @@ static void ParentSigHandler(pid_t pid)
 
 int main(void)
 {
-    struct sigaction sa;
+    struct sigaction sa = {0};
     pid_t pid = 0;
 
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = 0;
     sa.sa_handler = SignalHandler;
 
-    if (sigaction(SIGUSR1, &sa, NULL) == FAIL)
+    if (sigaction(SIGUSR1, &sa, NULL) == FAIL && errno != EINTR)
     {
         errExit("Failed to set SIGUSR1 handler");
     }
 
-    if (sigaction(SIGUSR2, &sa, NULL) == FAIL)
+    if (sigaction(SIGUSR2, &sa, NULL) == FAIL && errno != EINTR)
     {
         errExit("Failed to set SIGUSR2 handler");
     }
@@ -92,6 +91,7 @@ int main(void)
     }
 
     else if (pid == 0)
+        
         ChildSigHandler();
     else
         ParentSigHandler(pid);

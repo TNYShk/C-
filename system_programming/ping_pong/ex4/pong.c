@@ -29,7 +29,7 @@ int main()
 
     if (SIGACTION_FAILURE == sigaction(SIGUSR2, &sa, NULL))
     {
-        errExit("Failed to set SIGUSR1 handler");
+        errExit("Failed to set SIGUSR2 handler");
     }
   
     while (TRUE)

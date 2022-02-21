@@ -3,7 +3,7 @@
  * Developer: Tanya			       *
  *          Feb 17, 2022           *
  *                                 *
- * Reviewer:  	                   *
+ * Reviewer: Gal T.                *
 ************************************/
 #include <stdio.h> /* I/O funcs */
 #include <stdlib.h> /*system() */
@@ -47,11 +47,10 @@ int DoSystem(char *dowhat, char *name)
 	assert(NULL != name);
 
 	pFile = fopen(name,"aw");
+	write(STDOUT_FILENO, "In system()\n", 12);
 	
-	printf("In System, enter commands:\n");
-
 	dowhat = fgets(dowhat, MAXLENG, stdin);
-
+	fputs (dowhat,pFile);
 	while (0 != strcmp("exit\n", dowhat))
 	{
 		system(dowhat);
@@ -65,9 +64,6 @@ int DoSystem(char *dowhat, char *name)
 }
 
 
-
-
-
 int DoFork(char *dowhat, char *name)
 {	
 	int status = 0;
@@ -75,15 +71,13 @@ int DoFork(char *dowhat, char *name)
 	char **head = NULL;
 	FILE *pFile;
 
-
 	assert(NULL != dowhat);
-
+	assert(NULL != name);
+	
 	pFile = fopen(name,"aw");
-    
+     write(STDOUT_FILENO, "In fork()\n", 10);
     while (FORK)
     {
-        printf("Fork, enter commands:\n");
-
         dowhat = fgets(dowhat, MAXLENG, stdin);
 
         if(0 == strcmp("exit\n", dowhat))
@@ -107,14 +101,13 @@ int DoFork(char *dowhat, char *name)
         *str_arr++ = strtok(dowhat, " \n");
         while (NULL != (*str_arr++ = strtok(NULL, " \n")));
        	
-       	
         if (0 == fork())
         {
             errno = 0;
             if (FAILURE == execvp(*head, head) && errno != 0)
             {
                 fprintf(pFile,"error no: %d\n",errno);
-                printf("Invalid\n");
+                write(STDOUT_FILENO, "Invalid\n", 8);
                 free(head);
                 break;
             }

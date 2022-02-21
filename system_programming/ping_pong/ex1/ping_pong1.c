@@ -5,7 +5,7 @@
  *                                 *
  * Reviewer:                       *
 ************************************/
-#define _POSIX_C_SOURCE 1
+#define _POSIX_C_SOURCE 199309L
 #define _POSIX_SOURCE
 #define _XOPEN_SOURCE (700)
 #define errExit(msg) do { perror(msg); exit(EXIT_FAILURE); } while (0)
@@ -18,7 +18,7 @@
 #include <sys/wait.h> /* wait */
 #include <errno.h>    /* errno */
 
-#define MAX_PINGS (10)
+#define MAX_PINGS (20)
 #define FAIL (-1)
 
 sigset_t saveMask, blockMask;
@@ -40,7 +40,7 @@ void ParentSigHandler(pid_t pid)
 
     for (y = 0; y < MAX_PINGS; ++y)
     {
-        sleep(1);
+        sleep(0);
         write(STDOUT_FILENO, "Ping ", 6);
         kill(pid, SIGUSR1);
 
@@ -64,7 +64,7 @@ void ChildSigHandler(void)
       
         write(STDOUT_FILENO, "Pong!\n", 6);
         kill(getppid(), SIGUSR1);
-        sleep(2);
+        sleep(1);
     }
 
     return;
@@ -82,8 +82,6 @@ int main(void)
     if (sigprocmask(SIG_BLOCK, &blockMask, &saveMask) == FAIL)
         errExit("sigprocmask");
 
-   
-   
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = 0;
     sa.sa_handler = SigHandle;

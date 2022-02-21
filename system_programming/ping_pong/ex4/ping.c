@@ -19,8 +19,6 @@ pid_t zohara_g = 0;
 static void ChildHandlerFunc(int signal)
 {
     (void)signal; 
-  
-    write(STDOUT_FILENO, "PING\n", 5);
     kill(zohara_g, SIGUSR2);
 }
 
@@ -32,7 +30,7 @@ int main(int argc, const char *argv[])
     
     assert (argc == 2);
 
-    if (SIGACTION_FAILURE == sigaction(SIGUSR1, &sa, NULL))
+    if (SIGACTION_FAILURE == sigaction(SIGUSR1, &sa, NULL) && errno != EINTR)
     {
         errExit("Failed to set SIGUSR1 handler");
     }
@@ -43,7 +41,7 @@ int main(int argc, const char *argv[])
 
     while (TRUE)
     {
-        write(STDOUT_FILENO, "PING\n", 5);
+        write(STDOUT_FILENO, "PING ", 6);
         pause(); 
     }
     

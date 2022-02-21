@@ -1,7 +1,7 @@
 #define _POSIX_C_SOURCE 199309L
 #define _POSIX_SOURCE
 #define _XOPEN_SOURCE (700)
-#include <signal.h> /* signal, kill */
+#include <signal.h> /* sigaction, kill */
 #include <sys/types.h> /* child_pid_t */
 #include <stdio.h>     /* perror */
 #include <unistd.h>   /*fork() */
@@ -38,19 +38,18 @@ void PingPong1(void)
 
     if (0 == child) 
     {
-        if (-1 == execlp("./extra","./extra",NULL))
+        if (FORK_FAILURE == execlp("./extra","./extra",NULL))
         {
-        	 errExit("Failed execvp");
+        	errExit("Failed execlp");
         }
     }
     else 
     {
         while(TRUE)
         {
-            write(STDOUT_FILENO, "Pong!\n", 6);
+            write(STDOUT_FILENO, "Pong!\n", strlen("Pong! "));
             pause();
         }
-
     }	
 }
 
@@ -67,5 +66,6 @@ int main(void)
     char *str = "killall extra";
     PingPong1();
     system(str);
+   
     return 0;
 }
