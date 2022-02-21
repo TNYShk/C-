@@ -25,7 +25,8 @@ the folder contains 2 separate programs, divided into folders
 first compile "gd ex2_exec.c -o *name*" then compile "gd ex2.c". then run both ./a.out name
 
 # ex4. in c compiler
-first compile "gd pong.c -o *pong*" then run "./*name* & to get PID. next compile "gd ping.c". finally run ./a.out + PID
+first compile "gd pong.c -o *pong*" then run "./*name* &" to get PID. 
+next compile "gd ping.c". finaly, run ./a.out + PID
 
 
 
