@@ -37,10 +37,10 @@ void ParentSigHandler(pid_t pid)
 {
 	int y = 0;
 
-    for (y = 0; y < MAX_PINGS; ++y)
+    for (; y < MAX_PINGS; ++y)
     {
         sleep(0);
-        write(STDOUT_FILENO, "Ping ", 6);
+        write(STDOUT_FILENO, "Ping ", strlen("Ping "));
         kill(pid, SIGUSR1);
 
         if (FAIL == sigsuspend(&saveMask) && errno != EINTR)
@@ -54,14 +54,14 @@ void ChildSigHandler(void)
 {
 	int x = 0;
 
-    for(x = 0; x < MAX_PINGS; ++x)
+    for(; x < MAX_PINGS; ++x)
     {
         if (sigsuspend(&saveMask) == FAIL && errno != EINTR)
         {
             errExit("sigsuspend");
         }
       
-        write(STDOUT_FILENO, "Pong!\n", 6);
+        write(STDOUT_FILENO, "Pong!\n", strlen("Pong!  "));
         kill(getppid(), SIGUSR1);
         sleep(1);
     }
@@ -90,7 +90,7 @@ int main(void)
 
     pid = fork();
 
-    if (pid == 0)
+    if (0 == pid)
         ChildSigHandler();
     else
         ParentSigHandler(pid);

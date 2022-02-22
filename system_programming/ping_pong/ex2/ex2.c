@@ -24,8 +24,10 @@
 #define TRUE (1)
 
 static pid_t child = 0;
+
 static void SignalHandler(int signum);
 void PingPong1(void);
+
 
 void PingPong1(void)
 {
@@ -70,9 +72,8 @@ static void SignalHandler(int signum)
 
 int main(void)
 {
-    char *str = "killall extra";
+    
     PingPong1();
-    system(str);
-   
+
     return 0;
 }

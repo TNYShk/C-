@@ -27,9 +27,9 @@ void PingPong(void);
 void PingPong(void)
 {
     struct sigaction sa = {0};
-	sa.sa_handler = SignalHandler;
+	sa.sa_handler = &SignalHandler;
   
-    if (SIGACTION_FAILURE == sigaction(SIGUSR1, &sa, NULL) && errno != EINTR)
+    if (SIGACTION_FAILURE == sigaction(SIGUSR1, &sa, NULL))
     {
         errExit("Failed to set SIGUSR1 handler");
     }

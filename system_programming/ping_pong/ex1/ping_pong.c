@@ -5,7 +5,6 @@
  *                                 *
  * Reviewer:                       *
 ************************************/
-
 #define _POSIX_SOURCE
 #define _XOPEN_SOURCE (700)
 #define errExit(msg) do { perror(msg); exit(EXIT_FAILURE); } while (0)
@@ -18,11 +17,11 @@
 #include <unistd.h> /*fork() */
 #include <sys/types.h> /* pid_t */
 #include <sys/time.h> /*sig_atomic_t */
-
+#include <string.h> /* strlen */
 
 #define MAX_PINGS (10)
 #define FAIL (-1)
-
+#define TRUE (1)
 
 static sig_atomic_t sig_num;
 
@@ -34,15 +33,12 @@ static void SignalHandler(int sig)
 
 static void ChildSigHandler(void)
 {
-   struct timespec sleep;
-    sleep.tv_sec = 1;
-    sleep.tv_nsec = 0;
-    
-    while(1)
+   
+    while(TRUE)
     {
         pause();
-        write(STDOUT_FILENO, "Pong!\n", 6);
-        nanosleep(&sleep, 0);
+        write(STDOUT_FILENO, "Lalala!\n", strlen("Lalala! "));
+        sleep(1);
         kill(getppid(), SIGUSR2);
     }
 }
@@ -50,14 +46,11 @@ static void ChildSigHandler(void)
 static void ParentSigHandler(pid_t pid)
 {
     int pings = 0;
-    struct timespec sleep;
-    sleep.tv_sec = 1;
-    sleep.tv_nsec = 0;
-
+   
     for (; pings < MAX_PINGS; ++pings)
     {
-        write(STDOUT_FILENO, "Ping ", 6);
-        nanosleep(&sleep, 0);
+        write(STDOUT_FILENO, "Lilili ", strlen("Lilili  "));
+        sleep(0);
         kill(pid, SIGUSR1);
         pause();
     }
@@ -71,26 +64,21 @@ int main(void)
 
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = 0;
-    sa.sa_handler = SignalHandler;
+    sa.sa_handler = &SignalHandler;
 
-    if (sigaction(SIGUSR1, &sa, NULL) == FAIL && errno != EINTR)
+    if (FAIL == sigaction(SIGUSR1, &sa, NULL) || FAIL == sigaction(SIGUSR2, &sa, NULL))
     {
-        errExit("Failed to set SIGUSR1 handler");
-    }
-
-    if (sigaction(SIGUSR2, &sa, NULL) == FAIL && errno != EINTR)
-    {
-        errExit("Failed to set SIGUSR2 handler");
+        errExit("Failed to set SIGUSR1 or 2 handler");
     }
 
     pid = fork();
 
-    if (pid < 0)
+    if (0 > pid)
     {
         errExit("Failed to fork()");
     }
 
-    else if (pid == 0)
+    else if (0 == pid)
         
         ChildSigHandler();
     else

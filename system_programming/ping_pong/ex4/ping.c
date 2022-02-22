@@ -27,7 +27,6 @@ pid_t zohara_g = 0;
 static void ChildHandlerFunc(int signal);
 
 
-
 int main(int argc, const char *argv[])
 {
     struct sigaction sa = {0};
@@ -36,7 +35,7 @@ int main(int argc, const char *argv[])
     
     assert (argc == 2);
 
-    if (SIGACTION_FAILURE == sigaction(SIGUSR1, &sa, NULL) && errno != EINTR)
+    if (SIGACTION_FAILURE == sigaction(SIGUSR1, &sa, NULL))
     {
         errExit("Failed to set SIGUSR1 handler");
     }

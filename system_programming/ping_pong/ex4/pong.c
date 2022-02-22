@@ -23,13 +23,15 @@
 
 static void ChildHandlerFunc(int signal, siginfo_t *info, void *ucontext);
 
-int main()
+
+
+int main(void)
 {
     struct sigaction sa = {0};
     sa.sa_sigaction = &ChildHandlerFunc;
     sa.sa_flags |= SA_SIGINFO;
 
-    if (SIGACTION_FAILURE == sigaction(SIGUSR2, &sa, NULL) && errno != EINTR)
+    if (SIGACTION_FAILURE == sigaction(SIGUSR2, &sa, NULL))
     {
         errExit("Failed to set SIGUSR2 handler");
     }
