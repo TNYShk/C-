@@ -14,7 +14,7 @@
 #include <unistd.h>   /*fork() */
 #include <stdlib.h>   /* exit()*/
 #include <errno.h>    /* errno */
-#include <string.h>  /* strlen */
+#include <string.h>  /* strlen, atoi */
 #include <assert.h> /* assert */
 #define errExit(msg) do { perror(msg); exit(EXIT_FAILURE); } while (0) /*error handling macro */
 
@@ -31,7 +31,7 @@ int main(int argc, const char *argv[])
 {
     struct sigaction sa = {0};
     sa.sa_handler = &ChildHandlerFunc;
-    sa.sa_flags |= SA_SIGINFO;
+   
     
     assert (argc == 2);
 
