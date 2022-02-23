@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <assert.h>
-
+#include <unistd.h>
 #define STOP (100000)
 
 void *thread_func(void *);
@@ -34,7 +34,7 @@ int main (void)
   
 
     printf("final counter value: %d\n", counter_g);
-  
+    /*sleep(10);*/
     CheckArr();
     return 0;
 }
