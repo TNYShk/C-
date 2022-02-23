@@ -1,9 +1,9 @@
 /***********************************
- * ex4. Ping Pong - Source File    *
+ * 100k threads - Source File      *
  * Developer: Tanya                *
- *          Feb 21, 2022           *
+ *          Feb 23, 2022           *
  *                                 *
- * Reviewer:  Ofer                 *
+ * Reviewer:                       *
 ************************************/
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,17 +15,19 @@
 void *thread_func(void *);
 void PrintArr(void);
 void CheckArr();
+
 int counter_g = 0;
 int thread_arr[STOP] = {0};
 
 int main (void)
 {
+   
     pthread_t thread_id[STOP];
     int i = 0;
 
     for (;i< STOP; ++i)
     {
-        pthread_create(&thread_id[i], NULL, thread_func, NULL );
+        assert(0 == pthread_create(&thread_id[i], NULL, thread_func, NULL ));
         pthread_join(thread_id[i], NULL );
     }
  
@@ -47,11 +49,11 @@ void *thread_func(void *dummyPtr)
 
 void PrintArr(void)
 {
-    /*int i = 0;
+    int i = 0;
     for(; i< STOP; ++i)
     {
         printf("%d ,",thread_arr[i] );
-    }*/
+    }
     
 }
 
