@@ -10,111 +10,98 @@
 #include <pthread.h> /* threads.. */
 #include <assert.h> /* assert*/
 #include <unistd.h> /* sleep */
-#define STOP (32000)
+#include <time.h> /* time*/
+
+#define STOP (30000)
+#define TH_ARR_SIZE (100000)
 #define NEW_STOP (10000)
-#define HUGE_NUM (1111111111)
+#define HUGE_NUM (1111111111ul)
+#define SUCCESS (0)
 
-
-
-void Ex1_2();
-void Ex3();
-void *thread_func(void *);
-void PrintArr(void);
-void CheckArr();
-void Ex4(void);
-static void *thread_div_func(void *);
-void Sum_of(void);
-void *_div_func(void *val);
-pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
 int counter_g = 0;
-int thread_arr[STOP] = {0};
-int divisors[STOP] = {0};
+size_t thread_arr[TH_ARR_SIZE] = {0};
+pthread_mutex_t mutexi = PTHREAD_MUTEX_INITIALIZER;
 
 
-int main (void)
+
+void Ex1_2(void);
+void Ex3(void);
+void Ex4(void);
+static void *ThreadDivFunc(void *);
+static void *ThreadFunc(void *);
+
+void CheckArr(void);
+void SumOfDivs(void);
+
+void *_div_func(void *val);
+
+
+
+
+
+int main(void)
 {
   
- Ex4();
-  Sum_of();
-   /*
-   Sum_of();
-    
+    Ex1_2();
     Ex3();
-    
-      Ex1_2();
-     
-    */
+    Ex4();
+
+  SumOfDivs();
+   
     return 0;
 }
 
-void *thread_func(void *dummyPtr)
+static void *ThreadFunc(void *dummyPtr)
 {
-    /*printf("Thread number %ld\n", pthread_self());*/
-    /*pthread_mutex_lock( &mutex1 );*/
+    pthread_mutex_lock(&mutexi);
     thread_arr[counter_g] = counter_g;
     ++counter_g;
-
-    /*pthread_mutex_unlock( &mutex1 );
-*/
-    return dummyPtr;
-
-}
-
-void PrintArr(void)
-{
-    int i = 0;
-    for(; i < 36; ++i)
-    {
-        printf("%d ,",thread_arr[i] );
-    }
+    pthread_mutex_unlock(&mutexi);
     
+    return dummyPtr;
 }
 
-void CheckArr()
-{
-    int i = 0;
-    for(; i < STOP; ++i)
-    {
-        assert(thread_arr[i] == i);
-    }
-}
+
 void Ex1_2(void)
 {
-   pthread_t thread_id[STOP];
-    int i = 0;
+    pthread_t thread_id[TH_ARR_SIZE] = {0};
+    clock_t start = clock();
+    int idx = 0;
 
-    for (;i < STOP; ++i)
+    for (idx = 0; idx < TH_ARR_SIZE; ++idx)
     {
-        while(0 != pthread_create(&thread_id[i], NULL, thread_func, NULL ));
-        pthread_join(thread_id[i], NULL );
+        while(SUCCESS != pthread_create(&thread_id[idx], NULL, &ThreadFunc, &idx )){ };
+        pthread_join(thread_id[idx], NULL );
     }
     
- 
-
     printf("ex1_2 final counter value: %d\n", counter_g);
-    /*sleep(10);*/
+   
+    
+    printf("The process took %ld clocks\n", (clock() - start)/CLOCKS_PER_SEC);
+    CheckArr(); 
     
 }
 void Ex3(void)
 {
     int i = 0;
-    pthread_t thread_id[STOP] = {0};
+    pthread_t thread_id[TH_ARR_SIZE] = {0};
+    clock_t start = clock();
     counter_g = 0;
 
-    for (;i < STOP; ++i)
+    for (;i < TH_ARR_SIZE; ++i)
     {
-        while(0 != pthread_create(&thread_id[i], NULL, thread_func, NULL ));
-
+        while(0 != pthread_create(&thread_id[i], NULL, ThreadFunc, NULL ));
         pthread_detach(thread_id[i]);
     }
-    printf("ex3: final counter value: %d\n", counter_g);
- 
-    /*CheckArr(); 
-  */
+
+    printf("\nex3: final counter value: %d\n", counter_g);
+    printf("The process took %ld clocks\n", (clock() - start)/CLOCKS_PER_SEC);
+    CheckArr(); 
+  
 }
 
 
-static void *thread_div_func(void *val)
+static void *ThreadDivFunc(void *val)
 {
     size_t num = (size_t )val;
     size_t i = 0;
@@ -126,7 +113,9 @@ static void *thread_div_func(void *val)
         if (0 == (HUGE_NUM % i))
         {
             sum_of_divs += i;
+            printf("divisor of %ld is %ld\n",HUGE_NUM, i);
         }
+
     }
     pthread_exit((void *)sum_of_divs);
 }
@@ -134,7 +123,8 @@ static void *thread_div_func(void *val)
 
 void Ex4(void)
 {
-    int i = 0;
+    long i = 0;
+    clock_t start = clock();
     size_t num = 1;
     size_t sum_of_divisors = 0;
     pthread_t thread_id[NEW_STOP] = {0};
@@ -142,7 +132,7 @@ void Ex4(void)
 
     for (i = 0; i < NEW_STOP; ++i)
     {
-        while(0 != pthread_create(&thread_id[i], NULL, &thread_div_func, (void *)num));
+        while(SUCCESS != pthread_create(&thread_id[i], NULL, &ThreadDivFunc, (void *)num));
         num += range;
     }
 
@@ -151,11 +141,47 @@ void Ex4(void)
         pthread_join(thread_id[i], (void *)&num);
         sum_of_divisors += num;
     }
-    printf("ex4: %ld\n", sum_of_divisors);
-
+   
+    printf("\nex4, sum of divisors: %ld\n", sum_of_divisors);
+    printf("The process took %ld clocks\n", (clock() - start)/CLOCKS_PER_SEC);
+    
 }
 
 
+
+
+
+/*single thread sum of all dividors */
+void SumOfDivs(void)
+{
+    clock_t start = clock();
+    size_t idx = 0;
+    size_t sum_of_divs = 0;
+    for (idx = 1; idx <= HUGE_NUM; ++idx)
+    {
+        if(0 == HUGE_NUM % idx)
+        {
+            sum_of_divs += idx;
+            /*printf("divisor of %ld is %ld\n",HUGE_NUM, idx);*/
+        }
+    }
+    
+    printf("\nex4 single thread: %ld \n", sum_of_divs);
+    printf("The process took %ld clocks\n", (clock() - start)/CLOCKS_PER_SEC);
+}
+
+
+
+
+
+void CheckArr()
+{
+    size_t i = 0;
+    for(; i < TH_ARR_SIZE; ++i)
+    {
+        assert(thread_arr[i] == i);
+    }
+}
 
 
 void *_div_func(void *val)
@@ -171,20 +197,4 @@ void *_div_func(void *val)
  
     return val;
 
-}
-
-void Sum_of(void)
-{
-    size_t i = 0;
-    size_t sum_of_divs = 0;
-    for (i = 1; i <= HUGE_NUM; ++i)
-    {
-        if(0 == HUGE_NUM % i)
-        {
-            sum_of_divs += i;
-        }
-    }
-    
-    printf("ex4 non threaded: %ld\n", sum_of_divs);
-  
 }
