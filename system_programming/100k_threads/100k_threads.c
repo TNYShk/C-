@@ -11,25 +11,29 @@
 #include <assert.h> /* assert*/
 #include <unistd.h> /* sleep */
 #include <time.h> /* time*/
-
+#include <omp.h> /* pragma openMP */
 #define STOP (32660)
 #define TH_ARR_SIZE (100000)
 #define NEW_STOP (10000)
-#define HUGE_NUM (1111111111ul)
+#define HUGE_NUM (1111111111UL)
 #define SUCCESS (0)
 
 int counter_g = 0;
 size_t thread_arr[TH_ARR_SIZE] = {0};
 pthread_mutex_t mutexi = PTHREAD_MUTEX_INITIALIZER;
 
+const size_t huge_g = 1111;
+
+size_t range1 = 0; 
 
 
 void Ex1_2(void);
 void Ex3(void);
 void Ex4(void);
+void Ex5(size_t max_threads);
 static void *ThreadDivFunc(void *);
 static void *ThreadFunc(void *);
-
+static void *ThreadDivFunc5(void *val);
 void CheckArr(size_t);
 void SumOfDivs(void);
 
@@ -41,12 +45,21 @@ void *_div_func(void *val);
 
 int main(void)
 {
-  
+    size_t ex5 =3;
     Ex1_2();
     Ex3();
     Ex4();
 
-  SumOfDivs();
+    for(;ex5 < 16; ++ex5)
+    {
+        Ex5(ex5);
+    }
+  
+    /*
+     SumOfDivs();
+    */
+
+ 
    
     return 0;
 }
@@ -82,14 +95,13 @@ void Ex1_2(void)
     
     printf("ex1_2 final counter value: %d\n", counter_g);
    
-    
-    printf("The process took %ld clocks\n", (clock() - start)/CLOCKS_PER_SEC);
+    printf("The process took %f clocks\n", (double)(clock() - start)/CLOCKS_PER_SEC);
     CheckArr(STOP);
     
 }
 void Ex3(void)
 {
-    int idx = 0;
+    size_t idx = 0;
     pthread_t thread_id[TH_ARR_SIZE] = {0};
     clock_t start = clock();
     counter_g = 0;
@@ -101,7 +113,7 @@ void Ex3(void)
     }
 
     printf("\nex3: final counter value: %d\n", counter_g);
-    printf("The process took %ld clocks\n", (clock() - start)/CLOCKS_PER_SEC);
+    printf("The process took %f clocks\n", (double)(clock() - start)/CLOCKS_PER_SEC);
     CheckArr(TH_ARR_SIZE); 
   
 }
@@ -149,8 +161,56 @@ void Ex4(void)
     }
    
     printf("\nex4, sum of divisors: %ld\n", sum_of_divisors);
-    printf("The process took %ld clocks\n", (clock() - start)/CLOCKS_PER_SEC);
+    printf("The process took %f clocks\n", (double)(clock() - start) / CLOCKS_PER_SEC);
     
+}
+
+void Ex5(size_t max_threads)
+{
+    size_t idx = 0;
+    clock_t start = clock();
+    size_t num = 1;
+    size_t sum_of_divisors = 0;
+    pthread_t thread_ids[15] = {0};
+    
+    range1 = huge_g / max_threads + 1; 
+
+    for (idx = 0; idx < max_threads; ++idx)
+    {
+        while(SUCCESS != pthread_create(&thread_ids[idx], NULL, &ThreadDivFunc5, (void *)num));
+        num += range1;
+    }
+
+    for (idx = 0; idx < max_threads; ++idx)
+    {
+        pthread_join(thread_ids[idx], (void *)&num);
+        sum_of_divisors += num;
+    }
+   
+    printf("\nex5, sum of divisors: %ld\n", sum_of_divisors);
+
+    printf("sum of divisors of %ld with %ld threads took %f sec\n",
+            huge_g, max_threads, (double)(clock() - start)/CLOCKS_PER_SEC);
+
+}
+
+static void *ThreadDivFunc5(void *val)
+{
+    size_t num = (size_t)val;
+    size_t idx = 0;
+    
+    size_t sum_of_divs = 0;
+    
+    for (idx = num; idx < (num + range1); ++idx)
+    {   
+        if (0 == (huge_g % idx))
+        {
+            sum_of_divs += idx;
+            /*printf("divisor of %ld is %ld\n",huge_g, idx);*/
+        }
+
+    }
+    pthread_exit((void *)sum_of_divs);
 }
 
 
@@ -160,9 +220,10 @@ void Ex4(void)
 /*single thread sum of all dividors */
 void SumOfDivs(void)
 {
-    clock_t start = clock();
+    time_t start = time(0);
     size_t idx = 0;
     size_t sum_of_divs = 0;
+#pragma omp parallel for num_threads (4)
     for (idx = 1; idx <= HUGE_NUM; ++idx)
     {
         if(0 == HUGE_NUM % idx)
@@ -173,7 +234,7 @@ void SumOfDivs(void)
     }
     
     printf("\nex4 single thread: %ld \n", sum_of_divs);
-    printf("The process took %ld clocks\n", (clock() - start)/CLOCKS_PER_SEC);
+    printf("The process took %ld clocks\n", (time(0) - start));
 }
 
 
@@ -189,18 +250,3 @@ void CheckArr(size_t length)
     }
 }
 
-
-void *_div_func(void *val)
-{
-    int sum_of_divs = 0;
-
-    if(HUGE_NUM % counter_g  == 0)
-    {
-        sum_of_divs += counter_g;
-        
-    }
-    ++counter_g;
- 
-    return val;
-
-}

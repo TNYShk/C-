@@ -57,7 +57,7 @@ long *SumIntPairsToLongs(int arr[], size_t length)
 
 long *SumIntPairsToLongs1(int arr[], size_t length)
 {
-	long *l_ptr = (long*)arr;
+	long *l_ptr = (long *)arr;
 	size_t idx = 0;
 
 	for(idx = 0; idx < length; idx += 2)

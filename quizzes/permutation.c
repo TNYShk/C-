@@ -20,7 +20,7 @@ void Permutation1(char *string, size_t idx);
 int main (void)
 {
     char string[10] = "ABC";
-    char another[10]= "TNY";
+    char another[10]= "ABC";
     Permutation(string);
     printf("\n");
     Permutation1(another,0);
@@ -47,7 +47,8 @@ void Permutation1(char *string, size_t idx)
 
     for(i = idx; i < strlen(string); ++i)
     {
-        GenericSwap(string + idx, string + i);
+        if (0 != strcmp(string + idx, string + i))
+                GenericSwap(string + idx, string + i);
         Permutation1(string, idx +1);
         GenericSwap(string + idx, string + i);
     }
@@ -57,9 +58,10 @@ void Permutation1(char *string, size_t idx)
 static void RecPermutation(char *string, size_t left, size_t right)
 {
     size_t idx = 0;
+    
     if (left == right)
     {
-        printf("%s\n", string);
+        printf(" %s\n", string);
         return;
     }
 
@@ -79,6 +81,5 @@ static void GenericSwap(char *left, char *right)
     char temp = 0;
     temp = *left;
     *left = *right;
-    *right = temp;
-       
+    *right = temp; 
 }
