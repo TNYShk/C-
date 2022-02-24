@@ -3,7 +3,7 @@
  * Developer: Tanya                *
  *          Feb 23, 2022           *
  *                                 *
- * Reviewer:                       *
+ * Reviewer: Zohar                 *
 ************************************/
 #include <stdio.h> /* printf*/
 #include <pthread.h> /* threads.. */
@@ -36,6 +36,10 @@ static void *ThreadDivFunc5(void *val);
 void CheckArr(size_t);
 void SumOfDivs(void);
 
+/* 
+compile: gd *.c  -lpthread -fopenmp
+run:     time ./a.out
+*/
 
 int main(void)
 {
@@ -55,50 +59,6 @@ int main(void)
 
 
 
-
-
-
-void Ex1_2(void)
-{
-    pthread_t thread_id[STOP] = {0};
-    clock_t start = clock();
-    size_t idx = 0;
-
-    for (idx = 0; idx < STOP; ++idx)
-    {
-        while(SUCCESS != pthread_create(&thread_id[idx], NULL, &ThreadFunc, NULL ));
-    }
-
-    for (idx = 0; idx < STOP; ++idx)
-    {
-        pthread_join(thread_id[idx], NULL );
-    }
-    
-    printf("ex1_2 final counter value: %d\n", counter_g);
-    printf("The process took %f clocks\n", (double)(clock() - start)/CLOCKS_PER_SEC);
-    CheckArr(STOP);
-    
-}
-
-void Ex3(void)
-{
-    size_t idx = 0;
-    pthread_t thread_id[TH_ARR_SIZE] = {0};
-    clock_t start = clock();
-    counter_g = 0;
-
-    for (;idx < TH_ARR_SIZE; ++idx)
-    {
-        while(SUCCESS != pthread_create(&thread_id[idx], NULL, ThreadFunc, NULL ));
-        pthread_detach(thread_id[idx]);
-    }
-
-    printf("\nex3: final counter value: %d\n", counter_g);
-    printf("The process took %f clocks\n", (double)(clock() - start)/CLOCKS_PER_SEC);
-    CheckArr(TH_ARR_SIZE); 
-  
-}
-
 static void *ThreadFunc(void *dummyPtr)
 {
     pthread_mutex_lock(&mutexi);
@@ -108,6 +68,47 @@ static void *ThreadFunc(void *dummyPtr)
     
     return dummyPtr;
 }
+
+
+void Ex1_2(void)
+{
+    pthread_t thread_id[STOP] = {0};
+    time_t start = time(0);
+    size_t idx = 0;
+
+    for (idx = 0; idx < STOP; ++idx)
+    {
+        while(SUCCESS != pthread_create(&thread_id[idx], NULL, &ThreadFunc, NULL ));  
+    }
+
+    for (idx = 0; idx < STOP; ++idx)
+    {
+        pthread_join(thread_id[idx], NULL );
+    }
+    
+    printf("ex1_2 final counter value: %d\n", counter_g);
+    printf("The process took %ld clocks\n", (time(0) - start));
+    CheckArr(STOP);
+    
+}
+void Ex3(void)
+{
+    size_t idx = 0;
+    time_t start = time(0);
+    counter_g = 0;
+
+    for (;idx < TH_ARR_SIZE; ++idx)
+    {
+        pthread_t id = 0;
+        while(SUCCESS != pthread_create(&id, NULL, &ThreadFunc, NULL ));
+        pthread_detach(id);
+    }
+
+    printf("\nex3: final counter value: %d\n", counter_g);
+    printf("The process took %ld clocks\n", (time(0) - start));
+    CheckArr(TH_ARR_SIZE); 
+}
+
 
 static void *ThreadDivFunc(void *val)
 {
@@ -123,6 +124,7 @@ static void *ThreadDivFunc(void *val)
             sum_of_divs += idx;
             printf("divisor of %ld is %ld\n",HUGE_NUM, idx);
         }
+
     }
     pthread_exit((void *)sum_of_divs);
 }
@@ -131,7 +133,7 @@ static void *ThreadDivFunc(void *val)
 void Ex4(void)
 {
     size_t idx = 0;
-    clock_t start = clock();
+    time_t start = time(0);
     size_t num = 1;
     size_t sum_of_divisors = 0;
     pthread_t thread_id[NEW_STOP] = {0};
@@ -142,15 +144,17 @@ void Ex4(void)
         while(SUCCESS != pthread_create(&thread_id[idx], NULL, &ThreadDivFunc, (void *)num));
         num += range;
     }
+
     for (idx = 0; idx < NEW_STOP; ++idx)
     {
         pthread_join(thread_id[idx], (void *)&num);
         sum_of_divisors += num;
     }
+   
     printf("\nex4, sum of divisors: %ld\n", sum_of_divisors);
-    printf("The process took %f clocks\n", (double)(clock() - start) / CLOCKS_PER_SEC); 
+    printf("The process took %ld clocks\n", (time(0) - start));
+    
 }
-
 
 void Ex5(size_t max_threads)
 {
@@ -175,6 +179,7 @@ void Ex5(size_t max_threads)
     }
    
     printf("\nex5, sum of divisors: %ld\n", sum_of_divisors);
+
     printf("sum of divisors of %ld with %ld threads took %f sec\n",
             huge_g, max_threads, (double)(clock() - start)/CLOCKS_PER_SEC);
 
@@ -184,6 +189,7 @@ static void *ThreadDivFunc5(void *val)
 {
     size_t num = (size_t)val;
     size_t idx = 0;
+    
     size_t sum_of_divs = 0;
     
     for (idx = num; idx < (num + range1); ++idx)
@@ -193,6 +199,7 @@ static void *ThreadDivFunc5(void *val)
             sum_of_divs += idx;
             /*printf("divisor of %ld is %ld\n",huge_g, idx);*/
         }
+
     }
     pthread_exit((void *)sum_of_divs);
 }
@@ -220,6 +227,9 @@ void SumOfDivs(void)
     printf("\nex4 single thread: %ld \n", sum_of_divs);
     printf("The process took %ld clocks\n", (time(0) - start));
 }
+
+
+
 
 
 void CheckArr(size_t length)
