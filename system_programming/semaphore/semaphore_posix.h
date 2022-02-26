@@ -1,6 +1,9 @@
 #ifndef __SEMAPHORE_POSIX_H__
 #define __SEMAPHORE_POSIX_H__
 
+
+
+
 int PosixSemManipulation(const char **cmd);
 
 /*
