@@ -28,7 +28,7 @@
 
 
 typedef int (*sem_act_func)(sem_t *sem, const char **cmd);
-static sem_act_func sem_actions[MAXLEN] = {NULL};
+static sem_act_func sem_actions[5] = {NULL};
 
 
 
@@ -54,29 +54,31 @@ static void InitSemAct(void)
 static int InitSemaphore(const char **cmd)
 {
     unsigned int value = atoi(cmd[2]);
+    
     return value;
 }
 
 int PosixSemManipulation(const char **cmd)
 {
     sem_t *semP = NULL;
-
-    semP = sem_open(cmd[1], O_CREAT  , S_IRUSR | S_IWUSR, InitSemaphore(cmd));
+   
+    semP = sem_open(cmd[1], O_CREAT, S_IRUSR | S_IWUSR, InitSemaphore(cmd));
     if(SEM_FAILED == semP)
     {
         errExit("sem_open");
     }
      InitSemAct();
-    return sem_actions[(size_t)cmd[2][0]] (semP, cmd);
+    while (sem_actions[(size_t)cmd[2][0]] (semP, cmd));
+     
+    return GREAT_SUCCESS;
     
 }
 
 
 
-
-
 static int DoExit(sem_t *sem, const char **cmd)
 {
+    sem = sem_open(cmd[1], O_EXCL, S_IRUSR | S_IWUSR, atoi(cmd[2]));
     if(FAIL == sem_close(sem))
         errExit("sem_close");
     
@@ -87,7 +89,7 @@ static int DoExit(sem_t *sem, const char **cmd)
 static int DoView(sem_t *sem, const char **cmd)
 {
     int val = 0;
-
+     sem = sem_open(cmd[1], O_EXCL, S_IRUSR | S_IWUSR, atoi(cmd[2]));
     if( FAIL == sem_getvalue(sem, &val))
         errExit("sem_getvalue");
     
@@ -97,7 +99,7 @@ static int DoView(sem_t *sem, const char **cmd)
 
 static int DoUnlink(sem_t *sem, const char **cmd)
 {
-
+    sem = sem_open(cmd[1], O_EXCL, S_IRUSR | S_IWUSR, atoi(cmd[2]));
     if( FAIL == sem_unlink(cmd[1]))
         errExit("sem_unlink");
     
@@ -108,6 +110,7 @@ static int DoUnlink(sem_t *sem, const char **cmd)
 static int DoDecrement(sem_t *sem, const char **cmd)
 {
     int sem_val = atoi(cmd[2]);
+    sem = sem_open(cmd[1], O_EXCL, S_IRUSR | S_IWUSR, atoi(cmd[2]));
     if( EAGAIN == sem_trywait(sem))
         errExit("sem_trywait");
     
@@ -118,6 +121,7 @@ static int DoDecrement(sem_t *sem, const char **cmd)
 
 static int DoIncrement(sem_t *sem, const char **cmd)
 {
+    sem = sem_open(cmd[1], O_EXCL  , S_IRUSR | S_IWUSR, atoi(cmd[2]));
     if( FAIL == sem_post(sem))
         errExit("sem_post");
     

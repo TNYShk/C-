@@ -24,10 +24,8 @@
 
 int main(int argc, const char *argv[])
 {
-    int flags = 0, opt = 0;
-    mode_t perms;
-    unsigned int value;
-    assert(3 == argc);
+
+    assert(2 < argc);
     
     PosixSemManipulation(argv);
    
