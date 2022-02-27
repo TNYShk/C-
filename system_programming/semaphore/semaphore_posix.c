@@ -7,38 +7,41 @@
 ************************************/
 #include <fcntl.h>  /* O_* const.*/
 #include <sys/stat.h> /* mode const. */
-#include <semaphore.h>
-#include <stdio.h>
+#include <semaphore.h> /*semaphore */
+#include <stdio.h> /* printf*/
 #include <pthread.h> /* threads.. */
 #include <assert.h> /* assert*/
 #include <unistd.h> /* sleep */
 #include <stdlib.h> /* atoi */
-#include <errno.h>
-#include <signal.h>
+#include <errno.h> /* errno */
 #include <string.h> /*strcmp */
 #define errExit(msg) do { perror(msg); exit(EXIT_FAILURE); } while (0)
-#include "semaphore_posix.h"
+#include "semaphore_posix.h" /* header*/
 
 
 #define LAZY_LUT (128)
 #define FAIL (-1)
 #define GREAT_SUCCESS (0)
+#define SEMNAME (10)
 
 int curr_process_sem_val_g = 0; 
-char name_g[10] = {0}; 
-unsigned int flag_g = 0;
+char name_g[SEMNAME] = {0}; 
+static unsigned int flag_g = 0;
+
 typedef int (*sem_act_func)(sem_t *sem, unsigned int val);
 static sem_act_func sem_actions[LAZY_LUT] = {NULL};
 
-static int DoU(sem_t *sem, unsigned int val);
-static sem_t *InitSemaphore(const char **cmd);
 static void InitSemAct(void);
+static sem_t *InitSemaphore(const char **cmd);
 static int DoExit(sem_t *sem, unsigned int val);
 static int DoView(sem_t *sem, unsigned int val);
 static int DoUnlink(sem_t *sem, unsigned int val);
 static int DoDecrement(sem_t *sem, unsigned int val);
 static int DoIncrement(sem_t *sem, unsigned int val);
 static int DoNothing(sem_t *sem, unsigned int val);
+static int DoU(sem_t *sem, unsigned int val);
+
+
 
 
 static void InitSemAct(void)
@@ -48,13 +51,18 @@ static void InitSemAct(void)
     {
         sem_actions[idx] = &DoNothing;
     }
-
     sem_actions['X'] = &DoExit;
     sem_actions['V'] = &DoView;
     sem_actions['I'] = &DoIncrement;
     sem_actions['D'] = &DoDecrement;
     sem_actions['R'] = &DoUnlink;
-     sem_actions['U'] = &DoU;
+    sem_actions['U'] = &DoU;
+    sem_actions['x'] = &DoExit;
+    sem_actions['v'] = &DoView;
+    sem_actions['i'] = &DoIncrement;
+    sem_actions['d'] = &DoDecrement;
+    sem_actions['r'] = &DoUnlink;
+    sem_actions['u'] = &DoU;
 }
 
 static sem_t *InitSemaphore(const char **cmd)
@@ -82,7 +90,7 @@ static int DoNothing(sem_t *sem, unsigned int val)
 {
      if(FAIL == sem_close(sem))
         errExit("sem_close");
-    
+    printf("not valid\n");
     (void)val;
      system(" ls -al /dev/shm/sem.*|more ");
     return GREAT_SUCCESS;
@@ -95,12 +103,12 @@ static int DoExit(sem_t *sem, unsigned int val)
         if (curr_process_sem_val_g > 0)
         {
                 
-            return DoDecrement(sem,curr_process_sem_val_g);
+            return DoDecrement(sem, curr_process_sem_val_g);
         }
         else 
             {
                 
-                return DoIncrement(sem,(-1 * curr_process_sem_val_g));
+                return DoIncrement(sem, (-1 * curr_process_sem_val_g));
             }
     }
 
@@ -146,9 +154,8 @@ static int DoUnlink(sem_t *sem, unsigned int val)
 static int DoU(sem_t *sem, unsigned int val)
 {
     flag_g = 1;
-    (void)sem;
-    (void)val;
-    return GREAT_SUCCESS;
+    
+    return DoExit(sem, val);
 }
 
 static int DoDecrement(sem_t *sem, unsigned int val)
@@ -157,7 +164,6 @@ static int DoDecrement(sem_t *sem, unsigned int val)
     if( EAGAIN == sem_trywait(sem))
         errExit("sem_trywait");
    
-    printf("post dec, val is is %d\n", val);
     printf("%ld sem_wait() succeeded\n", (long) getpid());
     
     if (flag_g == 1)
