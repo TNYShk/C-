@@ -26,10 +26,11 @@
 
 int curr_process_sem_val_g = 0; 
 char name_g[10] = {0}; 
+unsigned int flag_g = 0;
 typedef int (*sem_act_func)(sem_t *sem, unsigned int val);
 static sem_act_func sem_actions[LAZY_LUT] = {NULL};
 
-
+static int DoU(sem_t *sem, unsigned int val);
 static sem_t *InitSemaphore(const char **cmd);
 static void InitSemAct(void);
 static int DoExit(sem_t *sem, unsigned int val);
@@ -53,6 +54,7 @@ static void InitSemAct(void)
     sem_actions['I'] = &DoIncrement;
     sem_actions['D'] = &DoDecrement;
     sem_actions['R'] = &DoUnlink;
+     sem_actions['U'] = &DoU;
 }
 
 static sem_t *InitSemaphore(const char **cmd)
@@ -88,7 +90,7 @@ static int DoNothing(sem_t *sem, unsigned int val)
 
 static int DoExit(sem_t *sem, unsigned int val)
 {
-   if (curr_process_sem_val_g >= 0)
+   if (flag_g)
    {
         if (curr_process_sem_val_g > 0)
         {
@@ -141,6 +143,14 @@ static int DoUnlink(sem_t *sem, unsigned int val)
     return GREAT_SUCCESS;
 }
 
+static int DoU(sem_t *sem, unsigned int val)
+{
+    flag_g = 1;
+    (void)sem;
+    (void)val;
+    return GREAT_SUCCESS;
+}
+
 static int DoDecrement(sem_t *sem, unsigned int val)
 {
     
@@ -150,14 +160,16 @@ static int DoDecrement(sem_t *sem, unsigned int val)
     printf("post dec, val is is %d\n", val);
     printf("%ld sem_wait() succeeded\n", (long) getpid());
     
-    if (curr_process_sem_val_g)
+    if (flag_g == 1)
     {
-        curr_process_sem_val_g -= 1;
+        curr_process_sem_val_g -= val;
+        flag_g = 0;
     }
-
+   
     if(FAIL == sem_close(sem))
         errExit("sem_close");
 
+   
     system(" ls -al /dev/shm/sem.*|more ");
     return GREAT_SUCCESS;
 }
@@ -168,14 +180,16 @@ static int DoIncrement(sem_t *sem, unsigned int val)
     if( FAIL == sem_post(sem) )
         errExit("sem_post");
     
-    if(val)
+    if(flag_g == 1)
     {
         curr_process_sem_val_g += 1;
+        flag_g = 0;
     }
-    
-
+   
+     
     if(FAIL == sem_close(sem))
         errExit("sem_close");
+
      system(" ls -al /dev/shm/sem.*|more ");
     return GREAT_SUCCESS;
 }
