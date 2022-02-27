@@ -20,106 +20,160 @@
 #include "semaphore_posix.h"
 
 
-
+#define LAZY_LUT (128)
 #define FAIL (-1)
 #define GREAT_SUCCESS (0)
 
+int curr_process_sem_val_g = 0; 
+char name_g[10] = {0}; 
+typedef int (*sem_act_func)(sem_t *sem, unsigned int val);
+static sem_act_func sem_actions[LAZY_LUT] = {NULL};
 
 
-typedef int (*sem_act_func)(sem_t *sem, const char **cmd);
-static sem_act_func sem_actions[5] = {NULL};
-
-
-
-static void InitSemAct(void);
-static int DoExit(sem_t *sem, const char **cmd);
-static int DoView(sem_t *sem, const char **cmd);
-static int DoUnlink(sem_t *sem, const char **cmd);
-static int DoDecrement(sem_t *sem, const char **cmd);
-static int DoIncrement(sem_t *sem, const char **cmd);
 static sem_t *InitSemaphore(const char **cmd);
+static void InitSemAct(void);
+static int DoExit(sem_t *sem, unsigned int val);
+static int DoView(sem_t *sem, unsigned int val);
+static int DoUnlink(sem_t *sem, unsigned int val);
+static int DoDecrement(sem_t *sem, unsigned int val);
+static int DoIncrement(sem_t *sem, unsigned int val);
+static int DoNothing(sem_t *sem, unsigned int val);
 
 
 static void InitSemAct(void)
 {
+    size_t idx = 0;
+    for(; idx < LAZY_LUT; ++idx)
+    {
+        sem_actions[idx] = &DoNothing;
+    }
+
     sem_actions['X'] = &DoExit;
     sem_actions['V'] = &DoView;
     sem_actions['I'] = &DoIncrement;
-    sem_actions['D']= &DoDecrement;
+    sem_actions['D'] = &DoDecrement;
     sem_actions['R'] = &DoUnlink;
 }
 
 static sem_t *InitSemaphore(const char **cmd)
 {
+    strcpy(name_g, cmd[1]);
     return sem_open(cmd[1], O_CREAT, S_IRUSR | S_IWUSR, atoi(cmd[2]));
 }
 
 int PosixSemManipulation(const char **cmd)
 {
     sem_t *semP = NULL;
-
     semP = InitSemaphore(cmd);
     if(SEM_FAILED == semP)
     {
         errExit("sem_open");
     }
-    
-    InitSemAct();
-    system(" ls -al /dev/shm/sem.*|more ");
 
-    return sem_actions[(size_t)cmd[2][0]] (semP,cmd);
+    InitSemAct();
+   
+    
+    return sem_actions[(size_t)cmd[2][0]] (semP, atoi(cmd[2]));
 }
 
-static int DoExit(sem_t *sem, const char **cmd)
+static int DoNothing(sem_t *sem, unsigned int val)
 {
+     if(FAIL == sem_close(sem))
+        errExit("sem_close");
+    
+    (void)val;
+     system(" ls -al /dev/shm/sem.*|more ");
+    return GREAT_SUCCESS;
+}
+
+static int DoExit(sem_t *sem, unsigned int val)
+{
+    if (val)
+    {
+        if (curr_process_sem_val_g == 0)
+        {
+            
+            DoDecrement(sem,curr_process_sem_val_g);
+        }
+        else
+        {
+            
+            curr_process_sem_val_g -= 1;
+            
+            DoIncrement(sem,curr_process_sem_val_g);
+        }
+    }
     if(FAIL == sem_close(sem))
         errExit("sem_close");
     
-    (void)cmd;
+    (void)val;
+     system(" ls -al /dev/shm/sem.*|more ");
     return GREAT_SUCCESS;
 }
 
-static int DoView(sem_t *sem, const char **cmd)
+static int DoView(sem_t *sem, unsigned int val)
 {
-    int val = 0;
-    sem = sem_open(cmd[1], O_EXCL);
-    if( FAIL == sem_getvalue(sem, &val))
+    int value = 0;
+   
+    if( FAIL == sem_getvalue(sem, &value))
         errExit("sem_getvalue");
     
-    printf("getval view is %d\n", val);
+    printf("getval view is %d\n", value);
+    if(FAIL == sem_close(sem))
+        errExit("sem_close");
+
+    (void)val;
+     system(" ls -al /dev/shm/sem.*|more ");
     return GREAT_SUCCESS;
 }
 
-static int DoUnlink(sem_t *sem, const char **cmd)
+static int DoUnlink(sem_t *sem, unsigned int val)
 {
-    sem = sem_open(cmd[1], O_EXCL);
-    if( FAIL == sem_unlink(cmd[1]))
+    
+    if( FAIL == sem_unlink(name_g))
         errExit("sem_unlink");
+
+    if(FAIL == sem_close(sem))
+        errExit("sem_close");
     
     (void)sem;
+     system(" ls -al /dev/shm/sem.*|more ");
     return GREAT_SUCCESS;
 }
 
-static int DoDecrement(sem_t *sem, const char **cmd)
+static int DoDecrement(sem_t *sem, unsigned int val)
 {
-    int sem_val = atoi(cmd[2]);
-    sem = sem_open(cmd[1], O_EXCL);
+    
     if( EAGAIN == sem_trywait(sem))
         errExit("sem_trywait");
-    sem_val = atoi(cmd[2]);
-    printf("post dec, val is is %d\n", sem_val);
+   
+    printf("post dec, val is is %d\n", val);
     printf("%ld sem_wait() succeeded\n", (long) getpid());
+    
+    if (curr_process_sem_val_g)
+    {
+        curr_process_sem_val_g -= 1;
+    }
+
+    if(FAIL == sem_close(sem))
+        errExit("sem_close");
+
+    system(" ls -al /dev/shm/sem.*|more ");
     return GREAT_SUCCESS;
 }
 
-static int DoIncrement(sem_t *sem, const char **cmd)
+static int DoIncrement(sem_t *sem, unsigned int val)
 {
-    sem = sem_open(cmd[1], O_EXCL);
-    if( FAIL == sem_post(sem))
+
+    if( FAIL == sem_post(sem) )
         errExit("sem_post");
     
-    (void)cmd;
+    (void)val;
+    curr_process_sem_val_g += 1;
 
+    if(FAIL == sem_close(sem))
+        errExit("sem_close");
+     system(" ls -al /dev/shm/sem.*|more ");
     return GREAT_SUCCESS;
 }
 
