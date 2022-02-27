@@ -1,16 +1,14 @@
 /***********************************
- * Ping Pong quiz - Source File      *
+ * Ping Pong quiz - Source File    *
  * Developer: Tanya                *
- *          Feb 23, 2022           *
- *                                 *
- * Reviewer: Zohar                 *
+ *          Feb 27, 2022           *
+ *                                 *                     
 ************************************/
 #include <stdio.h> /* printf*/
 #include <pthread.h> /* threads.. */
 #include <assert.h> /* assert*/
 #include <unistd.h> /* sleep */
-#include <time.h> /* time*/
-#include <omp.h> /* pragma openMP */
+
 
 pthread_mutex_t mutexi = PTHREAD_MUTEX_INITIALIZER;
 int flag_g = 1;
@@ -43,7 +41,6 @@ void DoPing(void)
         printf("PING!\n");
         while(0 != pthread_create(&threads[!flag_g], NULL, &ThreadFunc, NULL )); 
         pthread_join(threads[!flag_g], NULL );
-
    }
 }
 
@@ -61,7 +58,13 @@ void DoPong(void)
 
 int main(void)
 {
-    DoPing();
-    DoPong();
+    int x = 10;
+    while(x)
+    {
+        DoPing();
+        DoPong();
+    --x;
+    }
+    
     return 0;
 }

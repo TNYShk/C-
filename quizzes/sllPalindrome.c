@@ -14,9 +14,13 @@ typedef struct sll_node
     struct sll_node *next;
 }sll_node_t;
 
-
+int IsSllPalindrome(sll_node_t *head);
 int SLLIsPalindrome(sll_node_t *head);
 int CheckSLL(sll_node_t **, sll_node_t *);
+static size_t SLLCountNodes(sll_node_t *head);
+static sll_node_t *Flip(sll_node_t *head);
+static int CheckFlipped(sll_node_t *head, sll_node_t *flip);
+
 
 int main(void)
 {
@@ -54,7 +58,7 @@ int main(void)
 
 
     (1 == SLLIsPalindrome(head))? printf("Palindrome!\n"): printf("NOT Palindrome\n");
-   
+     (1 == IsSllPalindrome(head))? printf("Palindrome!\n"): printf("NOT Palindrome\n");
     return 0;
 }
 
@@ -76,4 +80,87 @@ int CheckSLL(sll_node_t **start, sll_node_t *end)
     (*start) = (*start)->next;
 
     return result;
+}
+
+
+
+static size_t SLLCountNodes(sll_node_t *head)
+{
+    size_t count = 0;
+
+    while(NULL != head)
+    {
+        ++count;
+        head = head->next;
+    }
+
+    return count;
+}
+
+static sll_node_t *Flip(sll_node_t *head)
+{
+    sll_node_t *temp_node = NULL;
+    sll_node_t *runner = NULL;
+    sll_node_t *next_node = NULL;
+    sll_node_t *new_head = NULL;
+
+    assert(NULL != head);
+
+    temp_node = NULL;
+    runner = head;
+
+    while(NULL != runner->next)
+    {
+        next_node = runner->next;
+        runner->next = temp_node;
+        temp_node = runner;
+        runner = next_node;
+    }
+
+    new_head = runner;
+    runner->next = temp_node;
+    return new_head;
+
+}
+
+int IsSllPalindrome(sll_node_t *head)
+{
+    size_t idx = 0;
+    size_t size = 0;
+    int result = 0;
+    sll_node_t *rev_head = head;
+    
+    assert(NULL != head);
+    size = SLLCountNodes(head);
+
+    size /= 2;
+
+    for(; idx < size + 1; ++idx)
+    {
+        rev_head = rev_head->next;
+    }
+    rev_head = Flip(rev_head);
+
+    result = CheckFlipped(head, rev_head);
+
+    rev_head = Flip(rev_head);
+    return result;
+
+}
+
+static int CheckFlipped(sll_node_t *head, sll_node_t *flip)
+{
+    while(NULL != head)
+    {
+        if((*(int *)head->data) == (*(int *)flip->data))
+        {
+            head = head->next;
+            flip = flip->next;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    return 1;
 }
