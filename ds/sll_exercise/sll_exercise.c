@@ -91,25 +91,28 @@ return 0;
 
 node_t *Flip(node_t *head)
 {
-	node_t *temp1 = NULL, *new_head = NULL, *prev_head = NULL;
+	node_t *temp_node = NULL;
+	node_t *runner = NULL;
+	node_t *next_node = NULL;
+	node_t *new_head = NULL;
 
-	assert (NULL != head);
+	assert(NULL != head);
 
-	prev_head = head;
-	temp1 = prev_head;
-	new_head = temp1->next;
+	temp_node = NULL;
+	runner = head;
 
-	while (NULL != new_head)
+	while(NULL != runner->next)
 	{
-		temp1 = new_head;
-		new_head = temp1->next;
-		temp1->next = prev_head;
-		prev_head = temp1;
+		next_node = runner->next;
+		runner->next = temp_node;
+		temp_node = runner;
 
+		runner = next_node;
 	}
-	head->next = NULL;
-
+	new_head = runner;
+	runner->next = temp_node;
 	return new_head;
+
 }
 
 node_t *FlipRec(node_t *head)
