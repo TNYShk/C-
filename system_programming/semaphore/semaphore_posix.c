@@ -88,21 +88,20 @@ static int DoNothing(sem_t *sem, unsigned int val)
 
 static int DoExit(sem_t *sem, unsigned int val)
 {
-    if (val)
-    {
-        if (curr_process_sem_val_g == 0)
+   if (curr_process_sem_val_g >= 0)
+   {
+        if (curr_process_sem_val_g > 0)
         {
-            
-            DoDecrement(sem,curr_process_sem_val_g);
+                
+            return DoDecrement(sem,curr_process_sem_val_g);
         }
-        else
-        {
-            
-            curr_process_sem_val_g -= 1;
-            
-            DoIncrement(sem,curr_process_sem_val_g);
-        }
+        else 
+            {
+                
+                return DoIncrement(sem,(-1 * curr_process_sem_val_g));
+            }
     }
+
     if(FAIL == sem_close(sem))
         errExit("sem_close");
     
@@ -137,6 +136,7 @@ static int DoUnlink(sem_t *sem, unsigned int val)
         errExit("sem_close");
     
     (void)sem;
+    (void)val;
      system(" ls -al /dev/shm/sem.*|more ");
     return GREAT_SUCCESS;
 }
@@ -168,8 +168,11 @@ static int DoIncrement(sem_t *sem, unsigned int val)
     if( FAIL == sem_post(sem) )
         errExit("sem_post");
     
-    (void)val;
-    curr_process_sem_val_g += 1;
+    if(val)
+    {
+        curr_process_sem_val_g += 1;
+    }
+    
 
     if(FAIL == sem_close(sem))
         errExit("sem_close");
