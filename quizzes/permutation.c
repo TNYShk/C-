@@ -1,15 +1,14 @@
-/**********************************************
- * permutation quiz- C File                               *
- * Developer: Tanya                            *
- * Written:   15/02/2022                       *
- *                                             *
+/***********************************
+ * permutation quiz- C File        *
+ * Developer: Tanya                *
+ * Written:   15/02/2022           *
+ *                                 *
  * Reviewer:                       *
- **********************************************/
-#include <stdlib.h> /* malloc() calloc() free() */  /*******/
+ ***********************************/
+#include <stdlib.h> /* malloc() calloc() free() */ 
 #include <string.h> /* memset() */
-#include <stdio.h>
+#include <stdio.h> /* printf*/
 #include <stdint.h>
-#include <limits.h> /*for LONG_MAX */
 #include <assert.h> /* assert() */
 
 void Permutation(char *string);
@@ -47,8 +46,8 @@ void Permutation1(char *string, size_t idx)
 
     for(i = idx; i < strlen(string); ++i)
     {
-        if (0 != strcmp(string + idx, string + i))
-                GenericSwap(string + idx, string + i);
+       
+        GenericSwap(string + idx, string + i);
         Permutation1(string, idx +1);
         GenericSwap(string + idx, string + i);
     }
