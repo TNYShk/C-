@@ -37,7 +37,7 @@ void CheckArr(size_t);
 void SumOfDivs(void);
 
 /* 
-compile: gd *.c  -lpthread -fopenmp
+compile: gd *.c  -pthread -fopenmp
 run:     time ./a.out
 */
 
@@ -78,7 +78,7 @@ void Ex1_2(void)
 
     for (idx = 0; idx < STOP; ++idx)
     {
-        while(SUCCESS != pthread_create(&thread_id[idx], NULL, &ThreadFunc, NULL ));  
+        while(SUCCESS != pthread_create(&thread_id[idx], NULL, &ThreadFunc, &idx ));  
     }
 
     for (idx = 0; idx < STOP; ++idx)
@@ -100,7 +100,7 @@ void Ex3(void)
     for (;idx < TH_ARR_SIZE; ++idx)
     {
         pthread_t id = 0;
-        while(SUCCESS != pthread_create(&id, NULL, &ThreadFunc, NULL ));
+        while(SUCCESS != pthread_create(&id, NULL, &ThreadFunc, &idx ));
         pthread_detach(id);
     }
 
