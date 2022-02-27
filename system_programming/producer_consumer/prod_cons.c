@@ -6,11 +6,11 @@
  * Reviewer:                       *
 ************************************/
 #include <pthread.h> /* thread*/
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <stdlib.h>   /* exit()*/
+#include <stdio.h> /* fgets, perror*/
+#include <stdlib.h> /* NULL */
+#include <string.h> /* memset*/
+#include <unistd.h> /* perror*/
+
 #include <errno.h>    /* errno */
 #define MAXLEN (4096)
 #define FAIL (-1)
@@ -30,13 +30,15 @@ static char buffer[MAXLEN] = {0};
 void *Producer(void *arg);
 void *Consumer(void *arg);
 
-int main(void )
+int main(void)
 {
     pthread_t prod_thr = 0, cons_thr = 0;
     int prod_id = 0,cons_id = 0;
+
     prod_id = pthread_create(&prod_thr, NULL, &Producer, NULL);
     if(FAIL == prod_id)
          errExit("pthread_create");
+
     cons_id = pthread_create(&cons_thr, NULL, &Consumer, NULL);
     if(FAIL == cons_id)
          errExit("pthread_create");
@@ -58,7 +60,7 @@ void *Producer(void *arg)
             fgets(buffer, MAXLEN, stdin);
             buffer[sizeof(buffer)] = '\0';
             atomic_compare_and_swap(p_lock, PRODUCER, DIRECTOR);
-            spinlock = DIRECTOR;
+           
         } 
     }
 }
