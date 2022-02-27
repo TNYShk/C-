@@ -28,6 +28,7 @@
 #define INVALID_INPUT (1)
 #define OK_EXIT (2)
 #define SUCCESS (0)
+
 typedef int (*sem_act_func)(int semid, char command);
 static sem_act_func sem_actions[LAZY_ASCII] = {NULL};
 
@@ -173,7 +174,7 @@ static int DoView(int semid, char command)
 
 }
 
-static int IncrementSema(int sema_id , int incrent_by , int undo_flag)
+static int IncrementSema(int semid , int incrent_by , int undo_flag)
 {
     struct sembuf op_settings = {0};
 
@@ -188,7 +189,7 @@ static int IncrementSema(int sema_id , int incrent_by , int undo_flag)
         op_settings.sem_flg = SEM_UNDO;
     }
     
-    return (FAIL_SEMA == semop(sema_id , &op_settings ,1)) ? EXIT_FAILURE : EXIT_SUCCESS ;
+    return (FAIL_SEMA == semop(semid , &op_settings ,1)) ? EXIT_FAILURE : EXIT_SUCCESS ;
 }
 
 
@@ -198,7 +199,7 @@ static int DoIncrement(int semid, char command)
     struct sembuf sem_opr = {0};
     printf("for UNDO presss u\n");
     command = getc(stdin);
-    if (command == 'u')
+    if (command == 'u' || command == 'U')
     {
         sem_opr.sem_flg |= SEM_UNDO;
     }
@@ -214,7 +215,7 @@ static int DoDecrement(int semid, char command)
     struct sembuf sem_opr = {0};
     printf("for UNDO presss u\n");
     command = getc(stdin);
-    if (command == 'u')
+    if (command == 'u' || command == 'U')
     {
         sem_opr.sem_flg |= SEM_UNDO;
     }

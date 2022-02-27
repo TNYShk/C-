@@ -35,7 +35,6 @@ int DoExit(char *dowhat, char *name)
 {	
 	(void)dowhat;
 	(void)name;
-	
 	return EXIT;
 }
 
@@ -59,7 +58,8 @@ int DoSystem(char *dowhat, char *name)
 	}
 	fclose(pFile);
 	memset(dowhat, 0, MAXLENG);
-	return (EXIT != remove(name));
+	remove(name);
+	return 0;
 	
 }
 
