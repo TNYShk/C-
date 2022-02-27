@@ -5,14 +5,18 @@
  *                                 *
  * Reviewer:                       *
 ************************************/
-
-#include <pthread.h>
+#include <pthread.h> /* thread*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <stdlib.h>   /* exit()*/
+#include <errno.h>    /* errno */
 #define MAXLEN (4096)
+#define FAIL (-1)
 #define atomic_compare_and_swap(destptr, oldval, newval) __sync_bool_compare_and_swap(destptr, oldval, newval)
+#define errExit(msg) do { perror(msg); exit(EXIT_FAILURE); } while (0) /*error handling macro */
+
 typedef enum locks
 {
     PRODUCER = 0,
@@ -29,9 +33,13 @@ void *Consumer(void *arg);
 int main(void )
 {
     pthread_t prod_thr = 0, cons_thr = 0;
-
-    int prod_id = pthread_create(&prod_thr, NULL, &Producer, NULL);
-    int cons_id = pthread_create(&cons_thr, NULL, &Consumer, NULL);
+    int prod_id = 0,cons_id = 0;
+    prod_id = pthread_create(&prod_thr, NULL, &Producer, NULL);
+    if(FAIL == prod_id)
+         errExit("pthread_create");
+    cons_id = pthread_create(&cons_thr, NULL, &Consumer, NULL);
+    if(FAIL == cons_id)
+         errExit("pthread_create");
     
     pthread_join(prod_thr, NULL);
     pthread_join(cons_thr, NULL);
@@ -53,8 +61,6 @@ void *Producer(void *arg)
             spinlock = DIRECTOR;
         } 
     }
-    
-
 }
 
 void *Consumer(void *arg)
