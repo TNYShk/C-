@@ -82,6 +82,7 @@ static int DoExit(sem_t *sem, const char **cmd)
 static int DoView(sem_t *sem, const char **cmd)
 {
     int val = 0;
+    sem = sem_open(cmd[1], O_EXCL);
     if( FAIL == sem_getvalue(sem, &val))
         errExit("sem_getvalue");
     
@@ -91,6 +92,7 @@ static int DoView(sem_t *sem, const char **cmd)
 
 static int DoUnlink(sem_t *sem, const char **cmd)
 {
+    sem = sem_open(cmd[1], O_EXCL);
     if( FAIL == sem_unlink(cmd[1]))
         errExit("sem_unlink");
     
@@ -101,6 +103,7 @@ static int DoUnlink(sem_t *sem, const char **cmd)
 static int DoDecrement(sem_t *sem, const char **cmd)
 {
     int sem_val = atoi(cmd[2]);
+    sem = sem_open(cmd[1], O_EXCL);
     if( EAGAIN == sem_trywait(sem))
         errExit("sem_trywait");
     sem_val = atoi(cmd[2]);
@@ -111,6 +114,7 @@ static int DoDecrement(sem_t *sem, const char **cmd)
 
 static int DoIncrement(sem_t *sem, const char **cmd)
 {
+    sem = sem_open(cmd[1], O_EXCL);
     if( FAIL == sem_post(sem))
         errExit("sem_post");
     
