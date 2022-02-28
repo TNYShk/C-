@@ -51,7 +51,7 @@ int isEOF_g = 0;
 static sem_t prod_ex4_5 = {0};
 static sem_t consm_ex4_5 = {0};
 static cbuffer_t *cbuffy = NULL;
-
+pthread_mutex_t mutexii = PTHREAD_MUTEX_INITIALIZER;
 void Ex1();
 static void *Producer(void *arg);
 static void *Consumer(void *arg);
@@ -68,13 +68,88 @@ void Ex4();
 static void *ThreadProd4(void *something);
 static void *ThreadCons4(void *something);
 
+void Ex5();
+static void *ThreadProd5(void *something);
+static void *ThreadCons5(void *something);
+
 
 int main(void)
 {
     
-    Ex4();
+    Ex5();
     return 0;
 }
+
+
+void Ex5(void)
+{
+    pthread_t producer[THREADS] = {0}, consumer[THREADS] = {0};
+    size_t idx5 = 0;
+   
+    pthread_mutex_init(&mutexi, NULL);
+    pthread_mutex_init(&mutexii, NULL);
+
+    if(FAIL == sem_init(&prod_ex4_5, 0, THREADS))
+    {
+        errExit("sem_init");
+    }
+    if(FAIL == sem_init(&consm_ex4_5, 0, 0))
+    {
+        errExit("sem_init");
+    }
+
+    cbuffy = CBuffCreate(WORD_SIZE * THREADS);
+
+    for(idx5 = 0; idx5 < THREADS; ++idx5 )
+    {
+        while(SUCCESS != pthread_create(&producer[idx5], NULL, &ThreadProd5, (void *)idx5)); 
+    }
+    for(idx5 = 0; idx5 < THREADS; ++idx5 )
+    {
+        while(SUCCESS != pthread_create(&consumer[idx5], NULL, &ThreadCons5, (void *)idx5));  
+    }
+
+    for(idx5 = 0; idx5 < THREADS; ++idx5 )
+    {
+        pthread_join(producer[idx5], NULL);
+        pthread_join(consumer[idx5], NULL);
+    }
+
+    
+    pthread_mutex_destroy(&mutexi);
+    pthread_mutex_destroy(&mutexii);
+    sem_destroy(&prod_ex4_5);
+    sem_destroy(&consm_ex4_5);
+    CBuffDestroy(cbuffy);
+    cbuffy = NULL;
+}
+
+static void *ThreadProd5(void *something)
+{
+    sem_wait(&prod_ex4_5);
+    pthread_mutex_lock(&mutexi);
+        CBuffWrite(cbuffy, &something, WORD_SIZE);
+    pthread_mutex_unlock(&mutexi);
+    sem_post(&consm_ex4_5);
+    return NULL;
+
+}
+static void *ThreadCons5(void *something)
+{ 
+    size_t read_num = 0;
+    sem_wait(&consm_ex4_5);
+    pthread_mutex_lock(&mutexii);
+    CBuffRead(cbuffy, &read_num, WORD_SIZE);
+    
+    printf("read : %ld\n", read_num);
+    pthread_mutex_unlock(&mutexii);
+    sem_post(&prod_ex4_5);
+    
+    
+    return something;
+}
+
+
 
 
 
@@ -121,8 +196,7 @@ static void *ThreadProd4(void *something)
 {
     sem_wait(&prod_ex4_5);
     pthread_mutex_lock(&mutexi);
-    CBuffWrite(cbuffy, &something, WORD_SIZE);
-
+        CBuffWrite(cbuffy, &something, WORD_SIZE);
     pthread_mutex_unlock(&mutexi);
     sem_post(&consm_ex4_5);
     return NULL;
