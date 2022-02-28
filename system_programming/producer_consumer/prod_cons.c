@@ -102,7 +102,92 @@ static void *ThreadCons(void *something)
 {
     return NULL;
 }
+/*
+void Ex2(void)
+{
+    pthread_t producer[THREADS] = {0}, consumer[THREADS] = {0};
+    sll_prod_cons = SListCreate();
 
+    
+   
+    for(idx_g = 0; idx_g < THREADS; ++idx_g )
+    {
+        while(SUCCESS != pthread_create(&producer[idx_g], NULL, &ThreadProd2, NULL )); 
+        while(SUCCESS != pthread_create(&consumer[idx_g], NULL, &ThreadCons2, NULL ));  
+    }
+   
+  
+    for(idx_g = 0; idx_g < THREADS; ++idx_g )
+    {
+        pthread_detach(producer[idx_g]);
+        pthread_detach(consumer[idx_g]);
+
+    }
+   
+   
+    SListDestroy(sll_prod_cons);
+  
+}
+
+static void *ThreadProd2(void *something)
+{
+    char buf[MAX_INPUT] = {0};
+    int status = SUCCESS;
+    (void)arg;
+
+    while (!isEOF_g)
+    {
+        char *data = NULL;
+
+        memset(buf, 0, MAX_INPUT);
+        if (NULL == fgets(buf, MAX_INPUT, stdin))
+        {
+            isEOF_g = 1;
+            status = !SUCCESS;
+        }
+        else if (NULL == (data = malloc(strlen(buf) + 1)))
+        {
+            status = !SUCCESS;
+        }
+        else
+        {
+            pthread_mutex_lock(&mutexi);
+            status = SListInsertBefore(SListEnd(sll_prod_cons), strcpy(data, buf));
+        
+            pthread_mutex_unlock(&mutexi);
+        }
+
+        if (SUCCESS != status)
+        {
+            return NULL;
+        }
+
+        sleep(0);
+    }
+
+    return NULL;
+
+}
+
+static void *ThreadCons2(void *something)
+{
+    char *reader = NULL;
+    pthread_mutex_lock(&mutexi);
+    while(!SListIsEmpty(sll_prod_cons))
+    {
+        reader = SListGetData((slist_iter_t)sll_prod_cons);
+        SListRemove(SListBegin(sll_prod_cons));
+        pthread_mutex_unlock(&mutexi);
+        printf("reads: %s\n", reader);
+     
+        reader = NULL;
+        sleep(0);
+    }
+    
+    return something;
+}
+
+*/
 
 void Ex2(void)
 {
@@ -145,10 +230,14 @@ static void *ThreadProd2(void *something)
 
 static void *ThreadCons2(void *something)
 {
-    
-    void *reader = SListGetData((slist_iter_t)sll_prod_cons);
-     
+    void *reader = NULL;
     pthread_mutex_lock(&mutexi);
+    reader = SListGetData((slist_iter_t)sll_prod_cons);
+    if(NULL == reader)
+    {
+        sleep(0);
+        return;
+    }
     printf("read: %ld\n", *(size_t *)reader);
         SListRemove(SListBegin(sll_prod_cons));
     pthread_mutex_unlock(&mutexi);
