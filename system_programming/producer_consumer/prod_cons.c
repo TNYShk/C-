@@ -62,7 +62,7 @@ static void *ThreadCons(void *something);
 int main(void)
 {
     
-    Ex1();
+    Ex2();
     return 0;
 }
 
@@ -119,10 +119,9 @@ void Ex2(void)
         pthread_join(producer[idx_g], NULL);
         pthread_join(consumer[idx_g], NULL);
     }
-
-    pthread_mutex_destroy(&mutexi);
    
     SListDestroy(sll_prod_cons);
+    pthread_mutex_destroy(&mutexi);
 }
 
 static void *ThreadProd2(void *something)
