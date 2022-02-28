@@ -128,6 +128,7 @@ static void *Producer_Ex6(void *something)
         {
             pthread_cond_wait(&condition_cond, &condition_mutex);
         }
+        *(int *)something += 5; 
         pthread_mutex_unlock (&condition_mutex);
         
       if(count_g >= COUNT_DONE) return(NULL);
@@ -147,7 +148,7 @@ static void *Consumers_Ex6(void *something)
         pthread_mutex_unlock(&condition_mutex);
 
         pthread_mutex_lock(&count_mutex);
-        *(int *)something += 5; 
+        *(int *)something -= 5; 
         ++count_g;
         printf("Cosumers consumed: %d\n",*(int *)something);
         pthread_mutex_unlock( &count_mutex );
