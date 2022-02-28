@@ -19,7 +19,7 @@
 #define MAXLEN (4096)
 #define FAIL (-1)
 #define SUCCESS (0)
-
+#define THREADS (5)
 #define atomic_compare_and_swap(destptr, oldval, newval) __sync_bool_compare_and_swap(destptr, oldval, newval)
 #define atomic_sync_fetch_and(destptr, flag) __sync_fetch_and_and(destptr, flag)
 #define atomic_sync_fetch_or(destptr, flag) __sync_fetch_and_or(destptr, flag)
@@ -37,14 +37,16 @@ typedef enum locks
 
 /* ex1 */
 volatile int spinlock = PRODUCER;
-volatile int *p_lock = &spinlock;
+
+
 static char buffer[MAXLEN] = {0};
 /* ex2 -3*/
 pthread_mutex_t mutexi = PTHREAD_MUTEX_INITIALIZER;
 static size_t idx_g = 0;
 static sem_t ex3_sem = {0};
-slist_t *sll_prod_cons = NULL;
+static slist_t *sll_prod_cons = NULL;
 
+static int isEOF_g = 0;
 
 void Ex1();
 static void *Producer(void *arg);
@@ -101,23 +103,30 @@ static void *ThreadCons(void *something)
     return NULL;
 }
 
+
 void Ex2(void)
 {
-    pthread_t producer[5] = {0}, consumer[5] = {0};
+    pthread_t producer[THREADS] = {0}, consumer[5] = {0};
+    size_t idx = 0;
     sll_prod_cons = SListCreate();
 
     pthread_mutex_init(&mutexi, NULL);
    
 
-    for(idx_g = 0; idx_g < 5; ++idx_g )
+    for(idx = 0; idx < THREADS; ++idx )
     {
-        while(SUCCESS != pthread_create(&producer[idx_g], NULL, &ThreadProd2, sll_prod_cons )); 
-        while(SUCCESS != pthread_create(&consumer[idx_g], NULL, &ThreadCons2, sll_prod_cons ));  
+        while(SUCCESS != pthread_create(&producer[idx], NULL, &ThreadProd2, &idx_g )); 
+       
     }
-    for(idx_g = 0; idx_g < 5; ++idx_g )
+    for(idx = 0; idx < THREADS; ++idx )
     {
-        pthread_join(producer[idx_g], NULL);
-        pthread_join(consumer[idx_g], NULL);
+       
+        while(SUCCESS != pthread_create(&consumer[idx], NULL, &ThreadCons2, NULL ));  
+    }
+    for(idx = 0; idx < THREADS; ++idx )
+    {
+        pthread_join(producer[idx], NULL);
+        pthread_join(consumer[idx], NULL);
     }
    
     SListDestroy(sll_prod_cons);
@@ -127,27 +136,26 @@ void Ex2(void)
 static void *ThreadProd2(void *something)
 {
     pthread_mutex_lock(&mutexi);
-        fgets(buffer, MAXLEN, stdin);
-        SListInsertBefore(SListEnd((slist_t*)something), &buffer);
+        SListInsertBefore(SListEnd(sll_prod_cons), &something);
+        ++idx_g;
     pthread_mutex_unlock(&mutexi);
 
-    return NULL;
+    return something;
 }
 
 static void *ThreadCons2(void *something)
 {
+    
+    void *reader = SListGetData((slist_iter_t)sll_prod_cons);
+     
     pthread_mutex_lock(&mutexi);
-    memset(buffer, 0 ,MAXLEN);
-    SListRemove(SListBegin((slist_t *)something));
-
+    printf("read: %ld\n", *(size_t *)reader);
+        SListRemove(SListBegin(sll_prod_cons));
     pthread_mutex_unlock(&mutexi);
+    
 
-    return NULL;
+    return something;
 }
-
-
-
-
 
 
 
@@ -177,7 +185,7 @@ static void *Producer(void *arg)
         {
             fgets(buffer, MAXLEN, stdin);
             
-            atomic_compare_and_swap(p_lock, PRODUCER, DIRECTOR);
+            atomic_compare_and_swap(&spinlock, PRODUCER, DIRECTOR);
         } 
         else
         {
@@ -196,7 +204,7 @@ static void *Consumer(void *arg)
             write(STDOUT_FILENO, "string is:\n", 10);
             write(STDOUT_FILENO, buffer, MAXLEN);
             memset(buffer, 0 ,MAXLEN);
-            atomic_compare_and_swap(p_lock, DIRECTOR, PRODUCER);
+            atomic_compare_and_swap(&spinlock, DIRECTOR, PRODUCER);
         }
         else
         {
