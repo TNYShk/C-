@@ -123,7 +123,6 @@ static void *ThreadProd4(void *something)
     pthread_mutex_lock(&mutexi);
     CBuffWrite(cbuffy, &something, WORD_SIZE);
 
-    
     pthread_mutex_unlock(&mutexi);
     sem_post(&consm_ex4_5);
     return NULL;
@@ -140,8 +139,8 @@ static void *ThreadCons4(void *something)
 
     sem_post(&prod_ex4_5);
     pthread_mutex_unlock(&mutexi);
-    (void)something;
-    return NULL;
+    
+    return something;
 }
 
 
