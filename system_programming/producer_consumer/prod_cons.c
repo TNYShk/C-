@@ -26,7 +26,8 @@
 #define atomic_sync_fetch_xor(destptr, flag) __sync_fetch_and_xor(destptr, flag)
 #define errExit(msg) do { perror(msg); exit(EXIT_FAILURE); } while (0) /*error handling macro */
 
-#include "sll.h"
+
+#include "dll.h"
 #include "cir_buffer.h"
 
 typedef enum locks
@@ -42,11 +43,12 @@ volatile int spinlock = PRODUCER;
 static char buffer[MAXLEN] = {0};
 /* ex2 -3*/
 pthread_mutex_t mutexi = PTHREAD_MUTEX_INITIALIZER;
- size_t idx_g = 0;
+size_t idx_g = 0;
 static sem_t ex3_sem = {0};
-static slist_t *sll_prod_cons = NULL;
 
-static int isEOF_g = 0;
+
+static dlist_t *dll_ex2_3 = NULL;
+int isEOF_g = 0;
 
 void Ex1();
 static void *Producer(void *arg);
@@ -57,111 +59,206 @@ static void *ThreadProd2(void *something);
 static void *ThreadCons2(void *something);
 
 void Ex3();
-static void *ThreadProd(void *something);
-static void *ThreadCons(void *something);
+static void *ThreadProd3(void *something);
+static void *ThreadCons3(void *something);
 
 
 int main(void)
 {
     
-    Ex2();
+    Ex3();
     return 0;
 }
 
 
+
+
+
 void Ex3(void)
 {
-    pthread_t producer[5] = {0}, consumer[5] = {0};
-    sll_prod_cons = SListCreate();
+    pthread_t producer[THREADS] = {0}, consumer[THREADS] = {0};
+    size_t idx3 = 0;
+    dll_ex2_3 = DListCreate();
 
     pthread_mutex_init(&mutexi, NULL);
     sem_init(&ex3_sem, 0, 0);
 
-    for(idx_g = 0; idx_g < 5; ++idx_g )
+    for(idx3 = 0; idx3 < THREADS; ++idx3 )
     {
-        while(SUCCESS != pthread_create(&producer[idx_g], NULL, &ThreadProd, sll_prod_cons )); 
-        while(SUCCESS != pthread_create(&consumer[idx_g], NULL, &ThreadCons, sll_prod_cons ));  
+        while(SUCCESS != pthread_create(&producer[idx3], NULL, &ThreadProd3, NULL )); 
     }
-    for(idx_g = 0; idx_g < 5; ++idx_g )
+    for(idx3 = 0; idx3 < THREADS; ++idx3 )
     {
-        pthread_join(producer[idx_g], NULL);
-        pthread_join(consumer[idx_g], NULL);
+        while(SUCCESS != pthread_create(&consumer[idx3], NULL, &ThreadCons3, NULL));  
     }
 
+    for(idx3 = 0; idx3 < THREADS; ++idx3 )
+    {
+        pthread_join(producer[idx3], NULL);
+        pthread_join(consumer[idx3], NULL);
+    }
+
+    DListDestroy(dll_ex2_3);
     pthread_mutex_destroy(&mutexi);
     sem_destroy(&ex3_sem);
-    SListDestroy(sll_prod_cons);
+   
 }
 
 
-static void *ThreadProd(void *something)
+static void *ThreadProd3(void *something)
 {
-    return NULL;
+    char *temp = NULL; 
+    char buffer_l[MAXLEN] = {'\0'};
+    
+    while (!isEOF_g)
+    {
+        pthread_mutex_lock(&mutexi);
+        memset(buffer_l, 0 ,MAXLEN);
+        if (NULL == fgets(buffer_l, MAXLEN, stdin)) /*press ctrl D to change global variable and indicate finishing writing */ 
+        {
+            isEOF_g = 1;
+            pthread_mutex_unlock(&mutexi);
+            sem_post(&ex3_sem);
+            return NULL;
+        }
+        temp = (char *)malloc(strlen(buffer_l) + 1);
+        if (NULL == temp)
+        {
+            pthread_mutex_unlock(&mutexi);
+            errExit("malloc error");
+        }
+
+        strcpy(temp, buffer_l); 
+        DListPushBack(dll_ex2_3, temp);
+        sem_post(&ex3_sem);
+        pthread_mutex_unlock(&mutexi);
+
+        sleep(0); 
+    }
+
+    return something;
+
 }
-static void *ThreadCons(void *something)
+static void *ThreadCons3(void *something)
 {
-    return NULL;
+    
+    while (1)
+    {
+        char *freeir = NULL; 
+        sem_wait(&ex3_sem);
+        if(isEOF_g)
+        {
+            return NULL;
+        }
+
+        pthread_mutex_lock(&mutexi);
+            freeir = (char *)DListPopFront(dll_ex2_3);
+            write(STDOUT_FILENO, "consumer read: \n", strlen("consumer read  "));
+            write(STDOUT_FILENO, freeir, strlen(freeir));
+        pthread_mutex_unlock(&mutexi);
+        
+        free(freeir);
+        freeir = NULL;
+
+        sleep(0);
+    }
+
+    return something;
 }
+
+
+
 
 
 void Ex2(void)
 {
     pthread_t producer[THREADS] = {0}, consumer[5] = {0};
-    size_t idx = 0;
-    sll_prod_cons = SListCreate();
+    size_t idx2 = 0;
+    dll_ex2_3 = DListCreate();
 
     pthread_mutex_init(&mutexi, NULL);
    
+    for(idx2 = 0; idx2 < THREADS; ++idx2 )
+    {
+        while(SUCCESS != pthread_create(&producer[idx2], NULL, &ThreadProd2, NULL )); 
+    }
+    for(idx2 = 0; idx2 < THREADS; ++idx2 )
+    {
+        while(SUCCESS != pthread_create(&consumer[idx2], NULL, &ThreadCons2, NULL));  
+    }
 
-    for(idx = 0; idx < THREADS; ++idx )
+    for(idx2 = 0; idx2 < THREADS; ++idx2 )
     {
-        while(SUCCESS != pthread_create(&producer[idx], NULL, &ThreadProd2, &idx_g )); 
-       
+        pthread_join(producer[idx2], NULL);
+        pthread_join(consumer[idx2], NULL);
     }
-    for(idx = 0; idx < THREADS; ++idx )
-    {
-       
-        while(SUCCESS != pthread_create(&consumer[idx], NULL, &ThreadCons2, NULL ));  
-    }
-    for(idx = 0; idx < THREADS; ++idx )
-    {
-        pthread_join(producer[idx], NULL);
-        pthread_join(consumer[idx], NULL);
-    }
-   
-    SListDestroy(sll_prod_cons);
+
+    DListDestroy(dll_ex2_3);
     pthread_mutex_destroy(&mutexi);
 }
 
+
 static void *ThreadProd2(void *something)
 {
-    pthread_mutex_lock(&mutexi);
-        SListInsertBefore(SListEnd(sll_prod_cons), &something);
-        ++idx_g;
-    pthread_mutex_unlock(&mutexi);
-
-    return something;
-}
-
-static void *ThreadCons2(void *something)
-{
-    void *reader = NULL;
-    while(!SListIsEmpty(sll_prod_cons))
+   char *temp = NULL; 
+    char buffer_l[MAXLEN] = {'\0'};
+    
+    while (!isEOF_g)
     {
         pthread_mutex_lock(&mutexi);
-        reader = SListGetData((slist_iter_t)sll_prod_cons);
-        if(NULL == reader)
+        memset(buffer_l, 0 ,MAXLEN);
+        if (NULL == fgets(buffer_l, MAXLEN, stdin)) /*press ctrl D to change global variable and indicate finishing writing */ 
         {
-            sleep(0);
-            return;
+            isEOF_g = 1;
+            pthread_mutex_unlock(&mutexi);
+            return NULL;
         }
-        printf("read: %ld\n", *(size_t *)reader);
-        SListRemove(SListBegin(sll_prod_cons));
+        temp = (char *)malloc(sizeof(buffer_l));
+        if (NULL == temp)
+        {
+            pthread_mutex_unlock(&mutexi);
+            errExit("malloc error");
+        }
+        strcpy(temp, buffer_l); 
+        DListPushBack(dll_ex2_3, temp);
         pthread_mutex_unlock(&mutexi);
-     }
+
+        sleep(0); 
+    }
+
+    return something;
+
+}
+static void *ThreadCons2(void *something)
+{
+    while (1)
+    {
+        char *freeir = NULL; 
+
+        pthread_mutex_lock(&mutexi);
+        if (!DListIsEmpty(dll_ex2_3))
+        {
+            freeir = DListPopFront(dll_ex2_3);
+            write(STDOUT_FILENO, "consumer read: \n", strlen("consumer read  "));
+            write(STDOUT_FILENO, freeir, strlen(freeir));
+        }
+        pthread_mutex_unlock(&mutexi);
+        
+        if (!freeir && isEOF_g) 
+        {
+            return NULL;
+        }
+
+        free(freeir);
+        freeir = NULL;
+
+        sleep(0);
+    }
 
     return something;
 }
+
+
 
 
 
