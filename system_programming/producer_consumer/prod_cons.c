@@ -43,10 +43,16 @@ static char buffer[MAXLEN] = {0};
 pthread_mutex_t mutexi = PTHREAD_MUTEX_INITIALIZER;
 static size_t idx_g = 0;
 static sem_t ex3_sem = {0};
+slist_t *sll_prod_cons = NULL;
+
 
 void Ex1();
 static void *Producer(void *arg);
 static void *Consumer(void *arg);
+
+void Ex2();
+static void *ThreadProd2(void *something);
+static void *ThreadCons2(void *something);
 
 void Ex3();
 static void *ThreadProd(void *something);
@@ -64,7 +70,7 @@ int main(void)
 void Ex3(void)
 {
     pthread_t producer[5] = {0}, consumer[5] = {0};
-    slist_t *sll_prod_cons = SListCreate();
+    sll_prod_cons = SListCreate();
 
     pthread_mutex_init(&mutexi, NULL);
     sem_init(&ex3_sem, 0, 0);
@@ -95,6 +101,54 @@ static void *ThreadCons(void *something)
     return NULL;
 }
 
+void Ex2(void)
+{
+    pthread_t producer[5] = {0}, consumer[5] = {0};
+    sll_prod_cons = SListCreate();
+
+    pthread_mutex_init(&mutexi, NULL);
+   
+
+    for(idx_g = 0; idx_g < 5; ++idx_g )
+    {
+        while(SUCCESS != pthread_create(&producer[idx_g], NULL, &ThreadProd2, sll_prod_cons )); 
+        while(SUCCESS != pthread_create(&consumer[idx_g], NULL, &ThreadCons2, sll_prod_cons ));  
+    }
+    for(idx_g = 0; idx_g < 5; ++idx_g )
+    {
+        pthread_join(producer[idx_g], NULL);
+        pthread_join(consumer[idx_g], NULL);
+    }
+
+    pthread_mutex_destroy(&mutexi);
+   
+    SListDestroy(sll_prod_cons);
+}
+
+static void *ThreadProd2(void *something)
+{
+    pthread_mutex_lock(&mutexi);
+        fgets(buffer, MAXLEN, stdin);
+        SListInsertBefore(SListEnd((slist_t*)something), &buffer);
+    pthread_mutex_unlock(&mutexi);
+
+    return NULL;
+}
+
+static void *ThreadCons2(void *something)
+{
+    pthread_mutex_lock(&mutexi);
+    memset(buffer, 0 ,MAXLEN);
+    SListRemove(SListBegin((slist_t *)something));
+
+    pthread_mutex_unlock(&mutexi);
+
+    return NULL;
+}
+
+
+
+
 
 
 
@@ -123,7 +177,7 @@ static void *Producer(void *arg)
         if(PRODUCER == spinlock)
         {
             fgets(buffer, MAXLEN, stdin);
-            buffer[sizeof(buffer)] = '\0';
+            
             atomic_compare_and_swap(p_lock, PRODUCER, DIRECTOR);
         } 
         else
