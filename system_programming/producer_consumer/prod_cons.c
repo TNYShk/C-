@@ -15,11 +15,11 @@
 #include <fcntl.h>  /* For O_* constants */
 #include <sys/stat.h> /* For mode constants */
 
-
+#define WORD_SIZE (sizeof(size_t))
 #define MAXLEN (4096)
 #define FAIL (-1)
 #define SUCCESS (0)
-#define THREADS (5)
+#define THREADS (8)
 #define atomic_compare_and_swap(destptr, oldval, newval) __sync_bool_compare_and_swap(destptr, oldval, newval)
 #define atomic_sync_fetch_and(destptr, flag) __sync_fetch_and_and(destptr, flag)
 #define atomic_sync_fetch_or(destptr, flag) __sync_fetch_and_or(destptr, flag)
@@ -38,17 +38,19 @@ typedef enum locks
 
 /* ex1 */
 volatile int spinlock = PRODUCER;
-
-
 static char buffer[MAXLEN] = {0};
+
 /* ex2 -3*/
 pthread_mutex_t mutexi = PTHREAD_MUTEX_INITIALIZER;
 size_t idx_g = 0;
 static sem_t ex3_sem = {0};
-
-
 static dlist_t *dll_ex2_3 = NULL;
 int isEOF_g = 0;
+
+/*ex 4-5 */
+static sem_t prod_ex4_5 = {0};
+static sem_t consm_ex4_5 = {0};
+static cbuffer_t *cbuffy = NULL;
 
 void Ex1();
 static void *Producer(void *arg);
@@ -62,13 +64,87 @@ void Ex3();
 static void *ThreadProd3(void *something);
 static void *ThreadCons3(void *something);
 
+void Ex4();
+static void *ThreadProd4(void *something);
+static void *ThreadCons4(void *something);
+
 
 int main(void)
 {
     
-    Ex3();
+    Ex4();
     return 0;
 }
+
+
+
+void Ex4(void)
+{
+    pthread_t producer[THREADS] = {0}, consumer[THREADS] = {0};
+    size_t idx4 = 0;
+   
+    pthread_mutex_init(&mutexi, NULL);
+    if(FAIL == sem_init(&prod_ex4_5, 0, THREADS))
+    {
+        errExit("sem_init");
+    }
+    if(FAIL == sem_init(&consm_ex4_5, 0, 0))
+    {
+        errExit("sem_init");
+    }
+
+    cbuffy = CBuffCreate(WORD_SIZE * THREADS);
+
+    for(idx4 = 0; idx4 < THREADS; ++idx4 )
+    {
+        while(SUCCESS != pthread_create(&producer[idx4], NULL, &ThreadProd4, (void *)idx4)); 
+    }
+    for(idx4 = 0; idx4 < THREADS; ++idx4 )
+    {
+        while(SUCCESS != pthread_create(&consumer[idx4], NULL, &ThreadCons4, (void *)idx4));  
+    }
+
+    for(idx4 = 0; idx4 < THREADS; ++idx4 )
+    {
+        pthread_join(producer[idx4], NULL);
+        pthread_join(consumer[idx4], NULL);
+    }
+
+    
+    pthread_mutex_destroy(&mutexi);
+    sem_destroy(&prod_ex4_5);
+    sem_destroy(&consm_ex4_5);
+    CBuffDestroy(cbuffy);
+}
+
+static void *ThreadProd4(void *something)
+{
+    sem_wait(&prod_ex4_5);
+    pthread_mutex_lock(&mutexi);
+    CBuffWrite(cbuffy, &something, WORD_SIZE);
+
+    
+    pthread_mutex_unlock(&mutexi);
+    sem_post(&consm_ex4_5);
+    return NULL;
+
+}
+static void *ThreadCons4(void *something)
+{ 
+    size_t read_num = 0;
+    sem_wait(&consm_ex4_5);
+    pthread_mutex_lock(&mutexi);
+    CBuffRead(cbuffy, &read_num, WORD_SIZE);
+    
+    printf("read : %ld\n", read_num);
+
+    sem_post(&prod_ex4_5);
+    pthread_mutex_unlock(&mutexi);
+    (void)something;
+    return NULL;
+}
+
+
 
 
 
@@ -257,9 +333,6 @@ static void *ThreadCons2(void *something)
 
     return something;
 }
-
-
-
 
 
 void Ex1(void)
