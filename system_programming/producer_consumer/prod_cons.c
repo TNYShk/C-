@@ -58,6 +58,10 @@ pthread_mutex_t count_mutex     = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t condition_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t  condition_cond  = PTHREAD_COND_INITIALIZER;
 static sem_t semy_ex6 = {0};
+static size_t message = 0;
+static size_t received = 0;
+static int is_consumed = 0;
+
 int count_g = 0;
 #define COUNT_DONE (5)
 #define COUNT_HALT1 (3)
@@ -87,6 +91,10 @@ static void *ThreadCons5(void *something);
 void Ex6();
 static void *Producer_Ex6(void *something);
 static void *Consumers_Ex6(void *something);
+static void *Producer6(void *something);
+static void *Consumers6(void *something);
+
+
 
 int main(void)
 {
@@ -98,24 +106,36 @@ int main(void)
 
 void Ex6(void)
 {
+    size_t idx6 = 0;
     int consumed_p = 1923;
-    pthread_t producer,consumer1, consumer2, consumer3;
-    sem_init(&semy_ex6, 0, 3);
+    pthread_t producer,consumer[THREADS] = {0};
+    sem_init(&semy_ex6, 0, THREADS);
 
-    pthread_create( &producer, NULL, &Producer_Ex6, &consumed_p);
-    pthread_create( &consumer1, NULL, &Consumers_Ex6, &consumed_p);
-    pthread_create( &consumer2, NULL, &Consumers_Ex6, &consumed_p);
-    pthread_create( &consumer3, NULL, &Consumers_Ex6, &consumed_p);
+    pthread_create(&producer, NULL, &Producer_Ex6, &consumed_p);
+    for(; idx6 < THREADS; ++idx6)
+    {
+        while(SUCCESS != pthread_create(&consumer[idx6], NULL, &Consumers_Ex6, &consumed_p));
+    }
+  
 
     pthread_join( producer, NULL);
-    pthread_join( consumer1, NULL);
-    pthread_join( consumer2, NULL);
-    pthread_join( consumer3, NULL);
+    for(idx6 = 0; idx6 < THREADS; ++ idx6)
+    {
+        pthread_join(consumer[idx6], NULL);
+    }
+    
 
     sem_destroy(&semy_ex6);
     pthread_mutex_destroy(&count_mutex);
     pthread_mutex_destroy(&condition_mutex);
 }
+
+
+static void *Producer6(void *something)
+{
+    return something;
+}
+
 
 
 static void *Producer_Ex6(void *something)
@@ -124,15 +144,20 @@ static void *Producer_Ex6(void *something)
     {
         sem_wait(&semy_ex6);
         pthread_mutex_lock(&condition_mutex);
+        
         while(count_g >= COUNT_HALT1 && count_g <= COUNT_HALT2)
         {
+
             pthread_cond_wait(&condition_cond, &condition_mutex);
         }
-        *(int *)something += 5; 
         pthread_mutex_unlock (&condition_mutex);
         sem_post(&semy_ex6);
-      if(count_g >= COUNT_DONE) return(NULL);
-
+      
+        if(count_g >= COUNT_DONE)
+        {
+            return(NULL);
+        }
+        
     }
 }
 
@@ -154,10 +179,21 @@ static void *Consumers_Ex6(void *something)
         printf("Consumers consumed: %d\n",*(int *)something);
         pthread_mutex_unlock( &count_mutex );
         sem_post(&semy_ex6);
-        if(count_g >= COUNT_DONE) return(NULL);
+
+        if(count_g >= COUNT_DONE)
+        {
+            return(NULL);
+        }
     }
     
 }
+
+
+
+
+
+
+
 
 void Ex5(void)
 {
