@@ -1,31 +1,30 @@
 /***********************************
  * Consumer&Producer - Source File *
  * Developer: Tanya                *
- *          Feb 25, 2022           *
+ *          Feb 28, 2022           *
  *                                 *
- * Reviewer:                       *
+ * Reviewer: Zohar                 *
 ************************************/
-#include <pthread.h> /* thread */
-#include <stdio.h>  /* fgets, perror */
-#include <stdlib.h> /* size_t, NULL */
-#include <string.h> /* memset */
-#include <unistd.h> /* perror */
-#include <errno.h>  /* errno */
-#include <semaphore.h> 
-#include <fcntl.h>  /* For O_* constants */
+#include <pthread.h> /* threads */
+#include <stdio.h>   /* fgets, perror */
+#include <stdlib.h>  /* size_t, NULL */
+#include <string.h>  /* memset */
+#include <unistd.h>  /* perror */
+#include <errno.h>   /* errno */
+#include <semaphore.h> /* semaphore */
+#include <fcntl.h>    /* For O_* constants */
 #include <sys/stat.h> /* For mode constants */
 
 #define WORD_SIZE (sizeof(size_t))
 #define MAXLEN (4096)
 #define FAIL (-1)
 #define SUCCESS (0)
-#define THREADS (3)
+#define THREADS (4)
 #define atomic_compare_and_swap(destptr, oldval, newval) __sync_bool_compare_and_swap(destptr, oldval, newval)
 #define atomic_sync_fetch_and(destptr, flag) __sync_fetch_and_and(destptr, flag)
 #define atomic_sync_fetch_or(destptr, flag) __sync_fetch_and_or(destptr, flag)
 #define atomic_sync_fetch_xor(destptr, flag) __sync_fetch_and_xor(destptr, flag)
 #define errExit(msg) do { perror(msg); exit(EXIT_FAILURE); } while (0) /*error handling macro */
-
 
 #include "dll.h"
 #include "cir_buffer.h"
@@ -58,12 +57,10 @@ pthread_mutex_t count_mutex     = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t condition_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t  condition_cond  = PTHREAD_COND_INITIALIZER;
 static sem_t semy_ex6 = {0};
-static size_t message = 0;
+static int message = 0;
 static size_t received = 0;
 static int is_consumed = 0;
-
 int count_g = 0;
-
 
 
 void Ex1();
@@ -95,7 +92,14 @@ static void DoSomething(int something);
 
 int main(void)
 {
-    
+    /*
+    Ex1();
+    Ex2();
+    Ex3();
+    Ex4();
+    Ex5();
+    */
+    /*Choose your poison: */
     Ex6();
     return 0;
 }
@@ -113,14 +117,12 @@ void Ex6(void)
         while(SUCCESS != pthread_create(&consumer[idx6], NULL, &Consumers_Ex6, NULL));
     }
   
-
     pthread_join( producer, NULL);
     for(idx6 = 0; idx6 < THREADS; ++ idx6)
     {
         pthread_join(consumer[idx6], NULL);
     }
     
-
     sem_destroy(&semy_ex6);
     pthread_mutex_destroy(&count_mutex);
     pthread_mutex_destroy(&condition_mutex);
@@ -131,9 +133,9 @@ static void DoSomething(int something)
 {
     sem_wait(&semy_ex6);
     pthread_mutex_lock(&condition_mutex);
-    message = something;
-    is_consumed = 1;
-    pthread_cond_signal(&condition_cond);
+        message = something;
+        is_consumed = 1;
+        pthread_cond_signal(&condition_cond);
     pthread_mutex_unlock(&condition_mutex);
 }
 
@@ -141,13 +143,14 @@ static void DoSomething(int something)
 
 static void *Producer_Ex6(void *something)
 {
+    (void)something;
     while(count_g < THREADS)
     {
         sem_wait(&semy_ex6);
         pthread_mutex_lock(&condition_mutex);
-        ++count_g;
-        is_consumed = 1;
-        pthread_cond_signal(&condition_cond);
+            ++count_g;
+            is_consumed = 1;
+            pthread_cond_signal(&condition_cond);
         pthread_mutex_unlock(&condition_mutex);
 
         sleep(0);
@@ -159,38 +162,36 @@ static void *Producer_Ex6(void *something)
 
 static void *Consumers_Ex6(void *something)
 {
+   
    while(count_g)
    {
-        pthread_mutex_lock(&condition_mutex);
+      pthread_mutex_lock(&condition_mutex);
         ++received;
         while(!is_consumed)
-         {
+        {
             pthread_cond_wait( &condition_cond, &condition_mutex);
-         }
-         
-         pthread_mutex_unlock(&condition_mutex);
+        }
+      pthread_mutex_unlock(&condition_mutex);
 
-         if (message == FAIL)
-         {
+        if (message == FAIL)
+        {
             return NULL;
-         }
-         printf("consumers: %d\n", count_g);
-         if(THREADS == received)
-         {
+        }
+        printf("consumers: %d\n", count_g);
+        if(THREADS == received)
+        {
             received = 0;
             is_consumed = 0;
             sem_post(&semy_ex6);
-
-         }
-      sleep(0);
-   }
-     if(count_g == THREADS) return NULL;
+        }
+        sleep(0);
+    }
+    if(count_g == THREADS)
+    {
+        return NULL;
+    }  
+    return something;  
 }
-
-
-
-
-
 
 
 
