@@ -19,7 +19,7 @@
 #define MAXLEN (4096)
 #define FAIL (-1)
 #define SUCCESS (0)
-#define THREADS (8)
+#define THREADS (3)
 #define atomic_compare_and_swap(destptr, oldval, newval) __sync_bool_compare_and_swap(destptr, oldval, newval)
 #define atomic_sync_fetch_and(destptr, flag) __sync_fetch_and_and(destptr, flag)
 #define atomic_sync_fetch_or(destptr, flag) __sync_fetch_and_or(destptr, flag)
@@ -63,9 +63,7 @@ static size_t received = 0;
 static int is_consumed = 0;
 
 int count_g = 0;
-#define COUNT_DONE (5)
-#define COUNT_HALT1 (3)
-#define COUNT_HALT2 (4)
+
 
 
 void Ex1();
@@ -91,8 +89,7 @@ static void *ThreadCons5(void *something);
 void Ex6();
 static void *Producer_Ex6(void *something);
 static void *Consumers_Ex6(void *something);
-static void *Producer6(void *something);
-static void *Consumers6(void *something);
+static void DoSomething(int something);
 
 
 
@@ -107,14 +104,13 @@ int main(void)
 void Ex6(void)
 {
     size_t idx6 = 0;
-    int consumed_p = 1923;
     pthread_t producer,consumer[THREADS] = {0};
-    sem_init(&semy_ex6, 0, THREADS);
+    sem_init(&semy_ex6, 0, 1);
 
-    pthread_create(&producer, NULL, &Producer_Ex6, &consumed_p);
+    pthread_create(&producer, NULL, &Producer_Ex6, NULL);
     for(; idx6 < THREADS; ++idx6)
     {
-        while(SUCCESS != pthread_create(&consumer[idx6], NULL, &Consumers_Ex6, &consumed_p));
+        while(SUCCESS != pthread_create(&consumer[idx6], NULL, &Consumers_Ex6, NULL));
     }
   
 
@@ -131,61 +127,66 @@ void Ex6(void)
 }
 
 
-static void *Producer6(void *something)
+static void DoSomething(int something)
 {
-    return something;
+        sem_wait(&semy_ex6);
+        pthread_mutex_lock(&condition_mutex);
+        message = something;
+        is_consumed = 1;
+        pthread_cond_signal(&condition_cond);
+        pthread_mutex_unlock(&condition_mutex);
+
 }
 
 
 
 static void *Producer_Ex6(void *something)
 {
-    while(1)
+    while(count_g < THREADS)
     {
         sem_wait(&semy_ex6);
         pthread_mutex_lock(&condition_mutex);
-        
-        while(count_g >= COUNT_HALT1 && count_g <= COUNT_HALT2)
-        {
+        ++count_g;
+        is_consumed = 1;
+        pthread_cond_signal(&condition_cond);
+        pthread_mutex_unlock(&condition_mutex);
 
-            pthread_cond_wait(&condition_cond, &condition_mutex);
-        }
-        pthread_mutex_unlock (&condition_mutex);
-        sem_post(&semy_ex6);
-      
-        if(count_g >= COUNT_DONE)
-        {
-            return(NULL);
-        }
-        
+        sleep(0);
     }
+    DoSomething(FAIL);
+
+    return NULL;
 }
 
 static void *Consumers_Ex6(void *something)
 {
-    while(1)
-    {
-        sem_wait(&semy_ex6);
+   while(count_g)
+   {
         pthread_mutex_lock(&condition_mutex);
-        if( count_g < COUNT_HALT1 || count_g > COUNT_HALT2)
-        {
-          pthread_cond_signal(&condition_cond);
-        }
-        pthread_mutex_unlock(&condition_mutex);
+        ++received;
+        while(!is_consumed)
+         {
+            pthread_cond_wait( &condition_cond, &condition_mutex);
+         }
+         
+         pthread_mutex_unlock(&condition_mutex);
 
-        pthread_mutex_lock(&count_mutex);
-        *(int *)something -= 5; 
-        ++count_g;
-        printf("Consumers consumed: %d\n",*(int *)something);
-        pthread_mutex_unlock( &count_mutex );
-        sem_post(&semy_ex6);
-
-        if(count_g >= COUNT_DONE)
-        {
-            return(NULL);
-        }
-    }
-    
+         if (count_g == FAIL)
+         {
+           
+            return NULL;
+         }
+         printf("consumers: %d\n", count_g);
+         if(THREADS == received)
+         {
+            
+            received = 0;
+            is_consumed = 0;
+            sem_post(&semy_ex6);
+         }
+     
+   }
+    sleep(0);
 }
 
 
