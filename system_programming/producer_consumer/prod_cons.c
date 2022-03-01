@@ -135,7 +135,7 @@ static void DoSomething(int something)
     pthread_mutex_lock(&condition_mutex);
         message = something;
         is_consumed = 1;
-        pthread_cond_signal(&condition_cond);
+        pthread_cond_broadcast(&condition_cond);
     pthread_mutex_unlock(&condition_mutex);
 }
 
