@@ -22,7 +22,7 @@ ilrd_uid_t UIDCreate(void)
 	ilrd_uid_t ucontainer = {0};
 
 	time_t ttime = time(NULL);
-	ucontainer.u_id = ++uid;
+	ucontainer.u_id = __sync_add_and_fetch(&uid, 1ul);
 	ucontainer.t_id = ttime;
 	ucontainer.p_id = getpid();
 
