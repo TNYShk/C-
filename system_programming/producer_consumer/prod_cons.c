@@ -129,13 +129,12 @@ void Ex6(void)
 
 static void DoSomething(int something)
 {
-        sem_wait(&semy_ex6);
-        pthread_mutex_lock(&condition_mutex);
-        message = something;
-        is_consumed = 0;
-        pthread_cond_signal(&condition_cond);
-        pthread_mutex_unlock(&condition_mutex);
-
+    sem_wait(&semy_ex6);
+    pthread_mutex_lock(&condition_mutex);
+    message = something;
+    is_consumed = 1;
+    pthread_cond_signal(&condition_cond);
+    pthread_mutex_unlock(&condition_mutex);
 }
 
 
@@ -171,7 +170,7 @@ static void *Consumers_Ex6(void *something)
          
          pthread_mutex_unlock(&condition_mutex);
 
-         if (count_g == FAIL)
+         if (message == FAIL)
          {
             return NULL;
          }
@@ -185,7 +184,7 @@ static void *Consumers_Ex6(void *something)
          }
       sleep(0);
    }
-     if(count_g == THREADS)return NULL;
+     if(count_g == THREADS) return NULL;
 }
 
 
