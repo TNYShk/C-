@@ -19,7 +19,8 @@
 #define MAXLEN (4096)
 #define FAIL (-1)
 #define SUCCESS (0)
-#define THREADS (4)
+#define THREADS (8)
+#define ON (1)
 #define atomic_compare_and_swap(destptr, oldval, newval) __sync_bool_compare_and_swap(destptr, oldval, newval)
 #define atomic_sync_fetch_and(destptr, flag) __sync_fetch_and_and(destptr, flag)
 #define atomic_sync_fetch_or(destptr, flag) __sync_fetch_and_or(destptr, flag)
@@ -30,6 +31,20 @@
 
 #include "dll.h"
 #include "cir_buffer.h"
+
+/* JUST AN IDEA
+
+typedef struct sync_mech
+{
+    pthread_mutex_t mutex;
+    pthread_mutex_t cond_mutex;
+    pthread_cond_t cond;
+    sem_t *prod_sem;
+    sem_t *cons_sem;
+    int flag;
+
+}sync_mech_t;
+*/
 
 typedef enum locks
 {
@@ -56,7 +71,6 @@ static cbuffer_t *cbuffy = NULL;
 
 
 /* ex6*/
-
 pthread_mutex_t condition_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t  condition_cond  = PTHREAD_COND_INITIALIZER;
 static sem_t semy_ex6 = {0};
@@ -103,7 +117,7 @@ int main(void)
     Ex5();
     */
     /*Choose your poison: */
-    Ex3();
+    Ex6();
     return 0;
 }
 
@@ -118,8 +132,7 @@ void Ex6(void)
         errExit("sem_init");
     }
 
-
-    pthread_create(&producer, NULL, &Producer_Ex6, NULL);
+    while(SUCCESS != pthread_create(&producer, NULL, &Producer_Ex6, NULL));
     for(; idx6 < THREADS; ++idx6)
     {
         while(SUCCESS != pthread_create(&consumer[idx6], NULL, &Consumers_Ex6, NULL));
@@ -156,8 +169,8 @@ static void *Producer_Ex6(void *something)
     {
         sem_wait(&semy_ex6);
         pthread_mutex_lock(&condition_mutex);
-        atomic_sync_add_fetch(&count_g, 1ul);
-            atomic_sync_fetch_or(&is_consumed, 1);  /* is_consumed = 1;*/
+        atomic_sync_add_fetch(&count_g, 1ul); /*++count_g */
+              is_consumed = 1;                /*  atomic_sync_fetch_or(&is_consumed, 1);*/
             pthread_cond_signal(&condition_cond);
         pthread_mutex_unlock(&condition_mutex);
 
@@ -179,7 +192,7 @@ static void *Consumers_Ex6(void *something)
         {
             pthread_cond_wait( &condition_cond, &condition_mutex);
         }
-         atomic_sync_add_fetch(&received, 1ul);
+         atomic_sync_add_fetch(&received, 1ul); /*++received; */
 
         if (message == FAIL)
         {
@@ -203,7 +216,18 @@ static void *Consumers_Ex6(void *something)
     return something;  
 }
 
+/* 
+typedef struct sync_mech
+{
+    pthread_mutex_t mutex;
+    pthread_mutex_t cond_mutex;
+    pthread_cond_t cond;
+    sem_t sema;
+    sem_t sema;
+    int flag;
 
+}sync_mech_t;
+*/
 
 void Ex5(void)
 {
@@ -242,7 +266,6 @@ void Ex5(void)
         pthread_join(consumer[idx5], NULL);
     }
 
-    
     pthread_mutex_destroy(&mutexi);
     pthread_mutex_destroy(&mutexii);
     sem_destroy(&prod_ex4_5);
@@ -254,21 +277,23 @@ void Ex5(void)
 static void *ThreadProd5(void *something)
 {
     sem_wait(&prod_ex4_5);
+
     pthread_mutex_lock(&mutexi);
         CBuffWrite(cbuffy, &something, WORD_SIZE);
     pthread_mutex_unlock(&mutexi);
     sem_post(&consm_ex4_5);
-    return NULL;
+    
+    return something;
 
 }
 static void *ThreadCons5(void *something)
 { 
     size_t read_num = 0;
+
     sem_wait(&consm_ex4_5);
     pthread_mutex_lock(&mutexii);
-    CBuffRead(cbuffy, &read_num, WORD_SIZE);
-    
-    printf("read : %ld\n", read_num);
+        CBuffRead(cbuffy, &read_num, WORD_SIZE);
+        printf("read : %ld\n", read_num);
     pthread_mutex_unlock(&mutexii);
     sem_post(&prod_ex4_5);
     
@@ -348,9 +373,14 @@ void Ex3(void)
     pthread_t producer[THREADS] = {0}, consumer[THREADS] = {0};
     size_t idx3 = 0;
 
-    dll_ex2_3 = DListCreate();
     pthread_mutex_init(&mutexi, NULL);
-    sem_init(&ex3_sem, 0, 0);
+   
+    if(FAIL == sem_init(&ex3_sem, 0, 0))
+    {
+        errExit("prod_sem_init");
+    }
+
+    dll_ex2_3 = DListCreate();
 
     for(idx3 = 0; idx3 < THREADS; ++idx3 )
     {
@@ -385,7 +415,7 @@ static void *ThreadProd3(void *something)
         memset(buffer_l, 0 ,MAXLEN);
         if (NULL == fgets(buffer_l, MAXLEN, stdin)) 
         {
-            atomic_sync_fetch_or(&isEOF_g, 1);  /* isEOF_g = 1;*/
+               isEOF_g = ON; /*atomic_sync_fetch_or(&isEOF_g, 1);*/
             
             pthread_mutex_unlock(&mutexi);
             sem_post(&ex3_sem);
@@ -425,7 +455,6 @@ static void *ThreadCons3(void *something)
 
         pthread_mutex_lock(&mutexi);
             releaser = (char *)DListPopFront(dll_ex2_3);
-
             write(STDOUT_FILENO, "consumer read: \n", strlen("consumer read  "));
             write(STDOUT_FILENO, releaser, strlen(releaser));
         pthread_mutex_unlock(&mutexi);
@@ -481,7 +510,7 @@ static void *ThreadProd2(void *something)
         memset(buffer_l, 0 ,MAXLEN);
         if (NULL == fgets(buffer_l, MAXLEN, stdin)) 
         {
-            atomic_compare_and_swap(&isEOF_g, PRODUCER, DIRECTOR); /*isEOF_g = 1;*/
+            isEOF_g = 1; /*atomic_compare_and_swap(&isEOF_g, PRODUCER, DIRECTOR);*/
             pthread_mutex_unlock(&mutexi);
             return NULL;
         }
@@ -503,7 +532,7 @@ static void *ThreadProd2(void *something)
 }
 static void *ThreadCons2(void *something)
 {
-    while (1)
+    while(1)
     {
         char *releaser = NULL; 
 
