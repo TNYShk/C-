@@ -53,7 +53,7 @@ static cbuffer_t *cbuffy = NULL;
 pthread_mutex_t mutexii = PTHREAD_MUTEX_INITIALIZER;
 
 /* ex6*/
-pthread_mutex_t count_mutex     = PTHREAD_MUTEX_INITIALIZER;
+
 pthread_mutex_t condition_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t  condition_cond  = PTHREAD_COND_INITIALIZER;
 static sem_t semy_ex6 = {0};
@@ -124,7 +124,7 @@ void Ex6(void)
     }
     
     sem_destroy(&semy_ex6);
-    pthread_mutex_destroy(&count_mutex);
+  
     pthread_mutex_destroy(&condition_mutex);
 }
 
