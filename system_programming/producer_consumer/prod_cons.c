@@ -132,7 +132,7 @@ static void DoSomething(int something)
         sem_wait(&semy_ex6);
         pthread_mutex_lock(&condition_mutex);
         message = something;
-        is_consumed = 1;
+        is_consumed = 0;
         pthread_cond_signal(&condition_cond);
         pthread_mutex_unlock(&condition_mutex);
 
@@ -173,20 +173,19 @@ static void *Consumers_Ex6(void *something)
 
          if (count_g == FAIL)
          {
-           
             return NULL;
          }
          printf("consumers: %d\n", count_g);
          if(THREADS == received)
          {
-            
             received = 0;
             is_consumed = 0;
             sem_post(&semy_ex6);
+
          }
-     
+      sleep(0);
    }
-    sleep(0);
+     if(count_g == THREADS)return NULL;
 }
 
 
