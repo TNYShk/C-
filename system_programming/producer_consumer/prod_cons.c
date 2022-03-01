@@ -166,11 +166,12 @@ static void *Consumers_Ex6(void *something)
    while(count_g)
    {
       pthread_mutex_lock(&condition_mutex);
-        ++received;
+        
         while(!is_consumed)
         {
             pthread_cond_wait( &condition_cond, &condition_mutex);
         }
+        ++received;
       pthread_mutex_unlock(&condition_mutex);
 
         if (message == FAIL)
