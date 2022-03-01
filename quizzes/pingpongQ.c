@@ -8,63 +8,64 @@
 #include <pthread.h> /* threads.. */
 #include <assert.h> /* assert*/
 #include <unistd.h> /* sleep */
+#include <fcntl.h>  /* O_* const.*/
+#include <sys/stat.h> /* mode const. */
+#include <semaphore.h> /* sem_t*/
+
+#define SUCCESS (0)
+
+pthread_t pingpong[2] = {0};
+sem_t pingS;
+sem_t pongS;
 
 
-pthread_mutex_t mutexi = PTHREAD_MUTEX_INITIALIZER;
-int flag_g = 1;
-pthread_t threads[2] = {0};
-
-
-
-
-static void *ThreadFunc(void *dummyPtr);
-void DoPong(void);
-void DoPing(void);
-
-
-
-
-
-static void *ThreadFunc(void *dummyPtr)
-{
-    pthread_mutex_lock(&mutexi);
-    flag_g = 0;
-    pthread_mutex_unlock(&mutexi);
-    return dummyPtr;
-}
-
-void DoPing(void)
-{
-    
-   while(flag_g)
-   {
-        printf("PING!\n");
-        while(0 != pthread_create(&threads[!flag_g], NULL, &ThreadFunc, NULL )); 
-        pthread_join(threads[!flag_g], NULL );
-   }
-}
-
-void DoPong(void)
-{
-    flag_g = 1;
-    while(flag_g)
-    {
-        printf("PONG!\n");
-        while(0 != pthread_create(&threads[flag_g], NULL, &ThreadFunc, NULL ));  
-        pthread_join(threads[flag_g], NULL );
-    }
-}
+void *DoPong(void *);
+void *DoPing(void *);
 
 
 int main(void)
 {
-    int x = 10;
-    while(x)
-    {
-        DoPing();
-        DoPong();
-    --x;
-    }
+        size_t timer = 100;
+        sem_init(&pingS, 0 ,1);
+        sem_init(&pongS, 0, 0);
+
+        while(SUCCESS != pthread_create(&pingpong[SUCCESS], NULL, &DoPing, NULL));
+        while(SUCCESS != pthread_create(&pingpong[!SUCCESS], NULL, &DoPong, NULL));
+
+        while(--timer)
+        {
+            sleep(0);
+            pthread_detach(pingpong[SUCCESS]);
+            pthread_detach(pingpong[!SUCCESS]);
+        }
     
+  
     return 0;
+}
+
+
+
+void *DoPing(void *something)
+{
+    
+   while(1)
+   {
+        sem_wait(&pingS);
+        printf("PING!\n");
+        sem_post(&pongS);
+   }
+   return something;
+}
+
+void *DoPong(void *something)
+{
+    
+    while(1)
+    {
+        sem_wait(&pongS);
+        printf("PONG!\n");
+        sem_post(&pingS);
+        
+    }
+    return something;
 }

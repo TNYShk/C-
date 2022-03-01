@@ -130,7 +130,7 @@ static void *Producer_Ex6(void *something)
         }
         *(int *)something += 5; 
         pthread_mutex_unlock (&condition_mutex);
-        
+        sem_post(&semy_ex6);
       if(count_g >= COUNT_DONE) return(NULL);
 
     }
@@ -140,6 +140,7 @@ static void *Consumers_Ex6(void *something)
 {
     while(1)
     {
+        sem_wait(&semy_ex6);
         pthread_mutex_lock(&condition_mutex);
         if( count_g < COUNT_HALT1 || count_g > COUNT_HALT2)
         {
@@ -150,7 +151,7 @@ static void *Consumers_Ex6(void *something)
         pthread_mutex_lock(&count_mutex);
         *(int *)something -= 5; 
         ++count_g;
-        printf("Cosumers consumed: %d\n",*(int *)something);
+        printf("Consumers consumed: %d\n",*(int *)something);
         pthread_mutex_unlock( &count_mutex );
         sem_post(&semy_ex6);
         if(count_g >= COUNT_DONE) return(NULL);
