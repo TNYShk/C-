@@ -29,27 +29,15 @@
 
 #define errExit(msg) do { perror(msg); exit(EXIT_FAILURE); } while (0) /*error handling macro */
 
-#include "dll.h"
-#include "cir_buffer.h"
+#include "dll.h" /* ds for ex 2-3 */
+#include "cir_buffer.h" /* ds for ex 4-5 */
 
-/* JUST AN IDEA
 
-typedef struct sync_mech
-{
-    pthread_mutex_t mutex;
-    pthread_mutex_t cond_mutex;
-    pthread_cond_t cond;
-    sem_t *prod_sem;
-    sem_t *cons_sem;
-    int flag;
-
-}sync_mech_t;
-*/
 
 typedef enum locks
 {
     PRODUCER = 0,
-    DIRECTOR
+    CONSUMER
 }locks_t;
 
 /* ex1 */
@@ -117,7 +105,7 @@ int main(void)
     Ex5();
     */
     /*Choose your poison: */
-    Ex6();
+    Ex2();
     return 0;
 }
 
@@ -145,7 +133,6 @@ void Ex6(void)
     }
     
     sem_destroy(&semy_ex6);
-  
     pthread_mutex_destroy(&condition_mutex);
 }
 
@@ -154,9 +141,9 @@ static void DoSomething(int something)
 {
     sem_wait(&semy_ex6);
     pthread_mutex_lock(&condition_mutex);
-        message = something;
-        atomic_sync_fetch_or(&is_consumed, 1);  /* is_consumed = 1;*/
-        pthread_cond_broadcast(&condition_cond);
+    message = something;
+    atomic_sync_fetch_or(&is_consumed, 1);  /* is_consumed = 1;*/
+    pthread_cond_broadcast(&condition_cond);
     pthread_mutex_unlock(&condition_mutex);
 }
 
@@ -170,20 +157,19 @@ static void *Producer_Ex6(void *something)
         sem_wait(&semy_ex6);
         pthread_mutex_lock(&condition_mutex);
         atomic_sync_add_fetch(&count_g, 1ul); /*++count_g */
-              is_consumed = 1;                /*  atomic_sync_fetch_or(&is_consumed, 1);*/
-            pthread_cond_signal(&condition_cond);
+        is_consumed = 1;                /*  atomic_sync_fetch_or(&is_consumed, 1);*/
+        pthread_cond_signal(&condition_cond);
         pthread_mutex_unlock(&condition_mutex);
 
         sleep(0);
     }
     DoSomething(FAIL);
 
-    return NULL;
+    return something;
 }
 
 static void *Consumers_Ex6(void *something)
 {
-   
    while(count_g)
    {
       pthread_mutex_lock(&condition_mutex);
@@ -192,7 +178,7 @@ static void *Consumers_Ex6(void *something)
         {
             pthread_cond_wait( &condition_cond, &condition_mutex);
         }
-         atomic_sync_add_fetch(&received, 1ul); /*++received; */
+        atomic_sync_add_fetch(&received, 1ul); /*++received; */
 
         if (message == FAIL)
         {
@@ -216,26 +202,12 @@ static void *Consumers_Ex6(void *something)
     return something;  
 }
 
-/* 
-typedef struct sync_mech
-{
-    pthread_mutex_t mutex;
-    pthread_mutex_t cond_mutex;
-    pthread_cond_t cond;
-    sem_t sema;
-    sem_t sema;
-    int flag;
 
-}sync_mech_t;
-*/
 
 void Ex5(void)
 {
     pthread_t producer[THREADS] = {0}, consumer[THREADS] = {0};
     size_t idx5 = 0;
-   
-    pthread_mutex_init(&mutexi, NULL);
-    pthread_mutex_init(&mutexii, NULL);
 
     if(FAIL == sem_init(&prod_ex4_5, 0, THREADS))
     {
@@ -271,7 +243,6 @@ void Ex5(void)
     sem_destroy(&prod_ex4_5);
     sem_destroy(&consm_ex4_5);
     CBuffDestroy(cbuffy);
-    cbuffy = NULL;
 }
 
 static void *ThreadProd5(void *something)
@@ -279,8 +250,11 @@ static void *ThreadProd5(void *something)
     sem_wait(&prod_ex4_5);
 
     pthread_mutex_lock(&mutexi);
-        CBuffWrite(cbuffy, &something, WORD_SIZE);
+
+    CBuffWrite(cbuffy, &something, WORD_SIZE);
+    
     pthread_mutex_unlock(&mutexi);
+    
     sem_post(&consm_ex4_5);
     
     return something;
@@ -291,10 +265,14 @@ static void *ThreadCons5(void *something)
     size_t read_num = 0;
 
     sem_wait(&consm_ex4_5);
+
     pthread_mutex_lock(&mutexii);
-        CBuffRead(cbuffy, &read_num, WORD_SIZE);
-        printf("read : %ld\n", read_num);
+    
+    CBuffRead(cbuffy, &read_num, WORD_SIZE);
+    printf("read : %ld\n", read_num);
+    
     pthread_mutex_unlock(&mutexii);
+    
     sem_post(&prod_ex4_5);
     
     return something;
@@ -306,10 +284,10 @@ static void *ThreadCons5(void *something)
 
 void Ex4(void)
 {
-    pthread_t producer[THREADS] = {0}, consumer[THREADS] = {0};
+    pthread_t producer[THREADS] = {0};
+    pthread_t consumer[THREADS] = {0};
     size_t idx4 = 0;
    
-    pthread_mutex_init(&mutexi, NULL);
     if(FAIL == sem_init(&prod_ex4_5, 0, THREADS))
     {
         errExit("sem_init");
@@ -346,10 +324,13 @@ void Ex4(void)
 static void *ThreadProd4(void *something)
 {
     sem_wait(&prod_ex4_5);
+
     pthread_mutex_lock(&mutexi);
-        CBuffWrite(cbuffy, &something, WORD_SIZE);
+    CBuffWrite(cbuffy, &something, WORD_SIZE);
     pthread_mutex_unlock(&mutexi);
+    
     sem_post(&consm_ex4_5);
+
     return NULL;
 
 }
@@ -358,23 +339,23 @@ static void *ThreadCons4(void *something)
     size_t read_num = 0;
 
     sem_wait(&consm_ex4_5);
+
     pthread_mutex_lock(&mutexi);
-        CBuffRead(cbuffy, &read_num, WORD_SIZE);
-        printf("read : %ld\n", read_num);
-        sem_post(&prod_ex4_5);
-    pthread_mutex_unlock(&mutexi);
+    CBuffRead(cbuffy, &read_num, WORD_SIZE);
+    printf("read : %ld\n", read_num);
     
+    pthread_mutex_unlock(&mutexi);
+    sem_post(&prod_ex4_5);
     return something;
 }
 
 
 void Ex3(void)
 {
-    pthread_t producer[THREADS] = {0}, consumer[THREADS] = {0};
+    pthread_t producer[THREADS] = {0}; 
+    pthread_t consumer[THREADS] = {0};
     size_t idx3 = 0;
 
-    pthread_mutex_init(&mutexi, NULL);
-   
     if(FAIL == sem_init(&ex3_sem, 0, 0))
     {
         errExit("prod_sem_init");
@@ -400,7 +381,7 @@ void Ex3(void)
     DListDestroy(dll_ex2_3);
     pthread_mutex_destroy(&mutexi);
     sem_destroy(&ex3_sem);
-    dll_ex2_3 = NULL;
+    
 }
 
 
@@ -472,11 +453,10 @@ static void *ThreadCons3(void *something)
 
 void Ex2(void)
 {
-    pthread_t producer[THREADS] = {0}, consumer[THREADS] = {0};
+    pthread_t producer[THREADS] = {0}; 
+    pthread_t consumer[THREADS] = {0};
     size_t idx2 = 0;
     dll_ex2_3 = DListCreate();
-
-    pthread_mutex_init(&mutexi, NULL);
    
     for(idx2 = 0; idx2 < THREADS; ++idx2 )
     {
@@ -495,7 +475,6 @@ void Ex2(void)
 
     DListDestroy(dll_ex2_3);
     pthread_mutex_destroy(&mutexi);
-    dll_ex2_3 = NULL;
 }
 
 
@@ -506,23 +485,26 @@ static void *ThreadProd2(void *something)
     
     while (!isEOF_g)
     {
-        pthread_mutex_lock(&mutexi);
         memset(buffer_l, 0 ,MAXLEN);
+        pthread_mutex_lock(&mutexi);
         if (NULL == fgets(buffer_l, MAXLEN, stdin)) 
         {
-            isEOF_g = 1; /*atomic_compare_and_swap(&isEOF_g, PRODUCER, DIRECTOR);*/
+            isEOF_g = 1; /*atomic_compare_and_swap(&isEOF_g, PRODUCER, CONSUMER);*/
             pthread_mutex_unlock(&mutexi);
             return NULL;
         }
-        link_node = (char *)malloc(sizeof(buffer_l));
-        if (NULL == link_node)
+        else
         {
+            link_node = (char *)malloc(sizeof(buffer_l));
+            if (NULL == link_node)
+            {
+                pthread_mutex_unlock(&mutexi);
+                errExit("malloc error");
+            }
+            strcpy(link_node, buffer_l); 
+            DListPushBack(dll_ex2_3, link_node);
             pthread_mutex_unlock(&mutexi);
-            errExit("malloc error");
         }
-        strcpy(link_node, buffer_l); 
-        DListPushBack(dll_ex2_3, link_node);
-        pthread_mutex_unlock(&mutexi);
 
         sleep(0); 
     }
@@ -590,7 +572,7 @@ static void *Producer(void *arg)
         {
             fgets(buffer, MAXLEN, stdin);
             
-            atomic_compare_and_swap(&spinlock, PRODUCER, DIRECTOR);
+            atomic_compare_and_swap(&spinlock, PRODUCER, CONSUMER);
         } 
         else
         {
@@ -604,12 +586,12 @@ static void *Consumer(void *arg)
     (void)arg;
     while(1)
     {
-        if(DIRECTOR == spinlock)
+        if(CONSUMER == spinlock)
         {
             write(STDOUT_FILENO, "string is:\n", 10);
             write(STDOUT_FILENO, buffer, MAXLEN);
             memset(buffer, 0 ,MAXLEN);
-            atomic_compare_and_swap(&spinlock, DIRECTOR, PRODUCER);
+            atomic_compare_and_swap(&spinlock, CONSUMER, PRODUCER);
         }
         else
         {
