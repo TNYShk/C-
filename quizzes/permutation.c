@@ -18,7 +18,7 @@ void Permutation1(char *string, size_t idx);
 
 int main (void)
 {
-    char string[10] = "ABC";
+    char string[10] = "ZOTEZ";
     char another[10]= "ABC";
     Permutation(string);
     printf("\n");
