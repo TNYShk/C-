@@ -122,7 +122,7 @@ size_t RecStrLen(const char *str)
 		return 0;
 	}
 
-	return (1 + RecStrLen(++str));
+	return (1 + RecStrLen(str + 1));
 }
 
 int RecStrCmp(const char *s1, const char *s2)
@@ -135,7 +135,7 @@ int RecStrCmp(const char *s1, const char *s2)
 		return (*s1 - *s2);
 	}
 	
-	return RecStrCmp(++s1, ++s2);
+	return RecStrCmp(s1 + 1, s2 + 1);
 }
 
 
@@ -152,7 +152,7 @@ char *RecStrCpy(char *dest, const char *src)
 		return dest;
 	}
 	
-	return (RecStrCpy(++dest, ++src) -1);
+	return (RecStrCpy(dest + 1, src + 1) -1);
 }
 
 
@@ -199,7 +199,7 @@ static int RecStrnCmp(const char *s1, const char *s2, size_t len)
 		return (*s1 - *s2);
 	}
 	
-	return RecStrnCmp(++s1, ++s2,--len);
+	return RecStrnCmp(s1 + 1, s2 + 1,--len);
 }
 
 

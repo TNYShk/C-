@@ -105,7 +105,7 @@ static void TestStringH()
 	char *haystack = "%$#@!^%";
 	char *needle = "!^";
 	printf("\n\t----------------------------Recursive string.h-------------------------------------------\n");
-	space = (char *)calloc(strlen("testing StrCpy and StrCat   ")+1, sizeof(char));
+	space = (char *)calloc(strlen("testing StrCpy and StrCat   ") + 1, sizeof(char));
 	printf("\nI hate strstr\n");
 	ReverseString(" I hate strstr");
 	printf("\n");
@@ -125,7 +125,7 @@ static void TestStringH()
 	printf("strcmp: %d\n",strcmp("hell", "help"));
 	printf("\n");
 	
-	space1 = (char *)calloc(strlen("testing StrCpy and StrCat   ")+1, sizeof(char));
+	space1 = (char *)calloc(strlen("testing StrCpy and StrCat   ") + 1, sizeof(char));
 	
 	strcpy(space1,"testing StrCpy");
 	RecStrCpy(space, "testing StrCpy");
