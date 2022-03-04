@@ -5,7 +5,7 @@
 #include <stdlib.h> /* mem alllocation*/
 #include <string.h> /* string.h*/
 #include "cir_buffer.h"
-#include "utils.h"
+#include "../../include/utils.h"
 void Testone(void);
 void Testtwo(void);
 void TestThree(void);

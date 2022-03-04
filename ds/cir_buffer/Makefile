@@ -17,7 +17,7 @@ CLEAN_SRC := $(filter-out $(wildcard *_test.c), $(SRCS))
 CLEAN_OBJ :=  $(CLEAN_SRC:.c=.o)
 
 DEPLIB := $(addsuffix .so, $(addprefix lib,$(DEPS)))
-DEPS :=  cir_buffer
+DEPS :=  
 
 LIBS := $(addsuffix .so, $(addprefix lib,$(notdir $(CURDIR))))
 DS := $(notdir $(CURDIR))

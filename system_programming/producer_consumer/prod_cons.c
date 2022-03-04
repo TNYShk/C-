@@ -105,7 +105,10 @@ int main(void)
     Ex5();
     */
     /*Choose your poison: */
-    Ex2();
+    printf("ex4:\n");
+    Ex4();
+    printf("ex5:\n");
+    Ex5();
     return 0;
 }
 
@@ -493,19 +496,17 @@ static void *ThreadProd2(void *something)
             pthread_mutex_unlock(&mutexi);
             return NULL;
         }
-        else
+        
+        link_node = (char *)malloc(sizeof(buffer_l));
+        if (NULL == link_node)
         {
-            link_node = (char *)malloc(sizeof(buffer_l));
-            if (NULL == link_node)
-            {
-                pthread_mutex_unlock(&mutexi);
-                errExit("malloc error");
-            }
-            strcpy(link_node, buffer_l); 
-            DListPushBack(dll_ex2_3, link_node);
             pthread_mutex_unlock(&mutexi);
+            errExit("malloc error");
         }
-
+        strcpy(link_node, buffer_l); 
+        DListPushBack(dll_ex2_3, link_node);
+        pthread_mutex_unlock(&mutexi);
+        
         sleep(0); 
     }
 
