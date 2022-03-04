@@ -97,18 +97,20 @@ static void DoSomething(int something);
 
 int main(void)
 {
-    /*
+    /* Choose your poison: 
     Ex1();
     Ex2();
     Ex3();
     Ex4();
     Ex5();
     */
-    /*Choose your poison: */
+
     printf("ex4:\n");
     Ex4();
-    printf("ex5:\n");
+    printf("\nex5:\n");
     Ex5();
+     printf("\nex6:\n");
+    Ex6();
     return 0;
 }
 
