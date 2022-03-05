@@ -214,6 +214,7 @@ void Ex5(void)
     pthread_t producer[THREADS] = {0}, consumer[THREADS] = {0};
     size_t idx5 = 0;
 
+
     if(FAIL == sem_init(&prod_ex4_5, 0, THREADS))
     {
         errExit("prod_sem_init");

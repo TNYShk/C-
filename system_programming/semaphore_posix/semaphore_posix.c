@@ -16,7 +16,8 @@
 #include <errno.h> /* errno */
 #include <string.h> /*strcmp */
 #define errExit(msg) do { perror(msg); exit(EXIT_FAILURE); } while (0)
-#include "semaphore_posix.h" /* header*/
+#define atomic_sync_fetch_or(destptr, flag) __sync_fetch_and_or(destptr, flag)
+#include "semaphore_posix.h" /* header */
 
 
 #define LAZY_LUT (128)
@@ -95,7 +96,7 @@ static int DoExit(sem_t *sem, unsigned int val)
 {
    if (flag_g)
    {
-        if (curr_process_sem_val_g > 0)
+        if (0 < curr_process_sem_val_g)
         {   
             return DoDecrement(sem, curr_process_sem_val_g);
         }
@@ -141,8 +142,8 @@ static int DoUnlink(sem_t *sem, unsigned int val)
 
 static int DoU(sem_t *sem, unsigned int val)
 {
-    flag_g = 1;
     
+    atomic_sync_fetch_or(&flag_g, 1); /* flag_g = 1;*/
     return DoExit(sem, val);
 }
 
