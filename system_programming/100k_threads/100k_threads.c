@@ -101,6 +101,13 @@ void Ex1_2(void)
         while(SUCCESS != pthread_create(&thread_id[idx], &attr, &ThreadFunc, &idx ));  
     }
     
+    for (idx = 0; idx < STOP; ++idx)
+    {
+        pthread_join(thread_id[idx], NULL );
+    }
+
+
+
     pthread_attr_destroy(&attr);
 
     printf("ex1_2 final counter value: %d\n", counter_g);

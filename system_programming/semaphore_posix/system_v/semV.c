@@ -57,8 +57,14 @@ static int DoIncrement(int semid, char command);
 
 int main(int argc, const char *argv[])
 {
+    if(argc != 2)
+    {
+        printf("not enpugh args! need: ./a.out <sem_name>");
+        return FAIL;
+    }
+
     SysVSemManipulation(argv);
-    (void)argc;
+    
     return 0;
 }
 
@@ -236,7 +242,7 @@ static int DoUnlink(int semid, char command)
     {
         errExit("semctl_remove");
     }
-    printf("removed?\n");
+    printf("removed\n");
     return OK_EXIT;
 }
 
