@@ -25,9 +25,9 @@
 #define GREAT_SUCCESS (0)
 #define SEMNAME (10)
 
-int curr_process_sem_val_g; 
-char name_g[SEMNAME]; 
-unsigned int flag_g;
+static int curr_process_sem_val_g = 0; 
+static char name_g[SEMNAME] = {'\0'};
+static unsigned int flag_g;
 
 
 

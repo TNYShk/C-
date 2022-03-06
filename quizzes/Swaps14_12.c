@@ -6,7 +6,7 @@ void SwapInts(int *a, int *b);
 void StupidSwap(int *a, int *b);
 void SwapVP(void **p1, void **p2);
 
-#define SIZE_OF_TYPE(a) ((size_t)(1+(a*)0))
+#define SIZE_OF_TYPE(a) ((size_t)(1 + (a *)0))
 
 
 void SwapInts(int *a, int *b)
