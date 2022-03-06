@@ -11,9 +11,9 @@
 #include <math.h> /* power */
 
 
-#include "../include/cal.h" /* program header */
-#include "../include/stack.h" /* required module */
-#include "../include/pars.h" /* required module */
+#include "cal.h" /* program header */
+#include "stack.h" /* required module */
+#include "pars.h" /* required module */
 
 #define ASCII (128)
 #define BADOP ('@')
