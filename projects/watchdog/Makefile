@@ -9,14 +9,14 @@ PIC := -fPIC
 CPPFLAGS := -I ../include
 LINKN := -shared
 TARGET:= a.out
-DEBUG := -g
+DEBUG := -g -pthread
 
 SRCS := $(wildcard *.c)
 OBJS := $(SRCS:.c=.o)
 CLEAN_SRC := $(filter-out $(wildcard *_test.c), $(SRCS))
 CLEAN_OBJ :=  $(CLEAN_SRC:.c=.o)
 
-DEPS :=  scheduler semaphore_posix
+DEPS :=  scheduler semaphore_sys_v uid task pq_heap heap dynamic_vector
 DEPLIB := $(addsuffix .so, $(addprefix lib,$(DEPS)))
 
 

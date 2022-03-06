@@ -1,5 +1,6 @@
 #define _XOPEN_SOURCE (700)
-
+#define _POSIX_C_SOURCE 199309L
+#include <time.h> /*time_t */
 #include <assert.h>      /* assert    */
 #include <pthread.h>     /* thread_t  */
 #include <signal.h>      /* sigaction */
@@ -18,15 +19,39 @@
 #define atomic_compare_and_swap(destptr, oldval, newval) __sync_bool_compare_and_swap(destptr, oldval, newval)
 
 #include "scheduler.h"
-#include "semaphore_posix.h"
+#include "semaphore_sys_v.h"
 #include "watchdog.h"
+#include "uid.h"
 
 #define PING_EVERY (1)
 #define CHECK_ALIVE_EVERY (5)
+#define SUCCESS (0)
+#define FAIL (-1)
+
+static void *WrapperSchedSem(void *something);
+static void SomeFailDie(scheduler_t *sched);
+static void SigHandlerAlive(int sig, siginfo_t *info, void *ucontext);
+static void SigHandlerKill(int sig, siginfo_t *info, void *ucontext);
+int TaskPingAlive(void *args);
+int TaskCheckAlive(void *args);
+int PingAlive2(void *args);
+
+
+typedef struct revive
+{
+	char **cmds;
+	scheduler_t *new_sched;
+	pid_t pid_child;
+}revive_t;
+
 
 static int alive_g = 0;
-static int sem_id;
-pid_t pid_child;
+static int semid;
+
+pthread_t watchdog_t_g = {0};
+revive_t new_g;
+
+
 
 
 
@@ -34,10 +59,9 @@ pid_t pid_child;
 int WDStart(int argc, char *argv[])
 {
 	
-	scheduler_t *new_sched = NULL;
+	
 	struct sigaction sa = {0};
 	struct sigaction ka = {0};
-
 	
 
 	ka.sa_sigaction = &SigHandlerKill;
@@ -45,6 +69,7 @@ int WDStart(int argc, char *argv[])
     sa.sa_flags |= SA_SIGINFO;
     ka.sa_flags |= SA_SIGINFO;
 
+    new_g.cmds[1] = argv[1];
   
     if (SUCCESS != sigaction(SIGUSR1, &sa, NULL))
     {
@@ -62,93 +87,130 @@ int WDStart(int argc, char *argv[])
     	errExit("Init_sem");
     }
 
-    new_sched = SchedCreate();
-    assert(NULL != new_sched);
-
-    if(UIDBadUID == SchedAddTask(new_sched, &PingAlive, NULL, NULL, NULL, time(0) + PING_EVERY))
+    new_g.new_sched = SchedCreate();
+    if(NULL == new_g.new_sched)
     {
-    	SchedDestroy(new_sched);
-    	new_sched = NULL;
     	SemRemove(semid);
+    }
+
+    if(UIDIsSame(UIDBadUID,SchedAddTask(new_g.new_sched, &TaskPingAlive, NULL, 
+    							NULL, NULL, time(0) + PING_EVERY)))
+    {
+    	SomeFailDie(new_g.new_sched);
     	errExit("UIDBadUID == SchedAddTask");
     	
     }
-    if(UIDBadUID == SchedAddTask(new_sched, &CheckAlive, NULL, NULL, NULL, time(0) + CHECK_ALIVE_EVERY))
+    if(UIDIsSame(UIDBadUID,SchedAddTask(new_g.new_sched, &TaskCheckAlive, NULL, 
+    					NULL, NULL, time(0) + CHECK_ALIVE_EVERY)))
     {
-    	SchedDestroy(new_sched);
-    	new_sched = NULL;
-    	SemRemove(semid);
+    	SomeFailDie(new_g.new_sched);
     	errExit("UIDBadUID == SchedAddTask");
     }
 		
-   
-    pid_child = fork();
+    new_g.pid_child = fork();
+    if(0 > new_g.pid_child)
+    {
+    	errExit("fork fail");
+    }
+    if (0 == new_g.pid_child) /* in watchdog process */
+    {
+    	SchedRun(new_g.new_sched);
+    	SchedDestroy(new_g.new_sched);
+    }
+    else /* in ward process */
+    {
+    	if(SUCCESS != pthread_create(&watchdog_t_g, NULL, &WrapperSchedSem, new_g.new_sched))
+    	{
+    		SomeFailDie(new_g.new_sched);
+    		kill(new_g.pid_child, SIGUSR2);
+    		errExit("pthread_create");
+    	}
+    }
+    
 
 	return 0;
 }
 
-
-
-static void *WatchdogThread(void *something)
+void WDStop(void)
 {
-    create semaphore
+	kill(new_g.pid_child, SIGUSR2);
+	pthread_join(watchdog_t_g, NULL);
 }
 
-int PingAlive(void *args)
+
+static void SomeFailDie(scheduler_t *sched)
+{
+    SchedDestroy(sched);
+    sched = NULL;
+    SemRemove(semid);
+}
+
+static void *WrapperSchedSem(void *something)
+{
+	SchedRun((scheduler_t *)something);
+	return NULL;
+}
+
+
+
+
+int TaskPingAlive(void *args)
 {
 	(void)args;
 
-	if(pid_child != 0)
+	if(0 != new_g.pid_child)
 	{
-		kill(pid_child, SIGUSR1);
+		kill(new_g.pid_child, SIGUSR1);
 	}
 
 	return PING_EVERY;
+}
+
+int TaskCheckAlive(void *args)
+{
+	(void)args;
+	if(!atomic_compare_and_swap(&alive_g, 1, 0))
+	{
+		/* REVIVE*/
+	
+	}
+	
+	return CHECK_ALIVE_EVERY;
 }
 
 int PingAlive2(void *args)
 {
 	(void)args;
 	
-	if(pid_child == 0)
+	if(0 == new_g.pid_child)
 	{
 		kill(getppid(), SIGUSR2);
 	}
 
-	return 1;
+	return PING_EVERY;
 }
 
 
 
 
-int CheckAlive(void *args)
-{
-	if(atomic_compare_and_swap(&alive_g, 1, 0))
-	{
-		return CHECK_ALIVE_EVERY;
-	
-	}
-	else
-	{
-			/* REVIVE*/
-	}
-	
-}
+
 
 static void SigHandlerAlive(int sig, siginfo_t *info, void *ucontext)
 {
 	atomic_sync_or_and_fetch(&alive_g, 1);
-	pid_child = info->si_pid;
+	new_g.pid_child = info->si_pid;
 	(void)sig;
-	(void)ucontext;
-	
+	(void)ucontext;	
 }
 
 static void SigHandlerKill(int sig, siginfo_t *info, void *ucontext)
 {
-	free scheduler;
-	pthread_join
-	SemRemove(sem_id);
+	SchedStop(new_g.new_sched);
+	pthread_join(new_g.pid_child, NULL);
+	SemRemove(semid);
 	
-	atomic_compare_and_swap(&alive_g, 1, 0)
+	atomic_compare_and_swap(&alive_g, 1, 0);
+	kill(new_g.pid_child, SIGUSR2);
+	
 }
+
