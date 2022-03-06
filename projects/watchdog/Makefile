@@ -9,28 +9,27 @@ PIC := -fPIC
 CPPFLAGS := -I ../include
 LINKN := -shared
 TARGET:= a.out
-DEBUG := -g -pthread
+DEBUG := -g
 
 SRCS := $(wildcard *.c)
 OBJS := $(SRCS:.c=.o)
 CLEAN_SRC := $(filter-out $(wildcard *_test.c), $(SRCS))
 CLEAN_OBJ :=  $(CLEAN_SRC:.c=.o)
 
-DEPS := 
-DEPLIST := $(addsuffix .so, $(addprefix lib,$(DEPS)))
+DEPS :=  scheduler semaphore_posix
+DEPLIB := $(addsuffix .so, $(addprefix lib,$(DEPS)))
 
 
 LIBS := $(addsuffix .so, $(addprefix lib,$(notdir $(CURDIR))))
 DS := $(notdir $(CURDIR))
 
-$(TARGET) : $(filter *_test.c,$(SRCS)) ../libs/debug/$(LIBS)
-	$(CC) $(CPPFLAGS) -L../libs/debug -Wl,-rpath=../libs/debug -Wall -o $@ $(DS)_test.c -l$(DS) $(addprefix -l,$(DEPS)) $(DEBUG)
+$(TARGET) : $(filter *_test.c,$(SRCS)) ../libs/debug/$(LIBS) $(DEPLIB)
+	$(CC) $(CPPFLAGS) -L ../libs/debug -Wl,-rpath=../libs/debug $(CFLAGS) -o $@ $(DS)_test.c -l$(DS) $(addprefix -l,$(DEPS)) $(DEBUG)
 
-$(DEPLIST) : lib%.so : 
-	$(MAKE) -C ../ds/$* all clean
+$(DEPLIB) : lib%.so :
+	$(MAKE) -C ../$* all clean
 
-
-../libs/debug/$(LIBS) : $(CLEAN_OBJ)
+../libs/debug/$(LIBS) : $(CLEAN_OBJ) 
 	$(CC) $(LINKN) $(DEBUG) -o $@ $^ 
 
 $(CLEAN_OBJ) : $(CLEAN_SRC) 
@@ -48,7 +47,8 @@ debug: ../libs/debug/$(LIBS)
 all: release debug
 
 clean:
-	rm -rf $(TARGET) *~ *.o 
+	rm -rf $(TARGET) *~ *.o
 
 test: $(TARGET)
 	./a.out
+

@@ -68,10 +68,10 @@ int DoExit(sem_t *sem)
     if(FAIL == sem_close(sem))
         errExit("sem_close");
    
-   
     system(" ls -al /dev/shm/sem.* | more ");
     return GREAT_SUCCESS;
 }
+
 
 int DoView(sem_t *sem)
 {
@@ -130,8 +130,6 @@ int DoIncrement(sem_t *sem, unsigned int val)
             errExit("sem_post");
     }
     
-
-   
     return GREAT_SUCCESS;
 }
 

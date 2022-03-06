@@ -15,31 +15,20 @@
 #include <stdlib.h> /* atoi */
 #include <errno.h>
 #include <signal.h>
-#include <stdlib.h> /* atoi */
+
 #include "semaphore_posix.h"
 
 #define errExit(msg) do { perror(msg); exit(EXIT_FAILURE); } while (0)
 
 
 
-int main(void)
+int main(int argc, const char *argv[])
 {
 
-   
-    sem_t *test = NULL;
+    assert(2 < argc);
     
-    test = InitSemaphore("tny", 2, 0);
-    
-    printf("value is %d\n", DoView(test));
-
-    DoIncrement(test,1);
-    printf("value is %d\n", DoView(test));
-    DoDecrement(test,2);
-    printf("value is %d\n", DoView(test));
-
+    PosixSemManipulation(argv);
    
-    DoUnlink(test);
-     system(" ls -al /dev/shm/sem.* | more ");
     return 0;
 }
 
