@@ -72,7 +72,7 @@ int WDStart(int argc, char *argv[])
 
     if (SUCCESS != sigaction(SIGUSR1, &sa, NULL))
     {
-        errExit("Failed to set SIGUSR2 handler");
+        errExit("Failed to set SIGUSR1 handler");
     }
 
     if (SUCCESS != sigaction(SIGUSR2, &ka, NULL))
@@ -80,11 +80,13 @@ int WDStart(int argc, char *argv[])
         errExit("Failed to set SIGUSR2 handler");
     }
 
-    semid = InitSem(1);
+    semid = InitSem(0);
     if(0 > semid)
     {
     	errExit("Init_sem");
     }
+    SemDecrement(semid,1);
+    printf("sem val is %d\n", SemGetVal(semid));
     sprintf(semchar,"%d", semid);
     memcpy(revive_g.buffer, argv[0], strlen(argv[0]));
     revive_g.whole = revive_g.buffer + strlen(revive_g.buffer) + 1;
@@ -142,8 +144,11 @@ int WDStart(int argc, char *argv[])
     	}
 
     }
-    pthread_join(watchdog_t_g, NULL);
-  
+    printf("sem val is %d\n", SemGetVal(semid));
+    if(0 == SemGetVal(semid))
+    {
+   	 pthread_join(watchdog_t_g, NULL);
+  	}
 	return 0;
 }
 

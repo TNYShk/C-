@@ -137,8 +137,11 @@ int main(int argc, const char *argv[])
     	SomeFailDie(new_sched);
     	errExit("UIDBadUID == SchedAddTask");
     }
-    
-    SchedRun(new_sched);
+    SemIncrement(sem_id, 1);
+    if(1 == SemGetVal(sem_id))
+    {
+    	SchedRun(new_sched);
+    }
   
 
     return 0;
