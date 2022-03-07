@@ -87,13 +87,13 @@ int SemIncrement(int sem_id, size_t inc_by)
 int SemGetVal(int sem_id)
 {
     union semun arg = {0};
-
-    if(FAIL == semctl(sem_id, 0, GETVAL, arg))
+    int value = 0;
+    if(FAIL == (value = semctl(sem_id, 0, GETVAL, arg)))
     {
-         errExit("semctl");
+        errExit("semctl get val");
     }
     
-    return semctl(sem_id, 0, GETVAL);
+    return value;
 }
 
 int SemDecrement(int sem_id, size_t dec_by)
