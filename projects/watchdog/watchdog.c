@@ -1,17 +1,17 @@
 #define _XOPEN_SOURCE (700)
 #define _POSIX_C_SOURCE 199309L
-#include <time.h> /*time_t */
-#include <assert.h>      /* assert    */
-#include <pthread.h>     /* thread_t  */
-#include <signal.h>      /* sigaction */
-#include <sys/types.h>   /* pid_t     */
-#include <unistd.h>      /* fork      */
-#include <stdio.h>       /* printf    */
-#include <fcntl.h>  /* O_* const.*/
-#include <sys/stat.h> /* mode const. */
-#include <stdlib.h> /* atoi */
-#include <errno.h> /* errno */
-#include <string.h> /*strcmp */
+#include <time.h>        /* time_t      */
+#include <assert.h>      /* assert      */
+#include <pthread.h>     /* thread_t    */
+#include <signal.h>      /* sigaction   */
+#include <sys/types.h>   /* pid_t       */
+#include <unistd.h>      /* fork        */
+#include <stdio.h>       /* printf      */
+#include <fcntl.h>       /* O_* const.  */
+#include <sys/stat.h>    /* mode const. */
+#include <stdlib.h>      /* atoi        */
+#include <errno.h>       /* errno       */
+#include <string.h>      /* strcmp      */
 
 #define errExit(msg) do { perror(msg); exit(EXIT_FAILURE); } while (0)
 #define atomic_sync_fetch_or(destptr, flag) __sync_fetch_and_or(destptr, flag)
@@ -28,15 +28,15 @@
 #define SUCCESS (0)
 #define FAIL (-1)
 #define ARGZ (256)
-#define PATHNAME ("/daniela")
+#define PATHNAME ("/kickdog")
 static void *WrapperSchedSem(void *something);
 static void SomeFailDie(scheduler_t *sched);
 static void SigHandlerAlive(int sig, siginfo_t *info, void *ucontext);
 static void SigHandlerKill(int sig);
-int TaskPingAlive(void *args);
-int TaskCheckAlive(void *args);
-int TaskStopSched(void *pid);
-int PingAlive2(void *args);
+static int TaskPingAlive(void *args);
+static int TaskCheckAlive(void *args);
+static int TaskStopSched(void *pid);
+static int PingAlive2(void *args);
 
 
 typedef struct revive
@@ -127,9 +127,6 @@ int WDStart(int argc, char *argv[])
     if (0 == revive_g.pid_child) /* in watchdog process */
     {
     	strcat(cwd, PATHNAME);
-    	printf("cwd is: %s\n", cwd);
-    	printf("semchar is: %s\n", semchar);
-    	
     	if(FAIL == execl(cwd,cwd,semchar, NULL))
         {
         	errExit("Failed execv");
@@ -143,16 +140,17 @@ int WDStart(int argc, char *argv[])
     		kill(revive_g.pid_child, SIGUSR2);
     		errExit("pthread_create");
     	}
-    }
-    
 
+    }
+    pthread_join(watchdog_t_g, NULL);
+  
 	return 0;
 }
 
 void WDStop(void)
 {
 	kill(revive_g.pid_child, SIGUSR2);
-	pthread_join(watchdog_t_g, NULL);
+	
 }
 
 
@@ -165,14 +163,16 @@ static void SomeFailDie(scheduler_t *sched)
 
 static void *WrapperSchedSem(void *something)
 {
-	SchedRun((scheduler_t *)something);
-	return NULL;
+	
+	printf("schedrun? %d\n",SchedRun((scheduler_t *)something));
+	printf("here?\n");
+	return something;
 }
 
 
 
 
-int TaskPingAlive(void *args)
+static int TaskPingAlive(void *args)
 {
 	(void)args;
 
@@ -184,12 +184,12 @@ int TaskPingAlive(void *args)
 	return PING_EVERY;
 }
 
-int TaskCheckAlive(void *args)
+static int TaskCheckAlive(void *args)
 {
 	(void)args;
 	if(!atomic_compare_and_swap(&alive_g, 1, 0))
 	{
-		
+		write(STDOUT_FILENO, "REVIVE PLEASE\n", strlen("REVIVE PLEASE "));
 		/* REVIVE*/
 	
 	}
@@ -200,7 +200,7 @@ int TaskCheckAlive(void *args)
 
 
 
-int TaskSIGUSR2(void *args)
+static int TaskSIGUSR2(void *args)
 {
 	(void)args;
 	
@@ -218,6 +218,7 @@ static void SigHandlerAlive(int sig, siginfo_t *info, void *ucontext)
 {
 	(void)sig;
 	(void)ucontext;	
+	write(STDOUT_FILENO, "Bark DOG\n", strlen("Bark DOG  "));
 	atomic_sync_or_and_fetch(&alive_g, 1);
 	revive_g.pid_child = info->si_pid;
 	

@@ -42,14 +42,14 @@ pid_t pid_child;
 
 static int sched_flag = 0;
 static int alive_g = 0;
-
+static int sem_id;
 
 static void SomeFailDie(scheduler_t *sched);
 static int TaskPingAlive(void *args);
 static int TaskCheckAlive(void *args);
 static int TaskStopSched(void *pid);
 
-static void SigHandlerKill(int sig);
+static void SigHandlerKill(int sig, siginfo_t *info, void *ucontext);
 static void SigHandlerAlive(int sig, siginfo_t *info, void *ucontext);
 
 
@@ -96,11 +96,13 @@ int main(int argc, const char *argv[])
     struct sigaction sa = {0};
 	struct sigaction ka = {0};
 	
-	int semid = atoi(argv[1]);
-	printf("semid %d\n",semid);
-	ka.sa_handler = &SigHandlerKill;
+	sem_id = atoi(argv[1]);
+	printf("semid %d\n",sem_id);
+
+	ka.sa_sigaction = &SigHandlerKill;
 	sa.sa_sigaction = &SigHandlerAlive;
     sa.sa_flags |= SA_SIGINFO;
+    ka.sa_flags |= SA_SIGINFO;
    
     if (SUCCESS != sigaction(SIGUSR1, &sa, NULL))
     {
@@ -112,7 +114,7 @@ int main(int argc, const char *argv[])
         errExit("Failed to set SIGUSR2 handler");
     }
 	
-/*
+
 	new_sched = SchedCreate();
 
 	if(UIDIsSame(UIDBadUID,SchedAddTask(new_sched, &TaskPingAlive, NULL, 
@@ -136,7 +138,7 @@ int main(int argc, const char *argv[])
     	errExit("UIDBadUID == SchedAddTask");
     }
     
-*/
+    SchedRun(new_sched);
   
 
     return 0;
@@ -145,8 +147,9 @@ int main(int argc, const char *argv[])
 
 static void SomeFailDie(scheduler_t *sched)
 {
-    /*SchedDestroy(sched);*/
+    SchedDestroy(sched);
     sched = NULL;
+    SemRemove(sem_id);
    
 }
 
@@ -154,16 +157,32 @@ static void SigHandlerAlive(int sig, siginfo_t *info, void *ucontext)
 {
 	(void)sig;
 	(void)ucontext;	
+	write(STDOUT_FILENO, "Dog Kicked\n", strlen("Dog Kicked  "));
 	atomic_sync_or_and_fetch(&alive_g, 1);
 	pid_child = info->si_pid;
 	
 }
 
-static void SigHandlerKill(int sig)
+static void SigHandlerKill(int sig, siginfo_t *info, void *ucontext)
 {
+	(void)sig;
+	(void)ucontext;	
+	(void)info;
 	if (NULL != new_sched)
 	{
 		atomic_compare_and_swap(&sched_flag,0 , 1);
 	}
+	printf("signalhandlerkill!\n");
+}
 
+static int TaskSIGUSR2(void *args)
+{
+	(void)args;
+	
+	if(0 == pid_child)
+	{
+		kill(getppid(), SIGUSR2);
+	}
+
+	return SUCCESS;
 }
