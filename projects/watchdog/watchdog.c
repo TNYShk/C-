@@ -1,5 +1,6 @@
 #define _XOPEN_SOURCE (700)
 #define _POSIX_C_SOURCE 199309L
+/* #define _POSIX_C_SOURCE 200112L */
 #include <time.h>        /* time_t      */
 #include <assert.h>      /* assert      */
 #include <pthread.h>     /* thread_t    */
@@ -8,7 +9,7 @@
 #include <unistd.h>      /* fork        */
 #include <stdio.h>       /* printf      */
 #include <fcntl.h>       /* O_* const.  */
-#include <sys/stat.h>    /* mode const. */
+#include <sys/stat.h>    /* mode const. S*/
 #include <stdlib.h>      /* atoi        */
 #include <errno.h>       /* errno       */
 #include <string.h>      /* strcmp      */
@@ -37,13 +38,14 @@ static int TaskPingAlive(void *args);
 static int TaskCheckAlive(void *args);
 static int TaskStopSched(void *pid);
 static int PingAlive2(void *args);
+static void InitSched(void);
+static void Revive(char *argv[]);
 
 
 typedef struct revive
 {
 	char buffer[ARGZ];
 	char *whole;
-	
 	pid_t pid_child;
 }revive_t;
 
@@ -68,7 +70,10 @@ int WDStart(int argc, char *argv[])
 	ka.sa_handler = &SigHandlerKill;
 	sa.sa_sigaction = &SigHandlerAlive;
     sa.sa_flags |= SA_SIGINFO;
-   
+	
+	errno = 0;
+	printf("set env? %d\n",putenv("TNY=26"));
+	printf("errno? %d\n", errno);
 
     if (SUCCESS != sigaction(SIGUSR1, &sa, NULL))
     {
@@ -89,17 +94,52 @@ int WDStart(int argc, char *argv[])
     sprintf(semchar,"%d", semid);
     memcpy(revive_g.buffer, argv[0], strlen(argv[0]));
     revive_g.whole = revive_g.buffer + strlen(revive_g.buffer) + 1;
- 	
+ 	strcat(revive_g.whole, semchar);
+	printf("testing revive_g.whole: %s\n",revive_g.whole );
     /*revive_g.whole = strcat(cwd, revive_g.buffer + 1);
     printf("testing: %s\n",revive_g.whole );*/
-    new_sched = SchedCreate();
-    if(NULL == new_sched)
+	InitSched();
+    
+		
+    revive_g.pid_child = fork();
+    if(0 > revive_g.pid_child)
     {
-    	
-    	SemRemove(semid);
+    	errExit("fork fail");
     }
+    if (0 == revive_g.pid_child) /* in watchdog process */
+    {
+    	strcat(cwd, PATHNAME);
+    	printf("semchar is: %s\n", semchar);
+    	printf("strcat cwd is: %s\n", cwd);
 
-    if(UIDIsSame(UIDBadUID,SchedAddTask(new_sched, &TaskPingAlive, NULL, 
+    	if(FAIL == execl(cwd,cwd,semchar, NULL))
+        {
+        	errExit("Failed execv");
+        }
+    }
+    else /* in ward process */
+    {
+    	if(SUCCESS != pthread_create(&watchdog_t_g, NULL, &WrapperSchedSem, new_sched))
+    	{
+    		SomeFailDie(new_sched);
+    		kill(revive_g.pid_child, SIGUSR2);
+    		errExit("pthread_create");
+    	}
+
+    }
+	
+	return 0;
+}
+
+static void InitSched(void)
+{
+	new_sched = SchedCreate();
+	if(NULL == new_sched)
+	{
+		errExit("SchedCreate failed");
+	}
+
+	 if(UIDIsSame(UIDBadUID,SchedAddTask(new_sched, &TaskPingAlive, NULL, 
     							NULL, NULL, time(0) + PING_EVERY)))
     {
     	SomeFailDie(new_sched);
@@ -119,45 +159,15 @@ int WDStart(int argc, char *argv[])
     	SomeFailDie(new_sched);
     	errExit("UIDBadUID == SchedAddTask");
     }
-
-		
-    revive_g.pid_child = fork();
-    if(0 > revive_g.pid_child)
-    {
-    	errExit("fork fail");
-    }
-    if (0 == revive_g.pid_child) /* in watchdog process */
-    {
-    	strcat(cwd, PATHNAME);
-    	printf("semchar is: %s\n", semchar);
-    	printf("semchar is: %s\n", cwd);
-    	if(FAIL == execl(cwd,cwd,semchar, NULL))
-        {
-        	errExit("Failed execv");
-        }
-    }
-    else /* in ward process */
-    {
-    	if(SUCCESS != pthread_create(&watchdog_t_g, NULL, &WrapperSchedSem, new_sched))
-    	{
-    		SomeFailDie(new_sched);
-    		kill(revive_g.pid_child, SIGUSR2);
-    		errExit("pthread_create");
-    	}
-
-    }
-    
-	return 0;
+	/* printf("in WATCHDOG ppid is %d, and pid is %d\n", getppid(), getpid()); */
 }
 
 void WDStop(void)
 {
-	
-   kill(revive_g.pid_child, SIGUSR2);
-   	pthread_join(watchdog_t_g, NULL);
+	kill(revive_g.pid_child, SIGUSR2);
+	pthread_join(watchdog_t_g, NULL);
+	SomeFailDie(new_sched);
   	
-	
-	
 }
 
 
@@ -198,12 +208,24 @@ static int TaskCheckAlive(void *args)
 	{
 		write(STDOUT_FILENO, "REVIVE PLEASE\n", strlen("REVIVE PLEASE "));
 		/* REVIVE*/
-	
+		Revive((char **)args);
 	}
 	
 	return CHECK_ALIVE_EVERY;
 }
 
+static void Revive(char *argv[])
+{
+	char revive[ARGZ] = {0};
+	getcwd(revive, ARGZ);
+	strcat(revive, PATHNAME);
+	revive_g.pid_child = fork();
+	if(FAIL == execl(revive,revive, revive_g.whole, NULL))
+    {
+        errExit("Failed execl");
+    }
+
+}
 
 
 
@@ -229,6 +251,7 @@ static void SigHandlerAlive(int sig, siginfo_t *info, void *ucontext)
 	atomic_sync_or_and_fetch(&alive_g, 1);
 	revive_g.pid_child = info->si_pid;
 	
+	
 }
 
 static void SigHandlerKill(int sig)
@@ -242,6 +265,7 @@ static void SigHandlerKill(int sig)
 
 int TaskStopSched(void *pid)
 {
+
 	if(1 == sched_flag)
 	{
 		SchedStop(new_sched);

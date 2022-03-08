@@ -33,21 +33,21 @@
 
 static int TaskPingAlive(void *args);
 static int TaskCheckAlive(void *args);
-static int TaskStopSched(void *pid);
 static int PingAlive2(void *args);
+static int TaskStopSched(void *pid);
 
 
 scheduler_t *new_sched;
 pid_t pid_child;
+static pid_t revival_pid = 0;
 
 static int sched_flag = 0;
 static int alive_g = 0;
 static int sem_id;
 
 static void SomeFailDie(scheduler_t *sched);
-static int TaskPingAlive(void *args);
-static int TaskCheckAlive(void *args);
-static int TaskStopSched(void *pid);
+static void Revive(char *argv[]);
+
 
 static void SigHandlerKill(int sig, siginfo_t *info, void *ucontext);
 static void SigHandlerAlive(int sig, siginfo_t *info, void *ucontext);
@@ -72,13 +72,40 @@ static int TaskCheckAlive(void *args)
 	if(!atomic_compare_and_swap(&alive_g, 1, 0))
 	{
 		printf("checkalive?");
-		SchedDestroy(new_sched);
+		if(1 == getppid())
+			Revive((char **)args);
+
+		/* SchedDestroy(new_sched); */
 		
 		/* REVIVE*/
 	
 	}
 	
 	return CHECK_ALIVE_EVERY;
+}
+
+static void Revive(char *argv[])
+{
+
+	revival_pid = fork();
+	if(0 > revival_pid)
+	{
+		errExit("baby fork fail");
+	}
+	if(0 == revival_pid)
+	{
+		char path[ARGZ] = {0};
+		memcpy(path, getenv("PWD"),strlen(getenv("PWD")));
+		strcat(path,argv[0] + 1);
+		/*can we fail strcat? memcpy? */
+		SemRemove(sem_id);
+		if(FAIL == execv(path,argv))
+		{
+			errExit("OMFG ALL BROKEN execv fail");
+		}
+
+	}
+	
 }
 
 static int TaskStopSched(void *pid)
@@ -92,14 +119,14 @@ static int TaskStopSched(void *pid)
 }
 
 
-int main(int argc, const char *argv[])
+int main(int argc, char *argv[])
 {
     struct sigaction sa = {0};
 	struct sigaction ka = {0};
 	
 	sem_id = atoi(argv[1]);
 	printf("semid %d\n",sem_id);
-
+	
 	ka.sa_sigaction = &SigHandlerKill;
 	sa.sa_sigaction = &SigHandlerAlive;
     sa.sa_flags |= SA_SIGINFO;
@@ -115,7 +142,7 @@ int main(int argc, const char *argv[])
         errExit("Failed to set SIGUSR2 handler");
     }
 	
-
+	 printf("inKICKDOG ppid is %d, and pid is %d\n", getppid(), getpid());
 	new_sched = SchedCreate();
 
 	if(UIDIsSame(UIDBadUID,SchedAddTask(new_sched, &TaskPingAlive, NULL, 
@@ -125,7 +152,7 @@ int main(int argc, const char *argv[])
     	errExit("UIDBadUID == SchedAddTask");
     	
     }
-    if(UIDIsSame(UIDBadUID,SchedAddTask(new_sched, &TaskCheckAlive, NULL, 
+    if(UIDIsSame(UIDBadUID,SchedAddTask(new_sched, &TaskCheckAlive, (void *)argv, 
     					NULL, NULL, time(0) + CHECK_ALIVE_EVERY)))
     {
     	SomeFailDie(new_sched);
@@ -140,7 +167,8 @@ int main(int argc, const char *argv[])
     }
     
     	SchedRun(new_sched);
-    
+
+    printf("KICKDOG: got env? %s\n", getenv("TNY"));
   
 
     return 0;
