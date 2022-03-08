@@ -71,8 +71,8 @@ static int TaskCheckAlive(void *args)
 	(void)args;
 	if(!atomic_compare_and_swap(&alive_g, 1, 0))
 	{
-		
-		/*SchedDestroy(new_sched);*/
+		printf("checkalive?");
+		SchedDestroy(new_sched);
 		
 		/* REVIVE*/
 	
@@ -85,7 +85,8 @@ static int TaskStopSched(void *pid)
 {
 	if(1 == sched_flag)
 	{
-		/*SchedStop(new_sched);*/
+		SchedStop(new_sched);
+		kill(getppid(), SIGUSR2);
 	}
 	return PING_EVERY;
 }
@@ -137,11 +138,9 @@ int main(int argc, const char *argv[])
     	SomeFailDie(new_sched);
     	errExit("UIDBadUID == SchedAddTask");
     }
-    SemIncrement(sem_id, 1);
-    if(1 == SemGetVal(sem_id))
-    {
+    
     	SchedRun(new_sched);
-    }
+    
   
 
     return 0;

@@ -43,11 +43,11 @@ typedef struct revive
 {
 	char buffer[ARGZ];
 	char *whole;
-	scheduler_t *new_sched;
+	
 	pid_t pid_child;
 }revive_t;
 
-
+scheduler_t *new_sched;
 static int alive_g = 0;
 static int semid;
 static int sched_flag = 0;
@@ -80,43 +80,43 @@ int WDStart(int argc, char *argv[])
         errExit("Failed to set SIGUSR2 handler");
     }
 
-    semid = InitSem(0);
+    semid = InitSem(1);
+    printf("sem val is %d\n", SemGetVal(semid));
     if(0 > semid)
     {
     	errExit("Init_sem");
     }
-    SemDecrement(semid,1);
-    printf("sem val is %d\n", SemGetVal(semid));
     sprintf(semchar,"%d", semid);
     memcpy(revive_g.buffer, argv[0], strlen(argv[0]));
     revive_g.whole = revive_g.buffer + strlen(revive_g.buffer) + 1;
  	
     /*revive_g.whole = strcat(cwd, revive_g.buffer + 1);
     printf("testing: %s\n",revive_g.whole );*/
-    revive_g.new_sched = SchedCreate();
-    if(NULL == revive_g.new_sched)
+    new_sched = SchedCreate();
+    if(NULL == new_sched)
     {
+    	
     	SemRemove(semid);
     }
 
-    if(UIDIsSame(UIDBadUID,SchedAddTask(revive_g.new_sched, &TaskPingAlive, NULL, 
+    if(UIDIsSame(UIDBadUID,SchedAddTask(new_sched, &TaskPingAlive, NULL, 
     							NULL, NULL, time(0) + PING_EVERY)))
     {
-    	SomeFailDie(revive_g.new_sched);
+    	SomeFailDie(new_sched);
     	errExit("UIDBadUID == SchedAddTask");
     	
     }
-    if(UIDIsSame(UIDBadUID,SchedAddTask(revive_g.new_sched, &TaskCheckAlive, NULL, 
+    if(UIDIsSame(UIDBadUID,SchedAddTask(new_sched, &TaskCheckAlive, NULL, 
     					NULL, NULL, time(0) + CHECK_ALIVE_EVERY)))
     {
-    	SomeFailDie(revive_g.new_sched);
+    	SomeFailDie(new_sched);
     	errExit("UIDBadUID == SchedAddTask");
     }
 
-     if(UIDIsSame(UIDBadUID,SchedAddTask(revive_g.new_sched, &TaskStopSched, NULL, 
+     if(UIDIsSame(UIDBadUID,SchedAddTask(new_sched, &TaskStopSched, NULL, 
     					NULL, NULL, time(0) + CHECK_ALIVE_EVERY)))
     {
-    	SomeFailDie(revive_g.new_sched);
+    	SomeFailDie(new_sched);
     	errExit("UIDBadUID == SchedAddTask");
     }
 
@@ -129,6 +129,8 @@ int WDStart(int argc, char *argv[])
     if (0 == revive_g.pid_child) /* in watchdog process */
     {
     	strcat(cwd, PATHNAME);
+    	printf("semchar is: %s\n", semchar);
+    	printf("semchar is: %s\n", cwd);
     	if(FAIL == execl(cwd,cwd,semchar, NULL))
         {
         	errExit("Failed execv");
@@ -136,25 +138,25 @@ int WDStart(int argc, char *argv[])
     }
     else /* in ward process */
     {
-    	if(SUCCESS != pthread_create(&watchdog_t_g, NULL, &WrapperSchedSem, revive_g.new_sched))
+    	if(SUCCESS != pthread_create(&watchdog_t_g, NULL, &WrapperSchedSem, new_sched))
     	{
-    		SomeFailDie(revive_g.new_sched);
+    		SomeFailDie(new_sched);
     		kill(revive_g.pid_child, SIGUSR2);
     		errExit("pthread_create");
     	}
 
     }
-    printf("sem val is %d\n", SemGetVal(semid));
-    if(0 == SemGetVal(semid))
-    {
-   	 pthread_join(watchdog_t_g, NULL);
-  	}
+    
 	return 0;
 }
 
 void WDStop(void)
 {
-	kill(revive_g.pid_child, SIGUSR2);
+	
+   kill(revive_g.pid_child, SIGUSR2);
+   	pthread_join(watchdog_t_g, NULL);
+  	
+	
 	
 }
 
@@ -168,9 +170,9 @@ static void SomeFailDie(scheduler_t *sched)
 
 static void *WrapperSchedSem(void *something)
 {
-	
-	printf("schedrun? %d\n",SchedRun((scheduler_t *)something));
 	printf("here?\n");
+	printf("schedrun? %d\n",SchedRun((scheduler_t *)something));
+	
 	return something;
 }
 
@@ -231,7 +233,7 @@ static void SigHandlerAlive(int sig, siginfo_t *info, void *ucontext)
 
 static void SigHandlerKill(int sig)
 {
-	if (NULL != revive_g.new_sched)
+	if (NULL != new_sched)
 	{
 		atomic_compare_and_swap(&sched_flag,0 , 1);
 	}
@@ -242,7 +244,7 @@ int TaskStopSched(void *pid)
 {
 	if(1 == sched_flag)
 	{
-		SchedStop(revive_g.new_sched);
+		SchedStop(new_sched);
 	}
 	return PING_EVERY;
 }
