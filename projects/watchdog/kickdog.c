@@ -114,6 +114,9 @@ static int TaskStopSched(void *pid)
 	if(1 == sched_flag)
 	{
 		SchedStop(new_sched);
+		SemIncrement(sem_id,1);
+		printf("kickdogsem val is %d\n", SemGetVal(sem_id) );
+		write(STDOUT_FILENO, "kickdog:line 117 SIGUSR2\n", strlen("kickdog:line 117 SIGUSR2 "));
 		kill(getppid(), SIGUSR2);
 	}
 	return PING_EVERY;

@@ -10,10 +10,10 @@
 
 int main(int argc, char *argv[])
 {
-   
+    time_t now = time(0);
     WDStart(argc, argv);
-    sleep(6);
-    WDStop();
+    while(time(NULL) < now + 10);
+    WDStop(); 
   
 
     return 0;

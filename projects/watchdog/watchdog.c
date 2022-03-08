@@ -17,7 +17,7 @@
 #define errExit(msg) do { perror(msg); exit(EXIT_FAILURE); } while (0)
 #define atomic_sync_fetch_or(destptr, flag) __sync_fetch_and_or(destptr, flag)
 #define atomic_sync_or_and_fetch(destptr, flag) __sync_or_and_fetch(destptr, flag)
-#define atomic_compare_and_swap(destptr, oldval, newval) __sync_bool_compare_and_swap(destptr, oldval, newval)
+/* #define atomic_compare_and_swap(destptr, oldval, newval) __sync_bool_compare_and_swap(destptr, oldval, newval) */
 #define atomic_sync_add_fetch(destptr, incrby) __sync_add_and_fetch(destptr, incrby)
 #include "scheduler.h"
 #include "semaphore_sys_v.h"
@@ -67,8 +67,9 @@ int WDStart(int argc, char *argv[])
 	getcwd(cwd, ARGZ);
 	printf("%s\n",cwd);
 	
-	ka.sa_handler = &SigHandlerKill;
+	
 	sa.sa_sigaction = &SigHandlerAlive;
+	ka.sa_handler = &SigHandlerKill;
     sa.sa_flags |= SA_SIGINFO;
 	
 	/* errno = 0;
@@ -86,11 +87,13 @@ int WDStart(int argc, char *argv[])
     }
 
     semid = InitSem(1);
-    printf("sem val is %d\n", SemGetVal(semid));
     if(0 > semid)
     {
     	errExit("Init_sem");
     }
+	SemDecrement(semid,1);
+	printf("post dec, in watchdog:sem val is %d\n", SemGetVal(semid) );
+
     sprintf(semchar,"%d", semid);
     memcpy(revive_g.buffer, argv[0], strlen(argv[0]));
     revive_g.whole = revive_g.buffer + strlen(revive_g.buffer) + 1;
@@ -101,13 +104,7 @@ int WDStart(int argc, char *argv[])
 	
 	InitSched();
 
-	if(SUCCESS != pthread_create(&watchdog_t_g, NULL, &WrapperSchedSem, new_sched))
-	{
-		SomeFailDie(new_sched);
-		kill(revive_g.pid_child, SIGUSR2);
-		errExit("pthread_create");
-	}
-
+	
     if(NULL == getenv("REVDOG"))
 	{
 		revive_g.pid_child = fork();
@@ -146,6 +143,15 @@ int WDStart(int argc, char *argv[])
 		}
 	}
 	
+	if(SUCCESS != pthread_create(&watchdog_t_g, NULL, &WrapperSchedSem, new_sched))
+	{
+		SomeFailDie(new_sched);
+		write(STDOUT_FILENO, "line 108 SIGUSR2\n", strlen("line 108 SIGUSR2 "));
+		kill(revive_g.pid_child, SIGUSR2);
+		errExit("pthread_create");
+	}
+
+
 	return 0;
 }
 
@@ -182,7 +188,8 @@ static void InitSched(void)
 
 void WDStop(void)
 {
-	
+	SemDecrement(semid,1);
+	write(STDOUT_FILENO, "line 187 SIGUSR2\n", strlen("line 187 SIGUSR2 "));
 	kill(revive_g.pid_child, SIGUSR2);
 	pthread_join(watchdog_t_g, NULL);
 
@@ -223,7 +230,7 @@ static int TaskPingAlive(void *args)
 static int TaskCheckAlive(void *args)
 {
 	(void)args;
-	if(!atomic_compare_and_swap(&alive_g, 1, 0))
+	if(!__sync_bool_compare_and_swap(&alive_g, 1, 0))
 	{
 		write(STDOUT_FILENO, "REVIVE PLEASE\n", strlen("REVIVE PLEASE "));
 		/* REVIVE*/
@@ -237,7 +244,6 @@ static void Revive(char *argv[])
 {
 	char revive[ARGZ] = {0};
 
-	
 	getcwd(revive, ARGZ);
 	strcat(revive, PATHNAME);
 
@@ -266,7 +272,7 @@ static void SigHandlerKill(int sig)
 	(void)sig;
 	if (NULL != new_sched)
 	{
-		atomic_compare_and_swap(&sched_flag,0 , 1);
+		__sync_bool_compare_and_swap(&sched_flag,0 , 1);
 	}
 
 }
