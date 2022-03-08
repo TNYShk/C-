@@ -3,9 +3,8 @@
 #include "watchdog.h"
 #include <string.h> 
 #include <stdlib.h> /* atoi */
-#include <stdio.h> /* atoi */
-#define ARGZ (256)
-#define PATHNAME ("/kickdog")
+#include <stdio.h> /* print */
+
 
 
 
@@ -13,7 +12,7 @@ int main(int argc, char *argv[])
 {
    
     WDStart(argc, argv);
-    sleep(5);
+    sleep(6);
     WDStop();
   
 

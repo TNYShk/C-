@@ -1,6 +1,6 @@
 #define _XOPEN_SOURCE (700)
-#define _POSIX_C_SOURCE 199309L
-/* #define _POSIX_C_SOURCE 200112L */
+/* #define _POSIX_C_SOURCE 199309L */
+#define _POSIX_C_SOURCE 200112L 
 #include <time.h>        /* time_t      */
 #include <assert.h>      /* assert      */
 #include <pthread.h>     /* thread_t    */
@@ -37,7 +37,6 @@ static void SigHandlerKill(int sig);
 static int TaskPingAlive(void *args);
 static int TaskCheckAlive(void *args);
 static int TaskStopSched(void *pid);
-static int PingAlive2(void *args);
 static void InitSched(void);
 static void Revive(char *argv[]);
 
@@ -67,13 +66,14 @@ int WDStart(int argc, char *argv[])
 	char cwd[ARGZ] = {0};
 	getcwd(cwd, ARGZ);
 	printf("%s\n",cwd);
+	
 	ka.sa_handler = &SigHandlerKill;
 	sa.sa_sigaction = &SigHandlerAlive;
     sa.sa_flags |= SA_SIGINFO;
 	
-	errno = 0;
+	/* errno = 0;
 	printf("set env? %d\n",putenv("TNY=26"));
-	printf("errno? %d\n", errno);
+	printf("errno? %d\n", errno); */
 
     if (SUCCESS != sigaction(SIGUSR1, &sa, NULL))
     {
@@ -98,35 +98,53 @@ int WDStart(int argc, char *argv[])
 	printf("testing revive_g.whole: %s\n",revive_g.whole );
     /*revive_g.whole = strcat(cwd, revive_g.buffer + 1);
     printf("testing: %s\n",revive_g.whole );*/
+	
 	InitSched();
-    
-		
-    revive_g.pid_child = fork();
-    if(0 > revive_g.pid_child)
-    {
-    	errExit("fork fail");
-    }
-    if (0 == revive_g.pid_child) /* in watchdog process */
-    {
-    	strcat(cwd, PATHNAME);
-    	printf("semchar is: %s\n", semchar);
-    	printf("strcat cwd is: %s\n", cwd);
 
-    	if(FAIL == execl(cwd,cwd,semchar, NULL))
-        {
-        	errExit("Failed execv");
-        }
-    }
-    else /* in ward process */
-    {
-    	if(SUCCESS != pthread_create(&watchdog_t_g, NULL, &WrapperSchedSem, new_sched))
-    	{
-    		SomeFailDie(new_sched);
-    		kill(revive_g.pid_child, SIGUSR2);
-    		errExit("pthread_create");
-    	}
+	if(SUCCESS != pthread_create(&watchdog_t_g, NULL, &WrapperSchedSem, new_sched))
+	{
+		SomeFailDie(new_sched);
+		kill(revive_g.pid_child, SIGUSR2);
+		errExit("pthread_create");
+	}
 
-    }
+    if(NULL == getenv("REVDOG"))
+	{
+		revive_g.pid_child = fork();
+		/* printf("child_pid in WDStart is: %d\n",revive_g.pid_child); */
+		if(0 > revive_g.pid_child)
+		{
+			errExit("fork fail");
+		}
+		if (0 == revive_g.pid_child) /* in watchdog process */
+		{
+			strcat(cwd, PATHNAME);
+			printf("semchar is: %s\n", semchar);
+			printf("strcat cwd is: %s\n", cwd);
+
+			if(FAIL == execl(cwd,cwd,semchar, NULL))
+			{
+				errExit("Failed execv");
+			}
+		}
+		/* else  in ward process 
+		{
+			if(SUCCESS != pthread_create(&watchdog_t_g, NULL, &WrapperSchedSem, new_sched))
+			{
+				SomeFailDie(new_sched);
+				kill(revive_g.pid_child, SIGUSR2);
+				errExit("pthread_create");
+			}
+
+		} */
+	}
+	else
+	{
+		if(SUCCESS != unsetenv("REVDOG"))
+		{
+			errExit("unsetenv fail");
+		}
+	}
 	
 	return 0;
 }
@@ -164,8 +182,10 @@ static void InitSched(void)
 
 void WDStop(void)
 {
+	
 	kill(revive_g.pid_child, SIGUSR2);
 	pthread_join(watchdog_t_g, NULL);
+
 	SomeFailDie(new_sched);
 }
 
@@ -216,8 +236,11 @@ static int TaskCheckAlive(void *args)
 static void Revive(char *argv[])
 {
 	char revive[ARGZ] = {0};
+
+	
 	getcwd(revive, ARGZ);
 	strcat(revive, PATHNAME);
+
 	revive_g.pid_child = fork();
 	if(FAIL == execl(revive,revive, revive_g.whole, NULL))
     {
@@ -226,19 +249,6 @@ static void Revive(char *argv[])
 
 }
 
-
-
-static int TaskSIGUSR2(void *args)
-{
-	(void)args;
-	
-	if(0 == revive_g.pid_child)
-	{
-		kill(getppid(), SIGUSR2);
-	}
-
-	return SUCCESS;
-}
 
 
 

@@ -30,7 +30,7 @@
 #define atomic_sync_add_fetch(destptr, incrby) __sync_add_and_fetch(destptr, incrby)
 
 scheduler_t *new_sched;
-pid_t pid_child;
+pid_t another_pid;
 static pid_t revival_pid = 0;
 static int sched_flag = 0;
 static int alive_g = 0;
@@ -55,9 +55,9 @@ static int TaskPingAlive(void *args)
 {
 	(void)args;
 
-	if(0 != pid_child)
+	if(0 != another_pid)
 	{
-		kill(pid_child, SIGUSR1);
+		kill(another_pid, SIGUSR1);
 	}
 
 	return PING_EVERY;
@@ -71,7 +71,7 @@ static int TaskCheckAlive(void *args)
 		printf("checkalive?");
 		if(1 == getppid())
 			Revive((char **)args);
-
+	Revive((char **)args);
 		/* SchedDestroy(new_sched); */
 		
 		/* REVIVE*/
@@ -83,6 +83,10 @@ static int TaskCheckAlive(void *args)
 
 static void Revive(char *argv[])
 {
+	errno = 0;
+	printf("set env? %d\n",putenv("REVDOG=666"));
+	printf("errno? %d\n", errno);
+
 
 	revival_pid = fork();
 	if(0 > revival_pid)
@@ -131,7 +135,7 @@ int main(int argc, char *argv[])
    
     if (SUCCESS != sigaction(SIGUSR1, &sa, NULL))
     {
-        errExit("Failed to set SIGUSR2 handler");
+        errExit("Failed to set SIGUSR1 handler");
     }
 
     if (SUCCESS != sigaction(SIGUSR2, &ka, NULL))
@@ -139,13 +143,12 @@ int main(int argc, char *argv[])
         errExit("Failed to set SIGUSR2 handler");
     }
 	
-	printf("inKICKDOG ppid is %d, and pid is %d\n", getppid(), getpid());
+	printf("in KICKDOG ppid is %d, and pid is %d\n", getppid(), getpid());
 
 	SchedInit(argv);
 	
     SchedRun(new_sched);
 
-    printf("KICKDOG: got env? %s\n", getenv("TNY"));
   
     return 0;
 }
@@ -194,7 +197,7 @@ static void SigHandlerAlive(int sig, siginfo_t *info, void *ucontext)
 	(void)ucontext;	
 	write(STDOUT_FILENO, "Dog fed\n", strlen("Dog fed  "));
 	atomic_sync_or_and_fetch(&alive_g, 1);
-	pid_child = info->si_pid;
+	another_pid = info->si_pid;
 	
 }
 
@@ -205,19 +208,9 @@ static void SigHandlerKill(int sig, siginfo_t *info, void *ucontext)
 	(void)info;
 	if (NULL != new_sched)
 	{
+		printf("signalhandlerkill!\n");
 		atomic_compare_and_swap(&sched_flag,0 , 1);
 	}
-	printf("signalhandlerkill!\n");
-}
-
-static int TaskSIGUSR2(void *args)
-{
-	(void)args;
 	
-	if(0 == pid_child)
-	{
-		kill(getppid(), SIGUSR2);
-	}
-
-	return SUCCESS;
 }
+
