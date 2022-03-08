@@ -116,8 +116,8 @@ int WDStart(int argc, char *argv[])
 		if (0 == revive_g.pid_child) /* in watchdog process */
 		{
 			strcat(cwd, PATHNAME);
-			printf("semchar is: %s\n", semchar);
-			printf("strcat cwd is: %s\n", cwd);
+			/* printf("semchar is: %s\n", semchar);
+			printf("strcat cwd is: %s\n", cwd); */
 
 			if(FAIL == execl(cwd,cwd,semchar, NULL))
 			{
@@ -135,18 +135,18 @@ int WDStart(int argc, char *argv[])
 
 		} */
 	}
-	else
+	else 
 	{
 		if(SUCCESS != unsetenv("REVDOG"))
 		{
 			errExit("unsetenv fail");
 		}
 	}
-	
+	/* in ward process */
 	if(SUCCESS != pthread_create(&watchdog_t_g, NULL, &WrapperSchedSem, new_sched))
 	{
 		SomeFailDie(new_sched);
-		write(STDOUT_FILENO, "line 108 SIGUSR2\n", strlen("line 108 SIGUSR2 "));
+		write(STDOUT_FILENO, "pthread create watchdog SIGUSR2\n", 25);
 		kill(revive_g.pid_child, SIGUSR2);
 		errExit("pthread_create");
 	}
@@ -189,10 +189,9 @@ static void InitSched(void)
 void WDStop(void)
 {
 	SemDecrement(semid,1);
-	write(STDOUT_FILENO, "line 187 SIGUSR2\n", strlen("line 187 SIGUSR2 "));
+	write(STDOUT_FILENO, "line 192 SIGUSR2\n", strlen("line 187 SIGUSR2 "));
 	kill(revive_g.pid_child, SIGUSR2);
 	pthread_join(watchdog_t_g, NULL);
-
 	SomeFailDie(new_sched);
 }
 
@@ -201,7 +200,7 @@ static void SomeFailDie(scheduler_t *sched)
 {
     SchedDestroy(sched);
     sched = NULL;
-    SemRemove(semid);
+   /*  SemRemove(semid); */
 }
 
 static void *WrapperSchedSem(void *something)
@@ -209,7 +208,7 @@ static void *WrapperSchedSem(void *something)
 	
 	printf("schedrun? %d\n",SchedRun((scheduler_t *)something));
 	
-	return something;
+	return NULL;
 }
 
 
@@ -254,8 +253,6 @@ static void Revive(char *argv[])
     }
 
 }
-
-
 
 
 static void SigHandlerAlive(int sig, siginfo_t *info, void *ucontext)

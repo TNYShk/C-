@@ -22,6 +22,7 @@
 #define SUCCESS (0)
 #define FAIL (-1)
 #define ARGZ (256)
+#define DATHNAME ("/watchdog_test")
 
 #define errExit(msg) do { perror(msg); exit(EXIT_FAILURE); } while (0)
 #define atomic_sync_fetch_or(destptr, flag) __sync_fetch_and_or(destptr, flag)
@@ -30,8 +31,8 @@
 #define atomic_sync_add_fetch(destptr, incrby) __sync_add_and_fetch(destptr, incrby)
 
 scheduler_t *new_sched;
-pid_t another_pid;
-static pid_t revival_pid = 0;
+
+static pid_t another_pid = 0;
 static int sched_flag = 0;
 static int alive_g = 0;
 static int sem_id;
@@ -39,7 +40,6 @@ static int sem_id;
 
 static int TaskPingAlive(void *args);
 static int TaskCheckAlive(void *args);
-static int PingAlive2(void *args);
 static int TaskStopSched(void *pid);
 
 static void SomeFailDie(scheduler_t *sched);
@@ -57,6 +57,7 @@ static int TaskPingAlive(void *args)
 
 	if(0 != another_pid)
 	{
+		printf("kickdog SIGUSR1 %d\n",__LINE__);
 		kill(another_pid, SIGUSR1);
 	}
 
@@ -88,18 +89,20 @@ static void Revive(char *argv[])
 	printf("errno? %d\n", errno);
 
 
-	revival_pid = fork();
-	if(0 > revival_pid)
+	another_pid = fork();
+	if(0 > another_pid)
 	{
 		errExit("baby fork fail");
 	}
-	if(0 == revival_pid)
+	if(0 == another_pid)
 	{
 		char path[ARGZ] = {0};
-		memcpy(path, getenv("PWD"),strlen(getenv("PWD")));
-		strcat(path,argv[0] + 1);
+		getcwd(path, ARGZ);
+		
+		strcat(path,DATHNAME);
+		printf("kickdog %d: %s\n",__LINE__,path);
 		/*can we fail strcat? memcpy? */
-		SemRemove(sem_id);
+		/* SemRemove(sem_id); */
 		if(FAIL == execv(path,argv))
 		{
 			errExit("OMFG ALL BROKEN execv fail");
@@ -118,6 +121,7 @@ static int TaskStopSched(void *pid)
 		printf("kickdogsem val is %d\n", SemGetVal(sem_id) );
 		write(STDOUT_FILENO, "kickdog:line 117 SIGUSR2\n", strlen("kickdog:line 117 SIGUSR2 "));
 		kill(getppid(), SIGUSR2);
+
 	}
 	return PING_EVERY;
 }
