@@ -23,31 +23,28 @@
 #define FAIL (-1)
 #define ARGZ (256)
 
-
-
 #define errExit(msg) do { perror(msg); exit(EXIT_FAILURE); } while (0)
 #define atomic_sync_fetch_or(destptr, flag) __sync_fetch_and_or(destptr, flag)
 #define atomic_sync_or_and_fetch(destptr, flag) __sync_or_and_fetch(destptr, flag)
 #define atomic_compare_and_swap(destptr, oldval, newval) __sync_bool_compare_and_swap(destptr, oldval, newval)
 #define atomic_sync_add_fetch(destptr, incrby) __sync_add_and_fetch(destptr, incrby)
 
+scheduler_t *new_sched;
+pid_t pid_child;
+static pid_t revival_pid = 0;
+static int sched_flag = 0;
+static int alive_g = 0;
+static int sem_id;
+
+
 static int TaskPingAlive(void *args);
 static int TaskCheckAlive(void *args);
 static int PingAlive2(void *args);
 static int TaskStopSched(void *pid);
 
-
-scheduler_t *new_sched;
-pid_t pid_child;
-static pid_t revival_pid = 0;
-
-static int sched_flag = 0;
-static int alive_g = 0;
-static int sem_id;
-
 static void SomeFailDie(scheduler_t *sched);
 static void Revive(char *argv[]);
-
+static void SchedInit(char *argv[]);
 
 static void SigHandlerKill(int sig, siginfo_t *info, void *ucontext);
 static void SigHandlerAlive(int sig, siginfo_t *info, void *ucontext);
@@ -142,8 +139,24 @@ int main(int argc, char *argv[])
         errExit("Failed to set SIGUSR2 handler");
     }
 	
-	 printf("inKICKDOG ppid is %d, and pid is %d\n", getppid(), getpid());
+	printf("inKICKDOG ppid is %d, and pid is %d\n", getppid(), getpid());
+
+	SchedInit(argv);
+	
+    SchedRun(new_sched);
+
+    printf("KICKDOG: got env? %s\n", getenv("TNY"));
+  
+    return 0;
+}
+
+static void SchedInit(char *argv[])
+{
 	new_sched = SchedCreate();
+	if(NULL == new_sched)
+	{
+		errExit("SchedCreate failed");
+	}
 
 	if(UIDIsSame(UIDBadUID,SchedAddTask(new_sched, &TaskPingAlive, NULL, 
     							NULL, NULL, time(0) + PING_EVERY)))
@@ -165,15 +178,7 @@ int main(int argc, char *argv[])
     	SomeFailDie(new_sched);
     	errExit("UIDBadUID == SchedAddTask");
     }
-    
-    	SchedRun(new_sched);
-
-    printf("KICKDOG: got env? %s\n", getenv("TNY"));
-  
-
-    return 0;
 }
-
 
 static void SomeFailDie(scheduler_t *sched)
 {
@@ -187,7 +192,7 @@ static void SigHandlerAlive(int sig, siginfo_t *info, void *ucontext)
 {
 	(void)sig;
 	(void)ucontext;	
-	write(STDOUT_FILENO, "Dog Kicked\n", strlen("Dog Kicked  "));
+	write(STDOUT_FILENO, "Dog fed\n", strlen("Dog fed  "));
 	atomic_sync_or_and_fetch(&alive_g, 1);
 	pid_child = info->si_pid;
 	

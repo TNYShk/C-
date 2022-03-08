@@ -159,7 +159,7 @@ static void InitSched(void)
     	SomeFailDie(new_sched);
     	errExit("UIDBadUID == SchedAddTask");
     }
-	/* printf("in WATCHDOG ppid is %d, and pid is %d\n", getppid(), getpid()); */
+	printf("in WATCHDOG ppid is %d, and pid is %d\n", getppid(), getpid()); 
 }
 
 void WDStop(void)
@@ -167,7 +167,6 @@ void WDStop(void)
 	kill(revive_g.pid_child, SIGUSR2);
 	pthread_join(watchdog_t_g, NULL);
 	SomeFailDie(new_sched);
-  	
 }
 
 
@@ -180,7 +179,7 @@ static void SomeFailDie(scheduler_t *sched)
 
 static void *WrapperSchedSem(void *something)
 {
-	printf("here?\n");
+	
 	printf("schedrun? %d\n",SchedRun((scheduler_t *)something));
 	
 	return something;
@@ -247,15 +246,14 @@ static void SigHandlerAlive(int sig, siginfo_t *info, void *ucontext)
 {
 	(void)sig;
 	(void)ucontext;	
-	write(STDOUT_FILENO, "Bark DOG\n", strlen("Bark DOG  "));
+	write(STDOUT_FILENO, "Barking hungry DOG\n", strlen("Barking hungry DOG  "));
 	atomic_sync_or_and_fetch(&alive_g, 1);
 	revive_g.pid_child = info->si_pid;
-	
-	
 }
 
 static void SigHandlerKill(int sig)
 {
+	(void)sig;
 	if (NULL != new_sched)
 	{
 		atomic_compare_and_swap(&sched_flag,0 , 1);
@@ -265,8 +263,7 @@ static void SigHandlerKill(int sig)
 
 int TaskStopSched(void *pid)
 {
-
-	if(1 == sched_flag)
+	if (1 == sched_flag)
 	{
 		SchedStop(new_sched);
 	}
