@@ -42,17 +42,12 @@ int InitSem( size_t init_val)
     sem_id = semget(sema_key, 1, 0666 | IPC_CREAT);
     if (FAIL == sem_id)
     {
-         errExit("semget");
+        errExit("semget");
     }
 
-    if(0 != init_val)
-    {    
-       
-        arg.val = init_val;
-        if (FAIL == semctl(sem_id, 0, SETVAL, arg))
-        {
-            errExit("semctl");
-        }
+    if (FAIL == semctl(sem_id, 0, SETVAL, init_val))
+    {
+        errExit("semctl");
     }
 
     return sem_id;
