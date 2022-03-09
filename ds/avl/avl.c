@@ -10,7 +10,7 @@
 #include <string.h> /* memset */
 #include <math.h> /* abs */
 
-#include "../include/avl.h" /* programs header*/
+#include "avl.h" /* programs header*/
 
 #define MAX(a,b) ((a > b)? (a) : (b))
 #define DIRECTION(a) (0 < a)
@@ -141,11 +141,11 @@ int AVLIsEmpty(const avl_t *tree)
 
 void AVLRemove(avl_t *tree, const void *data)
 {
-    avl_node_t *find_node = NULL;
+    void *find_it = NULL;
     assert(NULL != tree);
 
-    find_node = RecFindNode(tree->root, data, tree->cmp_func);
-    if (NULL != find_node)
+    find_it = RecFindNode(tree->root, data, tree->cmp_func);
+    if (NULL != find_it)
     {
        tree->root = DeleteNode(tree->root, (void *)data, tree->cmp_func);
     } 

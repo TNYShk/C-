@@ -135,7 +135,7 @@ int RecStrCmp(const char *s1, const char *s2)
 		return (*s1 - *s2);
 	}
 	
-	return RecStrCmp(s1 + 1, s2 + 1);
+	return RecStrCmp(++s1, ++s2);
 }
 
 
@@ -152,7 +152,7 @@ char *RecStrCpy(char *dest, const char *src)
 		return dest;
 	}
 	
-	return (RecStrCpy(dest + 1, src + 1) -1);
+	return (RecStrCpy(++dest, ++src) -1);
 }
 
 
@@ -199,7 +199,7 @@ static int RecStrnCmp(const char *s1, const char *s2, size_t len)
 		return (*s1 - *s2);
 	}
 	
-	return RecStrnCmp(s1 + 1, s2 + 1,--len);
+	return RecStrnCmp(++s1 , ++s2,--len);
 }
 
 
