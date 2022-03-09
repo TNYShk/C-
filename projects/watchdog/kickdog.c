@@ -13,10 +13,10 @@
 #include <errno.h> /* errno */
 #include <string.h> /*strcmp */
 #include <semaphore.h>
-#include "../include/watchdog.h"       /* watchdog API         */
-#include "../include/semaphore_sys_v.h"      /* sys_v sempahore API  */
-#include "../include/scheduler.h"      /* scheduler API        */
-#include "../include/uid.h"
+#include "watchdog.h"       /* watchdog API         */
+#include "semaphore_sys_v.h"      /* sys_v sempahore API  */
+#include "scheduler.h"      /* scheduler API        */
+#include "uid.h"
 #define PING_EVERY (1)
 #define CHECK_ALIVE_EVERY (5)
 #define SUCCESS (0)
@@ -72,9 +72,8 @@ static int TaskCheckAlive(void *args)
 		printf("in kickdog, trying to revive\n");
 		Revive((char **)args);
 		/* SchedDestroy(new_sched); */
-		
 		/* REVIVE*/
-	
+		return 0;
 	}
 	
 	return CHECK_ALIVE_EVERY;
@@ -102,7 +101,7 @@ static void Revive(char *argv[])
 		strcat(path,DATHNAME);
 		printf("REVIVE kickdog %d: %s\n",__LINE__,path);
 	
-		/* SemDecrement(sem_id,1); */
+		SemDecrement(sem_id,1);
 		if(FAIL == execv(path,argv))
 		{
 			errExit("OMFG ALL BROKEN execv fail");

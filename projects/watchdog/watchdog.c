@@ -89,6 +89,13 @@ int WDStart(int argc, char *argv[])
     printf("testing: %s\n",revive_g.whole );*/
 	
 	InitSched();
+	if(SUCCESS != pthread_create(&watchdog_t_g, NULL, &WrapperSchedSem, new_sched))
+	{
+		SomeFailDie(new_sched);
+		write(STDOUT_FILENO, "pthread create watchdog SIGUSR2\n", 25);
+		kill(revive_g.pid_child, SIGUSR2);
+		errExit("pthread_create");
+	}
 	
     if(NULL == getenv("REVDOG"))
 	{
@@ -103,13 +110,7 @@ int WDStart(int argc, char *argv[])
 		}
 	}
 	/* in ward process */
-	if(SUCCESS != pthread_create(&watchdog_t_g, NULL, &WrapperSchedSem, new_sched))
-	{
-		SomeFailDie(new_sched);
-		write(STDOUT_FILENO, "pthread create watchdog SIGUSR2\n", 25);
-		kill(revive_g.pid_child, SIGUSR2);
-		errExit("pthread_create");
-	}
+
 
 
 	return 0;
@@ -248,11 +249,14 @@ static void Revive(void)
 	strcat(revive, PATHNAME);
 
 	revive_g.pid_child = fork();
-	if(FAIL == execl(revive,revive, revive_g.whole, NULL))
-    {
-        errExit("Failed execl");
-    }
-
+	if(0 == revive_g.pid_child)
+	{
+		if(FAIL == execl(revive,revive, revive_g.whole, NULL))
+    	{
+        	errExit("Failed execl");
+    	}
+	}
+	
 }
 
 
