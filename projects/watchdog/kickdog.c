@@ -1,3 +1,10 @@
+/********************************************
+ * KICKDOG - Source Code                    *
+ * Developer: Tanya                   		*
+ * Mar 8, 2022                   	     	*
+ *                                          *
+ *      Reviewed by        	 	  	 		*
+*********************************************/
 #define _XOPEN_SOURCE (700)
 #define _POSIX_C_SOURCE 199309L
 
@@ -14,8 +21,7 @@
 #include "watchdog.h"    /* watchdog API         */
 #include "semaphore_sys_v.h"      /* sys_v sempahore API  */
 #include "scheduler.h"      /* scheduler API        */
-#include "uid.h"
-
+        
 #define PING_EVERY (1)
 #define CHECK_ALIVE_EVERY (5)
 #define SUCCESS (0)
@@ -23,11 +29,15 @@
 #define ARGZ (256)
 #define DATHNAME ("/watchdog_test")
 
-#define errExit(msg) do { perror(msg); exit(EXIT_FAILURE); } while (0)
-/* #define atomic_sync_fetch_or(destptr, flag) __sync_fetch_and_or(destptr, flag) */
 #define atomic_sync_or_and_fetch(destptr, flag) __sync_or_and_fetch(destptr, flag)
 #define atomic_compare_and_swap(destptr, oldval, newval) __sync_bool_compare_and_swap(destptr, oldval, newval)
-/* #define atomic_sync_add_fetch(destptr, incrby) __sync_add_and_fetch(destptr, incrby) */
+
+#ifdef DEBUG
+	#define errExit(msg) do { perror(msg); exit(EXIT_FAILURE); } while (0)
+#else
+	#define errExit(msg) do { perror(msg); return(errno); } while (0)
+#endif
+
 
 
 scheduler_t *new_sched;
@@ -42,12 +52,48 @@ static int TaskCheckAlive(void *args);
 static int TaskStopSched(void *pid);
 
 static void SomeFailDie(scheduler_t *sched);
-static void Revive(char *argv[]);
-static void SchedInit(char *argv[]);
+static int Revive(char *argv[]);
+static int SchedInit(char *argv[]);
 
 static void SigHandlerKill(int sig, siginfo_t *info, void *ucontext);
 static void SigHandlerAlive(int sig, siginfo_t *info, void *ucontext);
 
+
+
+
+
+int main(int argc, char *argv[])
+{
+    struct sigaction sa = {0};
+	struct sigaction ka = {0};
+	(void)argc;
+	sem_id = atoi(argv[1]);
+	/* printf("semid %d\n",sem_id); */
+	
+	ka.sa_sigaction = &SigHandlerKill;
+	sa.sa_sigaction = &SigHandlerAlive;
+    sa.sa_flags |= SA_SIGINFO;
+    ka.sa_flags |= SA_SIGINFO;
+   
+    if (SUCCESS != sigaction(SIGUSR1, &sa, NULL))
+    {
+        errExit("Failed to set SIGUSR1 handler");
+    }
+
+    if (SUCCESS != sigaction(SIGUSR2, &ka, NULL))
+    {
+        errExit("Failed to set SIGUSR2 handler");
+    }
+	
+	printf("in KICKDOG: ppid is %d, and pid is %d\n", getppid(), getpid());
+
+	assert(SUCCESS == SchedInit(argv));
+
+	SemIncrement(sem_id,1);
+    SchedRun(new_sched);
+
+    return 0;
+}
 
 
 
@@ -77,7 +123,7 @@ static int TaskCheckAlive(void *args)
 	return CHECK_ALIVE_EVERY;
 }
 
-static void Revive(char *argv[])
+static int Revive(char *argv[])
 {
 	errno = 0;
 	printf("set env? %d\n",putenv("REVDOG=666"));
@@ -106,7 +152,7 @@ static void Revive(char *argv[])
 		}
 
 	}
-	
+	return SUCCESS;
 }
 
 static int TaskStopSched(void *pid)
@@ -125,42 +171,9 @@ static int TaskStopSched(void *pid)
 }
 
 
-int main(int argc, char *argv[])
+
+static int SchedInit(char *argv[])
 {
-    struct sigaction sa = {0};
-	struct sigaction ka = {0};
-	(void)argc;
-	sem_id = atoi(argv[1]);
-	/* printf("semid %d\n",sem_id); */
-	
-	ka.sa_sigaction = &SigHandlerKill;
-	sa.sa_sigaction = &SigHandlerAlive;
-    sa.sa_flags |= SA_SIGINFO;
-    ka.sa_flags |= SA_SIGINFO;
-   
-    if (SUCCESS != sigaction(SIGUSR1, &sa, NULL))
-    {
-        errExit("Failed to set SIGUSR1 handler");
-    }
-
-    if (SUCCESS != sigaction(SIGUSR2, &ka, NULL))
-    {
-        errExit("Failed to set SIGUSR2 handler");
-    }
-	
-	printf("in KICKDOG: ppid is %d, and pid is %d\n", getppid(), getpid());
-
-	SchedInit(argv);
-
-	SemIncrement(sem_id,1);
-    SchedRun(new_sched);
-
-    return 0;
-}
-
-static void SchedInit(char *argv[])
-{
-	
 	new_sched = SchedCreate();
 	if(NULL == new_sched)
 	{
@@ -187,7 +200,7 @@ static void SchedInit(char *argv[])
     	SomeFailDie(new_sched);
     	errExit("UIDBadUID == SchedAddTask");
     }
-
+	return SUCCESS;
 }
 
 static void SomeFailDie(scheduler_t *sched)

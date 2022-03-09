@@ -1,28 +1,37 @@
+/********************************************
+ * WATCHDOG - Source Code                   *
+ * Developer: Tanya                   		*
+ * Mar 8, 2022                   	     	*
+ *                                          *
+ *      Reviewed by        	 	  	 		*
+*********************************************/
 #define _XOPEN_SOURCE (700)
-/* #define _POSIX_C_SOURCE 199309L */
 #define _POSIX_C_SOURCE 200112L 
 #include <time.h>        /* time_t      */
 #include <assert.h>      /* assert      */
 #include <pthread.h>     /* thread_t    */
 #include <signal.h>      /* sigaction   */
-#include <sys/wait.h>    /*  wait() */
 #include <sys/types.h>   /* pid_t       */
 #include <unistd.h>      /* fork        */
 #include <stdio.h>       /* printf      */
 #include <stdlib.h>      /* atoi        */
 #include <errno.h>       /* errno       */
 #include <string.h>      /* strlen      */
+#include "scheduler.h"		  /* scheduler API        */
+#include "semaphore_sys_v.h"  /* sys_v sempahore API  */
+#include "watchdog.h"         /* watchdog API         */
 
-#define errExit(msg) do { perror(msg); exit(EXIT_FAILURE); } while (0)
+#ifdef DEBUG
+	#define errExit(msg) do { perror(msg); exit(EXIT_FAILURE); } while (0)
+#else
+	#define errExit(msg) do { perror(msg); return(errno); } while (0)
+#endif
 
 #define atomic_sync_or_and_fetch(destptr, flag) __sync_or_and_fetch(destptr, flag)
 #define atomic_compare_and_swap(destptr, oldval, newval) __sync_bool_compare_and_swap(destptr, oldval, newval)
 
-#include "scheduler.h"
-#include "semaphore_sys_v.h"
-#include "watchdog.h"
-#include "uid.h"
 
+	
 #define PING_EVERY (1)
 #define CHECK_ALIVE_EVERY (5)
 #define SUCCESS (0)
@@ -37,9 +46,9 @@ static void SigHandlerKill(int sig);
 static int TaskPingAlive(void *args);
 static int TaskCheckAlive(void *args);
 static int TaskStopSched(void *pid);
-static void InitSched(void);
-static void InitProcess(char *argv[], int semid);
-static void Revive(void);
+static int InitSched(void);
+static int InitProcess(char *argv[], int semid);
+static int Revive(void);
 
 typedef struct revive
 {
@@ -84,7 +93,7 @@ int WDStart(int argc, char *argv[])
     	errExit("Init_sem");
     }
 	
-	InitSched();
+	assert(SUCCESS == InitSched());
 
 	if(SUCCESS != pthread_create(&watchdog_t_g, NULL, &WrapperSchedSem, new_sched))
 	{
@@ -110,15 +119,25 @@ int WDStart(int argc, char *argv[])
 	return SUCCESS;
 }
 
+void WDStop(void)
+{
+	
+	write(STDOUT_FILENO, "WDStop\n", strlen("WDStop "));
+	kill(revive_g.pid_child, SIGUSR2);
+	
+	pthread_join(watchdog_t_g, NULL);
+	SomeFailDie(new_sched);
+}
 
-static void InitProcess(char *argv[], int semid)
+
+
+static int InitProcess(char *argv[], int semid)
 {
 	char semchar[ARGZ] = {0};
 	char cwd[ARGZ] = {0};
 	
 	getcwd(cwd, ARGZ);
-	/* printf("%s\n",cwd); */
-
+	
 	sprintf(semchar,"%d", semid);
 
 	revive_g.pid_child = fork();
@@ -130,9 +149,7 @@ static void InitProcess(char *argv[], int semid)
 	if (0 == revive_g.pid_child) /* in watchdog process */
 	{
 		strcat(cwd, PATHNAME);
-			/* printf("semchar is: %s\n", semchar);
-			printf("strcat cwd is: %s\n", cwd); */
-
+		
 		if(FAIL == execl(cwd,cwd,semchar, NULL))
 		{
 			errExit("Failed execv");
@@ -142,13 +159,12 @@ static void InitProcess(char *argv[], int semid)
     memcpy(revive_g.buffer, argv[0], strlen(argv[0]));
     revive_g.whole = revive_g.buffer + strlen(revive_g.buffer) + 1;
  	strcat(revive_g.whole, semchar);
-/* 	printf("testing revive_g.whole: %s\n",revive_g.whole );
-	printf("watchdog pid is %d\n", revive_g.pid_child); */
+
+	return SUCCESS;
 }
 
-static void InitSched(void)
+static int InitSched(void)
 {
-	
 	new_sched = SchedCreate();
 	if(NULL == new_sched)
 	{
@@ -177,17 +193,10 @@ static void InitSched(void)
     }
 
 	printf("in WATCHDOG ppid is %d, and pid is %d\n", getppid(), getpid()); 
+	return SUCCESS;
 }
 
-void WDStop(void)
-{
-	
-	write(STDOUT_FILENO, "WDStop\n", strlen("WDStop "));
-	kill(revive_g.pid_child, SIGUSR2);
-	wait(NULL); 
-	pthread_join(watchdog_t_g, NULL);
-	SomeFailDie(new_sched);
-}
+
 
 
 static void SomeFailDie(scheduler_t *sched)
@@ -202,8 +211,6 @@ static void *WrapperSchedSem(void *something)
 	printf("schedrun? %d\n",SchedRun((scheduler_t *)something));
 	return NULL;
 }
-
-
 
 
 static int TaskPingAlive(void *args)
@@ -230,7 +237,7 @@ static int TaskCheckAlive(void *args)
 	return CHECK_ALIVE_EVERY;
 }
 
-static void Revive(void)
+static int Revive(void)
 {
 	char revive[ARGZ] = {0};
 
@@ -245,7 +252,7 @@ static void Revive(void)
         	errExit("Failed execl");
     	}
 	}
-	
+	return SUCCESS;
 }
 
 

@@ -1,18 +1,16 @@
 #include <time.h>
-#include <unistd.h>
-#include "watchdog.h"
-#include <string.h> 
-#include <stdlib.h> /* atoi */
+
 #include <stdio.h> /* print */
 
+#include "watchdog.h"
 
 
 
 int main(int argc, char *argv[])
 {
     time_t now = time(0);
-    WDStart(argc, argv);
-    while(time(NULL) < now + 20);
+    printf("ststus WD start: %d\n",WDStart(argc, argv));
+    while(time(NULL) < now + 10);
     WDStop(); 
   
 
