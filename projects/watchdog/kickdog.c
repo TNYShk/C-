@@ -12,7 +12,7 @@
 #include <stdlib.h> /* atoi */
 #include <errno.h> /* errno */
 #include <string.h> /*strcmp */
-
+#include <semaphore.h>
 #include "../include/watchdog.h"       /* watchdog API         */
 #include "../include/semaphore_sys_v.h"      /* sys_v sempahore API  */
 #include "../include/scheduler.h"      /* scheduler API        */
@@ -134,7 +134,7 @@ int main(int argc, char *argv[])
 	
 	sem_id = atoi(argv[1]);
 	printf("semid %d\n",sem_id);
-	
+	SemDecrement(sem_id,1);
 	ka.sa_sigaction = &SigHandlerKill;
 	sa.sa_sigaction = &SigHandlerAlive;
     sa.sa_flags |= SA_SIGINFO;
@@ -162,6 +162,7 @@ int main(int argc, char *argv[])
 
 static void SchedInit(char *argv[])
 {
+	SemIncrement(sem_id,1);
 	new_sched = SchedCreate();
 	if(NULL == new_sched)
 	{
@@ -188,6 +189,7 @@ static void SchedInit(char *argv[])
     	SomeFailDie(new_sched);
     	errExit("UIDBadUID == SchedAddTask");
     }
+	SemDecrement(sem_id,1);
 }
 
 static void SomeFailDie(scheduler_t *sched)

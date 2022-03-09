@@ -9,7 +9,7 @@
 #include <unistd.h>      /* fork        */
 #include <stdio.h>       /* printf      */
 #include <fcntl.h>       /* O_* const.  */
-#include <sys/stat.h>    /* mode const. S*/
+#include <sys/stat.h>    /* mode const. */
 #include <stdlib.h>      /* atoi        */
 #include <errno.h>       /* errno       */
 #include <string.h>      /* strcmp      */
@@ -86,13 +86,12 @@ int WDStart(int argc, char *argv[])
         errExit("Failed to set SIGUSR2 handler");
     }
 
-    semid = InitSem(1);
+    semid = InitSem(0);
     if(0 > semid)
     {
     	errExit("Init_sem");
     }
-	SemDecrement(semid,1);
-	printf("post dec, in watchdog:sem val is %d\n", SemGetVal(semid) );
+	printf("in watchdog:sem val is %d\n", SemGetVal(semid) );
 
     sprintf(semchar,"%d", semid);
     memcpy(revive_g.buffer, argv[0], strlen(argv[0]));
@@ -157,6 +156,7 @@ int WDStart(int argc, char *argv[])
 
 static void InitSched(void)
 {
+	SemIncrement(semid,1);
 	new_sched = SchedCreate();
 	if(NULL == new_sched)
 	{
@@ -183,14 +183,16 @@ static void InitSched(void)
     	SomeFailDie(new_sched);
     	errExit("UIDBadUID == SchedAddTask");
     }
+	SemDecrement(semid,1);
 	printf("in WATCHDOG ppid is %d, and pid is %d\n", getppid(), getpid()); 
 }
 
 void WDStop(void)
 {
-	SemDecrement(semid,1);
-	write(STDOUT_FILENO, "line 192 SIGUSR2\n", strlen("line 187 SIGUSR2 "));
+	
+	write(STDOUT_FILENO, "WDStop\n", strlen("WDStop "));
 	kill(revive_g.pid_child, SIGUSR2);
+	wait(NULL); 
 	pthread_join(watchdog_t_g, NULL);
 	SomeFailDie(new_sched);
 }
