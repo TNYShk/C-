@@ -57,7 +57,7 @@ static int TaskPingAlive(void *args)
 
 	if(0 != another_pid)
 	{
-		printf("kickdog SIGUSR1 %d\n",__LINE__);
+		/* printf("kickdog pings %d\n", __LINE__); */
 		kill(another_pid, SIGUSR1);
 	}
 
@@ -66,13 +66,14 @@ static int TaskPingAlive(void *args)
 
 static int TaskCheckAlive(void *args)
 {
-	(void)args;
+
 	if(!atomic_compare_and_swap(&alive_g, 1, 0))
 	{
-		printf("checkalive?");
-		if(1 == getppid())
-			Revive((char **)args);
-	Revive((char **)args);
+		printf("in kickdog, trying to revive\n");
+	/* 	if(1 == getppid())
+			Revive((char **)args); */
+
+		Revive((char **)args);
 		/* SchedDestroy(new_sched); */
 		
 		/* REVIVE*/
@@ -86,8 +87,10 @@ static void Revive(char *argv[])
 {
 	errno = 0;
 	printf("set env? %d\n",putenv("REVDOG=666"));
-	printf("errno? %d\n", errno);
-
+	if(errno != 0)
+	{
+		printf("errno? %d\n", errno);
+	}
 
 	another_pid = fork();
 	if(0 > another_pid)
@@ -102,7 +105,7 @@ static void Revive(char *argv[])
 		strcat(path,DATHNAME);
 		printf("kickdog %d: %s\n",__LINE__,path);
 		/*can we fail strcat? memcpy? */
-		/* SemRemove(sem_id); */
+		SemDecrement(sem_id,1);
 		if(FAIL == execv(path,argv))
 		{
 			errExit("OMFG ALL BROKEN execv fail");
@@ -121,6 +124,7 @@ static int TaskStopSched(void *pid)
 		printf("kickdogsem val is %d\n", SemGetVal(sem_id) );
 		write(STDOUT_FILENO, "kickdog:line 117 SIGUSR2\n", strlen("kickdog:line 117 SIGUSR2 "));
 		kill(getppid(), SIGUSR2);
+		SemDecrement(sem_id,1);
 
 	}
 	return PING_EVERY;
@@ -134,7 +138,7 @@ int main(int argc, char *argv[])
 	
 	sem_id = atoi(argv[1]);
 	printf("semid %d\n",sem_id);
-	SemDecrement(sem_id,1);
+	
 	ka.sa_sigaction = &SigHandlerKill;
 	sa.sa_sigaction = &SigHandlerAlive;
     sa.sa_flags |= SA_SIGINFO;
@@ -217,7 +221,7 @@ static void SigHandlerKill(int sig, siginfo_t *info, void *ucontext)
 	(void)info;
 	if (NULL != new_sched)
 	{
-		printf("signalhandlerkill!\n");
+		write(STDOUT_FILENO, "kickdog signalhandler kill!\n", strlen("kickdog signalhandler kill! "));
 		atomic_compare_and_swap(&sched_flag,0 , 1);
 	}
 	

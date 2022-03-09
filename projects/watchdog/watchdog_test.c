@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
 {
     time_t now = time(0);
     WDStart(argc, argv);
-    while(time(NULL) < now + 10);
+    while(time(NULL) < now + 20);
     WDStop(); 
   
 

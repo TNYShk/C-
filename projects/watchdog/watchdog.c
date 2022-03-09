@@ -38,8 +38,7 @@ static int TaskPingAlive(void *args);
 static int TaskCheckAlive(void *args);
 static int TaskStopSched(void *pid);
 static void InitSched(void);
-static void Revive(char *argv[]);
-
+static void Revive(void);
 
 typedef struct revive
 {
@@ -64,9 +63,9 @@ int WDStart(int argc, char *argv[])
 	struct sigaction ka = {0};
 	char semchar[ARGZ] = {0};
 	char cwd[ARGZ] = {0};
+	
 	getcwd(cwd, ARGZ);
 	printf("%s\n",cwd);
-	
 	
 	sa.sa_sigaction = &SigHandlerAlive;
 	ka.sa_handler = &SigHandlerKill;
@@ -202,7 +201,7 @@ static void SomeFailDie(scheduler_t *sched)
 {
     SchedDestroy(sched);
     sched = NULL;
-   /*  SemRemove(semid); */
+   	SemRemove(semid); 
 }
 
 static void *WrapperSchedSem(void *something)
@@ -235,13 +234,13 @@ static int TaskCheckAlive(void *args)
 	{
 		write(STDOUT_FILENO, "REVIVE PLEASE\n", strlen("REVIVE PLEASE "));
 		/* REVIVE*/
-		Revive((char **)args);
+		Revive();
 	}
 	
 	return CHECK_ALIVE_EVERY;
 }
 
-static void Revive(char *argv[])
+static void Revive(void)
 {
 	char revive[ARGZ] = {0};
 
