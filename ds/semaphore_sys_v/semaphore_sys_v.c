@@ -63,7 +63,7 @@ int SemRemove(int sem_id)
          errExit("semctl");
     }
 
-    printf("Semaphore removed\n");
+    /* printf("Semaphore removed\n"); */
     return SUCCESS;
 }
 
@@ -85,7 +85,7 @@ int SemGetVal(int sem_id)
     int value = 0;
     if(FAIL == (value = semctl(sem_id, 0, GETVAL, arg)))
     {
-         errExit("semctl");
+        errExit("semctl");
     }
     
     return semctl(sem_id, 0, GETVAL);
