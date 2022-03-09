@@ -41,13 +41,13 @@ typedef enum locks
 }locks_t;
 
 /* ex1 */
-volatile int spinlock = PRODUCER;
+static volatile int spinlock = PRODUCER;
 static char buffer[MAXLEN] = {0};
 
 /* ex2 -3*/
 pthread_mutex_t mutexi = PTHREAD_MUTEX_INITIALIZER;
 size_t idx_g = 0;
-static sem_t ex3_sem = {0};
+static sem_t ex3_sem_list = {0};
 static dlist_t *dll_ex2_3 = NULL;
 int isEOF_g = 0;
 
@@ -97,13 +97,14 @@ static void DoSomething(int something);
 
 int main(void)
 {
+     Ex1();
     /* Choose your poison: 
-    Ex1();
+   
     Ex2();
     Ex3();
     Ex4();
     Ex5();
-    */
+    
 
     printf("ex4:\n");
     Ex4();
@@ -111,6 +112,7 @@ int main(void)
     Ex5();
      printf("\nex6:\n");
     Ex6();
+    */
     return 0;
 }
 
@@ -213,7 +215,6 @@ void Ex5(void)
 {
     pthread_t producer[THREADS] = {0}, consumer[THREADS] = {0};
     size_t idx5 = 0;
-
 
     if(FAIL == sem_init(&prod_ex4_5, 0, THREADS))
     {
@@ -362,7 +363,7 @@ void Ex3(void)
     pthread_t consumer[THREADS] = {0};
     size_t idx3 = 0;
 
-    if(FAIL == sem_init(&ex3_sem, 0, 0))
+    if(FAIL == sem_init(&ex3_sem_list, 0, 0))
     {
         errExit("prod_sem_init");
     }
@@ -386,7 +387,7 @@ void Ex3(void)
 
     DListDestroy(dll_ex2_3);
     pthread_mutex_destroy(&mutexi);
-    sem_destroy(&ex3_sem);
+    sem_destroy(&ex3_sem_list);
     
 }
 
@@ -402,10 +403,10 @@ static void *ThreadProd3(void *something)
         memset(buffer_l, 0 ,MAXLEN);
         if (NULL == fgets(buffer_l, MAXLEN, stdin)) 
         {
-               isEOF_g = ON; /*atomic_sync_fetch_or(&isEOF_g, 1);*/
+            isEOF_g = ON; /*atomic_sync_fetch_or(&isEOF_g, 1);*/
             
             pthread_mutex_unlock(&mutexi);
-            sem_post(&ex3_sem);
+            sem_post(&ex3_sem_list);
             
             return NULL;
         }
@@ -419,7 +420,7 @@ static void *ThreadProd3(void *something)
 
         strcpy(link_node, buffer_l); 
         DListPushBack(dll_ex2_3, link_node);
-        sem_post(&ex3_sem);
+        sem_post(&ex3_sem_list);
         pthread_mutex_unlock(&mutexi);
 
         sleep(0); 
@@ -434,7 +435,7 @@ static void *ThreadCons3(void *something)
     while (1)
     {
         char *releaser = NULL; 
-        sem_wait(&ex3_sem);
+        sem_wait(&ex3_sem_list);
         if(isEOF_g)
         {
             return NULL;

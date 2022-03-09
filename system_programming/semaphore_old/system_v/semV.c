@@ -59,7 +59,7 @@ int main(int argc, const char *argv[])
 {
     if(argc != 2)
     {
-        printf("not enpugh args! need: ./a.out <sem_name>");
+        printf("not enough args! need: ./a.out <sem_name>");
         return FAIL;
     }
 

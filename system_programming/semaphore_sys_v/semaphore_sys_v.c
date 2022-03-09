@@ -26,11 +26,11 @@ union semun
 
 
 
-int InitSem( size_t init_val)
+int InitSem(size_t init_val)
 {
     int sem_id = 0;
     int proj_id = 0;
-    union semun arg;
+    
 
     key_t sema_key = ftok("./semaphore_sys_v.h" , proj_id);
     if(FAIL == sema_key)
@@ -42,18 +42,14 @@ int InitSem( size_t init_val)
     sem_id = semget(sema_key, 1, 0666 | IPC_CREAT);
     if (FAIL == sem_id)
     {
-         errExit("semget");
+        errExit("semget");
     }
 
-    if(0 != init_val)
-    {    
-       
-        arg.val = init_val;
-        if (FAIL == semctl(sem_id, 0, SETVAL, arg))
-        {
-            errExit("semctl");
-        }
+    if (FAIL == semctl(sem_id, 0, SETVAL, init_val))
+    {
+        errExit("semctl");
     }
+    
 
     return sem_id;
 }
@@ -65,7 +61,7 @@ int SemRemove(int sem_id)
 
     if(FAIL == semctl(sem_id, 0, IPC_RMID, arg))
     {
-         errExit("semctl");
+        errExit("semctl");
     }
 
     printf("Semaphore removed\n");
@@ -90,7 +86,7 @@ int SemGetVal(int sem_id)
     int value = 0;
     if(FAIL == (value = semctl(sem_id, 0, GETVAL, arg)))
     {
-        errExit("semctl get val");
+        errExit("semctl_getval");
     }
     
     return value;
