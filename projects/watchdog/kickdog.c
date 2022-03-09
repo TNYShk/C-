@@ -119,7 +119,7 @@ static int TaskStopSched(void *pid)
 		
 		printf("kickdogsem val is %d\n", SemGetVal(sem_id) );
 		write(STDOUT_FILENO, "kickdog:line 117 SIGUSR2\n", strlen("kickdog:line 117 SIGUSR2 "));
-		kill(getppid(), SIGUSR2);
+		kill(another_pid, SIGUSR2);
 	}
 	return PING_EVERY;
 }
