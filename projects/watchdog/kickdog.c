@@ -70,9 +70,6 @@ static int TaskCheckAlive(void *args)
 	if(!atomic_compare_and_swap(&alive_g, 1, 0))
 	{
 		printf("in kickdog, trying to revive\n");
-	/* 	if(1 == getppid())
-			Revive((char **)args); */
-
 		Revive((char **)args);
 		/* SchedDestroy(new_sched); */
 		
@@ -103,9 +100,9 @@ static void Revive(char *argv[])
 		getcwd(path, ARGZ);
 		
 		strcat(path,DATHNAME);
-		printf("kickdog %d: %s\n",__LINE__,path);
-		/*can we fail strcat? memcpy? */
-		SemDecrement(sem_id,1);
+		printf("REVIVE kickdog %d: %s\n",__LINE__,path);
+	
+		/* SemDecrement(sem_id,1); */
 		if(FAIL == execv(path,argv))
 		{
 			errExit("OMFG ALL BROKEN execv fail");
@@ -120,12 +117,10 @@ static int TaskStopSched(void *pid)
 	if(1 == sched_flag)
 	{
 		SchedStop(new_sched);
-		SemIncrement(sem_id,1);
+		
 		printf("kickdogsem val is %d\n", SemGetVal(sem_id) );
 		write(STDOUT_FILENO, "kickdog:line 117 SIGUSR2\n", strlen("kickdog:line 117 SIGUSR2 "));
 		kill(getppid(), SIGUSR2);
-		SemDecrement(sem_id,1);
-
 	}
 	return PING_EVERY;
 }
@@ -157,7 +152,8 @@ int main(int argc, char *argv[])
 	printf("in KICKDOG ppid is %d, and pid is %d\n", getppid(), getpid());
 
 	SchedInit(argv);
-	
+
+	SemIncrement(sem_id,1);
     SchedRun(new_sched);
 
   
@@ -166,7 +162,7 @@ int main(int argc, char *argv[])
 
 static void SchedInit(char *argv[])
 {
-	SemIncrement(sem_id,1);
+	
 	new_sched = SchedCreate();
 	if(NULL == new_sched)
 	{
@@ -174,7 +170,7 @@ static void SchedInit(char *argv[])
 	}
 
 	if(UIDIsSame(UIDBadUID,SchedAddTask(new_sched, &TaskPingAlive, NULL, 
-    							NULL, NULL, time(0) + PING_EVERY)))
+    					NULL, NULL, time(0) + PING_EVERY)))
     {
     	SomeFailDie(new_sched);
     	errExit("UIDBadUID == SchedAddTask");
@@ -193,7 +189,7 @@ static void SchedInit(char *argv[])
     	SomeFailDie(new_sched);
     	errExit("UIDBadUID == SchedAddTask");
     }
-	SemDecrement(sem_id,1);
+
 }
 
 static void SomeFailDie(scheduler_t *sched)
@@ -221,7 +217,7 @@ static void SigHandlerKill(int sig, siginfo_t *info, void *ucontext)
 	(void)info;
 	if (NULL != new_sched)
 	{
-		write(STDOUT_FILENO, "kickdog signalhandler kill!\n", strlen("kickdog signalhandler kill! "));
+		write(STDOUT_FILENO, "kickdog signalhandler kill!\n", 28);
 		atomic_compare_and_swap(&sched_flag,0 , 1);
 	}
 	

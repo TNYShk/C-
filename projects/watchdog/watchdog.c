@@ -38,6 +38,7 @@ static int TaskPingAlive(void *args);
 static int TaskCheckAlive(void *args);
 static int TaskStopSched(void *pid);
 static void InitSched(void);
+static void InitProcess(char *argv[], int semid);
 static void Revive(void);
 
 typedef struct revive
@@ -61,19 +62,11 @@ int WDStart(int argc, char *argv[])
 	
 	struct sigaction sa = {0};
 	struct sigaction ka = {0};
-	char semchar[ARGZ] = {0};
-	char cwd[ARGZ] = {0};
-	
-	getcwd(cwd, ARGZ);
-	printf("%s\n",cwd);
 	
 	sa.sa_sigaction = &SigHandlerAlive;
 	ka.sa_handler = &SigHandlerKill;
     sa.sa_flags |= SA_SIGINFO;
 	
-	/* errno = 0;
-	printf("set env? %d\n",putenv("TNY=26"));
-	printf("errno? %d\n", errno); */
 
     if (SUCCESS != sigaction(SIGUSR1, &sa, NULL))
     {
@@ -92,46 +85,15 @@ int WDStart(int argc, char *argv[])
     }
 	printf("in watchdog:sem val is %d\n", SemGetVal(semid) );
 
-    sprintf(semchar,"%d", semid);
-    memcpy(revive_g.buffer, argv[0], strlen(argv[0]));
-    revive_g.whole = revive_g.buffer + strlen(revive_g.buffer) + 1;
- 	strcat(revive_g.whole, semchar);
-	printf("testing revive_g.whole: %s\n",revive_g.whole );
     /*revive_g.whole = strcat(cwd, revive_g.buffer + 1);
     printf("testing: %s\n",revive_g.whole );*/
 	
 	InitSched();
-
 	
     if(NULL == getenv("REVDOG"))
 	{
-		revive_g.pid_child = fork();
-		/* printf("child_pid in WDStart is: %d\n",revive_g.pid_child); */
-		if(0 > revive_g.pid_child)
-		{
-			errExit("fork fail");
-		}
-		if (0 == revive_g.pid_child) /* in watchdog process */
-		{
-			strcat(cwd, PATHNAME);
-			/* printf("semchar is: %s\n", semchar);
-			printf("strcat cwd is: %s\n", cwd); */
-
-			if(FAIL == execl(cwd,cwd,semchar, NULL))
-			{
-				errExit("Failed execv");
-			}
-		}
-		/* else  in ward process 
-		{
-			if(SUCCESS != pthread_create(&watchdog_t_g, NULL, &WrapperSchedSem, new_sched))
-			{
-				SomeFailDie(new_sched);
-				kill(revive_g.pid_child, SIGUSR2);
-				errExit("pthread_create");
-			}
-
-		} */
+		InitProcess(argv, semid);
+		SemDecrement(semid,1);
 	}
 	else 
 	{
@@ -153,9 +115,47 @@ int WDStart(int argc, char *argv[])
 	return 0;
 }
 
+
+static void InitProcess(char *argv[], int semid)
+{
+	char semchar[ARGZ] = {0};
+	char cwd[ARGZ] = {0};
+	
+	getcwd(cwd, ARGZ);
+	printf("%s\n",cwd);
+
+	sprintf(semchar,"%d", semid);
+
+	revive_g.pid_child = fork();
+		/* printf("child_pid in WDStart is: %d\n",revive_g.pid_child); */
+	if(0 > revive_g.pid_child)
+	{
+		errExit("fork fail");
+	}
+	if (0 == revive_g.pid_child) /* in watchdog process */
+	{
+		strcat(cwd, PATHNAME);
+			/* printf("semchar is: %s\n", semchar);
+			printf("strcat cwd is: %s\n", cwd); */
+
+		if(FAIL == execl(cwd,cwd,semchar, NULL))
+		{
+			errExit("Failed execv");
+		}
+	}
+
+
+    memcpy(revive_g.buffer, argv[0], strlen(argv[0]));
+    revive_g.whole = revive_g.buffer + strlen(revive_g.buffer) + 1;
+ 	strcat(revive_g.whole, semchar);
+	printf("testing revive_g.whole: %s\n",revive_g.whole );
+	printf("watchdog pid is %d\n", revive_g.pid_child);
+	
+}
+
 static void InitSched(void)
 {
-	SemIncrement(semid,1);
+	/* SemIncrement(semid,1); */
 	new_sched = SchedCreate();
 	if(NULL == new_sched)
 	{
@@ -182,7 +182,7 @@ static void InitSched(void)
     	SomeFailDie(new_sched);
     	errExit("UIDBadUID == SchedAddTask");
     }
-	SemDecrement(semid,1);
+	/* SemDecrement(semid,1); */
 	printf("in WATCHDOG ppid is %d, and pid is %d\n", getppid(), getpid()); 
 }
 
