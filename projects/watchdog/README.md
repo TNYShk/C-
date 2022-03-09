@@ -20,8 +20,9 @@ the folder contains Watchdod program, designed to safe guard user's running proc
 # user's program MUST be in current folder
 > add and run user's program from watchdog_test.c
 > use makefile to compile and link accordingly
-> in terminal run 'make test'
-> in terminal run ./watchdog_test
+> in terminal run 'make test' 
+> in terminal run 'make run'
+> for release mode, run 'make release'
 
 > to test functionality, in terminal enter: kill pid/ppid
 > ppid/pid is printed when program starts
