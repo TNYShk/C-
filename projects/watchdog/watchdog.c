@@ -72,18 +72,23 @@ revive_t revive_g;
 
 int WDStart(int argc, char *argv[])
 {
-	
-	InitHandlers();
 	(void)argc;
 
-	
+	if(SUCCESS != InitHandlers())
+	{
+		errExit("Init SigHandlers");
+	}
+
     semid = InitSem(0);
     if(0 > semid)
     {
     	errExit("Init_sem");
     }
 	
-	 InitSched();
+	 if(SUCCESS != InitSched())
+	 {
+		errExit("Init Sched");
+	 }
 
 	if(SUCCESS != pthread_create(&watchdog_t_g, NULL, &WrapperSchedSem, new_sched))
 	{
@@ -113,21 +118,22 @@ int WDStart(int argc, char *argv[])
 
 int WDStop(void)
 {
-	errno = 0;
+
 	write(STDOUT_FILENO, "WDStop\n", strlen("WDStop "));
 	kill(revive_g.pid_child, SIGUSR2);
 	
 	pthread_join(watchdog_t_g, NULL);
 	Terminate(new_sched);
 
-	return errno;
+	return SUCCESS;
 }
 
 static int InitHandlers(void)
 {
 	struct sigaction sa = {0};
 	struct sigaction ka = {0};
-	
+	errno = 0;
+
 	sa.sa_sigaction = &SigHandlerAlive;
 	ka.sa_handler = &SigHandlerKill;
     sa.sa_flags |= SA_SIGINFO;
@@ -141,7 +147,7 @@ static int InitHandlers(void)
     {
         errExit("Failed to set SIGUSR2 handler");
     }
-	return SUCCESS;
+	return errno;
 }
 
 
@@ -149,10 +155,11 @@ static int InitProcess(char *argv[], int semid)
 {
 	char semchar[ARGZ] = {0};
 	char cwd[ARGZ] = {0};
-	
+	errno = 0;
+
 	getcwd(cwd, ARGZ);
 	sprintf(semchar,"%d", semid);
-
+	setenv("SEMCHAR", semchar,1);
 	revive_g.pid_child = fork();
 		
 	if(0 > revive_g.pid_child)
@@ -163,7 +170,7 @@ static int InitProcess(char *argv[], int semid)
 	{
 		strcat(cwd, PATHNAME);
 		
-		if(FAIL == execl(cwd,cwd,semchar, NULL))
+		if(FAIL == execv(cwd,argv))
 		{
 			errExit("Failed execv");
 		}
@@ -173,40 +180,46 @@ static int InitProcess(char *argv[], int semid)
     revive_g.full_path = revive_g.buffer + strlen(revive_g.buffer) + 1;
  	strcat(revive_g.full_path, semchar);
 
-	return SUCCESS;
+	return errno;
 }
 
 static int InitSched(void)
 {
+	errno = 0;
 	new_sched = SchedCreate();
 	if(NULL == new_sched)
 	{
-		errExit("SchedCreate failed");
+		SemRemove(semid); 
+		printf("Task Sched Error %s, %d\n", __FILE__, __LINE__);
+    	return FAIL;
 	}
 
 	if(UIDIsSame(UIDBadUID,SchedAddTask(new_sched, &TaskPingAlive, NULL, 
     							NULL, NULL, time(0) + PING_EVERY)))
     {
     	Terminate(new_sched);
-    	errExit("UIDBadUID == SchedAddTask");
+    	printf("Task Sched Error %s, %d\n", __FILE__, __LINE__);
+    	return FAIL;
     	
     }
     if(UIDIsSame(UIDBadUID,SchedAddTask(new_sched, &TaskCheckAlive, NULL, 
     					NULL, NULL, time(0) + CHECK_ALIVE_EVERY)))
     {
     	Terminate(new_sched);
-    	errExit("UIDBadUID == SchedAddTask");
+		printf("Task Sched Error %s, %d\n", __FILE__, __LINE__);
+    	return FAIL;
     }
 
     if(UIDIsSame(UIDBadUID,SchedAddTask(new_sched, &TaskStopSched, NULL, 
     					NULL, NULL, time(0) + CHECK_ALIVE_EVERY)))
     {
     	Terminate(new_sched);
-    	errExit("UIDBadUID == SchedAddTask");
+    	printf("Task Sched Error %s, %d\n", __FILE__, __LINE__);
+    	return FAIL;
     }
 
 	printf("in WATCHDOG ppid is %d, and pid is %d\n", getppid(), getpid()); 
-	return SUCCESS;
+	return errno;
 }
 
 
@@ -214,7 +227,6 @@ static int InitSched(void)
 
 static void Terminate(scheduler_t *sched)
 {
-	
 	SchedDestroy(sched);
     sched = NULL;
    	SemRemove(semid); 
@@ -254,17 +266,26 @@ static int TaskCheckAlive(void *args)
 static int Revive(void)
 {
 	char revive[ARGZ] = {0};
-
+	errno = 0;
+	
 	getcwd(revive, ARGZ);
 	strcat(revive, PATHNAME);
 	
-	setenv("SEMCHAR",revive_g.full_path, 1);
+	if(SUCCESS != setenv("SEMCHAR",revive_g.full_path, 1))
+	{
+		errExit("setenv fail");
+	}
 	revive_g.pid_child = fork();
+	if(0 > revive_g.pid_child)
+	{
+		errExit("WD Revive fork fail");
+	}
+
 	if(0 == revive_g.pid_child)
 	{
 		if(FAIL == execl(revive,revive, revive_g.full_path, NULL))
     	{
-        	errExit("Failed execl");
+        	errExit("WD Revive fail execl");
     	}
 	}
 	return SUCCESS;
@@ -284,11 +305,6 @@ static void SigHandlerKill(int sig)
 {
 	(void)sig;
 	atomic_compare_and_swap(&sched_flag,0 , 1);
-	/* if (NULL != new_sched)
-	{
-		atomic_compare_and_swap(&sched_flag,0 , 1);
-	} */
-
 }
 
 int TaskStopSched(void *pid)

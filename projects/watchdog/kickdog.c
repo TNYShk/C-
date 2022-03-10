@@ -16,7 +16,7 @@
 #include <stdio.h>       /* printf    */
 #include <stdlib.h>      /* atoi */
 #include <errno.h>       /* errno */
-#include <string.h>      /*strcmp */
+#include <string.h>      /*strlen */
 
 #include "watchdog.h"    /* watchdog API         */
 #include "semaphore_sys_v.h"      /* sys_v sempahore API  */
@@ -69,34 +69,38 @@ static void SigHandlerAlive(int sig, siginfo_t *info, void *ucontext);
 
 int main(int argc, char *argv[])
 {
-   
-	char *sem_env = NULL;
-	((sem_env = getenv("SEMCHAR")) == NULL)? (sem_id = atoi(argv[1])) : (sem_id = atoi(getenv("SEMCHAR")));
+	/* char *sem_env = NULL;
+	((sem_env = getenv("SEMCHAR")) == NULL)? (sem_id = atoi(argv[1])) : (sem_id = atoi(getenv("SEMCHAR"))); */
+	
+	sem_id = atoi(getenv("SEMCHAR"));
 	
 	(void)argc;
-
+	
 	if(SUCCESS != InitHandlers())
 	{
-		errExit("Failed to Init handlers");
+		printf("InitHandler Error %s, %d\n", __FILE__, __LINE__);
+		return FAILURE;
 	}
 	printf("in KICKDOG: ppid is %d, and pid is %d\n", getppid(), getpid());
 
 	if(SUCCESS != SchedInit(argv))
 	{
-		errExit("Failed to Init Scheduler");
+		printf("SchedInit Error %s, %d\n", __FILE__, __LINE__);
+		return FAILURE;
 	}
 
-	SemIncrement(sem_id,1);
+	SemIncrement(sem_id, 1);
     SchedRun(new_sched);
 
-    return 0;
+    return SUCCESS;
 }
 
 static int InitHandlers(void)
 {
 	struct sigaction sa = {0};
 	struct sigaction ka = {0};
-
+	errno = 0;
+	
 	ka.sa_sigaction = &SigHandlerKill;
 	sa.sa_sigaction = &SigHandlerAlive;
     sa.sa_flags |= SA_SIGINFO;
@@ -111,7 +115,7 @@ static int InitHandlers(void)
     {
         errExit("Failed to set SIGUSR2 handler");
     }
-	return SUCCESS;
+	return errno;
 }
 
 
@@ -132,7 +136,6 @@ static int TaskCheckAlive(void *args)
 	if(!atomic_compare_and_swap(&alive_g, 1, 0))
 	{
 		write(STDOUT_FILENO, "in kickdog, trying to revive\n", strlen("in kickdog, trying to revive ")); 
-		/* printf("in kickdog, trying to revive\n"); */
 		Revive((char **)args);
 		
 		return SUCCESS;
@@ -144,11 +147,9 @@ static int TaskCheckAlive(void *args)
 static int Revive(char *argv[])
 {
 	errno = 0;
-	printf("set env? %d\n",putenv("REVDOG=666"));
-	if(errno != 0)
+	if(SUCCESS != setenv("REVDOG", "666",1))
 	{
-		printf("errno: %d\n", errno);
-		errExit("putenv failed ");
+		errExit("setenv failed ");
 	}
 
 	another_pid = fork();
@@ -193,28 +194,32 @@ static int SchedInit(char *argv[])
 	new_sched = SchedCreate();
 	if(NULL == new_sched)
 	{
-		errExit("SchedCreate failed");
+		printf("Sched Init Error %s, %d\n", __FILE__, __LINE__);
+		return FAILURE;
 	}
-
+	
 	if(UIDIsSame(UIDBadUID,SchedAddTask(new_sched, &TaskPingAlive, NULL, 
     					NULL, NULL, time(0) + PING_EVERY)))
     {
     	Terminate();
-    	errExit("UIDBadUID == SchedAddTask");
+		printf("Task Sched Error %s, %d\n", __FILE__, __LINE__);
+    	return FAILURE;
     	
     }
     if(UIDIsSame(UIDBadUID,SchedAddTask(new_sched, &TaskCheckAlive, (void *)argv, 
     					NULL, NULL, time(0) + CHECK_ALIVE_EVERY)))
     {
     	Terminate();
-    	errExit("UIDBadUID == SchedAddTask");
+		printf("Task Sched Error %s, %d\n", __FILE__, __LINE__);
+    	return FAILURE;
     }
 
      if(UIDIsSame(UIDBadUID,SchedAddTask(new_sched, &TaskStopSched, NULL, 
     					NULL, NULL, time(0) + CHECK_ALIVE_EVERY)))
     {
     	Terminate();
-    	errExit("UIDBadUID == SchedAddTask");
+		printf("Task Sched Error %s, %d\n", __FILE__, __LINE__);
+    	return FAILURE;
     }
 	return SUCCESS;
 }
@@ -224,7 +229,6 @@ static void Terminate()
     SchedDestroy(new_sched);
     new_sched = NULL;
     SemRemove(sem_id);
-   
 }
 
 static void SigHandlerAlive(int sig, siginfo_t *info, void *ucontext)
@@ -234,7 +238,6 @@ static void SigHandlerAlive(int sig, siginfo_t *info, void *ucontext)
 	write(STDOUT_FILENO, "Dog fed\n", strlen("Dog fed  "));
 	atomic_sync_or_and_fetch(&alive_g, 1);
 	another_pid = info->si_pid;
-	
 }
 
 static void SigHandlerKill(int sig, siginfo_t *info, void *ucontext)
@@ -244,7 +247,6 @@ static void SigHandlerKill(int sig, siginfo_t *info, void *ucontext)
 	(void)info;
 	if (NULL != new_sched)
 	{
-		write(STDOUT_FILENO, "kickdog SGUSR2!\n", strlen("kickdog SGUSR2! "));
 		atomic_compare_and_swap(&sched_flag,0 , 1);
 	}
 	
