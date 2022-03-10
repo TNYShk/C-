@@ -31,8 +31,8 @@
 
 #define atomic_sync_or_and_fetch(destptr, flag) __sync_or_and_fetch(destptr, flag)
 #define atomic_compare_and_swap(destptr, oldval, newval) __sync_bool_compare_and_swap(destptr, oldval, newval)
-
-#ifdef DEBUG
+#define PRINT(msg)  do {write(STDOUT_FILENO, (msg), strlen(msg)); } while (0)
+#ifdef debug
 	#define errExit(msg) do { perror(msg); exit(EXIT_FAILURE); } while (0)
 #else
 	#define errExit(msg) do { perror(msg); return(errno); } while (0)
@@ -71,14 +71,16 @@ int main(int argc, char *argv[])
 {
 	/* char *sem_env = NULL;
 	((sem_env = getenv("SEMCHAR")) == NULL)? (sem_id = atoi(argv[1])) : (sem_id = atoi(getenv("SEMCHAR"))); */
-	
+
 	sem_id = atoi(getenv("SEMCHAR"));
 	
 	(void)argc;
 	
 	if(SUCCESS != InitHandlers())
 	{
+		
 		printf("InitHandler Error %s, %d\n", __FILE__, __LINE__);
+			
 		return FAILURE;
 	}
 	printf("in KICKDOG: ppid is %d, and pid is %d\n", getppid(), getpid());
@@ -86,6 +88,7 @@ int main(int argc, char *argv[])
 	if(SUCCESS != SchedInit(argv))
 	{
 		printf("SchedInit Error %s, %d\n", __FILE__, __LINE__);
+	
 		return FAILURE;
 	}
 
@@ -94,6 +97,8 @@ int main(int argc, char *argv[])
 
     return SUCCESS;
 }
+
+
 
 static int InitHandlers(void)
 {
@@ -135,7 +140,9 @@ static int TaskCheckAlive(void *args)
 {
 	if(!atomic_compare_and_swap(&alive_g, 1, 0))
 	{
-		write(STDOUT_FILENO, "in kickdog, trying to revive\n", strlen("in kickdog, trying to revive ")); 
+		#ifdef debug
+			PRINT("kickdog revive\n");
+		#endif
 		Revive((char **)args);
 		
 		return SUCCESS;
@@ -210,7 +217,9 @@ static int SchedInit(char *argv[])
     					NULL, NULL, time(0) + CHECK_ALIVE_EVERY)))
     {
     	Terminate();
+		
 		printf("Task Sched Error %s, %d\n", __FILE__, __LINE__);
+		
     	return FAILURE;
     }
 
@@ -218,7 +227,9 @@ static int SchedInit(char *argv[])
     					NULL, NULL, time(0) + CHECK_ALIVE_EVERY)))
     {
     	Terminate();
-		printf("Task Sched Error %s, %d\n", __FILE__, __LINE__);
+		
+			printf("Task Sched Error %s, %d\n", __FILE__, __LINE__);
+		
     	return FAILURE;
     }
 	return SUCCESS;
@@ -235,7 +246,9 @@ static void SigHandlerAlive(int sig, siginfo_t *info, void *ucontext)
 {
 	(void)sig;
 	(void)ucontext;	
-	write(STDOUT_FILENO, "Dog fed\n", strlen("Dog fed  "));
+	#ifdef debug
+		PRINT("Dog fed\n");
+	#endif
 	atomic_sync_or_and_fetch(&alive_g, 1);
 	another_pid = info->si_pid;
 }

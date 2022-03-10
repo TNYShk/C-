@@ -54,6 +54,7 @@ static int InitSemaphore(char *argv[]);
 
 static int Revive(char *argv[]);
 
+
 typedef struct revive
 {
 	char buffer[ARGZ];
@@ -61,28 +62,40 @@ typedef struct revive
 	pid_t pid_child;
 }revive_t;
 
+volatile int im_watchdog = 0;
+
 static scheduler_t *new_sched;
 static int alive_g = 0;
-static int semid;
+static char semchar[BUFSIZ] = {'\0'};
 static int sched_flag = 0;
 static pthread_t watchdog_t_g = {0};
+static int semid = 0;
 
 revive_t revive_g;
-char semchar[ARGZ] = {0};
 
-int im_watchdog = 0;
+
+
 
 int WDStart(int argc, char *argv[])
 {
-	revive_g.pid_child = getpid();
+	int who_am_i = (NULL == getenv("SEMV"));
+	
+	assert(1 <= argc);
+
 	InitSigHandler();
 
-	(void)argc;
-	
 	assert(SUCCESS == InitSemaphore(argv));
 	assert(SUCCESS == InitSched());
 
-	
+	if(who_am_i)
+	{
+		setenv("SEMV",revive_g.buffer,1);
+		InitProcess(argv);
+	}
+	else
+	{
+		revive_g.pid_child = getppid();
+	}
 	
 
 	
@@ -168,6 +181,11 @@ void WDStop(void)
 }
 
 
+static int Revive(char *argv[])
+{
+	
+	return InitProcess(argv);
+}
 
 static int InitProcess(char *argv[])
 {
@@ -267,11 +285,6 @@ static int TaskCheckAlive(void *args)
 	return CHECK_ALIVE_EVERY;
 }
 
-static int Revive(char *argv[])
-{
-	
-	return InitProcess(argv);
-}
 
 
 static void SigHandlerAlive(int sig, siginfo_t *info, void *ucontext)

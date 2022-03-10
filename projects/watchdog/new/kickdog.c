@@ -21,7 +21,7 @@
 #include "watchdog.h"    /* watchdog API         */
 #include "semaphore_sys_v.h"      /* sys_v sempahore API  */
 #include "scheduler.h"      /* scheduler API        */
-#include "uid.h"        
+       
 #define PING_EVERY (1)
 #define CHECK_ALIVE_EVERY (5)
 #define SUCCESS (0)
@@ -38,7 +38,7 @@
 	#define errExit(msg) do { perror(msg); return(errno); } while (0)
 #endif
 
-extern int im_watchdog;
+extern volatile int im_watchdog;
 
 scheduler_t *new_sched;
 static pid_t another_pid = 0;
@@ -65,41 +65,11 @@ static void SigHandlerAlive(int sig, siginfo_t *info, void *ucontext);
 int main(int argc, char *argv[])
 {
     
-	/*struct sigaction sa = {0};
-	struct sigaction ka = {0};
-	(void)argc;
-*/
+
 	im_watchdog = 1;
-	/*sem_id = getenv("SEMV");
-	sem_id = atoi(argv[1]);
-	 printf("semid %d\n",sem_id); */
 	
 	WDStart(argc, argv);
-	/*
-	ka.sa_sigaction = &SigHandlerKill;
-	sa.sa_sigaction = &SigHandlerAlive;
-    sa.sa_flags |= SA_SIGINFO;
-    ka.sa_flags |= SA_SIGINFO;
-   
-    if (SUCCESS != sigaction(SIGUSR1, &sa, NULL))
-    {
-        errExit("Failed to set SIGUSR1 handler");
-    }
-
-    if (SUCCESS != sigaction(SIGUSR2, &ka, NULL))
-    {
-        errExit("Failed to set SIGUSR2 handler");
-    }
 	
-	printf("in KICKDOG: ppid is %d, and pid is %d\n", getppid(), getpid());
-
-	assert(SUCCESS == SchedInit(argv));
-
-	SemIncrement(sem_id,1);
-    SchedRun(new_sched);
-	*/
-
-	WDStop();
     return 0;
 }
 

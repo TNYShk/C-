@@ -21,7 +21,8 @@
 #include "semaphore_sys_v.h"  /* sys_v sempahore API  */
 #include "watchdog.h"         /* watchdog API         */
 
-#ifdef DEBUG
+#define PRINT(msg)  do {write(STDOUT_FILENO, (msg), strlen(msg)); } while (0)
+#ifdef debug
 	#define errExit(msg) do { perror(msg); exit(EXIT_FAILURE); } while (0)
 #else
 	#define errExit(msg) do { perror(msg); return(errno); } while (0)
@@ -73,27 +74,29 @@ revive_t revive_g;
 int WDStart(int argc, char *argv[])
 {
 	(void)argc;
+	errno = 0;
 
 	if(SUCCESS != InitHandlers())
 	{
-		errExit("Init SigHandlers");
+		printf("InitHandler Error %s, %d\n", __FILE__, __LINE__);
+    	return FAIL;
 	}
-
+	
     semid = InitSem(0);
     if(0 > semid)
     {
     	errExit("Init_sem");
     }
 	
-	 if(SUCCESS != InitSched())
-	 {
-		errExit("Init Sched");
-	 }
+	if(SUCCESS != InitSched())
+	{
+		printf("SchedInit Error %s, %d\n", __FILE__, __LINE__);
+		return FAIL;
+	}
 
 	if(SUCCESS != pthread_create(&watchdog_t_g, NULL, &WrapperSchedSem, new_sched))
 	{
 		Terminate(new_sched);
-		write(STDOUT_FILENO, "pthread create watchdog SIGUSR2\n", 25);
 		kill(revive_g.pid_child, SIGUSR2);
 		errExit("pthread_create");
 	}
@@ -102,8 +105,7 @@ int WDStart(int argc, char *argv[])
     if(NULL == getenv("REVDOG"))
 	{
 		InitProcess(argv, semid);
-		
-		SemDecrement(semid,1);
+		SemDecrement(semid, 1);
 	}
 	else 
 	{
@@ -113,13 +115,14 @@ int WDStart(int argc, char *argv[])
 		}
 	}
 
-	return SUCCESS;
+	return errno;
 }
 
 int WDStop(void)
 {
-
-	write(STDOUT_FILENO, "WDStop\n", strlen("WDStop "));
+	#ifdef debug
+		PRINT("WDStop\n");
+	#endif
 	kill(revive_g.pid_child, SIGUSR2);
 	
 	pthread_join(watchdog_t_g, NULL);
@@ -153,13 +156,18 @@ static int InitHandlers(void)
 
 static int InitProcess(char *argv[], int semid)
 {
-	char semchar[ARGZ] = {0};
-	char cwd[ARGZ] = {0};
+	char semchar[ARGZ] = {'\0'};
+	char cwd[ARGZ] = {'\0'};
 	errno = 0;
 
 	getcwd(cwd, ARGZ);
-	sprintf(semchar,"%d", semid);
-	setenv("SEMCHAR", semchar,1);
+	assert(0 <= sprintf(semchar,"%d", semid));
+
+	if(SUCCESS != setenv("SEMCHAR", semchar, 1))
+	{
+		errExit("setenv fail");
+	}
+
 	revive_g.pid_child = fork();
 		
 	if(0 > revive_g.pid_child)
@@ -214,6 +222,7 @@ static int InitSched(void)
     					NULL, NULL, time(0) + CHECK_ALIVE_EVERY)))
     {
     	Terminate(new_sched);
+		
     	printf("Task Sched Error %s, %d\n", __FILE__, __LINE__);
     	return FAIL;
     }
@@ -234,7 +243,7 @@ static void Terminate(scheduler_t *sched)
 
 static void *WrapperSchedSem(void *something)
 {
-	printf("schedrun? %d\n",SchedRun((scheduler_t *)something));
+	SchedRun((scheduler_t *)something);
 	return NULL;
 }
 
@@ -256,7 +265,9 @@ static int TaskCheckAlive(void *args)
 	(void)args;
 	if(!__sync_bool_compare_and_swap(&alive_g, 1, 0))
 	{
-		write(STDOUT_FILENO, "REVIVE PLEASE\n", strlen("REVIVE PLEASE "));
+		#ifdef debug
+			PRINT("REVIVE PLEASE\n");
+		#endif
 		return Revive();
 	}
 	
@@ -267,7 +278,7 @@ static int Revive(void)
 {
 	char revive[ARGZ] = {0};
 	errno = 0;
-	
+
 	getcwd(revive, ARGZ);
 	strcat(revive, PATHNAME);
 	
@@ -296,7 +307,9 @@ static void SigHandlerAlive(int sig, siginfo_t *info, void *ucontext)
 {
 	(void)sig;
 	(void)ucontext;	
-	write(STDOUT_FILENO, "Hungry Barking DOG\n", strlen("Hungry Barking DOG  "));
+	#ifdef debug
+		PRINT("Hungry Barking DOG\n");
+	#endif
 	atomic_sync_or_and_fetch(&alive_g, 1);
 	revive_g.pid_child = info->si_pid;
 }
