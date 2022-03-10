@@ -4,6 +4,6 @@
 
 int WDStart(int argc, char *argv[]);
 
-void WDStop(void);
+int WDStop(void);
 
 #endif /*  __WATCHDOG_H__ */
