@@ -16,16 +16,16 @@
 #include <stdio.h>       /* printf    */
 #include <stdlib.h>      /* atoi */
 #include <errno.h>       /* errno */
-#include <string.h>      /*strcmp */
+#include <string.h>      /*strlen */
 
 #include "watchdog.h"    /* watchdog API         */
 #include "semaphore_sys_v.h"      /* sys_v sempahore API  */
 #include "scheduler.h"      /* scheduler API        */
-        
+#include "uid.h"        
 #define PING_EVERY (1)
 #define CHECK_ALIVE_EVERY (5)
-
-
+#define SUCCESS (0)
+#define FAIL (-1)
 #define ARGZ (256)
 #define DATHNAME ("/watchdog_test")
 
@@ -38,65 +38,44 @@
 	#define errExit(msg) do { perror(msg); return(errno); } while (0)
 #endif
 
-enum Stat
-{
-	FAILURE = -1,
-	SUCCESS = 0,
-	FALSE = 1
-};
+extern int im_watchdog;
 
-static scheduler_t *new_sched = NULL;
+scheduler_t *new_sched;
 static pid_t another_pid = 0;
 static int sched_flag = 0;
 static int alive_g = 0;
-static int sem_id = 0;
+static int sem_id;
 
 
 static int TaskPingAlive(void *args);
 static int TaskCheckAlive(void *args);
 static int TaskStopSched(void *pid);
 
-static void Terminate(void);
+static void SomeFailDie(scheduler_t *sched);
 static int Revive(char *argv[]);
-
 static int SchedInit(char *argv[]);
-static int InitHandlers(void);
 
 static void SigHandlerKill(int sig, siginfo_t *info, void *ucontext);
 static void SigHandlerAlive(int sig, siginfo_t *info, void *ucontext);
 
 
 
+
+
 int main(int argc, char *argv[])
 {
-   
-	char *sem_env = NULL;
-	((sem_env = getenv("SEMCHAR")) == NULL)? (sem_id = atoi(argv[1])) : (sem_id = atoi(getenv("SEMCHAR")));
-	
-	(void)argc;
-
-	if(SUCCESS != InitHandlers())
-	{
-		errExit("Failed to Init handlers");
-	}
-	printf("in KICKDOG: ppid is %d, and pid is %d\n", getppid(), getpid());
-
-	if(SUCCESS != SchedInit(argv))
-	{
-		errExit("Failed to Init Scheduler");
-	}
-
-	SemIncrement(sem_id,1);
-    SchedRun(new_sched);
-
-    return 0;
-}
-
-static int InitHandlers(void)
-{
-	struct sigaction sa = {0};
+    
+	/*struct sigaction sa = {0};
 	struct sigaction ka = {0};
-
+	(void)argc;
+*/
+	im_watchdog = 1;
+	/*sem_id = getenv("SEMV");
+	sem_id = atoi(argv[1]);
+	 printf("semid %d\n",sem_id); */
+	
+	WDStart(argc, argv);
+	/*
 	ka.sa_sigaction = &SigHandlerKill;
 	sa.sa_sigaction = &SigHandlerAlive;
     sa.sa_flags |= SA_SIGINFO;
@@ -111,8 +90,20 @@ static int InitHandlers(void)
     {
         errExit("Failed to set SIGUSR2 handler");
     }
-	return SUCCESS;
+	
+	printf("in KICKDOG: ppid is %d, and pid is %d\n", getppid(), getpid());
+
+	assert(SUCCESS == SchedInit(argv));
+
+	SemIncrement(sem_id,1);
+    SchedRun(new_sched);
+	*/
+
+	WDStop();
+    return 0;
 }
+
+
 
 
 static int TaskPingAlive(void *args)
@@ -131,11 +122,10 @@ static int TaskCheckAlive(void *args)
 {
 	if(!atomic_compare_and_swap(&alive_g, 1, 0))
 	{
-		write(STDOUT_FILENO, "in kickdog, trying to revive\n", strlen("in kickdog, trying to revive ")); 
-		/* printf("in kickdog, trying to revive\n"); */
+		printf("in kickdog, trying to revive\n");
 		Revive((char **)args);
 		
-		return SUCCESS;
+		return 0;
 	}
 	
 	return CHECK_ALIVE_EVERY;
@@ -147,31 +137,30 @@ static int Revive(char *argv[])
 	printf("set env? %d\n",putenv("REVDOG=666"));
 	if(errno != 0)
 	{
-		printf("errno: %d\n", errno);
-		errExit("putenv failed ");
+		printf("errno? %d\n", errno);
 	}
 
 	another_pid = fork();
 	if(0 > another_pid)
 	{
-		errExit("kickdog revive fork fail");
+		errExit("baby fork fail");
 	}
 	if(0 == another_pid)
 	{
 		char path[ARGZ] = {0};
-		
 		getcwd(path, ARGZ);
+		
 		strcat(path,DATHNAME);
+		/* printf("REVIVE kickdog %d: %s\n",__LINE__,path); */
 	
 		SemDecrement(sem_id,1);
-
-		if(FAILURE == execv(path,argv))
+		if(FAIL == execv(path,argv))
 		{
 			errExit("OMFG ALL BROKEN REVIVE execv fail");
 		}
 
 	}
-	return errno;
+	return SUCCESS;
 }
 
 static int TaskStopSched(void *pid)
@@ -181,6 +170,9 @@ static int TaskStopSched(void *pid)
 	if(1 == sched_flag)
 	{
 		SchedStop(new_sched);
+		
+		/* printf("kickdogsem val is %d\n", SemGetVal(sem_id) );
+		write(STDOUT_FILENO, "kickdog:line 117 SIGUSR2\n", strlen("kickdog:line 117 SIGUSR2 ")); */
 		kill(another_pid, SIGUSR2);
 	}
 	return PING_EVERY;
@@ -199,30 +191,30 @@ static int SchedInit(char *argv[])
 	if(UIDIsSame(UIDBadUID,SchedAddTask(new_sched, &TaskPingAlive, NULL, 
     					NULL, NULL, time(0) + PING_EVERY)))
     {
-    	Terminate();
+    	SomeFailDie(new_sched);
     	errExit("UIDBadUID == SchedAddTask");
     	
     }
     if(UIDIsSame(UIDBadUID,SchedAddTask(new_sched, &TaskCheckAlive, (void *)argv, 
     					NULL, NULL, time(0) + CHECK_ALIVE_EVERY)))
     {
-    	Terminate();
+    	SomeFailDie(new_sched);
     	errExit("UIDBadUID == SchedAddTask");
     }
 
      if(UIDIsSame(UIDBadUID,SchedAddTask(new_sched, &TaskStopSched, NULL, 
     					NULL, NULL, time(0) + CHECK_ALIVE_EVERY)))
     {
-    	Terminate();
+    	SomeFailDie(new_sched);
     	errExit("UIDBadUID == SchedAddTask");
     }
 	return SUCCESS;
 }
 
-static void Terminate()
+static void SomeFailDie(scheduler_t *sched)
 {
-    SchedDestroy(new_sched);
-    new_sched = NULL;
+    SchedDestroy(sched);
+    sched = NULL;
     SemRemove(sem_id);
    
 }

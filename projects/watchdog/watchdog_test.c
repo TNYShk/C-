@@ -9,9 +9,9 @@
 int main(int argc, char *argv[])
 {
     time_t now = time(0);
-    printf("ststus WD start: %d\n",WDStart(argc, argv));
-    while(time(NULL) < now + 10);
-    WDStop(); 
+    printf("status WD start: %d\n",WDStart(argc, argv));
+    while(time(NULL) < now + 20);
+    printf("stop is %d\n", WDStop()); 
   
 
     return 0;

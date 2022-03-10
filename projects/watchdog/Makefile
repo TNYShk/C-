@@ -16,7 +16,7 @@ CUR_INC := $(DS_INC_LOC)
 
 CC = gcc
 CFLAGS = -fpic -ansi -pedantic-errors -Wall -Wextra -pthread
-CPPFLAGS = -I$(DS_INC_LOC) -I../include
+CPPFLAGS = -I$(DS_INC_LOC) -I../include 
 LDFLAGS = -pthread -L$(DS_LIB_LOC) -Wl,-rpath='$(DS_LIB_LOC)'  -Wl,-rpath='$$ORIGIN'
 LDLIBS =  $(addprefix -l,$(DS_DEPS)) 
 VLG = valgrind --leak-check=yes --track-origins=yes
@@ -77,6 +77,5 @@ $(DS_LIB_LOC) $(DS_INC_LOC):
 	@mkdir -p $@
 
 clean:
-	#cleaning!
 	rm -rf $(TRGT) *~ *.o
 
