@@ -38,7 +38,7 @@
 	#define errExit(msg) do { perror(msg); return(errno); } while (0)
 #endif
 
-enum Stat
+enum stat
 {
 	FAILURE = -1,
 	SUCCESS = 0,
@@ -246,7 +246,7 @@ static void SigHandlerAlive(int sig, siginfo_t *info, void *ucontext)
 {
 	(void)sig;
 	(void)ucontext;	
-	#ifdef debug
+	#ifndef debug
 		PRINT("Dog fed\n");
 	#endif
 	atomic_sync_or_and_fetch(&alive_g, 1);
