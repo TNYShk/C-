@@ -9,10 +9,12 @@
 #include <assert.h> /* assert*/
 #include <stdlib.h> /* calloc, malloc, free*/
 #include <string.h> /*memcpy */
-
+#include <pthread.h> /* threads*/
+#include <unistd.h> /* sleep, wait*/
 #include "comp_sort.h" /* program header */
 
-
+#define MIN(a,b) ((a)< (b)? (a) : (b))
+#define MIN3(a,b,c) ( (MIN(a,b)) < (c) ? (MIN((a),(b))): (c) )
 
 
 
@@ -37,6 +39,8 @@ static void RQS(void *arr, size_t nmemb, size_t size, cmp_func_t cmp_fun);
 static int Partition(char *arr, size_t size, int left, int right, cmp_func_t cmp_fun);
 static void GenericSwap(char *left, char *right, size_t sz);
 /*****************/
+
+/*mutltithreaded qsort */
 
 
 
@@ -154,40 +158,6 @@ static void RecQS(void *arr, size_t size, int left, int right, cmp_func_t cmp_fu
     RecQS(arr, size, pivot + 1, right,   cmp_fun);
 }
 
-static int Partition(char *arr, size_t size, int left, int right, cmp_func_t cmp_fun)
-{
-    void  *arr_help = NULL;
-    void *arr_left = NULL;
-    void *arr_right = NULL;
-
-    int i = 0;
-    int last = left;
-    int mid = (right + left) >> 1;
-
-    arr_left = (arr + (left * size));
-    arr_right = (arr + (mid * size));
-    
-    GenericSwap(arr_left, arr_right, size);
-
-    for(i = left + 1; i <= right; ++i)
-    {
-        void *pivot_p = (arr + (i * size));
-
-        if(0 < cmp_fun(arr_left,pivot_p))
-        {
-            ++last;
-            arr_help = (arr + (last * size));
-            
-            GenericSwap(pivot_p, arr_help, size);
-        }
-    }
-    arr_help = (arr + (last * size));
-    
-    GenericSwap(arr_left, arr_help, size);
-
-    return last;
-}
-
 
 
 void IntQuickSort(void *arr, size_t nmemb, size_t size, cmp_func_t cmp_fun)
@@ -287,9 +257,11 @@ static void Merge(int *arr, int *help, size_t low, size_t mid, size_t high)
 
 
 
+
+
 static void GenericSwap(char *left, char *right, size_t size)
 {
-    while(0 < size)
+    while (0 < size)
     {
         char tmp = *left;
         *left = *right;
@@ -330,6 +302,8 @@ static int FindMinIndex(int *arr, size_t len)
 	}
 	return lowest - arr;
 }
+
+
 
 
 
