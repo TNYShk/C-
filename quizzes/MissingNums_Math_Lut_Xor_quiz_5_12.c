@@ -7,7 +7,7 @@
 void PrintMissingLut(int *arr, int size)
 {
 	int i = size + 2;
-	int *new_ar = (int*)calloc((size+2),sizeof(size_t));
+	int *new_ar = (int*)calloc((size + 2),sizeof(size_t));
 	if(NULL != new_ar){
 
 	for(i = 0; i<size; ++i)

@@ -18,7 +18,7 @@ unsigned int CountCouples(unsigned int check)
 			++counter;
 		}
 
-		m<<=1;
+		m <<= 1;
 	}while (m < k);
 
 	return counter;

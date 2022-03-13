@@ -12,8 +12,8 @@ int isRotation(const char *s1, const char *s2)
 	{
 		size_t leng = strlen(cut_here_s2);
 
-		if (0 ==(strncmp(cut_here_s2,s1,leng))&&
-		   (0 ==strncmp(s2,s1+leng, strlen(s2) - leng)))
+		if (0 == (strncmp(cut_here_s2,s1,leng))&&
+		   (0 == strncmp(s2,s1+leng, strlen(s2) - leng)))
 		{
 			return SUCCESS;
 		}

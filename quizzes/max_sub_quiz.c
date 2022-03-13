@@ -8,10 +8,10 @@ int maxLocalSum(int *array, int length);
 int main(void)
 {
 
-	int arr[]={-2, 1, -3, 4, -1, 2, 3, -5, 4};
-	int arr1[]={-1, 2, 4, 0};
+	int arr[] = {-2, 1, -3, 4, -1, 2, 3, -5, 4};
+	int arr1[] = {-1, 2, 4, 0};
 	int len = sizeof(arr)/sizeof(int);
-	int len1= sizeof(arr1)/sizeof(int);
+	int len1 = sizeof(arr1)/sizeof(int);
 	
 	printf("arr: max sum is %d\n",maxLocalSum(arr,len));
 	printf("arr: max sum is %d\n",FindMaxSub(arr,len));

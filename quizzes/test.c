@@ -24,7 +24,7 @@ static void PrintBits(unsigned char byte)
 	{
 		
 		*string = byte&bit_mask;
-		byte>>=1;
+		byte >>= 1;
 		printf("%d",*string);
 		
 		 
