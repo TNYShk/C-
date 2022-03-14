@@ -42,19 +42,19 @@ public class HelloWorldApp {
      System.out.println("free memory after gc is: "+ memort1);
     
       
-     Recursive(1);
+     Recursive(0);
     }
    
    static void Recursive(int something)
    {
       if(100 == something)
       {
-         
+         System.out.print(something + " " );
          return;
       }
          
     System.out.print(something + " " );
-      Recursive(++something);
+      Recursive(something +1 );
    }
 }
 
