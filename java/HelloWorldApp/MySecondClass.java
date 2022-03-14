@@ -13,11 +13,15 @@ public class MySecondClass {
     public static void Recursive(int something){
       
         if(100 == something){
-        System.out.print(something + " " );
-        return;
-    }
+            System.out.print(something + " ");
+            return;
+        }
          
-    System.out.print(something + " " );
-    Recursive(something +1 );
+    System.out.print(something + " ");
+    Recursive(something + 1);
    }
+
+
+
+   
 }
