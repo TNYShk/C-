@@ -3,7 +3,7 @@
  * Developer: Tanya                   		*
  * Mar 8, 2022                   	     	*
  *                                          *
- *      Reviewed by        	 	  	 		*
+ *      Reviewed by Ephraim	 	  	 		*
 *********************************************/
 #define _XOPEN_SOURCE (700)
 #define _POSIX_C_SOURCE 199309L
@@ -32,7 +32,7 @@
 #define atomic_sync_or_and_fetch(destptr, flag) __sync_or_and_fetch(destptr, flag)
 #define atomic_compare_and_swap(destptr, oldval, newval) __sync_bool_compare_and_swap(destptr, oldval, newval)
 #define PRINT(msg)  do {write(STDOUT_FILENO, (msg), strlen(msg)); } while (0)
-#ifdef debug
+#ifdef DEBUG
 	#define errExit(msg) do { perror(msg); exit(EXIT_FAILURE); } while (0)
 #else
 	#define errExit(msg) do { perror(msg); return(errno); } while (0)
@@ -78,22 +78,26 @@ int main(int argc, char *argv[])
 	
 	if(SUCCESS != InitHandlers())
 	{
-		
-		printf("InitHandler Error %s, %d\n", __FILE__, __LINE__);
-			
+		#ifdef DEBUG
+			printf("InitHandler Error %s, %d\n", __FILE__, __LINE__);
+		#endif	
 		return FAILURE;
 	}
+#ifdef DEBUG
 	printf("in KICKDOG: ppid is %d, and pid is %d\n", getppid(), getpid());
-
+#endif
 	if(SUCCESS != SchedInit(argv))
 	{
-		printf("SchedInit Error %s, %d\n", __FILE__, __LINE__);
-	
+		#ifdef DEBUG
+			printf("SchedInit Error %s, %d\n", __FILE__, __LINE__);
+		#endif
 		return FAILURE;
 	}
 
-	SemIncrement(sem_id, 1);
-    SchedRun(new_sched);
+	if(SUCCESS != SemIncrement(sem_id, 1))
+		return EXIT_FAILURE;
+    
+	SchedRun(new_sched);
 
     return SUCCESS;
 }
@@ -140,10 +144,13 @@ static int TaskCheckAlive(void *args)
 {
 	if(!atomic_compare_and_swap(&alive_g, 1, 0))
 	{
-		#ifdef debug
-			PRINT("kickdog revive\n");
+		#ifdef DEBUG
+			PRINT("Revivng Kickdog\n");
 		#endif
-		Revive((char **)args);
+		if(SUCCESS != Revive((char **)args))
+		{
+			return FAILURE;
+		}
 		
 		return SUCCESS;
 	}
@@ -164,6 +171,7 @@ static int Revive(char *argv[])
 	{
 		errExit("kickdog revive fork fail");
 	}
+
 	if(0 == another_pid)
 	{
 		char path[ARGZ] = {0};
@@ -171,11 +179,11 @@ static int Revive(char *argv[])
 		getcwd(path, ARGZ);
 		strcat(path,DATHNAME);
 	
-		SemDecrement(sem_id,1);
+		SemDecrement(sem_id, 1);
 
 		if(FAILURE == execv(path,argv))
 		{
-			errExit("OMFG ALL BROKEN REVIVE execv fail");
+			errExit("REVIVE execv fail");
 		}
 
 	}
@@ -201,7 +209,9 @@ static int SchedInit(char *argv[])
 	new_sched = SchedCreate();
 	if(NULL == new_sched)
 	{
-		printf("Sched Init Error %s, %d\n", __FILE__, __LINE__);
+		#ifdef DEBUG
+			printf("Sched Init Error %s, %d\n", __FILE__, __LINE__);
+		#endif	
 		return FAILURE;
 	}
 	
@@ -209,7 +219,9 @@ static int SchedInit(char *argv[])
     					NULL, NULL, time(0) + PING_EVERY)))
     {
     	Terminate();
-		printf("Task Sched Error %s, %d\n", __FILE__, __LINE__);
+		#ifdef DEBUG
+			printf("Task Sched Error %s, %d\n", __FILE__, __LINE__);
+		#endif
     	return FAILURE;
     	
     }
@@ -217,9 +229,9 @@ static int SchedInit(char *argv[])
     					NULL, NULL, time(0) + CHECK_ALIVE_EVERY)))
     {
     	Terminate();
-		
-		printf("Task Sched Error %s, %d\n", __FILE__, __LINE__);
-		
+		#ifdef DEBUG
+			printf("Task Sched Error %s, %d\n", __FILE__, __LINE__);
+		#endif
     	return FAILURE;
     }
 
@@ -227,9 +239,9 @@ static int SchedInit(char *argv[])
     					NULL, NULL, time(0) + CHECK_ALIVE_EVERY)))
     {
     	Terminate();
-		
+		#ifdef DEBUG
 			printf("Task Sched Error %s, %d\n", __FILE__, __LINE__);
-		
+		#endif
     	return FAILURE;
     }
 	return SUCCESS;
@@ -246,7 +258,7 @@ static void SigHandlerAlive(int sig, siginfo_t *info, void *ucontext)
 {
 	(void)sig;
 	(void)ucontext;	
-	#ifndef debug
+	#ifdef DEBUG
 		PRINT("Dog fed\n");
 	#endif
 	atomic_sync_or_and_fetch(&alive_g, 1);
