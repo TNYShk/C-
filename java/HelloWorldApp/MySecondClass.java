@@ -1,5 +1,4 @@
-package HelloWorldApp; 
-
+/* package HelloWorldApp;  */
 public class MySecondClass {
     
     public static void foo1() {

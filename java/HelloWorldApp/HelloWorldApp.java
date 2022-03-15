@@ -1,8 +1,7 @@
 import java.util.*;
 import java.lang.Runtime;
 
-import HelloWorldApp.MySecondClass; 
-
+/* import HelloWorldApp.MySecondClass;  */
 public class HelloWorldApp {
     
    public static void main(String[] args) { 
@@ -13,10 +12,10 @@ public class HelloWorldApp {
         
       Date today = new Date();
       System.out.println(today); 
-
+      
       MySecondClass.foo1(); 
       /*  MySecondClass.foo2();   */
-      
+     
        QFiveTeen();
      
     /*  System.out.println(arrayList); */
