@@ -7,7 +7,7 @@
 void PrintMissingLut(int *arr, int size)
 {
 	int i = size + 2;
-	int *new_ar = (int*)calloc((size + 2),sizeof(size_t));
+	int *new_ar = (int *)calloc((size + 2),sizeof(size_t));
 	if(NULL != new_ar){
 
 	for(i = 0; i<size; ++i)
@@ -15,7 +15,7 @@ void PrintMissingLut(int *arr, int size)
 		new_ar[arr[i]] = arr[i];
 	}
 	printf("LUT: missing numbers are: ");
-	for (i=1;i<=size+2; ++i)
+	for (i = 1;i <= size + 2; ++i)
 	{
 		if (new_ar[i] == 0)
 			printf("%d ",i);
@@ -33,9 +33,9 @@ void PrintMissingMat(int *arr, size_t length)
 	size_t i = 0;
 	
 	
-	avg = (1 + length+2) / 2.0;
+	avg = (1 + length + 2) / 2.0;
 
-	org_sum = avg * (length+2);
+	org_sum = avg * (length + 2);
 	diff = org_sum;
 	
 	for(i = 0; i<length ; ++i)
