@@ -4,6 +4,6 @@ public class Cashier {
     }
 
     public static void payment(CreditCard visa, double price){
-        visa.debit(price);
+        CreditCard.debit(price);
     }
 }
