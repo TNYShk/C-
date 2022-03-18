@@ -1,4 +1,5 @@
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
 import java.lang.Runtime;
 
 /* import HelloWorldApp.MySecondClass;  */
@@ -33,7 +34,7 @@ public class HelloWorldApp {
    
    public static void QFiveTeen(){
 
-      List<int[]> arrayList = new ArrayList<int[]>();
+      ArrayList<int[]> arrList = new ArrayList<int[]>();
      
       for(int i = 0; i < 1000; ++i)
       {
@@ -43,7 +44,7 @@ public class HelloWorldApp {
             hundK[j] = j*10;
          }
          
-         arrayList.add(i, hundK);
+         arrList.add(i, hundK);
       }
      
    }
