@@ -24,13 +24,18 @@ public class SinglyLinkedList {
 
         @Override
         public Object next() {
-            currentNode = currentNode.next;
-            return currentNode.data;
+            Object nextData = currentNode;
+
+            if(null != currentNode){
+                nextData = currentNode.data;
+                currentNode = currentNode.next;
+            }
+            return nextData;
         }
 
         @Override
         public boolean hasNext(){
-            return this.currentNode.data != null;
+            return ((null != currentNode) && (null != currentNode.next));
         }
     }
 
@@ -82,6 +87,19 @@ public class SinglyLinkedList {
         return headbanger;
     }
 
+    @Override
+    public String toString() {
+        Node runner = this.head;
+        String list = "List elements:\n{ " ;
+        while (null != runner) {
+            list += runner.data + " ";
+            runner = runner.next;
+        }
+
+        list += "}";
+
+        return list;
+    }
 
 
 }
