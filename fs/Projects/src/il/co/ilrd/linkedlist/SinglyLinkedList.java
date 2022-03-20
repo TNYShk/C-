@@ -65,12 +65,16 @@ public class SinglyLinkedList {
     }
 
     public ListIterator find(Object data) {
-        ListIterator runner = begin();
+        Node runner = this.head;
+        ListIterator holder = null;
 
-        while((runner.next() != data) && runner.hasNext()) {
-            runner = (ListIterator) runner.next();
+        while(null != runner) {
+            if(runner.data.equals(data)){
+               return new ListIteratorImp(runner);
+            }
+            runner = runner.next;
         }
-        return runner;
+       return holder;
     }
 
     public ListIterator begin() {
@@ -81,3 +85,4 @@ public class SinglyLinkedList {
 
 
 }
+

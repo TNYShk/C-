@@ -10,15 +10,29 @@ public class TestList {
         System.out.println(test.isEmpty());
 
         test.pushFront(d);
-
         System.out.println(test.isEmpty());
 
         System.out.println(test.isEmpty());
         test.pushFront(pi);
         System.out.println(test.listSize());
+
+        if ((null != test.find(d))) {
+            System.out.println("found  ");
+        } else {
+            System.out.println("Not found");
+        }
+        if ((null != test.find(7))) {
+            System.out.println("found  ");
+        } else {
+            System.out.println("Not found");
+        }
+
+
+        test.popFront();
         test.popFront();
         System.out.println(test.isEmpty());
 
     }
 }
+
 
