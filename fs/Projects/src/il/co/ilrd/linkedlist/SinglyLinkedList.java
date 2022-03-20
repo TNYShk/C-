@@ -68,9 +68,9 @@ public class SinglyLinkedList {
         Node runner = this.head;
         ListIterator holder = null;
 
-        while(null != runner) {
+        while((null != runner) ){
             if(runner.data.equals(data)){
-               return new ListIteratorImp(runner);
+                holder = new ListIteratorImp(runner);
             }
             runner = runner.next;
         }
