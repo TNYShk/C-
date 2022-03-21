@@ -1,10 +1,14 @@
 package il.co.ilrd.linkedlist;
+/*
+Singly Linked List Mar 20, 2022
+by Tanya S.
+reviewed by Dor Rigler
+ */
 
 public class SinglyLinkedList {
     private Node head = null;
 
     //default constructor
-
     private class Node {
         private Object data = null;
         private Node next = null;
@@ -24,7 +28,7 @@ public class SinglyLinkedList {
 
         @Override
         public Object next() {
-            Object nextData = currentNode;
+            Object nextData = null;
 
             if(null != currentNode){
                 nextData = currentNode.data;
@@ -40,9 +44,9 @@ public class SinglyLinkedList {
     }
 
     public void pushFront(Object data) {
-        Node newNode = new Node(data , this.head);
+        Node newNode = new Node(data, this.head);
         this.head = newNode;
-        System.out.println("pushed to list: " + data);
+        //System.out.println("pushed to list: " + data);
     }
 
     public Object popFront() {
@@ -71,15 +75,14 @@ public class SinglyLinkedList {
 
     public ListIterator find(Object data) {
         Node runner = this.head;
-        ListIterator holder = null;
 
         while((null != runner) ){
             if(runner.data.equals(data)){
-                holder = new ListIteratorImp(runner);
+               return new ListIteratorImp(runner);
             }
             runner = runner.next;
         }
-       return holder;
+       return null;
     }
 
     public ListIterator begin() {
@@ -91,13 +94,13 @@ public class SinglyLinkedList {
     public String toString() {
         Node runner = this.head;
         String list = "List elements:\n{ " ;
+
         while (null != runner) {
             list += runner.data + " ";
             runner = runner.next;
         }
 
         list += "}";
-
         return list;
     }
 
