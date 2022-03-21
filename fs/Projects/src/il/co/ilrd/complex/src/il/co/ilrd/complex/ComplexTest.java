@@ -1,18 +1,22 @@
 package il.co.ilrd.complex;
 
 import org.junit.jupiter.api.Test;
+
+import static il.co.ilrd.complex.Complex.parse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 public class ComplexTest {
 
     public static void main(String args[]){
-       //TestUno();
+       TestUno();
+       ParseTest();
         JuintTst tanya = new JuintTst();
         tanya.testEmptyNull();
     }
 
 
     static void TestUno(){
+
         Complex igal = new Complex(1,2);
         Complex twinky = new Complex(2,4);
         Complex kika = new Complex(2,4);
@@ -36,6 +40,13 @@ public class ComplexTest {
         System.out.println(igal);
     }
 
+    static void ParseTest(){
+        System.out.println("\nParsing test!");
+        System.out.println(parse("-26 - 8i"));
+        System.out.println(parse("0.3 + 0.0i"));
+        System.out.println(parse("0 - 0.5i"));
+        System.out.println(parse("-0.6 + 8i"));
+    }
 }
 class JuintTst{
 

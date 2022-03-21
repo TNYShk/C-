@@ -3,11 +3,11 @@ package il.co.ilrd.complex;
 
 public class Complex implements Comparable<Complex> {
     private double real = 0;
-    private double fake = 0;
+    private double ifake = 0;
 
-    public Complex(double real, double fake){
+    public Complex(double real, double ifake){
         this.real = real;
-        this.fake = fake;
+        this.ifake = ifake;
     }
 
     public Complex(){
@@ -17,41 +17,41 @@ public class Complex implements Comparable<Complex> {
         return this.real;
     }
     public double getImaginary() {
-        return this.fake;
+        return this.ifake;
     }
     public void setReal(double real) {
         this.real = real;
     }
     public void setImaginary(double imaginary) {
-        this.fake = imaginary;
+        this.ifake = imaginary;
     }
     public double getValue(){
-        return Math.hypot(real,fake);
+        return Math.hypot(real,ifake);
     }
 
     public boolean isReal() {
         return (0 != this.real);
     }
     public boolean isImaginary() {
-        return (0 != this.fake);
+        return (0 != this.ifake);
     }
 
     public Complex addition(Complex that){
         double addReal = this.real + that.real;
-        double addFake = this.fake + that.fake;
+        double addifake = this.ifake + that.ifake;
 
-        return new Complex(addReal, addFake);
+        return new Complex(addReal, addifake);
     }
     public Complex substract(Complex that){
         double subReal = this.real - that.real;
-        double subFake = this.fake - that.fake;
+        double subifake = this.ifake - that.ifake;
 
-        return new Complex(subReal, subFake);
+        return new Complex(subReal, subifake);
     }
     public Complex multiplyWith(Complex other){
-        double multReal = this.real * other.real - this.fake * other.fake;
-        double multFake = this.real * other.fake + this.fake * other.real;
-        return new Complex(multReal,multFake);
+        double multReal = this.real * other.real - this.ifake * other.ifake;
+        double multifake = this.real * other.ifake + this.ifake * other.real;
+        return new Complex(multReal,multifake);
     }
 
     public Complex divideBy(Complex other) {
@@ -69,14 +69,25 @@ public class Complex implements Comparable<Complex> {
     return null;
     }
 
-    public double getSize() {
-        return Math.sqrt(Math.pow(this.real, 2) + Math.pow(this.fake, 2));
-    }
     public static Complex parse(String complex){
-        return new Complex(666,666);
+       StringBuffer copy = new StringBuffer(complex);
+       int len = copy.length();
+       int blank = copy.indexOf(" ");
+       int i = copy.indexOf("i");
+       int sign = copy.indexOf("+");
+      char [] reali = new char[blank];
+      char [] fakei = new char[len - blank];
+
+      copy.getChars(0,blank,reali,0);
+      double dreal = Double.parseDouble(String.valueOf(reali));
+      copy.getChars(blank + 2, i, fakei,0);
+      double dImage = Double.parseDouble(String.valueOf(fakei));
+
+      if (-1 == sign){ dImage *= -1;}
+        return new Complex(dreal,dImage);
     }
     private Complex conjugate() {
-        Complex conj=  new Complex(this.real, -fake);
+        Complex conj=  new Complex(this.real, -ifake);
     System.out.println(conj);
         return conj;
     }
@@ -93,7 +104,7 @@ public class Complex implements Comparable<Complex> {
     @Override
     public boolean equals(Object obj){
     Complex temp = (Complex)obj;
-    return ((temp.real == this.real) && (temp.fake == this.fake));
+    return ((temp.real == this.real) && (temp.ifake == this.ifake));
 
     }
 
@@ -109,21 +120,18 @@ public class Complex implements Comparable<Complex> {
     }
 
 
-
-
-
     @Override
     public String toString(){
         if (real == 0) {
-            return "( 0 " + fake + "i )";
+            return "( 0 " + ifake + "i )";
         }
-        if (fake == 0){
+        if (ifake == 0){
             return "(" + real + " + 0*i )";
         }
-        if (fake <  0) {
-            return "(" + real + " - " + (-fake) + "i )";
+        if (ifake <  0) {
+            return "(" + real + " - " + (-ifake) + "i )";
         }
-        return "(" + real + " + " + fake + "i )";
+        return "(" + real + " + " + ifake + "i )";
     }
 
 }
