@@ -65,7 +65,7 @@ public class Complex implements Comparable<Complex> {
             double newDown = otherConjugated.getImaginary() / mana;
             return new Complex(newUp,newDown);
         }
-    System.out.println("cant divide by zero!!\n");
+    System.out.println("no no no cant divide by zero!!");
     return null;
     }
 
@@ -75,20 +75,21 @@ public class Complex implements Comparable<Complex> {
        int blank = copy.indexOf(" ");
        int i = copy.indexOf("i");
        int sign = copy.indexOf("+");
-      char [] reali = new char[blank];
-      char [] fakei = new char[len - blank];
+      char [] realnput = new char[blank];
+      char [] fakeInput = new char[len - blank];
 
-      copy.getChars(0,blank,reali,0);
-      double dreal = Double.parseDouble(String.valueOf(reali));
-      copy.getChars(blank + 2, i, fakei,0);
-      double dImage = Double.parseDouble(String.valueOf(fakei));
+      copy.getChars(0,blank,realnput,0);
+      double dReal = Double.parseDouble(String.valueOf(realnput));
+      copy.getChars(blank + 2, i, fakeInput,0);
+      double dImage = Double.parseDouble(String.valueOf(fakeInput));
 
       if (-1 == sign){ dImage *= -1;}
-        return new Complex(dreal,dImage);
+        return new Complex(dReal,dImage);
     }
+
     private Complex conjugate() {
         Complex conj=  new Complex(this.real, -ifake);
-    System.out.println(conj);
+        //System.out.println(conj);
         return conj;
     }
 
@@ -97,7 +98,7 @@ public class Complex implements Comparable<Complex> {
     public int compareTo(Complex obj){
         Complex temp = (Complex)obj;
 
-        return (int)(Math.pow(this.getValue(),2) - (Math.pow(temp.getValue(),2)));
+       return (int)(Math.pow(this.getValue(),2) - (Math.pow(temp.getValue(),2)));
 
     }
 
