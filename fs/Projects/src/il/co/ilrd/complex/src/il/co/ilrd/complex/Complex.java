@@ -65,8 +65,8 @@ public class Complex implements Comparable<Complex> {
             double newDown = otherConjugated.getImaginary() / mana;
             return new Complex(newUp,newDown);
         }
-
-    return new Complex(666,666);
+    System.out.println("cant divide by zero!!\n");
+    return null;
     }
 
     private double getSize() {

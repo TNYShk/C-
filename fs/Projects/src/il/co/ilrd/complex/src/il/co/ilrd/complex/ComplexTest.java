@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 public class ComplexTest {
 
     public static void main(String args[]){
-        TestUno();
+       // TestUno();
         JuintTst tanya = new JuintTst();
         tanya.testEmptyNull();
     }
@@ -44,6 +44,7 @@ class JuintTst{
         Complex tanya = new Complex(1,2);
         Complex maya = new Complex(0,-4);
 
+
         Complex twinky = new Complex(2,4);
         Complex kika = new Complex(2,4);
 
@@ -51,6 +52,9 @@ class JuintTst{
         assertEquals(true,tanya.isReal());
         assertEquals(false,maya.isReal());
         assertEquals(false,adam.isImaginary());
+        tanya.setReal(0.0);
+        tanya.setImaginary(0.0);
+        assertNull(twinky.divideBy(tanya));
 
         System.out.println("equals and assert null done!\n");
 
