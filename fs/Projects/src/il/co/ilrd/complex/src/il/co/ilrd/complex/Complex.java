@@ -60,7 +60,7 @@ public class Complex implements Comparable<Complex> {
             Complex otherConjugated = other.conjugate();
 
             otherConjugated = this.multiplyWith(otherConjugated);
-            double mana = Math.pow(other.getSize(), 2);
+            double mana = Math.pow(other.getValue(), 2);
             double newUp = otherConjugated.getReal() / mana;
             double newDown = otherConjugated.getImaginary() / mana;
             return new Complex(newUp,newDown);
@@ -69,7 +69,7 @@ public class Complex implements Comparable<Complex> {
     return null;
     }
 
-    private double getSize() {
+    public double getSize() {
         return Math.sqrt(Math.pow(this.real, 2) + Math.pow(this.fake, 2));
     }
     public static Complex parse(String complex){
@@ -84,8 +84,10 @@ public class Complex implements Comparable<Complex> {
 
     @Override
     public int compareTo(Complex obj){
+        Complex temp = (Complex)obj;
 
-        return 1;
+        return (int)(Math.pow(this.getValue(),2) - (Math.pow(temp.getValue(),2)));
+
     }
 
     @Override
