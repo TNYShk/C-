@@ -92,12 +92,18 @@ public class Complex implements Comparable<Complex> {
     public boolean equals(Object obj){
     Complex temp = (Complex)obj;
     return ((temp.real == this.real) && (temp.fake == this.fake));
-    
+
     }
 
     @Override
     public int hashCode(){
-        return 1;
+        long v = Double.doubleToLongBits(this.getReal());
+        long z = Double.doubleToLongBits(this.getImaginary());
+        if(z != 0){
+            return (int)(v^(z>>32));
+        }
+        return (int)(z^(v>>32));
+
     }
 
 
@@ -107,15 +113,15 @@ public class Complex implements Comparable<Complex> {
     @Override
     public String toString(){
         if (real == 0) {
-            return "( 0 +" + fake + "i";
+            return "( 0 " + fake + "i )";
         }
         if (fake == 0){
-            return "(" + real + " + 0.0i";
+            return "(" + real + " + 0*i )";
         }
         if (fake <  0) {
-            return "(" + real + " - " + (-fake) + "i)";
+            return "(" + real + " - " + (-fake) + "i )";
         }
-        return "(" + real + " + " + fake + "i)";
+        return "(" + real + " + " + fake + "i )";
     }
 
 }
