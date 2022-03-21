@@ -1,4 +1,4 @@
-package Test;
+package il.co.ilrd.TestShape;
 
 public class Square extends Rectangle {
 

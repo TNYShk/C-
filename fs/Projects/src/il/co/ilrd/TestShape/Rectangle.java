@@ -1,4 +1,4 @@
-package Test;
+package il.co.ilrd.TestShape;
 
 public class Rectangle extends Shape{
     protected double width;
