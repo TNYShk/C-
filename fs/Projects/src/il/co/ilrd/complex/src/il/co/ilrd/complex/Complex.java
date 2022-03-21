@@ -2,18 +2,36 @@ package il.co.ilrd.complex;
 
 
 public class Complex implements Comparable<Complex> {
-    private double real;
-    private double fake;
+    private double real = 0;
+    private double fake = 0;
 
     public Complex(double real, double fake){
         this.real = real;
         this.fake = fake;
     }
-
+    public double getReal() {
+        return this.real;
+    }
+    public double getImaginary() {
+        return this.fake;
+    }
+    public void setReal(double real) {
+        this.real = real;
+    }
+    public void setImaginary(double imaginary) {
+        this.fake = imaginary;
+    }
     public double getValue(){
         return Math.hypot(real,fake);
     }
 
+    public boolean isReal() {
+        return (0 != this.real);
+    }
+    public boolean isImaginary() {
+        return (0 != this.fake);
+    }
+    
     public Complex addition(Complex that){
         double addReal = this.real + that.real;
         double addFake = this.fake + that.fake;
@@ -56,12 +74,7 @@ public class Complex implements Comparable<Complex> {
         return 1;
     }
 
-    public boolean isReal() {
-        return (0 != this.real);
-    }
-    public boolean isImaginary() {
-        return (0 != this.fake);
-    }
+
 
 
 
@@ -76,7 +89,7 @@ public class Complex implements Comparable<Complex> {
         if (fake <  0) {
             return fake + " - " + (-fake) + "i";
         }
-        return real + " + " + fake + "i";
+        return "(" + real + " + " + fake + "i)";
     }
 
 }
