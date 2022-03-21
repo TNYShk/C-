@@ -12,39 +12,40 @@ public class TestList {
         Double d = 26.6;
         Double pi = 3.14;
         SinglyLinkedList test = new SinglyLinkedList();
-        System.out.println(test.isEmpty());
-
+        System.out.println("list is empty? " + test.isEmpty());
+        System.out.println("trying to pop empty list..\n");
+        test.popFront();
+        System.out.println("trying to push into list..\n");
         test.pushFront(d);
-        System.out.println(test.isEmpty());
+        System.out.println("link size: " + test.listSize());
 
-        System.out.println(test.isEmpty());
         test.pushFront(pi);
-        System.out.println(test.listSize());
+        System.out.println(test);
+        System.out.println("link size: " + test.listSize());
 
         if ((null != test.find(d))) {
-            System.out.println("found  ");
+            System.out.println("found " + d);
         } else {
             System.out.println("Not found");
         }
         if ((null != test.find(7))) {
             System.out.println("found  ");
         } else {
-            System.out.println("Not found");
+            System.out.println("7 Not found");
         }
 
-
         test.popFront();
         test.popFront();
-        System.out.println(test.isEmpty());
-        System.out.println("Test 1 complete");
+        System.out.println("list is empty? " + test.isEmpty());
+        System.out.println("Test 1 complete\n");
     }
 
     static void testDos(){
         Double d = 26.6;
         Double pi = 3.14;
         SinglyLinkedList testTwo = new SinglyLinkedList();
-        System.out.println(testTwo.isEmpty());
-        System.out.println(testTwo.listSize());
+        System.out.println("empty list?" + testTwo.isEmpty());
+        System.out.println("size is " + testTwo.listSize());
         testTwo.pushFront(d);
         testTwo.pushFront(pi);
         testTwo.pushFront(370.3);
@@ -67,8 +68,15 @@ public class TestList {
         } else{
             System.out.println("Iterator has no next!");
         }
-        System.out.println(testTwo);
 
+        found = testTwo.find(370);
+        if (null != found){
+            System.out.println("found 370");
+        } else {
+            System.out.println("370 Not found");
+        }
+
+        System.out.println(testTwo);
         ListIterator getBegin =  testTwo.begin();
         System.out.println("list begins with: "+ getBegin.next());
 
