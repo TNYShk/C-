@@ -84,7 +84,7 @@ public class Complex implements Comparable<Complex> {
 
     @Override
     public int compareTo(Complex obj){
-        
+
         return 1;
     }
 

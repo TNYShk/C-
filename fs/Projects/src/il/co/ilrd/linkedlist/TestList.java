@@ -1,14 +1,23 @@
 package il.co.ilrd.linkedlist;
 
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 public class TestList {
 
-    public static void main (String args[]){
+    public static void main(String args[]) {
+
+        JunitTest tanya = new JunitTest();
+        tanya.testEmptyNullSLL();
+
         testUno();
         testDos();
 
     }
 
-    static void testUno(){
+    static void testUno() {
         Double d = 26.6;
         Double pi = 3.14;
         SinglyLinkedList test = new SinglyLinkedList();
@@ -40,7 +49,7 @@ public class TestList {
         System.out.println("Test 1 complete\n");
     }
 
-    static void testDos(){
+    static void testDos() {
         Double d = 26.6;
         Double pi = 3.14;
         SinglyLinkedList testTwo = new SinglyLinkedList();
@@ -52,20 +61,20 @@ public class TestList {
         System.out.println("size is " + testTwo.listSize());
 
         if ((null != testTwo.find(pi))) {
-            System.out.println("found  "+ pi);
+            System.out.println("found  " + pi);
         } else {
             System.out.println("Not found");
         }
         ListIterator found = testTwo.find(d);
 
-        if (null != found){
+        if (null != found) {
             System.out.println("found  " + d);
         } else {
             System.out.println("Not found");
         }
-        if(found.hasNext()){
+        if (found.hasNext()) {
             System.out.println("Iterator has next!");
-        } else{
+        } else {
             System.out.println("Iterator has no next!");
         }
         Object last = found.next();
@@ -73,15 +82,15 @@ public class TestList {
         System.out.println(last);
 
         found = testTwo.find(370);
-        if (null != found){
+        if (null != found) {
             System.out.println("found 370");
         } else {
             System.out.println("370 Not found");
         }
 
         System.out.println(testTwo);
-        ListIterator getBegin =  testTwo.begin();
-        System.out.println("list begins with: "+ getBegin.next());
+        ListIterator getBegin = testTwo.begin();
+        System.out.println("list begins with: " + getBegin.next());
 
         testTwo.popFront();
         testTwo.popFront();
@@ -89,4 +98,17 @@ public class TestList {
         System.out.println("Test 2 complete");
     }
 }
+ class JunitTest{
+        private SinglyLinkedList myList = new SinglyLinkedList();
+
+
+        @Test
+        void testEmptyNullSLL(){
+            assertEquals(true,myList.isEmpty());
+            assertNull((myList).popFront());
+            System.out.println("equals and assert null done!\n");
+
+        }
+    }
+
 
