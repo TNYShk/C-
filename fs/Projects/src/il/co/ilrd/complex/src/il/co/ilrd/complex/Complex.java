@@ -9,6 +9,10 @@ public class Complex implements Comparable<Complex> {
         this.real = real;
         this.fake = fake;
     }
+
+    public Complex(){
+        this(0,0);
+    }
     public double getReal() {
         return this.real;
     }
@@ -31,7 +35,7 @@ public class Complex implements Comparable<Complex> {
     public boolean isImaginary() {
         return (0 != this.fake);
     }
-    
+
     public Complex addition(Complex that){
         double addReal = this.real + that.real;
         double addFake = this.fake + that.fake;
@@ -51,21 +55,44 @@ public class Complex implements Comparable<Complex> {
     }
 
     public Complex divideBy(Complex other) {
-        return new Complex(0,0);
+
+        if(other.isImaginary() || other.isReal()){
+            Complex otherConjugated = other.conjugate();
+
+            otherConjugated = this.multiplyWith(otherConjugated);
+            double mana = Math.pow(other.getSize(), 2);
+            double newUp = otherConjugated.getReal() / mana;
+            double newDown = otherConjugated.getImaginary() / mana;
+            return new Complex(newUp,newDown);
+        }
+
+    return new Complex(666,666);
+    }
+
+    private double getSize() {
+        return Math.sqrt(Math.pow(this.real, 2) + Math.pow(this.fake, 2));
     }
     public static Complex parse(String complex){
         return new Complex(666,666);
     }
-
+    private Complex conjugate() {
+        Complex conj=  new Complex(this.real, -fake);
+    System.out.println(conj);
+        return conj;
+    }
 
 
     @Override
     public int compareTo(Complex obj){
+        
         return 1;
     }
 
     @Override
     public boolean equals(Object obj){
+    Complex temp = (Complex)obj;
+    return ((temp.real == this.real) && (temp.fake == this.fake));
+
         return true;
     }
 
@@ -81,13 +108,13 @@ public class Complex implements Comparable<Complex> {
     @Override
     public String toString(){
         if (real == 0) {
-            return real + "";
+            return "( 0 +" + fake + "i";
         }
         if (fake == 0){
-            return fake + "i";
+            return "(" + real + " + 0.0i";
         }
         if (fake <  0) {
-            return fake + " - " + (-fake) + "i";
+            return "(" + real + " - " + (-fake) + "i)";
         }
         return "(" + real + " + " + fake + "i)";
     }
