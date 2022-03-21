@@ -39,7 +39,7 @@ public class SinglyLinkedList {
 
         @Override
         public boolean hasNext(){
-            return ((null != currentNode) && (null != currentNode.next));
+            return ((null != currentNode) && (null != currentNode.data));
         }
     }
 

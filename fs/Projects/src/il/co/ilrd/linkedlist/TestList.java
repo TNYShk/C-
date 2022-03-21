@@ -68,6 +68,9 @@ public class TestList {
         } else{
             System.out.println("Iterator has no next!");
         }
+        Object last = found.next();
+
+        System.out.println(last);
 
         found = testTwo.find(370);
         if (null != found){
