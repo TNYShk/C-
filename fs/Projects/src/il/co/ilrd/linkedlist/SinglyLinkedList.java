@@ -103,3 +103,7 @@ public class SinglyLinkedList {
 
 
 }
+<<<<<<< HEAD
+=======
+
+>>>>>>> d77c11b7bc622e767cad44fcbd20f005bed25c92
