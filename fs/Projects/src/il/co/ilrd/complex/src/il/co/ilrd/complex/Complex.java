@@ -92,8 +92,7 @@ public class Complex implements Comparable<Complex> {
     public boolean equals(Object obj){
     Complex temp = (Complex)obj;
     return ((temp.real == this.real) && (temp.fake == this.fake));
-
-        return true;
+    
     }
 
     @Override
