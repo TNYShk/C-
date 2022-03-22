@@ -106,6 +106,7 @@ public class TestList {
         void testEmptyNullSLL(){
             assertEquals(true,myList.isEmpty());
             assertNull((myList).popFront());
+
             System.out.println("equals and assert null done!\n");
 
         }

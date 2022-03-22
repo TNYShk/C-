@@ -9,14 +9,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class ComplexTest {
 
     public static void main(String[] args){
-        JuintTst.ComplexOperationsTest();
-        JuintTst.testEmptyNull();
-        JuintTst.ParseTest();
-        JuintTst.EqualsCompareToTest();
+
     }
 
 
 }
+/*
 class JuintTst{
 
     @Test
@@ -93,4 +91,4 @@ class JuintTst{
 
         System.out.println("Addition Subtraction Multiplication tests done!");
     }
-}
+}*/

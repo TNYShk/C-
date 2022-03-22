@@ -88,7 +88,7 @@ public class Complex implements Comparable<Complex> {
     }
 
     private Complex conjugate() {
-        Complex conj=  new Complex(this.real, -ifake);
+        Complex conj =  new Complex(this.real, -ifake);
         //System.out.println(conj);
         return conj;
     }
