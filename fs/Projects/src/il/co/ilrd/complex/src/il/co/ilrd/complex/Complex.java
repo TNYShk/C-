@@ -96,6 +96,7 @@ public class Complex implements Comparable<Complex> {
     public static Complex parse(String complex){
 
         complex.trim();
+
         if(!complex.endsWith("i")){
             double dReal = Double.parseDouble(complex);
             return new Complex(dReal,0);
@@ -106,19 +107,19 @@ public class Complex implements Comparable<Complex> {
 
         if((-1 == sign) && (complex.endsWith("i")) ){
             if((-1 == minus) ||(copy.substring(0,minus).length() < 2)){
-                double fakep = Double.parseDouble(copy.substring(0,copy.length()-1));
-                return new Complex(0,fakep);
+                double fakeParse = Double.parseDouble(copy.substring(0,copy.length()-1));
+                return new Complex(0,fakeParse);
             }
-            double realp = Double.parseDouble(copy.substring(0,minus));
-            double fakep = Double.parseDouble(copy.substring(minus +1,copy.length()-1));
-            return new Complex(realp,-fakep);
+            double realParse = Double.parseDouble(copy.substring(0,minus));
+            double ifakeParse = Double.parseDouble(copy.substring(minus +1,copy.length()-1));
+            return new Complex(realParse,-ifakeParse);
         }
 
         if(-1 != sign){
-            double realp = Double.parseDouble(copy.substring(0,sign));
-            double fakep = Double.parseDouble(copy.substring(sign +1,copy.length()-1));
+            double realParse = Double.parseDouble(copy.substring(0,sign));
+            double ifakeParse = Double.parseDouble(copy.substring(sign +1,copy.length()-1));
 
-            return new Complex(realp,fakep);
+            return new Complex(realParse,ifakeParse);
         }
 
         double realp = Double.parseDouble(copy.substring(0,minus));
@@ -140,7 +141,7 @@ public class Complex implements Comparable<Complex> {
     public int compareTo(Complex obj){
         double temp = this.getValue() - obj.getValue();
         double delta = 0.001;
-        int answer = (temp <= delta)? 0: 1;
+        int answer = (Math.abs(temp) <= delta)? 0: 1;
         return answer;
 
     }
