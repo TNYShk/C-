@@ -6,9 +6,9 @@ public class Enums {
         MONDAY(2),
         TUE(3),
         WED(4),
-        THR(5),
-        FRI(6),
-        SAT(7);
+        THURSDAY(5),
+        FRIDAY(6),
+        SATURDAY(7);
 
         static int getIntValue(EWeekDay a){
             return a.ordinal() + 1;
@@ -16,33 +16,35 @@ public class Enums {
 
         private final int day;
 
-        private EWeekDay(int day) {
+        EWeekDay(int day) {
             this.day = day;
         }
 
     public String fromValue(int day) {
         switch (day) {
             case (1):
-                System.out.println("SUNDAY");
+                System.out.println(EWeekDay.valueOf("SUNDAY"));
                 break;
             case (2):
-                System.out.println("MONDAY");
+                System.out.println(EWeekDay.valueOf("MONDAY"));
                 break;
             case (3):
-                System.out.println("TUE");
+                System.out.println(EWeekDay.valueOf("TUE"));
                 break;
             case (4):
-                System.out.println("WED");
+                System.out.println(EWeekDay.valueOf("WED"));
                 break;
             case (5):
-                System.out.println("THU");
+                System.out.println(EWeekDay.valueOf("THURSDAY"));
                 break;
             case (6):
-                System.out.println("FRI");
+                System.out.println(EWeekDay.valueOf("FRIDAY"));
                 break;
             case (7):
-                System.out.println("SAT");
+                System.out.println(EWeekDay.valueOf("SATURDAY"));
                 break;
+            default:
+                System.out.println("NOT VALID");
         }
         return "GoodBye!\n";
     }
@@ -59,10 +61,12 @@ public class Enums {
 
 
         EWeekDay test = EWeekDay.TUE;
+        System.out.println(test.fromValue(0));
+        System.out.println(test.fromValue(1));
         System.out.println(test.fromValue(6));
         EWeekDay.PrintAll();
         System.out.println(EWeekDay.getIntValue(EWeekDay.MONDAY));
-        System.out.println(EWeekDay.getIntValue(EWeekDay.SAT));
+        System.out.println(EWeekDay.getIntValue(EWeekDay.SATURDAY));
 
 
     }
