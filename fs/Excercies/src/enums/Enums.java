@@ -13,14 +13,18 @@ public class Enums {
         static int getIntValue(EWeekDay a){
             return a.ordinal() + 1;
         }
+        private static EWeekDay[] weekArray = EWeekDay.values();
 
         private final int day;
 
         EWeekDay(int day) {
             this.day = day;
         }
+        public static EWeekDay returnValue(int num) {
+            return weekArray[num - 1];
+        }
 
-    public String fromValue(int day) {
+        public static String fromValue(int day) {
         switch (day) {
             case (1):
                 System.out.println(EWeekDay.valueOf("SUNDAY"));
@@ -59,14 +63,14 @@ public class Enums {
     }
     public static void test(){
 
-
-        EWeekDay test = EWeekDay.TUE;
-        System.out.println(test.fromValue(0));
-        System.out.println(test.fromValue(1));
-        System.out.println(test.fromValue(6));
+        System.out.println(EWeekDay.fromValue(0));
+        System.out.println(EWeekDay.fromValue(1));
+        System.out.println(EWeekDay.fromValue(6));
         EWeekDay.PrintAll();
         System.out.println(EWeekDay.getIntValue(EWeekDay.MONDAY));
         System.out.println(EWeekDay.getIntValue(EWeekDay.SATURDAY));
+
+        System.out.println(EWeekDay.returnValue(2));
 
 
     }
