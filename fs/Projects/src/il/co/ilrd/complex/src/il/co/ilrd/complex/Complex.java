@@ -73,22 +73,40 @@ public class Complex implements Comparable<Complex> {
     return null;
     }
 
+
     public static Complex parse(String complex){
-       StringBuffer copy = new StringBuffer(complex);
-       int len = copy.length();
-       int blank = copy.indexOf(" ");
-       int i = copy.indexOf("i");
-       int sign = copy.indexOf("+");
-      char [] realnput = new char[blank];
-      char [] fakeInput = new char[len - blank];
+        complex.trim();
+        if(!complex.endsWith("i")){
+            double dReal = Double.parseDouble(complex);
+            return new Complex(dReal,0);
+        }
+        StringBuffer copy = new StringBuffer(complex);
+        int sign = complex.lastIndexOf("+");
+        int minus = complex.lastIndexOf("-");
 
-      copy.getChars(0,blank,realnput,0);
-      double dReal = Double.parseDouble(String.valueOf(realnput));
-      copy.getChars(blank + 2, i, fakeInput,0);
-      double dImage = Double.parseDouble(String.valueOf(fakeInput));
+        if((-1 == sign) && (complex.endsWith("i")) ){
+            if((-1 == minus) ||(copy.substring(0,minus).length() < 2)){
+                double fakep = Double.parseDouble(copy.substring(0,copy.length()-1));
+                return new Complex(0,fakep);
+            }
+            double realp = Double.parseDouble(copy.substring(0,minus));
+            double fakep = Double.parseDouble(copy.substring(minus +1,copy.length()-1));
+            return new Complex(realp,-fakep);
+        }
 
-      if (-1 == sign){ dImage *= -1;}
-        return new Complex(dReal,dImage);
+        if(-1 != sign){
+            double realp = Double.parseDouble(copy.substring(0,sign));
+            double fakep = Double.parseDouble(copy.substring(sign +1,copy.length()-1));
+
+            return new Complex(realp,fakep);
+        }
+
+        double realp = Double.parseDouble(copy.substring(0,minus));
+        double fakep = Double.parseDouble(copy.substring(minus +2,copy.length()-1));
+
+        return new Complex(realp,-fakep);
+
+
     }
 
     private Complex conjugate() {
@@ -132,10 +150,10 @@ public class Complex implements Comparable<Complex> {
     @Override
     public String toString(){
         if (real == 0) {
-            return "( 0 " + ifake + "i )";
+            return "(" + ifake + "i )";
         }
         if (ifake == 0){
-            return "(" + real + " + 0*i )";
+            return "(" + real + ")";
         }
         if (ifake <  0) {
             return "(" + real + " - " + (-ifake) + "i )";
