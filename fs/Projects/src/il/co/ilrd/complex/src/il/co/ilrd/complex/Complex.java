@@ -5,14 +5,18 @@ public class Complex implements Comparable<Complex> {
     private double real = 0;
     private double ifake = 0;
 
-    public Complex(double real, double ifake){
+    private Complex(double real, double ifake){
         this.real = real;
         this.ifake = ifake;
     }
-
-    public Complex(){
-        this(0,0);
+    public static Complex createReal(double re){
+        return new Complex(re,0);
     }
+    public static Complex createImaginary(double fake){
+        return new Complex(0,fake);
+    }
+
+
     public double getReal() {
         return this.real;
     }
@@ -104,9 +108,13 @@ public class Complex implements Comparable<Complex> {
 
     @Override
     public boolean equals(Object obj){
-    Complex temp = (Complex)obj;
-    return ((temp.real == this.real) && (temp.ifake == this.ifake));
 
+       if (obj instanceof Complex) {
+           Complex temp = (Complex) obj;
+           return ((temp.real == this.real) && (temp.ifake == this.ifake));
+       }
+       System.out.println("not a complex num object");
+       return false;
     }
 
     @Override
