@@ -60,7 +60,7 @@ public class Complex implements Comparable<Complex> {
 
     public Complex divideBy(Complex other) {
 
-        if(other.isImaginary() || other.isReal()){
+        if(other.isImaginary() || (other.real != 0)){
             Complex otherConjugated = other.conjugate();
 
             otherConjugated = this.multiplyWith(otherConjugated);

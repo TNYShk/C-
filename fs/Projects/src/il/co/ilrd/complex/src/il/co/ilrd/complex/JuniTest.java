@@ -22,8 +22,8 @@ class JuintTst{
         twinky.setImaginary(4);
 
 
-        assertEquals(true,tanya.isReal());
-        assertEquals(false,maya.isReal());
+        assertEquals(false,tanya.isReal());
+        assertEquals(true,maya.isReal());
         assertEquals(false,adam.isImaginary());
         tanya.setReal(0.0);
         tanya.setImaginary(0.0);
