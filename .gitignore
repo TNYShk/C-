@@ -5,7 +5,7 @@
 !*.c
 !.gitignore
 !*.md
-
+!*.java
 !*.h
 !*Makefile
 !/**/

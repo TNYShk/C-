@@ -5,7 +5,7 @@ import static il.co.ilrd.complex.Complex.parse;
 public class ComplexTest {
 
     public static void main(String[] args){
-        Complex parse = parse(" -26 - 8i");
+        Complex parse = parse(" -26+ 8i");
         System.out.println(parse);
         parse = parse(" -26 -8i");
         System.out.println(parse);

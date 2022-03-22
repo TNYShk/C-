@@ -34,7 +34,7 @@ public class Complex implements Comparable<Complex> {
     }
 
     public boolean isReal() {
-        return (0 != this.real);
+        return (0 == this.ifake);
     }
     public boolean isImaginary() {
         return (0 != this.ifake);
@@ -72,9 +72,29 @@ public class Complex implements Comparable<Complex> {
     System.out.println("no no no cant divide by zero!!");
     return null;
     }
+/*
+    public static Complex parse(String complex){
+       StringBuffer copy = new StringBuffer(complex);
+       int len = copy.length();
+       int blank = copy.indexOf(" ");
+       int i = copy.indexOf("i");
+       int sign = copy.indexOf("+");
+      char [] realnput = new char[blank];
+      char [] fakeInput = new char[len - blank];
 
+      copy.getChars(0,blank,realnput,0);
+      double dReal = Double.parseDouble(String.valueOf(realnput));
+      copy.getChars(blank + 2, i, fakeInput,0);
+      double dImage = Double.parseDouble(String.valueOf(fakeInput));
+
+      if (-1 == sign){ dImage *= -1;}
+        return new Complex(dReal,dImage);
+    }
+
+ */
 
     public static Complex parse(String complex){
+
         complex.trim();
         if(!complex.endsWith("i")){
             double dReal = Double.parseDouble(complex);
@@ -118,9 +138,10 @@ public class Complex implements Comparable<Complex> {
 
     @Override
     public int compareTo(Complex obj){
-        Complex temp = (Complex)obj;
-
-       return (int)(Math.pow(this.getValue(),2) - (Math.pow(temp.getValue(),2)));
+        double temp = this.getValue() - obj.getValue();
+        double delta = 0.001;
+        int answer = (temp <= delta)? 0: 1;
+        return answer;
 
     }
 
@@ -136,14 +157,13 @@ public class Complex implements Comparable<Complex> {
     }
 
     @Override
-    public int hashCode(){
-        long v = Double.doubleToLongBits(this.getReal());
-        long z = Double.doubleToLongBits(this.getImaginary());
-        if(z != 0){
-            return (int)(v^(z>>32));
-        }
-        return (int)(z^(v>>32));
-
+    public int hashCode() {
+        final int res = 5031;
+        Double Re = this.real;
+        Double Im = this.ifake;
+        int result = 31 * res + Re.hashCode();
+        result += 31 * res + Im.hashCode();
+        return result;
     }
 
 

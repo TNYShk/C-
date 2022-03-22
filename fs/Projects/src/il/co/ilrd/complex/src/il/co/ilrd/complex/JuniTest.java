@@ -46,7 +46,7 @@ class JuintTst{
         original.setImaginary(8);
         assertEquals(parse, original);
 
-        parse = parse("5+0.3i");
+        parse = parse("5+ 0.3i");
         original.setReal(5);
         original.setImaginary(0.3);
         assertEquals(parse, original);
@@ -124,5 +124,44 @@ class JuintTst{
         assertEquals(igal.getImaginary(),-4.0);
 
         System.out.println("Addition Subtraction Multiplication Division tests done!");
+    }
+
+    @Test
+    void testHashCode() {
+        Complex z1 = createReal(6.5);
+        z1.setImaginary(8);
+        Complex z2 = createReal(6.5);
+        z2.setImaginary(8);
+
+        assertTrue(z1.equals(z2));
+        int n1 = z1.hashCode();
+        int n2 = z2.hashCode();
+        assertTrue(n1 == n2);
+
+        Complex z3 = createReal(7);
+        z3.setImaginary(8);
+        int n3 = z3.hashCode();
+        assertTrue(n1 != n3);
+
+        Complex z4 = createReal(0.8);
+        z4.setImaginary(0);
+        Complex z5 = createReal(0);
+        z4.setImaginary(0.8);
+
+        int n4 = z4.hashCode();
+        int n5 = z5.hashCode();
+        assertTrue(n4 != n5);
+
+        Complex z6 = createReal(0);
+        z6.setImaginary(7.2);
+        Complex z7 = createReal(0);
+        z7.setImaginary(0.8);
+        int n6 = z6.hashCode();
+        int n7 = z7.hashCode();
+        assertFalse(n6 == n7);
+
+        System.out.println("Hashing equals tests done!");
+
+
     }
 }
