@@ -75,7 +75,6 @@ public class Complex implements Comparable<Complex> {
 
     public static Complex parse(String complex){
 
-        complex.trim();
         complex.replace(" ", "");
         double dReal = 0;
         double dFake = 0;
@@ -83,7 +82,7 @@ public class Complex implements Comparable<Complex> {
             dReal = Double.parseDouble(complex);
             return new Complex(dReal,0);
         }
-        StringBuffer copy = new StringBuffer(complex);
+        StringBuilder copy = new StringBuilder(complex);
         int sign = complex.lastIndexOf("+");
         int minus = complex.lastIndexOf("-");
 
@@ -112,9 +111,7 @@ public class Complex implements Comparable<Complex> {
 
 
     private Complex conjugate() {
-        Complex conj =  new Complex(this.real, -ifake);
-        //System.out.println(conj);
-        return conj;
+       return new Complex(this.real, -ifake);
     }
 
 
@@ -132,7 +129,7 @@ public class Complex implements Comparable<Complex> {
 
        if (obj instanceof Complex) {
            Complex temp = (Complex) obj;
-           return ((Double.compare(this.real, temp.real)) - (Double.compare(this.ifake,temp.ifake)) == 0);
+           return ((0 == Double.compare(this.real, temp.real)) && (0 == Double.compare(this.ifake,temp.ifake)));
        }
        System.out.println("not a complex num object");
        return false;
