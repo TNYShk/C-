@@ -8,6 +8,10 @@ public class quiz2 {
     public static void main(String args[]) {
         Point p2 = new Point();
         System.out.println(p2);
+        
+        Bolean b = null;
+        System.out.println(b? true: false); //Exception in thread "main" java.lang.NullPointerException
+        
 
     }
     final class some{}
