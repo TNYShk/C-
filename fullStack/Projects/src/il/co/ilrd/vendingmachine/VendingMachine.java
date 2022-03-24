@@ -51,20 +51,20 @@ public class VendingMachine{
             @Override
             public void insertCoin(VendingMachine mac, Coins coin) {
                 mac.balance += coin.getValue();
-                mac.myScreen.Print("current balance: " + mac.balance);
+                mac.instance.Print("current balance: " + mac.balance);
             }
 
             @Override
             public void chooseProduct(VendingMachine mac, Products chosen) {
                 mac.chosenProduct = chosen;
                 double left = mac.balance - mac.chosenProduct.getPrice();
-                mac.myScreen.Print("you chose " + mac.chosenProduct.getName() + " costs: "+ mac.chosenProduct.getPrice());
+                mac.instance.Print("you chose " + mac.chosenProduct.getName() + " costs: "+ mac.chosenProduct.getPrice());
 
                 if (0 > left) {
                     mac.myScreen.Print("not enough, you're missing " + -left);
                     mac.state = WAITCOINS;
                 } else {
-                    mac.myScreen.Print("here's your " + mac.chosenProduct.getName() + " and change, if any " + left);
+                    mac.instance.Print("here's your " + mac.chosenProduct.getName() + " and change, if any " + left);
                     mac.balance = 0;
                 }
             }
@@ -102,6 +102,8 @@ public class VendingMachine{
 
         };
 
+        private Screen instance;
+
         public void insertCoin(VendingMachine vm, Coins coin) {
             return;
         }
@@ -112,18 +114,20 @@ public class VendingMachine{
 
         public void cancelReturn(VendingMachine mac) {
             mac.state = WAITPRODUCT;
-            mac.myScreen.Print("here's your money back " + mac.balance);
+            mac.instance.Print("here's your money back " + mac.balance);
             mac.balance = 0;
         }
 
         public void turnOFF(VendingMachine mac) {
             if (mac.balance != 0) {
                 mac.myScreen.Print("here's your change " + mac.balance);
+
             }
-            System.out.println("\nTurning OFF, GoodBye");
+            mac.instance.Print("\nTurning OFF, GoodBye");
             mac.balance = 0;
             mac.chosenProduct = Products.EMPTY;
             mac.state = OFF;
+
         }
 
         public void turnON(VendingMachine vm) {
@@ -131,5 +135,22 @@ public class VendingMachine{
         }
     };
 
+    Screen instance = new Screen(){
+
+        @Override
+        public void Print(String toPrint){
+            System.out.println(toPrint);
+        }
+    };
+
+    static class Inner{
+
+        void method(VendingMachine vm){
+            Products statProd = Products.BEER;
+            System.out.println(statProd.getName());
+            System.out.println("balance is: " + vm.balance);
+            System.out.println(vm.state);
+        }
+    }
 
 }
