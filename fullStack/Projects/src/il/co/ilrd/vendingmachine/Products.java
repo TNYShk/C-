@@ -3,6 +3,7 @@ package il.co.ilrd.vendingmachine;
 public enum Products {
     EMPTY(0, " "),
     COLA(8, "coca-cola"),
+    POISON(15.3, "RedBull"),
     WATER(5.5, "Neviot"),
     COFFEE(7,"espresso"),
     CANDY(9.9, "kitkat"),

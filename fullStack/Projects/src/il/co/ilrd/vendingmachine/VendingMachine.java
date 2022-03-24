@@ -1,6 +1,6 @@
 package il.co.ilrd.vendingmachine;
 
-public class VendingMachine implements Screen{
+public class VendingMachine{
     State state = State.OFF;
     private final Products[] catalogMachine;
     public double balance = 0;
@@ -37,6 +37,8 @@ public class VendingMachine implements Screen{
         state.turnON(this);
     }
 
+
+
     private enum State {
         OFF {
             @Override
@@ -49,13 +51,14 @@ public class VendingMachine implements Screen{
             @Override
             public void insertCoin(VendingMachine mac, Coins coin) {
                 mac.balance += coin.getValue();
-                System.out.println("current balance: " + mac.balance);
+                mac.myScreen.Print("current balance: " + mac.balance);
             }
 
             @Override
             public void turnOFF(VendingMachine mac) {
                 if (mac.balance != 0) {
-                    System.out.print("here's your change " + mac.balance);
+                    mac.myScreen.Print("here's your money back " + mac.balance);
+
                 }
                 System.out.println("GoodBye");
                 mac.balance = 0;
@@ -66,7 +69,7 @@ public class VendingMachine implements Screen{
             @Override
             public void cancelReturn(VendingMachine mac) {
                 mac.state = WAITPRODUCT;
-                System.out.println("here's your money back " + mac.balance);
+                mac.myScreen.Print("here's your money back " + mac.balance);
                 mac.balance = 0;
             }
 
@@ -74,12 +77,13 @@ public class VendingMachine implements Screen{
             public void chooseProduct(VendingMachine mac, Products chosen) {
                 mac.chosenP = chosen;
                 double left = mac.balance - mac.chosenP.getPrice();
-                System.out.println("you chose " + mac.chosenP.getName() + " costs: "+ mac.chosenP.getPrice());
+                mac.myScreen.Print("you chose " + mac.chosenP.getName() + " costs: "+ mac.chosenP.getPrice());
+
                 if (0 > left) {
-                    System.out.println("not enough, you're missing " + -left);
+                    mac.myScreen.Print("not enough, you're missing " + -left);
                     mac.state = WAITCOINS;
                 } else {
-                    System.out.println("here's your " + mac.chosenP.getName() + " and change, if any " + left);
+                    mac.myScreen.Print("here's your " + mac.chosenP.getName() + " and change, if any " + left);
                     mac.balance = 0;
                 }
             }
@@ -88,20 +92,20 @@ public class VendingMachine implements Screen{
             @Override
             public void insertCoin(VendingMachine mac, Coins coin) {
                 mac.balance += coin.getValue();
-                System.out.println("current balance: " + mac.balance);
-                System.out.println("you chose " + mac.chosenP.getName() + " costs: "+ mac.chosenP.getPrice());
+                mac.myScreen.Print("current balance: " + mac.balance);
+                mac.myScreen.Print("you chose " + mac.chosenP.getName() + " costs: "+ mac.chosenP.getPrice());
                 double left = mac.balance - mac.chosenP.getPrice();
                 if (0 > left) {
-                    System.out.println("not enough, you're missing " + -left);
+                    mac.myScreen.Print("not enough, you're missing " + -left);
                 } else {
-                    System.out.println("here's your " + mac.chosenP.getName() + " and change, if any " + left);
+                    mac.myScreen.Print("here's your " + mac.chosenP.getName() + " and change, if any " + left);
                     mac.balance = 0;
                 }
             }
             @Override
             public void turnOFF (VendingMachine mac){
                 if (mac.balance != 0) {
-                    System.out.print("here's your change " + mac.balance);
+                    mac.myScreen.Print("here's your change " + mac.balance);
                 }
                 System.out.println("GoodBye");
                 mac.balance = 0;
@@ -110,24 +114,25 @@ public class VendingMachine implements Screen{
             }
             @Override
             public void cancelReturn (VendingMachine mac){
-                mac.balance = 0;
                 mac.state = WAITPRODUCT;
+                mac.myScreen.Print("here's your money back " + mac.balance);
+                mac.balance = 0;
             }
 
             @Override
             public void chooseProduct (VendingMachine mac, Products chosen){
                 mac.chosenP = chosen;
-                System.out.println(" "+ mac.chosenP.getName() + " costs " + mac.chosenP.getPrice());
+                mac.myScreen.Print(" "+ mac.chosenP.getName() + " costs " + mac.chosenP.getPrice());
                 if(mac.balance >= mac.chosenP.getPrice()) {
                     mac.balance -= mac.chosenP.getPrice();
                     if (mac.balance != 0) {
-                        System.out.print("here's your change " + mac.balance);
+                        mac.myScreen.Print("here's your change " + mac.balance);
                     }
-                    System.out.println("Enjoy your " + mac.chosenP.getName());
+                    mac.myScreen.Print("Enjoy your " + mac.chosenP.getName());
                     mac.balance = 0;
                     mac.state = WAITPRODUCT;
                 }
-                System.out.println("not enough, you're missing " + (mac.chosenP.getPrice() - mac.balance));
+                mac.myScreen.Print("not enough, you're missing " + (mac.chosenP.getPrice() - mac.balance));
             }
 
         };
