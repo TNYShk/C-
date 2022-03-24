@@ -14,9 +14,7 @@ public class quiz2 {
         
 
     }
-    final class some{}
-    private class another{}
-    public class next{}
+
 
 }
 
@@ -37,11 +35,11 @@ class Point{
             return "Point x " + this.x + " y " + this.y;
         }
     }
-
+/*
     abstract class SomeClass{}
     final class some{}
    // each public class should have its own .java file
 
-
+*/
 
 
