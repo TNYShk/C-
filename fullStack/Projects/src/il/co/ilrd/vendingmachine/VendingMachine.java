@@ -5,13 +5,13 @@ public class VendingMachine{
     private final Products[] catalogMachine;
     public double balance = 0;
     private final Screen myScreen;
-    private Products chosenP = Products.EMPTY;
+    private Products chosenProduct = Products.EMPTY;
 
 
     public VendingMachine(Products[] catalogMachine, Screen myScreen){
         this.catalogMachine = catalogMachine;
         this.myScreen = myScreen;
-        this.balance = 0;
+        //this.balance = 0;
     }
 
     public void insertCoin(Coins coin) {
@@ -20,17 +20,16 @@ public class VendingMachine{
 
 
     public void chooseProduct(Products desired) {
-        this.chosenP = desired;
+        this.chosenProduct = desired;
         this.state.chooseProduct(this,desired);
     }
 
     public void cancelReturn() {
-        this.chosenP = Products.EMPTY;
+        this.chosenProduct = Products.EMPTY;
         this.state.cancelReturn(this);
     }
 
     public void turnOFF() {
-        this.balance = 0;
         state.turnOFF(this);
     }
     public void turnON() {
@@ -43,6 +42,7 @@ public class VendingMachine{
         OFF {
             @Override
             public void turnON(VendingMachine mac) {
+                mac.myScreen.Print("\nON and Ready!");
                 mac.state = WAITPRODUCT;
             }
         },
@@ -55,35 +55,16 @@ public class VendingMachine{
             }
 
             @Override
-            public void turnOFF(VendingMachine mac) {
-                if (mac.balance != 0) {
-                    mac.myScreen.Print("here's your money back " + mac.balance);
-
-                }
-                System.out.println("GoodBye");
-                mac.balance = 0;
-                mac.chosenP = Products.EMPTY;
-                mac.state = OFF;
-            }
-
-            @Override
-            public void cancelReturn(VendingMachine mac) {
-                mac.state = WAITPRODUCT;
-                mac.myScreen.Print("here's your money back " + mac.balance);
-                mac.balance = 0;
-            }
-
-            @Override
             public void chooseProduct(VendingMachine mac, Products chosen) {
-                mac.chosenP = chosen;
-                double left = mac.balance - mac.chosenP.getPrice();
-                mac.myScreen.Print("you chose " + mac.chosenP.getName() + " costs: "+ mac.chosenP.getPrice());
+                mac.chosenProduct = chosen;
+                double left = mac.balance - mac.chosenProduct.getPrice();
+                mac.myScreen.Print("you chose " + mac.chosenProduct.getName() + " costs: "+ mac.chosenProduct.getPrice());
 
                 if (0 > left) {
                     mac.myScreen.Print("not enough, you're missing " + -left);
                     mac.state = WAITCOINS;
                 } else {
-                    mac.myScreen.Print("here's your " + mac.chosenP.getName() + " and change, if any " + left);
+                    mac.myScreen.Print("here's your " + mac.chosenProduct.getName() + " and change, if any " + left);
                     mac.balance = 0;
                 }
             }
@@ -93,46 +74,30 @@ public class VendingMachine{
             public void insertCoin(VendingMachine mac, Coins coin) {
                 mac.balance += coin.getValue();
                 mac.myScreen.Print("current balance: " + mac.balance);
-                mac.myScreen.Print("you chose " + mac.chosenP.getName() + " costs: "+ mac.chosenP.getPrice());
-                double left = mac.balance - mac.chosenP.getPrice();
+                mac.myScreen.Print("you chose " + mac.chosenProduct.getName() + " costs: "+ mac.chosenProduct.getPrice());
+                double left = mac.balance - mac.chosenProduct.getPrice();
                 if (0 > left) {
                     mac.myScreen.Print("not enough, you're missing " + -left);
                 } else {
-                    mac.myScreen.Print("here's your " + mac.chosenP.getName() + " and change, if any " + left);
+                    mac.myScreen.Print("here's your " + mac.chosenProduct.getName() + " and change, if any " + left);
                     mac.balance = 0;
                 }
-            }
-            @Override
-            public void turnOFF (VendingMachine mac){
-                if (mac.balance != 0) {
-                    mac.myScreen.Print("here's your change " + mac.balance);
-                }
-                System.out.println("GoodBye");
-                mac.balance = 0;
-                mac.chosenP = Products.EMPTY;
-                mac.state = OFF;
-            }
-            @Override
-            public void cancelReturn (VendingMachine mac){
-                mac.state = WAITPRODUCT;
-                mac.myScreen.Print("here's your money back " + mac.balance);
-                mac.balance = 0;
             }
 
             @Override
             public void chooseProduct (VendingMachine mac, Products chosen){
-                mac.chosenP = chosen;
-                mac.myScreen.Print(" "+ mac.chosenP.getName() + " costs " + mac.chosenP.getPrice());
-                if(mac.balance >= mac.chosenP.getPrice()) {
-                    mac.balance -= mac.chosenP.getPrice();
+                mac.chosenProduct = chosen;
+                mac.myScreen.Print(" "+ mac.chosenProduct.getName() + " costs " + mac.chosenProduct.getPrice());
+                if(mac.balance >= mac.chosenProduct.getPrice()) {
+                    mac.balance -= mac.chosenProduct.getPrice();
                     if (mac.balance != 0) {
                         mac.myScreen.Print("here's your change " + mac.balance);
                     }
-                    mac.myScreen.Print("Enjoy your " + mac.chosenP.getName());
+                    mac.myScreen.Print("Enjoy your " + mac.chosenProduct.getName());
                     mac.balance = 0;
                     mac.state = WAITPRODUCT;
                 }
-                mac.myScreen.Print("not enough, you're missing " + (mac.chosenP.getPrice() - mac.balance));
+                mac.myScreen.Print("not enough, you're missing " + (mac.chosenProduct.getPrice() - mac.balance));
             }
 
         };
@@ -145,12 +110,20 @@ public class VendingMachine{
             return;
         }
 
-        public void cancelReturn(VendingMachine vm) {
-            return;
+        public void cancelReturn(VendingMachine mac) {
+            mac.state = WAITPRODUCT;
+            mac.myScreen.Print("here's your money back " + mac.balance);
+            mac.balance = 0;
         }
 
-        public void turnOFF(VendingMachine vm) {
-            return;
+        public void turnOFF(VendingMachine mac) {
+            if (mac.balance != 0) {
+                mac.myScreen.Print("here's your change " + mac.balance);
+            }
+            System.out.println("\nTurning OFF, GoodBye");
+            mac.balance = 0;
+            mac.chosenProduct = Products.EMPTY;
+            mac.state = OFF;
         }
 
         public void turnON(VendingMachine vm) {

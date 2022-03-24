@@ -14,6 +14,8 @@ public class VendingMachineTest {
         vm.chooseProduct(Products.COLA);
         vm.insertCoin(Coins.TENS);
         vm.cancelReturn();
+        vm.turnOFF();
+        vm.turnON();
         vm.insertCoin(Coins.TENS);
         vm.insertCoin(Coins.TENS);
         vm.chooseProduct(Products.BEER);
