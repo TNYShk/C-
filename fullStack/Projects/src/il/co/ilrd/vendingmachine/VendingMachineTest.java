@@ -8,8 +8,9 @@ public class VendingMachineTest {
 
         vm.turnON();
         vm.insertCoin(Coins.TENS);
-        vm.insertCoin(Coins.TENS);
+
         vm.chooseProduct(Products.COLA);
+        vm.insertCoin(Coins.TENS);
         vm.chooseProduct(Products.BEER);
         vm.insertCoin(Coins.FIVES);
         vm.insertCoin(Coins.SHEKEL);
@@ -23,5 +24,6 @@ public class VendingMachineTest {
         vm.cancelReturn();
         vm.insertCoin(Coins.TENS);
         vm.chooseProduct(Products.WATER);
+        vm.turnOFF();
     }
 }

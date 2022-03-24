@@ -49,18 +49,24 @@ public class VendingMachine implements Screen{
             @Override
             public void insertCoin(VendingMachine mac, Coins coin) {
                 mac.balance += coin.getValue();
+                System.out.println("current balance: " + mac.balance);
             }
 
             @Override
             public void turnOFF(VendingMachine mac) {
+                if (mac.balance != 0) {
+                    System.out.print("here's your change " + mac.balance);
+                }
+                System.out.println("GoodBye");
                 mac.balance = 0;
+                mac.chosenP = Products.EMPTY;
                 mac.state = OFF;
             }
 
             @Override
             public void cancelReturn(VendingMachine mac) {
                 mac.state = WAITPRODUCT;
-                System.out.println("here's your money back" + mac.balance);
+                System.out.println("here's your money back " + mac.balance);
                 mac.balance = 0;
             }
 
@@ -68,11 +74,12 @@ public class VendingMachine implements Screen{
             public void chooseProduct(VendingMachine mac, Products chosen) {
                 mac.chosenP = chosen;
                 double left = mac.balance - mac.chosenP.getPrice();
+                System.out.println("you chose " + mac.chosenP.getName() + " costs: "+ mac.chosenP.getPrice());
                 if (0 > left) {
                     System.out.println("not enough, you're missing " + -left);
                     mac.state = WAITCOINS;
                 } else {
-                    System.out.println("here's you're change if any " + left);
+                    System.out.println("here's your " + mac.chosenP.getName() + " and change, if any " + left);
                     mac.balance = 0;
                 }
             }
@@ -81,12 +88,13 @@ public class VendingMachine implements Screen{
             @Override
             public void insertCoin(VendingMachine mac, Coins coin) {
                 mac.balance += coin.getValue();
-
+                System.out.println("current balance: " + mac.balance);
+                System.out.println("you chose " + mac.chosenP.getName() + " costs: "+ mac.chosenP.getPrice());
                 double left = mac.balance - mac.chosenP.getPrice();
                 if (0 > left) {
                     System.out.println("not enough, you're missing " + -left);
                 } else {
-                    System.out.println("here's your" + mac.chosenP.getName() + " and change, if any " + left);
+                    System.out.println("here's your " + mac.chosenP.getName() + " and change, if any " + left);
                     mac.balance = 0;
                 }
             }
