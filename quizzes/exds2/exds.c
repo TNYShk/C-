@@ -638,17 +638,6 @@ static void PrintStack(stack_t *stack)
 }
 
 
-
-
-void MergeSort(int *arr, size_t length){
-
-    int *helper = (int *)calloc(length,sizeof(int));
-    assert(NULL != helper);
-
-    memcpy(helper,arr,sizeof(int) * length);
-    
-}
-
 int CountONBits(int number)
 {
     int temp = 0;

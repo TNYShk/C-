@@ -2,17 +2,14 @@
 #include <stdlib.h>
 
 
-
-
-
 int IsSumFound(int *, int, int);
+
+
 
 int IsSumFound(int *sorted_ar, int target, int size)
 {
-
-	int *left= sorted_ar;
+	int *left = sorted_ar;
 	int *right = &sorted_ar[size-1];
-	
 	
 	while(left<right)
 	{
