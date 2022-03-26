@@ -179,15 +179,17 @@ static state_t StateGetNumber(char **math_expression, calc_status_t *status, ope
 		++(*math_expression);
 		calc->cur_state = WAIT_NUM;
 	}
-	else
+	else if (READ_NUMBER == ans)
 	{
 		StackPush(calc->numbers, &result);
+
 	}
 	
 	if (INVALID_READ == ans)
 	{
-		calc->cur_state = INVALID;
+		
 		*status = CALC_MATH_ERROR;
+		return INVALID;
 	}
 	
 	(void)operators_lut;
