@@ -46,11 +46,11 @@ int AddOne(int n)
 	
 	while(n & one)
 	{
-		n = n^one;
-		one = one << 1;	
+		n ^= one;
+		one <<=  1;	
 	}
 	
-	n = n^one;
+	n ^= one;
 	
 	return n;
 }
