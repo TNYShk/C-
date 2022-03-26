@@ -6,15 +6,12 @@
  *      reviewed by Amit               		  *
 **********************************************/
 
-
 #include <stdlib.h> /*  size_t dynamic memory allocation */
 #include <stdio.h>   /*  standard library               */
 #include <string.h>   /*  memmove                      */
 #include <assert.h>    /* assert                      */ 
                                                 
 #include "dynamic_vector.h"
-
-
 
 #define GROWTHFACTOR (2)
 #define ANDONE (1)

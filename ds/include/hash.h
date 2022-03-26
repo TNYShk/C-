@@ -99,10 +99,22 @@ size_t HashSize(const hash_t *hash);
  * RETURN:
  *  Boolean. 1 if empty, otherwise 0.
  * 
- * Complexity: O(size) time, O(1) space*/
+ * Complexity: O(1) time, O(1) space*/
 int HashIsEmpty(const hash_t *hash);
 
- /* Complexity: time O(n) space O(1)*/ /* it cannot change the data! */
+ /*
+ * DESCRIPTION:
+ *  performs an action forEach of the hash's elements
+ *  
+ * PARAMS:
+ *  ptr to the hash table.
+ *  action_func to perform on the elements
+ *  parameter to be usd with the action func
+ * 
+ * RETURN:
+ *  1 if empty, otherwise 0.
+ * 
+ * Complexity: O(n) time, O(1) space*/
 int HashForEach(const hash_t *hash, hash_action_func_t action_func, void *param);
 
 #endif /* __HASH_H__*/

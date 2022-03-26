@@ -21,8 +21,6 @@
 #define SERVER_ADRS(mask_size) ((1u << (BITS - (mask_size))) - 1u)
 #define BROADCAST_ADR(mask_size) ((1u << (BITS - (mask_size))) - 2u)
 
-
-
 enum child
 {
     LEFT,
@@ -106,7 +104,7 @@ dhcp_t *DHCPCreate(const char *network_address, unsigned int subnet_mask_size)
 	
     dhcp->subnet_mask_size = subnet_mask_size; 
 	dhcp->tree->height = BITS - dhcp->subnet_mask_size;
-    dhcp->network_address = inet & (-1)<<dhcp->tree->height;
+    dhcp->network_address = inet & ( (-1) << dhcp->tree->height );
 
 	if (SUCCESS != CreateLeftSubTrie(dhcp->tree->root, dhcp->tree->height))
 	{
