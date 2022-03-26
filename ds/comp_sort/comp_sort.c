@@ -40,9 +40,54 @@ static int Partition(char *arr, size_t size, int left, int right, cmp_func_t cmp
 static void GenericSwap(char *left, char *right, size_t sz);
 /*****************/
 
-/*mutltithreaded qsort */
+void HeapSort(int *arr, size_t length);
+static void ConverttoMaxHeap(int *arr, size_t length);
+static void HeapifyDown(int *arr, size_t idx, size_t length);
 
 
+void HeapSort(int *arr, size_t length)
+{
+    assert(NULL != arr);
+    ConverttoMaxHeap(arr,length);
+    
+    do
+    {
+        PSwap(arr, arr + (--length));
+        HeapifyDown(arr,0,length);
+
+    } while (0 < length);
+}
+
+static void ConverttoMaxHeap(int *arr, size_t length)
+{
+    size_t idx = length;
+
+    while(idx)
+    {
+        HeapifyDown(arr, --idx,length);
+    }
+}
+static void HeapifyDown(int *arr, size_t idx, size_t length)
+{
+    size_t left_child = (idx << 1) + 1;
+    size_t right_child = (idx << 1) + 2;
+    size_t parent = idx;
+
+    if((left_child < length) && (arr[parent] < arr[left_child]))
+    {
+        parent = left_child;
+    }
+    if((right_child < length) && (arr[parent] < arr[right_child]))
+    {
+        parent = right_child;
+    }
+    if(idx != parent)
+    {
+        PSwap(arr + idx, arr + parent);
+        HeapifyDown(arr, parent, length);
+    }
+
+}
 
 void BubbleSort(int *arr, size_t arr_size)
 {
@@ -156,6 +201,40 @@ static void RecQS(void *arr, size_t size, int left, int right, cmp_func_t cmp_fu
 
     RecQS(arr, size, left,      pivot - 1, cmp_fun);
     RecQS(arr, size, pivot + 1, right,   cmp_fun);
+}
+
+static int Partition(char *arr, size_t size, int left, int right, cmp_func_t cmp_fun)
+{
+    void  *arr_help = NULL;
+    void *arr_left = NULL;
+    void *arr_right = NULL;
+
+    int i = 0;
+    int last = left;
+    int mid = (right + left) >> 1;
+
+    arr_left = (arr + (left * size));
+    arr_right = (arr + (mid * size));
+    
+    GenericSwap(arr_left, arr_right, size);
+
+    for(i = left + 1; i <= right; ++i)
+    {
+        void *pivot_p = (arr + (i * size));
+
+        if(0 < cmp_fun(arr_left,pivot_p))
+        {
+            ++last;
+            arr_help = (arr + (last * size));
+            
+            GenericSwap(pivot_p, arr_help, size);
+        }
+    }
+    arr_help = (arr + (last * size));
+    
+    GenericSwap(arr_left, arr_help, size);
+
+    return last;
 }
 
 

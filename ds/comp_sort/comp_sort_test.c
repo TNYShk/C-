@@ -22,12 +22,12 @@ void InitArrOne(int *ar, size_t len);
 int cmpfunc(const void * a, const void * b);
 int IsSorted(int *arr, size_t length);
 
-
+void TestHeapSort(void);
 
 int main (void)
 {
-
-	clock_t start = 0;
+	TestHeapSort();
+	/* clock_t start = 0;
 	clock_t end = 0;
 	int arr[] = {4,2,3,8,1,15};
 	int arr2[] = {3,5,1,0,1,6};
@@ -213,10 +213,18 @@ printf("\n--------------------Selection Sort--------------------\n");
 	printf("5K InsertionSort tested!\n");
 	printf("5K - Insertion sort took %ld m.sec to run \n", end - start);
 	
+ */
 
-	
-	
 	return 0;
+}
+
+void TestHeapSort(void)
+{
+	int fivek[FIVEK] = {0};
+	InitArr(fivek,FIVEK, RANGE);
+	HeapSort(fivek,FIVEK);
+	assert(1 == IsSorted(fivek,FIVEK));
+	PrintArr(fivek, 100);
 }
 
 
