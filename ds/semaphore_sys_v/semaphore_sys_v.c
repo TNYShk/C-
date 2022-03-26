@@ -30,15 +30,17 @@ int InitSem( size_t init_val)
 {
     int sem_id = 0;
     int proj_id = 0;
-    union semun arg;
+
+   /*  char path[256] = {'\0'};
+    getcwd(path,256);
+    strcat(path, argv + 1); */
 
     key_t sema_key = ftok("../include/semaphore_sys_v.h" , proj_id);
     if(FAIL == sema_key)
     {
         errExit("key_failed");
-    }
+    }   
 
-            
     sem_id = semget(sema_key, 1, 0666 | IPC_CREAT);
     if (FAIL == sem_id)
     {
@@ -56,15 +58,9 @@ int InitSem( size_t init_val)
 
 int SemRemove(int sem_id)
 {
-    union semun arg;
-
-    if(FAIL == semctl(sem_id, 0, IPC_RMID, arg))
-    {
-         errExit("semctl");
-    }
-
-    /* printf("Semaphore removed\n"); */
-    return SUCCESS;
+    union semun arg = {0};
+    
+    return semctl(sem_id, 0, IPC_RMID, arg);
 }
 
 int SemIncrement(int sem_id, size_t inc_by)

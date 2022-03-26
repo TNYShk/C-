@@ -7,43 +7,49 @@
 * ********************************************/
 
 #include <assert.h> /* assert 			  */
-#include <stdlib.h> /* malloc, NULL ,free */
+#include <stdlib.h> /* memory allocation, free */
 #include <unistd.h> /* sleep */
-
-#include "scheduler.h"
+#include <string.h> /*memset */
+#include "scheduler.h"   /*scheduler API  */
 #include "pq.h"			     /* priority queue API */
-#include "utils.h" /* utilities lib      */
+/* #include "utils.h" utilities lib      */ 
+
 
 #define TIMEFAILURE ((time_t)-1)
 #define TASK_NOT_FOUND (1)
+#define OFF (0)
+#define ON (1)
+#define SUCCESS (0)
 
+/* wrapper func*/
 static int FindTask (const void *task, const void *uid);
 
 
 struct scheduler
 {
 	pq_t* pq;
-	int stop_flag;
+	int operate_flag;
 };
 
 scheduler_t *SchedCreate(void)
 {
-	scheduler_t *sch = (scheduler_t *)malloc(sizeof(scheduler_t));
-	if (NULL == sch)
+	scheduler_t *new_sched = (scheduler_t *)malloc(sizeof(scheduler_t));
+	if (NULL == new_sched)
 	{
 		return NULL;
 	}
 
-	sch->pq = PQCreate(&TasksCompare);
-	if(NULL == sch->pq)
+	new_sched->pq = PQCreate(&TasksCompare);
+	if(NULL == new_sched->pq)
 	{
-		free(sch);
-		sch = NULL;
+		memset(new_sched, 0, sizeof(scheduler_t));
+		free(new_sched);
+		new_sched = NULL;
 	}
 
-	sch->stop_flag = FALSE;
+	new_sched->operate_flag = OFF;
 
-	return sch;
+	return new_sched;
 }
 
 void SchedDestroy(scheduler_t *sched)
@@ -54,7 +60,8 @@ void SchedDestroy(scheduler_t *sched)
 
 	PQDestroy(sched->pq);
 	sched->pq = NULL;
-
+	
+	memset(sched, 0, sizeof(scheduler_t));
 	free(sched);
 	sched = NULL;
 }
@@ -62,32 +69,29 @@ void SchedDestroy(scheduler_t *sched)
 ilrd_uid_t SchedAddTask(scheduler_t *sched, task_func_t task_func, void *task_args,
                         cleanup_func_t cleanup_func, void *cleanup_args, time_t time_to_run)
 {
-	task_t *task_ptr = NULL;
-	int enqueue_status = SUCCESS;
+	task_t *new_task = NULL;
 
 	assert(NULL != sched);
 	assert(NULL != task_func);
 	assert(TIMEFAILURE != time_to_run);
 
-	task_ptr = TaskCreate(task_func, task_args, cleanup_func, 
+	new_task = TaskCreate(task_func, task_args, cleanup_func, 
 				     cleanup_args, time_to_run);
 
-	if(NULL == task_ptr)
+	if(NULL == new_task)
 	{
 		return UIDBadUID;
 	}
 
-	enqueue_status = PQEnqueue(sched->pq, task_ptr);
-
-	if(FAILURE == enqueue_status)
+	if(SUCCESS != PQEnqueue(sched->pq, new_task))
 	{
-		TaskDestroy(task_ptr);
-		task_ptr = NULL;
+		TaskDestroy(new_task);
+		new_task = NULL;
 
 		return UIDBadUID;	
 	}
 
-	return (TaskGetUID(task_ptr));
+	return TaskGetUID(new_task);
 }
 
 int SchedRemoveTask(scheduler_t *sched, ilrd_uid_t uid)
@@ -116,11 +120,11 @@ int SchedRun(scheduler_t *sched)
 
 	assert(NULL != sched);
 
-	sched->stop_flag = FALSE;
+	sched->operate_flag = OFF;
 
 	while ((!SchedIsEmpty(sched)) && 
 		  (return_status >= SUCCESS) && 
-		  (FALSE == sched->stop_flag))
+		  (OFF == sched->operate_flag))
 	{
 		task = PQDequeue(sched->pq);
 
@@ -148,7 +152,7 @@ void SchedStop(scheduler_t *sched)
 {
 	assert(NULL != sched);
 
-	sched->stop_flag = TRUE;
+	sched->operate_flag = ON;
 }
 
 size_t SchedSize(const scheduler_t *sched)

@@ -43,23 +43,24 @@ void HashDestroy(hash_t *hash);
 
 /*
  * DESCRIPTION: 
- * Algorithm sorts given array, by counting instances of elements
- * 
+ * Insert data (dll node) into hash table
+ * BUT, duplicates are not welcomed! since result in same key
+ *
  * PARAMS: 
- * array to sort
- * size_t length of the array 
+ * ptr to the hash table
+ * void *data to insert
  * 
- * RETURN: 1 if Sorted, 0 if not sorted, FAIL (-1) if malloc failed
- * Complexity: time O(1) (amortized), space O(1)*/
+ * RETURN: 0 for SUCCESS
+ * Complexity: time O(n) (amortized), space O(1)*/
 int HashInsert(hash_t *hash, void *data);
 
 /*
  * DESCRIPTION: 
- * Algorithm sorts given array, by counting instances of elements
+ * Remove element from the hash table, based on given element's key
  * 
  * PARAMS: 
- * array to sort
- * size_t length of the array 
+ * ptr to the hash table
+ * key of the element to remove
  * 
  * RETURN: 1 if Sorted, 0 if not sorted, FAIL (-1) if malloc failed
  * Complexity: time O(1) (amortized), space O(1)*/
@@ -67,29 +68,38 @@ void HashRemove(hash_t *hash, const void *key);
 
 /*
  * DESCRIPTION: 
- * Algorithm sorts given array, by counting instances of elements
+ * find a matching element in the hash table, based on the provided key
  * 
  * PARAMS: 
- * array to sort
- * size_t length of the array 
+ * ptr to the hash table
+ * key of the element
  * 
- * RETURN: 1 if Sorted, 0 if not sorted, FAIL (-1) if malloc failed
+ * RETURN: if element exist in the hash, its data is returned. otherwise NULL
  * Complexity: time O(1) (amortized), space O(1)*/
 void *HashFind(const hash_t *hash, const void *key);
 
 /*
  * DESCRIPTION: 
- * Algorithm sorts given array, by counting instances of elements
+ * get the size of the hash table = number of elements
  * 
  * PARAMS: 
- * array to sort
- * size_t length of the array 
+ * ptr to the hash table
  * 
- * RETURN: 1 if Sorted, 0 if not sorted, FAIL (-1) if malloc failed
- * Complexity: time O(1) space O(1)*/
+ * RETURN: total amount of elements cuurenly residing in the hash
+ * Complexity: time O(n) space O(1)*/
 size_t HashSize(const hash_t *hash);
 
- /* Complexity: time O(m) space O(1)*/
+ /*
+ * DESCRIPTION:
+ *  Checks wether hash table is empty.
+ *  
+ * PARAMS:
+ *  ptr to the hash table.
+ * 
+ * RETURN:
+ *  Boolean. 1 if empty, otherwise 0.
+ * 
+ * Complexity: O(size) time, O(1) space*/
 int HashIsEmpty(const hash_t *hash);
 
  /* Complexity: time O(n) space O(1)*/ /* it cannot change the data! */

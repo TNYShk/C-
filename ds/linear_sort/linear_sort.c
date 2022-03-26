@@ -9,11 +9,14 @@
 #include <stdlib.h> /* calloc */
 #include <string.h> /* memcpy */
 #include <stddef.h> /* size_t*/
+#include <math.h>
 #include "linear_sort.h" /* program header*/
 
 #define BASE (10)
 #define FAIL (-1)
-
+#define SIZE (100)
+int arrtest_g[SIZE] = {0};
+int resultarr_g[SIZE] = {0};
 /****************** Service Funcs ****************************/
 static int FindMin(int *arr, size_t len);
 static int FindMax(int *arr, size_t len);
@@ -298,4 +301,49 @@ static int IsSorted(int *arr, size_t length)
         ++i;
     }
     return flag;
+}
+
+
+void RadixTanya(size_t len, int radix)
+{
+	int k = FindMax(arrtest_g, len);
+	int resultarr[SIZE] = {0};
+	int digits = MaxDigits(k);
+	int i = 0;
+
+	for( i= 0; i < digits; ++i)
+	{
+		counting_sort( i, radix);
+	}
+}
+
+void counting_sort(int digit, int radix)
+{
+	
+	int *arrC = (int *)malloc(sizeof(int) * radix);
+	int idx = 0;
+
+	for(idx = 0; idx < SIZE; ++idx)
+	{
+		double base = ((double)arrtest_g[idx]/radix );
+		double power = ((double)digit);
+		int digits_of_arr = pow(base,power);
+		digits_of_arr %= radix;
+		arrC[digits_of_arr] = arrC[digits_of_arr] + 1;
+	}
+	for(idx = 1; idx < radix ; ++idx)
+	{
+		arrC[idx] += arrC[idx - 1];
+	}
+
+	for(idx = SIZE - 1; idx >= 0; --idx)
+	{
+	    double base = ((double)arrtest_g[idx]/radix );
+		double power = ((double)digit);
+		int digits_of_arr = pow(base,power);
+		digits_of_arr %= radix;
+		arrC[digits_of_arr] = arrC[digits_of_arr] - 1;
+		resultarr_g[arrC[digits_of_arr]] = arrtest_g[idx];
+	}
+
 }

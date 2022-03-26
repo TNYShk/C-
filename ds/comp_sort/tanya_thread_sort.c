@@ -7,13 +7,13 @@
 #include <stdio.h> /*printf*/
 #include <time.h>
 #include <sys/time.h>
-
+#include <math.h>
 
 
 
 #define SUCCESS (0)
-#define SIZE (500 * 100000)
-
+#define SIZE (100000)
+#define BASE (10)
 #define MIN(a,b) ((a)< (b)? (a) : (b))
 #define MIN3(a,b,c) ( (MIN(a,b)) < (c) ? (MIN((a),(b))): (c) )
 #define atomic_sub_and_fetch(destptr, decrement) __sync_sub_and_fetch(destptr, decrement)
@@ -28,6 +28,22 @@ int max_threads_g = 0;
 int n_threads_g = 0;
 int data[SIZE] = {0};
 int dataset[SIZE] = {0};
+
+int arrtest_g[SIZE] = {0};
+
+int arrdata[SIZE] = {0};
+int left[SIZE /2] = {0};
+int right[SIZE /2] = {0};
+int part = 0;
+void merge(int start, int mid, int end);
+void merge_sort(int start, int end);
+void Init_threads_merge_sort();
+
+void count_sort(int radix);
+void RadixTanya(void);
+static int MaxDigits(int max);
+static int FindMax(size_t len);
+
 
 void Init_Array(int *data, int len);
 void VerifySortTest(int *data, int len);
@@ -53,9 +69,10 @@ void *ThreadMergeSortFunc(void *arg);
 void InitThreadMergeSort(int *data);
 
 
+
 int main(void) 
 {
-
+/*
   Init_Array(data, SIZE);
     printf("Sorting 50 Million numbers with Quicksort ...\n");
     TimeTest();
@@ -63,15 +80,23 @@ int main(void)
     printf("took %.2fs\n", TimeTest());
     VerifySortTest(data, SIZE);
     
-   /*  printf("\n\n"); 
-    Init_Array(dataset, SIZE);
-    
+     printf("\n now merge sort threads..\n");
+    Init_Array(arrdata, SIZE);
+    printf("Sorting 50 Million numbers with MergeSort 4 threads ...\n");
     
     TimeTest();
-    InitThreadMergeSort(dataset);
+    Init_threads_merge_sort();
+     printf("took %.2fs\n", TimeTest());
+*/
+
+     printf("\n\n"); 
+    Init_Array(arrtest_g, SIZE);
+    printf("Radix sort\n");
+    TimeTest();
+    RadixTanya();
     printf("took %.2fs\n", TimeTest());
-    VerifySortTest(dataset, SIZE);
-     */
+    VerifySortTest(arrtest_g, SIZE);
+     
   
     
     return 0;
@@ -352,6 +377,11 @@ void InitThreadSort(int *data, int len)
     pthread_mutex_unlock(&qmutex);
 }
 
+
+
+
+
+
 void InitThreadMergeSort(int *data)
 {
     pthread_t merged_th[8] = {0};
@@ -366,21 +396,15 @@ void InitThreadMergeSort(int *data)
     {
         pthread_join(merged_th[idx], NULL);
     }
-
-    
-
 }
 
 void *ThreadMergeSortFunc(void *arg)
 {
    void *holder = arg;
    MergeSort(holder, SIZE, sizeof(int));
-   
  
     return NULL;
 }
-
-
 
 
 
@@ -399,9 +423,7 @@ void MergeSort(void *arr_to_sort, size_t num_elements, unsigned int size_elem)
       
     free(helper);
     helper = NULL;
-
 }
-
 
 void RecMergeSort(void *arr, void *helper, size_t left, size_t right)
 {
@@ -444,4 +466,175 @@ void Merge(void *arr, void *help, size_t start, size_t mid, size_t end)
 
 	memcpy(temp + start, a_temp + start, sizeof(int) * (i - start));
 
+}
+
+void merge(int start, int mid, int end)
+{
+    int n1 = mid -start +1;
+    int n2 = end - mid;
+    int idx = 0, jdx = 0;
+    int k = 0;
+
+    for(;idx < n1; idx++)
+    {
+        left[idx] = arrdata[idx + start];
+    }
+
+    for(idx = 0; idx < n1; ++idx)
+    {
+        right[idx] = arrdata[idx + mid + 1];
+    }
+    k = start;
+    idx = jdx = 0;
+
+    while ((idx < n1) &&(jdx < n2) )
+    {
+        if (left[idx]<= right[jdx])
+        {
+            arrdata[k++] = left[idx++];
+        }
+        else
+        {
+            arrdata[k++] = right[jdx++];
+        }
+        while(idx < n1)
+        {
+           arrdata[k++] = left[idx++];
+        }
+        while(jdx < n2)
+        {
+            arrdata[k++] = right[jdx++];
+        }
+    }
+   
+}
+
+void merge_sort(int start, int end)
+{
+    int mid = start + (end - start)/2;
+
+    if (start < end)
+    {
+        merge_sort(start, mid);
+        merge_sort(mid +1, end);
+
+        merge(start, mid, end);
+    }
+}
+
+void *merge_s(void *arg)
+{
+    int thread_part = part++;
+    int low = thread_part * (SIZE / 4);
+    int high = (thread_part + 1) * (SIZE / 4) - 1;
+    int mid = low + (high - low) / 2;
+
+    if (low < high)
+    {
+        merge_sort(low, mid);
+        merge_sort(mid + 1, high);
+        merge(low, mid, high);
+    }
+    return arg;
+}
+
+
+void Init_threads_merge_sort()
+{
+    pthread_t merged_th[4] = {0};
+    size_t idx = 0;
+   
+    
+    for(; idx < 4; ++idx)
+    {
+        while(SUCCESS != pthread_create(&merged_th[idx],NULL, &merge_s, NULL));
+    }
+    for(idx = 0; idx < 4; ++idx)
+    {
+        pthread_join(merged_th[idx], NULL);
+   
+    }
+
+
+    merge(0, (SIZE / 2 - 1) / 2, SIZE / 2 - 1);
+    merge(SIZE / 2, SIZE/2 + (SIZE-1-SIZE/2)/2, SIZE - 1);
+    merge(0, (SIZE - 1)/2, SIZE - 1);
+    
+    
+    VerifySortTest(arrdata, SIZE);
+    PrintSome(arrdata,SIZE);
+}
+
+void RadixTanya(void)
+{
+	int max = FindMax(SIZE);
+    int position = 1;
+
+    for (position = 1; (max/position) > 0; position *= 10)
+    {
+        count_sort(position);
+    }
+}
+
+static int FindMax(size_t len)
+{
+	int *left = arrtest_g;
+	int *right = arrtest_g + len - 1;
+	int max = *arrtest_g;
+
+	while(left < right)
+	{
+		if(*left > max)
+		{
+			max = *left;
+		}
+		++left;
+	}
+    printf("max val is %d\n", max);
+	return max;
+}
+
+void count_sort(int radix)
+{
+	int idx = 0;
+    int *arrC = (int *)calloc(10, sizeof(int));
+    int *temp = (int *)calloc(SIZE, sizeof(int));
+    assert(NULL != arrC);
+     assert(NULL != temp);
+
+	for(idx = 0; idx < SIZE; ++idx)
+	{
+		arrC[((arrtest_g[idx]/ radix) % 10)]++;
+	}
+
+	for(idx = 1; idx < 10 ; ++idx)
+	{
+		arrC[idx] += arrC[idx - 1];
+	}
+
+	for(idx = SIZE - 1; idx >= 0; --idx)
+	{
+	    temp[arrC[((arrtest_g[idx]/radix) % 10)] -1] = arrtest_g[idx];
+		arrC[((arrtest_g[idx] / radix) % 10)]--;
+	}
+    for (idx = 0; idx < SIZE; ++idx)
+    {
+        arrtest_g[idx] = temp[idx];
+    }
+    free(arrC);
+    free(temp);
+}
+
+static int MaxDigits(int max)
+{
+	int digit_counter = 0;
+
+	assert(0 < max);
+
+	while(max)
+	{
+		++digit_counter;
+		max /= BASE;
+	}
+	return digit_counter;
 }

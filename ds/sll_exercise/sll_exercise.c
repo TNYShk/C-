@@ -92,14 +92,11 @@ return 0;
 node_t *Flip(node_t *head)
 {
 	node_t *temp_node = NULL;
-	node_t *runner = NULL;
+	node_t *runner = head;
 	node_t *next_node = NULL;
-	node_t *new_head = NULL;
+	node_t *new_head = runner;
 
 	assert(NULL != head);
-
-	temp_node = NULL;
-	runner = head;
 
 	while(NULL != runner->next)
 	{
@@ -109,7 +106,7 @@ node_t *Flip(node_t *head)
 
 		runner = next_node;
 	}
-	new_head = runner;
+	/* new_head = runner; */
 	runner->next = temp_node;
 	return new_head;
 

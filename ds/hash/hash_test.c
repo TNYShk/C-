@@ -16,7 +16,7 @@
 #define HIDE (system("stty -icanon -echo"))
 #define UNHIDE (system("stty icanon echo"))
 #define ESC (27)
-
+#define FIVELETSIZE (10000)
 
 void CreateDestroy();
 void OccupyHotel();
@@ -29,7 +29,10 @@ static const void *GetKey(const void *data);
 static size_t hash_func(const void *key);
 static size_t hash_func99(const void *key);
 
-
+/*wordle tests*/
+void ValidPermutation(hash_t *hashy, char *string, size_t idx);
+static void Swap(char *left, char *right);
+static void PrintHash(void);
 
 
 typedef struct dict
@@ -87,6 +90,11 @@ static void SpellCheck()
             {
                 fgets(string, WORDLENMAX, stdin);
                 spell = HashFind(hashy, GetKey(string));
+               
+                if(strlen(string) == 6)
+                    ValidPermutation(hashy,string, 0); 
+                   
+                
                 (spell == NULL)? printf("\nbad spelling: %s \n", string): 
                     printf("\n %s\nGOOD SPELLING!!\n", (char *)spell);
             }
@@ -94,11 +102,41 @@ static void SpellCheck()
         fclose(pFile);
         free(dictionary);
         HashDestroy(hashy);
+      
     }
 }
 
+void ValidPermutation(hash_t *hashy, char *string, size_t idx)
+{
+    size_t i = 0;
+    char *spell = NULL;
 
+    if (idx == strlen(string))
+    {
+        if (NULL != (spell = HashFind(hashy, GetKey(string))))
+        {
+            printf("%s \n",(char *)spell);
+        }
+        
+        return;
+    }
 
+    for(i = idx; i < strlen(string); ++i)
+    {
+        Swap(string + idx, string + i);
+        ValidPermutation(hashy, string, idx + 1);
+        Swap(string + idx, string + i);
+    }
+  
+
+}
+static void Swap(char *left, char *right)
+{
+    char temp = 0;
+    temp = *left;
+    *left = *right;
+    *right = temp; 
+}
 
 
 void CreateDestroy()
