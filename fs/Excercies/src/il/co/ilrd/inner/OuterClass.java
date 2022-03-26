@@ -7,7 +7,15 @@ interface Tanya{
 public class OuterClass {
     String outerField = "Outer field";
     static String staticOuterField = "Static outer field";
-
+/*
+// can't have static method inside non static class.
+    public void foo(){
+        class AIC{
+            public static void foo2(){}
+        }
+        AIC.foo2(); // need to instantiate class AIC first!
+    }
+  */
     public void methodOffer(){
         int x = 7;
         System.out.println("here "+ x);
