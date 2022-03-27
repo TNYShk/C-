@@ -29,6 +29,7 @@ public class VendingMachine{
             if (secondsToWait > 0) {
                //tools.beep();
                 --secondsToWait;
+                turnON();
             }else{
                 tools.beep();
                 System.out.println("no input, good bye!");

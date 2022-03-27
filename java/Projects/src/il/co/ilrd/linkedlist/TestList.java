@@ -81,14 +81,16 @@ public class TestList {
         }
         Object last = found.next();
 
-        System.out.println(last);
+        System.out.println("last is "+ last);
 
-        found = testTwo.find(370);
-        if (null != found) {
-            System.out.println("found 370");
+        found = testTwo.find(270);
+        if (found.hasNext()) {
+            System.out.println("found  270" );
         } else {
-            System.out.println("370 Not found");
+            System.out.println("Not found");
         }
+
+
 
         System.out.println(testTwo);
         ListIterator getBegin = testTwo.begin();

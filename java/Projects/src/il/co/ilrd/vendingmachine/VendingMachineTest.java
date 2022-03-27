@@ -16,9 +16,7 @@ public class VendingMachineTest {
         vm.turnON();
         vm.chooseProduct(Products.WATER);
         vm.insertCoin(Coins.AGORA);
-        vm.turnOFF();
-        vm.turnON();
-        vm.chooseProduct(Products.BEER);
+
         try{
             Thread.sleep(5000);
         }catch (InterruptedException e){

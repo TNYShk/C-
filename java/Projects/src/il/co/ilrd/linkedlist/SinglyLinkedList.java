@@ -1,9 +1,4 @@
 package il.co.ilrd.linkedlist;
-/*
-Singly Linked List Mar 20, 2022
-by Tanya S.
-reviewed by Dor Rigler
- */
 
 public class SinglyLinkedList {
     private Node head = null;
@@ -39,7 +34,7 @@ public class SinglyLinkedList {
 
         @Override
         public boolean hasNext(){
-            return ((null != currentNode) && (null != currentNode.data));
+            return ((null != currentNode) );
         }
     }
 
@@ -58,14 +53,24 @@ public class SinglyLinkedList {
         }
     return removedData;
     }
+    /*
+
+// don't punish good users with if (is empty..)
+    public Object popFront() {
+        Object removedData = head.data;
+        head = head.next;
+        return removedData;
+    }
+*/
 
     public int listSize() {
         int count = 0;
-        Node runner = head;
-            while(null != runner){
-               ++count;
-               runner = runner.next;
-            }
+        ListIteratorImp run = new ListIteratorImp(head);
+
+        while(run.hasNext()){
+            ++count;
+            run.next();
+        }
         return count;
         }
 
@@ -74,15 +79,13 @@ public class SinglyLinkedList {
     }
 
     public ListIterator find(Object data) {
-        Node runner = this.head;
 
-        while((null != runner) ){
-            if(runner.data.equals(data)){
-               return new ListIteratorImp(runner);
+        ListIteratorImp run = new ListIteratorImp(head);
+
+        while(run.hasNext() && !(run.currentNode.data.equals(data))){
+                run.next();
             }
-            runner = runner.next;
-        }
-       return null;
+        return run;
     }
 
     public ListIterator begin() {
