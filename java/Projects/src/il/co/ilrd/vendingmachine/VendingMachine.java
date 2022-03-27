@@ -13,7 +13,7 @@ public class VendingMachine{
     private Products chosenProduct = Products.EMPTY;
     Toolkit tools;
     Timer timer;
-    long secondsToWait = 10;
+    private long secondsToWait = 10;
 
 
     public VendingMachine(Products[] catalogMachine, Screen myScreen){
@@ -48,14 +48,14 @@ public class VendingMachine{
 
 
     public void chooseProduct(Products desired) {
-        this.chosenProduct = desired;
+        chosenProduct = desired;
        timer.scheduleAtFixedRate(new RemindTask(), secondsToWait,5000);
-        this.state.chooseProduct(this,desired);
+       state.chooseProduct(this,desired);
     }
 
     public void cancelReturn() {
-        this.chosenProduct = Products.EMPTY;
-        this.state.cancelReturn(this);
+        chosenProduct = Products.EMPTY;
+        state.cancelReturn(this);
     }
 
     public void turnOFF() {
@@ -64,8 +64,6 @@ public class VendingMachine{
     public void turnON() {
         state.turnON(this);
     }
-
-
 
     private enum State {
         OFF {
