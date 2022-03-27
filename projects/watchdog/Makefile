@@ -1,81 +1,92 @@
-NAME = $(notdir $(CURDIR))
-MODE ?=debug
-
-DS_LIB_LOC := ../../ds/libs/$(MODE)
-DS_INC_LOC := ../../ds/include 
-
-
-DS_DEPS := task uid schedule semaphore_sys_v 
-
-CUR_LIB_NAME := lib$(NAME).so
-CUR_LIB := $(DS_LIB_LOC)/$(CUR_LIB_NAME)
-CUR_INC := $(DS_INC_LOC)
-#NO_REBUILD_DEPS := pthread
-
-
-
-CC = gcc
-CFLAGS = -fpic -ansi -pedantic-errors -Wall -Wextra -pthread
-CPPFLAGS = -I$(DS_INC_LOC) -I../include 
-LDFLAGS = -pthread -L$(DS_LIB_LOC) -Wl,-rpath='$(DS_LIB_LOC)'  -Wl,-rpath='$$ORIGIN'
-LDLIBS =  $(addprefix -l,$(DS_DEPS)) 
-VLG = valgrind --leak-check=yes --track-origins=yes
-
+CC := gcc
+CFLAGS := -fPIC -ansi -pedantic-errors -Wall -Wextra
+CPPFLAGS := -I../include -I../../ds/include -I../../system_programming/include
+LDFLAGS = -shared -pthread
+RELEASE = -O3 -DNDEBUG  
 DEBUG = -g -DDEBUG
-RELEASE =  -DNDBUG
+VLG = valgrind --leak-check=yes --track-origins=yes
+DEPC1 = semaphore_sys_v
+DEPC2 = schedule
 
-SRCS := $(wildcard *.c)  
-OBJS := $(filter-out %_guard.c,$(SRCS:.c=.o))
+DBG := debug
+RLS := release
 
-TRGT = $(filter %.out,$(SRCS:_test.c=_test.out))
-GUARDIAN_TRGT = $(SRCS:_guard.c=_guard.out)
-GD = $(CC)
+#shoshanas make
+MKDIR = mkdir -p
+OBJDIR := ../objects/
 
-ifeq ($(MODE), debug)
-CFLAGS += $(DEBUG)
-LDFLAGS += $(DEBUG)
-else ifeq ($(MODE), release)
-CFLAGS += $(RELEASE)
-LDFLAGS += $(RELEASE)
-endif
+RLSDIR := ../../ds/libs/$(RLS)
+DBGDIR := ../../ds/libs/$(DBG)
 
-.PHONY: all run vlg debug clean release
+SRCS_TEST := $(wildcard *_test.c)
+SRCS_LIB := $(filter-out $(SRCS_TEST),$(wildcard *.c))
 
-all: run
+OBJS_LIB := $(SRCS_LIB:.c=.o)
+OBJS_TEST := $(SRCS_TEST:.c=.o)
 
-run: test $(GUARDIAN_TRGT)
-	./$(NAME)_test.out
+SRC_EXE := kickdog.c
+OBJS_EXE := ../../ds/libs/kickdog.o
+EXE_EXE := kickdog
 
-vlg: debug
-	$(VLG) ./$(TRGT)
+TEST := $(basename $(SRCS_TEST)) 
+STEM := $(subst _test,,$(TEST))
 
-debug: $(DS_DEPS) $(CUR_LIB) | $(DS_LIB_LOC) $(DS_INC_LOC)
+SHLIB := $(patsubst %,lib%.so,$(STEM))
+LDLIBS = -l$(STEM) -lm
 
-release: 
-	$(MAKE) MODE:=release
 
-test: debug $(TRGT)
+.PHONY: all release debug test
+all: release debug
 	
+release: $(RLSDIR)/$(SHLIB) | $(RLSDIR)
 
-%.o: %.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c -o $@
+$(RLSDIR)/$(SHLIB): $(RLSDIR)/$(OBJS_LIB) | $(RLSDIR)
+	$(CC) $(LDFLAGS) -o $@ $^
+$(RLSDIR)/$(OBJS_LIB): $(SRCS_LIB) | $(RLSDIR)
+	$(CC) -c $(CFLAGS) $(CPPFLAGS) $(RELEASE) $< -o $@
 
-%.out: %.o kickdog.o
-	#link : 
-	$(CC) $(LDFLAGS) $^ -o $@ $ -lwatchdog $(LDLIBS) 
 
-$(CUR_LIB): $(NAME).o
-	$(CC) -shared $(LDFLAGS) -o $@ $< $(LDLIBS) 
+debug: LDFLAGS += -g
+debug: $(DBGDIR)/$(SHLIB) | $(DBGDIR)
 
-#$(GUARDIAN_TRGT): kickdog.o
-#	$(CC) $(LDFLAGS) $^ -o $@ $(LDLIBS) -lwatchdog
+$(DBGDIR)/$(SHLIB): LDFLAGS := -shared
+$(DBGDIR)/$(SHLIB): $(DBGDIR)/$(OBJS_LIB) | $(DBGDIR)
+	$(CC) $(LDFLAGS) -o $@ ../../ds/libs/debug/watchdog.o
+$(DBGDIR)/$(OBJS_LIB): $(SRCS_LIB) | $(DBGDIR)
+	$(CC) -c $(CFLAGS) $(CPPFLAGS) $(DEBUG) $< -o $@
 
-$(DS_DEPS) : 
-	$(MAKE) -C../../ds/ $(MODE) target=$@
+$(TEST): LDFLAGS := $(filter-out -shared,$(LDFLAGS))
+$(TEST): LDFLAGS += -g -L $(DBGDIR) -Wl,-rpath=$(DBGDIR) 
+																	
+$(TEST): $(DBGDIR)/$(SHLIB) $(EXE_EXE) | $(DBGDIR)
+	$(MAKE) -C ../../system_programming/$(DEPC1)
+	$(MAKE) -C ../../ds/$(DEPC2)
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) -o $@ $(SRCS_TEST) $(LDLIBS) $(DBGDIR)/libsemaphore_sys_v.so $(DBGDIR)/libschedule.so $(DBGDIR)/libpq.so $(DBGDIR)/libheap.so $(DBGDIR)/libdynamic_vector.so $(DBGDIR)/libtask.so $(DBGDIR)/libuid.so $(DBGDIR)/libsorted_list.so $(DBGDIR)/libdll.so
 
-$(DS_LIB_LOC) $(DS_INC_LOC):
-	@mkdir -p $@
+test: $(TEST)
+
+$(EXE_EXE): $(OBJS_EXE) $(DBGDIR)/$(SHLIB)
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) -o $@ $(SRC_EXE) $(LDLIBS) $(DBGDIR)/libsemaphore_sys_v.so $(DBGDIR)/libschedule.so $(DBGDIR)/libpq.so $(DBGDIR)/libheap.so $(DBGDIR)/libdynamic_vector.so $(DBGDIR)/libtask.so $(DBGDIR)/libuid.so $(DBGDIR)/libsorted_list.so $(DBGDIR)/libdll.so
+
+$(OBJS_EXE): ../include/watchdog.h
+
+$(RLSDIR) $(DBGDIR):
+	$(MKDIR) $@
+
+%.c: | ../include/%.h
+	sed 's/^#.*//g ; 3i #include "$*.h"' $| > $@
+	sed -i 's/^typedef.*//g ; s/);/)\n{\n    \n}/g' $@ 
+	sed -i '/./{H;$!d} ; x ; s/\/\*.*\*\///g' $@
+
+
+.PHONY := vlg git clean
+vlg: test
+	$(VLG) ./$(TEST)
+
+git:
+	git add ./
+	git commit -m "$(m)"
+	git push 
 
 clean:
-	rm -rf $(TRGT) *~ *.o
-
+	rm -rf $(TARGET) *~ *.o

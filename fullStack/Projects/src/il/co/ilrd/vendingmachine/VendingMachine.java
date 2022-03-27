@@ -13,7 +13,7 @@ public class VendingMachine{
     private Products chosenProduct = Products.EMPTY;
     Toolkit tools;
     Timer timer;
-    int secondsToWait = 10;
+    long secondsToWait = 10;
 
 
 
@@ -23,11 +23,10 @@ public class VendingMachine{
         //this.balance = 0;
         timer = new Timer();
         tools = Toolkit.getDefaultToolkit();
-        timer.schedule(new RemindTask(), 5,1*1000);
+
     }
     class RemindTask extends TimerTask {
         public void run(){
-
             if (secondsToWait > 0) {
                //tools.beep();
                 --secondsToWait;
@@ -50,6 +49,7 @@ public class VendingMachine{
 
     public void chooseProduct(Products desired) {
         this.chosenProduct = desired;
+       timer.scheduleAtFixedRate(new RemindTask(), secondsToWait,5000);
         this.state.chooseProduct(this,desired);
     }
 
