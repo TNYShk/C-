@@ -1,20 +1,49 @@
 package il.co.ilrd.vendingmachine;
+import com.sun.corba.se.impl.oa.toa.TOA;
+
+import java.awt.*;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class VendingMachine{
-    State state = State.OFF;
+    private State state = State.OFF;
     private final Products[] catalogMachine;
     public double balance = 0;
     private final Screen myScreen;
     private Products chosenProduct = Products.EMPTY;
+    Toolkit tools;
+    Timer timer;
+    int secondsToWait = 10;
+
 
 
     public VendingMachine(Products[] catalogMachine, Screen myScreen){
         this.catalogMachine = catalogMachine;
         this.myScreen = myScreen;
         //this.balance = 0;
+        timer = new Timer();
+        tools = Toolkit.getDefaultToolkit();
+        timer.schedule(new RemindTask(), 5,1*1000);
+    }
+    class RemindTask extends TimerTask {
+        public void run(){
+
+            if (secondsToWait > 0) {
+               //tools.beep();
+                --secondsToWait;
+            }else{
+                tools.beep();
+                System.out.println("no input, good bye!");
+                cancelReturn();
+                timer.cancel();
+            }
+
+        }
     }
 
+
     public void insertCoin(Coins coin) {
+      this.secondsToWait = 10;
         state.insertCoin(this, coin);
     }
 
@@ -121,13 +150,12 @@ public class VendingMachine{
         public void turnOFF(VendingMachine mac) {
             if (mac.balance != 0) {
                 mac.myScreen.Print("here's your change " + mac.balance);
-
             }
+
             mac.instance.Print("\nTurning OFF, GoodBye");
             mac.balance = 0;
             mac.chosenProduct = Products.EMPTY;
             mac.state = OFF;
-
         }
 
         public void turnON(VendingMachine vm) {
