@@ -41,4 +41,11 @@ public class testSingletons {
         assertEquals(s1.toString(), s2.toString());
     }
 
+    @Test
+    void TestUnSafe() {
+        NoThreadSafeSingleton s1 = NoThreadSafeSingleton.getInstance();
+        NoThreadSafeSingleton s2 = NoThreadSafeSingleton.getInstance();
+        assertTrue(s1.equals(s2));
+    }
+
 }
