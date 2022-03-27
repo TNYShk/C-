@@ -20,7 +20,7 @@ public class VendingMachineTest {
         vm.turnON();
         vm.chooseProduct(Products.BEER);
         try{
-            Thread.sleep(7000);
+            Thread.sleep(5000);
         }catch (InterruptedException e){
             e.printStackTrace();
         }
@@ -28,6 +28,12 @@ public class VendingMachineTest {
         vm.chooseProduct(Products.BEER);
         vm.insertCoin(Coins.AGORA);
         vm.insertCoin(Coins.FIVES);
+        try{
+            Thread.sleep(5000);
+        }catch (InterruptedException e){
+            e.printStackTrace();
+        }
+        vm.chooseProduct(Products.CANDY);
         //vm.chooseProduct(Products.WATER);
         //vm.insertCoin(Coins.AGORA);
         //vm.insertCoin(Coins.TENS);

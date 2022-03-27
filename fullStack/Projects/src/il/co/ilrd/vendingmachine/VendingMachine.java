@@ -16,11 +16,10 @@ public class VendingMachine{
     long secondsToWait = 10;
 
 
-
     public VendingMachine(Products[] catalogMachine, Screen myScreen){
         this.catalogMachine = catalogMachine;
         this.myScreen = myScreen;
-        //this.balance = 0;
+        this.balance = 0;
         timer = new Timer();
         tools = Toolkit.getDefaultToolkit();
 
