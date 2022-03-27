@@ -1,6 +1,6 @@
 package il.co.ilrd.singleton;
 
-//not thread safe
+
 public class NoThreadSafeSingleton {
     private static NoThreadSafeSingleton instance;
 

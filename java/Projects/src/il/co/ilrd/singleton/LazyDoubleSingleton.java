@@ -9,13 +9,17 @@ public class LazyDoubleSingleton {
     private LazyDoubleSingleton(){
     }
     public static LazyDoubleSingleton getInstance(){
+
         if (instance == null) {
             lock.lock();
             if (instance == null) {
                 instance = new LazyDoubleSingleton();
+                lock.unlock();
             }
         }
-        lock.unlock();
+
+
+
         return instance;
 
     }
