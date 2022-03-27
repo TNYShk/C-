@@ -1,4 +1,4 @@
-package Test;
+package il.co.ilrd.shapes;
 import java.lang.Class;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -64,8 +64,8 @@ public class TestShape {
         methodTest();
         System.out.println("\n its duDu time!\n");
 
-        doDump("Test.Square");
-        doDump("Test.Rectangle");
+        doDump("il.co.ilrd.TestShape.Square");
+        doDump("il.co.ilrd.TestShape.Rectangle");
         doDump(args[0]);
 
 

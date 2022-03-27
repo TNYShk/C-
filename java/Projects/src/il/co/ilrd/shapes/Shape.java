@@ -1,4 +1,5 @@
-package Test;
+package il.co.ilrd.shapes;
+
 abstract class Shape {
 
     protected String color;

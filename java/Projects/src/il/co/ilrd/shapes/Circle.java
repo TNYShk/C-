@@ -1,4 +1,4 @@
-package Test;
+package il.co.ilrd.shapes;
 
 public class Circle extends Shape{
     protected double radius;
