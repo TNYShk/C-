@@ -20,6 +20,13 @@ public class objectAnalyzer {
         return object.getClass().getDeclaredFields();
     }
 
+    public static void getName(Object object) {
+       Method[] methods = Foo.class.getMethods();
+       for(Method method : methods){
+           System.out.println("Method: " + method.getName());
+       }
+    }
+
     public static Object createInstance(Object object) throws NoSuchMethodException,
             SecurityException, InstantiationException, IllegalAccessException,
             IllegalArgumentException, InvocationTargetException {
