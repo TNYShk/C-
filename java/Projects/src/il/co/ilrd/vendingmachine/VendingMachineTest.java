@@ -5,7 +5,7 @@ package il.co.ilrd.vendingmachine;
 public class VendingMachineTest {
     public static void main(String[] args) {
 
-    //TestOne();
+    TestOne();
         TestTwo();
     }
     static void TestTwo(){

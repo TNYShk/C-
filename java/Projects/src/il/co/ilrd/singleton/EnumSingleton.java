@@ -4,6 +4,6 @@ public enum EnumSingleton {
     SINGLETON;
 
     public static EnumSingleton getInstance(){
-       return EnumSingleton.SINGLETON;
+       return SINGLETON;
     }
 }

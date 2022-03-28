@@ -1,7 +1,7 @@
 package il.co.ilrd.singleton;
 
 public class NoThreadSafeSingleton {
-    private static NoThreadSafeSingleton instance;
+    private static NoThreadSafeSingleton instance = null;
     private NoThreadSafeSingleton(){}
 
     public static NoThreadSafeSingleton getInstance(){

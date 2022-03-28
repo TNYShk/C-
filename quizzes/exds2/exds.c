@@ -15,6 +15,7 @@
 #define WORDSDICT (102401)
 #define FAILURE (1)
 #define SUCCESS (0)
+#define MAT (4)
 
 #define DICT_PATH ("/usr/share/dict/words")
 
@@ -77,10 +78,11 @@ static void PrintStack(stack_t *stack);
 int CountONBits(int number);
 int RecCountONBits(int number);
 
+void TestMatrixPoly(void);
 
 int main(void)
 {
-  
+  TestMatrixPoly();
    /* 
    
     MinSubArrTest();
@@ -88,23 +90,48 @@ int main(void)
     SpellCheck(); 
  
     RevStrTest(); 
-   
+    SLLFlipTest();
     Test2Stacks();
      
     SortWordsFile("filesort");
     SortCharsFile();
    
+   printf("on bits of 76 is %d\n", CountONBits(75));
+    printf("REC on bits of 76 is %d\n", RecCountONBits(75));
     */
-SLLFlipTest();
 
-printf("on bits of 76 is %d\n", CountONBits(75));
-printf("REC on bits of 76 is %d\n", RecCountONBits(75));
+
+
 
     
     return 0;
 }
 
+void TestMatrixPoly(void)
+{
+    int i = 0;
+    int j = 0;
 
+    char poly_g[MAT][MAT] = 
+    {
+        {'a','b','c','d'},
+        {'e','f','g','h'},
+        {'h','g','f','e'},
+        {'d','c','b','a'}
+    };
+
+    for(i = 0; i<MAT; ++i)
+    {
+        for(j = 0 ;j<MAT/2; ++j)
+        {
+            if(poly_g[i][j] != poly_g[MAT -1 -i][MAT- 1-j])
+            {
+                printf("not a poly!\n");
+                break;
+            }
+        }
+    }
+}
 
 /*sort chars from a file */
 void SortCharsFile(void)

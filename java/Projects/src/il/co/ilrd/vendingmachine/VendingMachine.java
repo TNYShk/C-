@@ -40,12 +40,10 @@ public class VendingMachine{
         }
     }
 
-
     public void insertCoin(Coins coin) {
       this.secondsToWait = 10;
         state.insertCoin(this, coin);
     }
-
 
     public void chooseProduct(Products desired) {
         chosenProduct = desired;
@@ -129,15 +127,11 @@ public class VendingMachine{
 
         };
 
-        private Screen instance;
+       // private Screen instance;
 
-        public void insertCoin(VendingMachine vm, Coins coin) {
-            return;
-        }
+        public void insertCoin(VendingMachine vm, Coins coin) {}
 
-        public void chooseProduct(VendingMachine vm, Products product) {
-            return;
-        }
+        public void chooseProduct(VendingMachine vm, Products product) {}
 
         public void cancelReturn(VendingMachine mac) {
             mac.state = WAITPRODUCT;
@@ -156,19 +150,11 @@ public class VendingMachine{
             mac.state = OFF;
         }
 
-        public void turnON(VendingMachine vm) {
-            return;
-        }
-    };
+        public void turnON(VendingMachine vm) {}
+    }
 
-    Screen instance = new Screen(){
-
-        @Override
-        public void Print(String toPrint){
-            System.out.println(toPrint);
-        }
-    };
-
+    Screen instance = toPrint -> System.out.println(toPrint);
+/*
     static class Inner{
 
         void method(VendingMachine vm){
@@ -178,5 +164,5 @@ public class VendingMachine{
             System.out.println(vm.state);
         }
     }
-
+*/
 }
