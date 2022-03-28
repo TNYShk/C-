@@ -18,9 +18,21 @@ public class LazyDoubleSingleton {
             }
         }
 
-
-
         return instance;
 
     }
+
+    /* without lock version//
+
+        public static LazyDoubleSingleton getInstance(){
+             if (instance == null) {
+                synchronized (LazyDoubleSingleton.class){
+                    if (instance == null) {
+                        instance = new LazyDoubleSingleton();
+              }
+            }
+        }
+        return instance;
+    }
+     */
 }
