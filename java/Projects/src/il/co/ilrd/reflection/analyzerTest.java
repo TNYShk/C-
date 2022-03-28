@@ -21,6 +21,9 @@ public class analyzerTest {
         }
         System.out.println("calling Foo's Method");
         objectAnalyzer.callMethod(t, "PrintMe" );
+        System.out.println("creating instance of Foo via reflection");
+        Object s = objectAnalyzer.createInstance(t);
+        objectAnalyzer.callMethod(s, "PrintMe" );
 
     }
 }

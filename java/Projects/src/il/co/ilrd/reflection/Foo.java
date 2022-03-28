@@ -6,6 +6,9 @@ public class Foo extends Ancestor implements Tanya {
     public Foo(int x){
         barf = x;
     }
+    public Foo(){
+        barf = 6;
+    }
 
     private void setBarf(int barf){
         this.barf = barf;
