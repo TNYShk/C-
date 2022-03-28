@@ -10,11 +10,11 @@ public class testSingletons {
     @Test
     void TestLazySafeS() {
 
-        LazySIngletonSafe s1 = LazySIngletonSafe.getInstance();
-        LazySIngletonSafe s2 = LazySIngletonSafe.getInstance();
+        LazySIngleton s1 = LazySIngleton.getInstance();
+        LazySIngleton s2 = LazySIngleton.getInstance();
         assertEquals(s1.hashCode(), s2.hashCode());
         assertEquals(s1.toString(), s2.toString());
-        assertTrue(LazySIngletonSafe.getInstance().equals(s2.getInstance()));
+        assertTrue(LazySIngleton.getInstance().equals(s2.getInstance()));
         assertTrue(s1.getInstance().equals(s2.getInstance()));
     }
 
@@ -27,8 +27,8 @@ public class testSingletons {
     }
     @Test
     void TestSafeUnLazy() {
-        singletonNotLazyThreadSafe s1 = singletonNotLazyThreadSafe.getInstance();
-        singletonNotLazyThreadSafe s2 = singletonNotLazyThreadSafe.getInstance();
+        NonLazySingleton s1 = NonLazySingleton.getInstance();
+        NonLazySingleton s2 = NonLazySingleton.getInstance();
         assertEquals(s1.hashCode(), s2.hashCode());
         assertEquals(s1.toString(), s2.toString());
     }
