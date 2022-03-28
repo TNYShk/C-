@@ -21,7 +21,7 @@ public class objectAnalyzer {
     }
 
     public static void getName(Object object) {
-       Method[] methods = Foo.class.getMethods();
+       Method[] methods = object.getClass().getMethods();
        for(Method method : methods){
            System.out.println("Method: " + method.getName());
        }
