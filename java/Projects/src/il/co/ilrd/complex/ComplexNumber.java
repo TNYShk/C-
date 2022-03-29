@@ -1,19 +1,19 @@
 package il.co.ilrd.complex;
 
 
-public class Complex implements Comparable<Complex> {
+public class ComplexNumber implements Comparable<ComplexNumber> {
     private double real = 0;
     private double ifake = 0;
 
-    private Complex(double real, double ifake){
+    private ComplexNumber(double real, double ifake){
         this.real = real;
         this.ifake = ifake;
     }
-    public static Complex createReal(double re){
-        return new Complex(re,0);
+    public static ComplexNumber createReal(double re){
+        return new ComplexNumber(re,0);
     }
-    public static Complex createImaginary(double fake){
-        return new Complex(0,fake);
+    public static ComplexNumber createImaginary(double fake){
+        return new ComplexNumber(0,fake);
     }
 
 
@@ -40,47 +40,47 @@ public class Complex implements Comparable<Complex> {
         return (0 != this.ifake);
     }
 
-    public Complex addition(Complex that){
+    public ComplexNumber addition(ComplexNumber that){
         double addReal = this.real + that.real;
         double addifake = this.ifake + that.ifake;
 
-        return new Complex(addReal, addifake);
+        return new ComplexNumber(addReal, addifake);
     }
-    public Complex substract(Complex that){
+    public ComplexNumber substract(ComplexNumber that){
         double subReal = this.real - that.real;
         double subifake = this.ifake - that.ifake;
 
-        return new Complex(subReal, subifake);
+        return new ComplexNumber(subReal, subifake);
     }
-    public Complex multiplyWith(Complex other){
+    public ComplexNumber multiplyWith(ComplexNumber other){
         double multReal = this.real * other.real - this.ifake * other.ifake;
         double multifake = this.real * other.ifake + this.ifake * other.real;
-        return new Complex(multReal,multifake);
+        return new ComplexNumber(multReal,multifake);
     }
 
-    public Complex divideBy(Complex other) {
+    public ComplexNumber divideBy(ComplexNumber other) {
 
         if(other.isImaginary() || (other.real != 0)){
-            Complex otherConjugated = other.conjugate();
+            ComplexNumber otherConjugated = other.conjugate();
 
             otherConjugated = this.multiplyWith(otherConjugated);
             double mana = Math.pow(other.getValue(), 2);
             double newUp = otherConjugated.getReal() / mana;
             double newDown = otherConjugated.getImaginary() / mana;
-            return new Complex(newUp,newDown);
+            return new ComplexNumber(newUp,newDown);
         }
     System.out.println("no no no cant divide by zero!!");
     return null;
     }
 
-    public static Complex parse(String complex){
+    public static ComplexNumber parse(String complex){
 
         complex.replace(" ", "");
         double dReal = 0;
         double dFake = 0;
         if(!complex.endsWith("i")){
             dReal = Double.parseDouble(complex);
-            return new Complex(dReal,0);
+            return new ComplexNumber(dReal,0);
         }
         StringBuilder copy = new StringBuilder(complex);
         int sign = complex.lastIndexOf("+");
@@ -106,17 +106,17 @@ public class Complex implements Comparable<Complex> {
             dFake = Double.parseDouble(copy.substring(minus + 1, copy.length() - 1));
             dFake *= -1;
         }
-        return new Complex(dReal,dFake);
+        return new ComplexNumber(dReal,dFake);
     }
 
 
-    private Complex conjugate() {
-       return new Complex(this.real, -ifake);
+    private ComplexNumber conjugate() {
+       return new ComplexNumber(this.real, -ifake);
     }
 
 
     @Override
-    public int compareTo(Complex obj){
+    public int compareTo(ComplexNumber obj){
         double temp = this.getValue() - obj.getValue();
         double delta = 0.001;
         int answer = (Math.abs(temp) <= delta)? 0: 1;
@@ -127,8 +127,8 @@ public class Complex implements Comparable<Complex> {
     @Override
     public boolean equals(Object obj){
 
-       if (obj instanceof Complex) {
-           Complex temp = (Complex) obj;
+       if (obj instanceof ComplexNumber) {
+           ComplexNumber temp = (ComplexNumber) obj;
            return ((0 == Double.compare(this.real, temp.real)) && (0 == Double.compare(this.ifake,temp.ifake)));
        }
        System.out.println("not a complex num object");

@@ -21,17 +21,17 @@ public class VendingMachine{
         this.myScreen = myScreen;
         this.balance = 0;
         timer = new Timer();
-        tools = Toolkit.getDefaultToolkit();
+
 
     }
     class RemindTask extends TimerTask {
         public void run(){
             if (secondsToWait > 0) {
-               //tools.beep();
+
                 --secondsToWait;
                 turnON();
             }else{
-                tools.beep();
+
                 System.out.println("no input, good bye!");
                 cancelReturn();
                 timer.cancel();
