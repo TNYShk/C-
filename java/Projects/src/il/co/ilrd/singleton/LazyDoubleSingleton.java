@@ -10,12 +10,12 @@ public class LazyDoubleSingleton {
     }
     public static LazyDoubleSingleton getInstance(){
 
-        if (instance == null) {
+        if (null == instance) {
             lock.lock();
-            if (instance == null) {
+            if (null == instance) {
                 instance = new LazyDoubleSingleton();
-                lock.unlock();
             }
+            lock.unlock();
         }
 
         return instance;

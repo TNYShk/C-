@@ -4,11 +4,11 @@ public class LazySIngleton {
 
     private LazySIngleton(){}
 
-    static class LazySIngletonHelper {
+    static class LazySIngletonHolder {
         private static LazySIngleton instance = new LazySIngleton();
     }
 
     public static synchronized LazySIngleton getInstance(){
-        return LazySIngletonHelper.instance;
+        return LazySIngletonHolder.instance;
     }
 }
