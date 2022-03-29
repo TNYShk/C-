@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
+typedef struct dog dog_t;
 typedef struct animal animal_t;
 typedef struct object object_t;
 typedef struct class class_t;
@@ -28,31 +29,33 @@ struct animal
     int num_legs;
     int num_masters;
     int ID;
-
 };
+
+struct dog
+{
+    animal_t animal;
+    int num_legs;
+};
+
 static int AnimalCounter = 0;
 int AnimalStaticFlag_g = 0;
+char holder[BUFSIZ] = {0};
 
 static void ObjectHashCode(void *object);
 static char *ObjectToString(void *object);
 static void ObjectFinalize(void *object);
-
+static char *AnimalToString(void *object);
 void AnimalSayHello(void *this);
 void AnimalShowCounter(void *this);
-/*
-struct B
-{
-    animal_t object;
-    int b;
-};*/
+void AnimalctorInt(animal_t *this, int num_masters);
 
 vf_t object_vt[] = {(vf_t)&ObjectToString,(vf_t)&ObjectHashCode, (vf_t)&ObjectFinalize };   /* function pointer, &ObjectHashCode and so ...,*/
-vf_t animal_vt[] = {&AnimalSayHello, &AnimalShowCounter/* (vf_t)&AnimalToString,(vf_t)&AnimalHashCode, (vf_t)&AnimalFinalize */};   /* function pointer, &ObjectHashCode and so ... (Vt_t)&foo  */
+vf_t animal_vt[] = {&AnimalSayHello, &AnimalShowCounter, (vf_t)&AnimalToString/* (vf_t)&AnimalToString,(vf_t)&AnimalHashCode, (vf_t)&AnimalFinalize */};   /* function pointer, &ObjectHashCode and so ... (Vt_t)&foo  */
 
 
 class_t object_metadata = {"Object", sizeof(object_t), NULL, &object_vt};
 class_t animal_metadata = {"Animal", sizeof(animal_t), &object_metadata, &animal_vt};
-
+class_t dog_metadata =    {"Dog", sizeof(dog_t), &animal_metadata, &animal_vt};
 
 
 static void AnimalStaticBlocks()
@@ -62,9 +65,18 @@ static void AnimalStaticBlocks()
    
 }
 
-void AnimalInstanceBlock()
+static void DogStaticBlocks()
 {
-    printf("Instance initialization block Animal\n");
+    printf("Static block Dog\n");
+}
+
+void AnimalInstanceBlock(void *object)
+{
+    char nameInstance[100] = {0};
+    memset(nameInstance,0,100);
+    strcpy(nameInstance,((char *)object));
+
+    printf("Instance initialization block %s\n",nameInstance );
 }
 
 static void ObjectHashCode(void *object)
@@ -75,21 +87,34 @@ static void ObjectHashCode(void *object)
 
 static void ObjectFinalize(void *object)
 {
-    class_t *freer = ((object_t*)object)->meta;
-    free(freer);
-
-
+    free(object);
 }
 
 static char *ObjectToString(void *object)
 {
-    char holder[BUFSIZ] = {0};
-    char *toString;
-    size_t stringname = strlen(((object_t*)object)->meta->name);
-    memcpy(holder,((object_t*)object)->meta->name,stringname +1);
+    char adrs[100] = {0};
+    char *toString = NULL;
+    memset(holder,0,BUFSIZ);
+    strcpy(holder,((object_t*)object)->meta->name);
     
-    sprintf(holder +stringname, "@%p",(object_t *)object);
+    sprintf(adrs, "@%p",(object_t *)object);
+    strcat(holder,adrs);
+     
+    toString = holder;
+  
+    return toString;
+}
 
+static char *AnimalToString(void *object)
+{
+    char adrs[100] = {0};
+    char *toString = NULL;
+    memset(holder,0,BUFSIZ);
+
+    strcpy(holder,"Animal with ID: ");
+    
+    sprintf(adrs , "%d",((animal_t *)object)->ID);
+    strcat(holder,adrs);
      
     toString = holder;
   
@@ -102,14 +127,39 @@ void Animalctor(animal_t *this, int num_legs, int num_masters)
     this->ID = ++AnimalCounter;
     this->num_legs = num_legs;
     this->num_masters = num_masters;
-    AnimalInstanceBlock();
+    AnimalInstanceBlock(this->object.meta->name);
     printf("Animal Ctor\n");
     animal_vt[0](this);
     animal_vt[1](this);
 
+     printf("%s\n", ((vfchar_t (*))animal_vt)[2](this));
+    printf("%s\n", ((vfchar_t (*))object_vt)[0](this));
+}
 
+void Dogctor(dog_t *this, int num_legs, int num_masters)
+{
+    
+    DogStaticBlocks();
+    AnimalInstanceBlock(this->animal.object.meta->parent->name);
+    AnimalctorInt(&this->animal,2);
+    
+    this->num_legs = num_legs;
+     printf("Dog Ctor\n");
+   
 
 }
+
+void AnimalctorInt(animal_t *this, int num_masters)
+{
+    printf("Animal Ctor\n");
+    this->ID = ++AnimalCounter;
+   
+    this->num_masters = num_masters;
+    AnimalInstanceBlock(this->object.meta->name);
+   
+   
+}
+
 
 void AnimalSayHello(void *this)
 {
@@ -139,11 +189,19 @@ object_t *ObjectCreate(class_t *meta)
 
 int main()
 {
-    animal_t* any = (animal_t *)ObjectCreate(&animal_metadata);
+    animal_t *any = (animal_t *)ObjectCreate(&animal_metadata);
+    dog_t *dogy = NULL;
     Animalctor(any,5,1); 
+    /*
+    printf("%s\n", ((vfchar_t (*))animal_vt)[2](any));
+    printf("%s\n", ((vfchar_t (*))object_vt)[0](any));
+*/
+    ((object_vt)[2](any));
    
-    printf("to string %s\n", ((vfchar_t (*))object_vt)[0](any));
 
+    dogy = (dog_t *)ObjectCreate(&dog_metadata);
+    
+    Dogctor(dogy,4,2);
      
      return 0;
 }
