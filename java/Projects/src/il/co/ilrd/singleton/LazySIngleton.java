@@ -1,14 +1,14 @@
 package il.co.ilrd.singleton;
 
 public class LazySIngleton {
-    private static LazySIngleton instance = null;
 
     private LazySIngleton(){}
 
+    static class LazySIngletonHelper {
+        private static LazySIngleton instance = new LazySIngleton();
+    }
+
     public static synchronized LazySIngleton getInstance(){
-        if (null == instance){
-            instance = new LazySIngleton();
-        }
-        return instance;
+        return LazySIngletonHelper.instance;
     }
 }
