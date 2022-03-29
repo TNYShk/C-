@@ -144,8 +144,7 @@ void Dogctor(dog_t *this, int num_legs, int num_masters)
     AnimalctorInt(&this->animal,2);
     
     this->num_legs = num_legs;
-     printf("Dog Ctor\n");
-   
+    printf("Dog Ctor\n");
 
 }
 
