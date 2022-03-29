@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
+typedef struct la la_t;
 typedef struct cat cat_t;
 typedef struct dog dog_t;
 typedef struct animal animal_t;
@@ -45,6 +46,13 @@ struct cat
     char *color;
 };
 
+struct la
+{
+    cat_t cat;
+    
+};
+
+
 
 static int AnimalCounter = 0;
 int AnimalStaticFlag_g = 0;
@@ -58,14 +66,17 @@ void AnimalSayHello(void *this);
 void AnimalShowCounter(void *this);
 void AnimalctorInt(animal_t *this, int num_masters);
 
+void CatLaSayHello(void *this);
+
 vf_t object_vt[] = {(vf_t)&ObjectToString,(vf_t)&ObjectHashCode, (vf_t)&ObjectFinalize };   /* function pointer, &ObjectHashCode and so ...,*/
 vf_t animal_vt[] = {&AnimalSayHello, &AnimalShowCounter, (vf_t)&AnimalToString/* (vf_t)&AnimalToString,(vf_t)&AnimalHashCode, (vf_t)&AnimalFinalize */};   /* function pointer, &ObjectHashCode and so ... (Vt_t)&foo  */
-
+vf_t cat_vt[] = {&CatLaSayHello, &AnimalShowCounter, (vf_t)&AnimalToString};
 
 class_t object_metadata = {"Object", sizeof(object_t), NULL, &object_vt};
 class_t animal_metadata = {"Animal", sizeof(animal_t), &object_metadata, &animal_vt};
 class_t dog_metadata =    {"Dog", sizeof(dog_t), &animal_metadata, &animal_vt};
 class_t cat_metadata =    {"Cat", sizeof(cat_t), &animal_metadata, &animal_vt};
+class_t la_metadata =     {"Legendary", sizeof(la_t), &cat_metadata, &animal_vt};
 
 static void AnimalStaticBlocks()
 {
@@ -78,9 +89,15 @@ static void DogStaticBlocks()
     printf("Static block Dog\n");
 }
 
+
 static void CatStaticBlock()
 {
     printf("Static block Cat\n");
+}
+
+static void LAStaticBlocks()
+{
+    printf("Static block Legendary Animal\n");
 }
 
 void AnimalInstanceBlock(void *object)
@@ -148,7 +165,8 @@ void Animalctor(animal_t *this, int num_legs, int num_masters)
     this->num_legs = num_legs;
     this->num_masters = num_masters;
 
-    if (strcmp("Cat", this->object.meta->name)!= 0)
+    if ((strcmp("Cat", this->object.meta->name)!= 0) && 
+            (strcmp("Legendary", this->object.meta->name)!= 0))
     {
          AnimalInstanceBlock(this->object.meta->name);
     }
@@ -171,18 +189,31 @@ void Dogctor(dog_t *this, int num_legs, int num_masters)
     printf("Dog Ctor\n");
 }
 
-void Catctor(cat_t *this, int num_masters)
+void Catctor(cat_t *this, int num_masters, char *color)
 {
-    CatStaticBlock();
-    AnimalInstanceBlock(this->animal.object.meta->parent->name);
-    Animalctor(&this->animal,5,2);
-
-    this->color = "black";
+    if(strcmp("Cat", this->animal.object.meta->name) == 0)
+    {
+        CatStaticBlock();
+        AnimalInstanceBlock(this->animal.object.meta->parent->name);
+        Animalctor(&this->animal,5,2);
+    }
+    
+    this->color = color;
   
-     printf("Cat Ctor ");
-    printf("with color %s\n",this->color );
+     printf("Cat Ctor with color %s\n",this->color );
      printf("Cat Ctor\n");
    
+}
+
+void LActor(la_t *this)
+{
+    LAStaticBlocks();
+    AnimalInstanceBlock(this->cat.animal.object.meta->parent->parent->name);
+    
+    Animalctor(&this->cat.animal,5,0); 
+    Catctor(&this->cat,0,"black");
+    printf("Legendary Ctor\n");
+
 }
 
 
@@ -198,14 +229,65 @@ void AnimalctorInt(animal_t *this, int num_masters)
 
 void AnimalSayHello(void *this)
 {
-    char AnyName[10] = {0};
-    memset(AnyName,0,10);
+    char AnyName[20] = {0};
+   
+    char parName[20] = {0};
+    memset(AnyName,0,20);
+    memset(parName,0,20);
 
-    strcpy(AnyName, ((animal_t*)this)->object.meta->parent->name);
-    printf("%s ", AnyName);
+    strcpy(AnyName, ((animal_t*)this)->object.meta->name);
+    strcpy(parName, ((animal_t*)this)->object.meta->parent->name);
+    
+
+    if(strcmp("Legendary",AnyName) == 0)
+    {
+        printf("%s ", AnyName);
+        printf("Hello!\n");
+        memset(parName,0,20);
+
+    }
+    else if(strcmp("Cat",AnyName) == 0)
+    {
+        printf("%s ", parName);
+        printf("Hello!\n");
+        printf("I Have %d legs\n",((animal_t*)this)->num_legs);
+        
+    }
+
+    else if (strcmp("Object",parName) == 0)
+    {
+        printf("%s ", AnyName);
+        printf("Hello!\n");
+         printf("I Have %d legs\n",((animal_t*)this)->num_legs);
+    }
+   
+    
+   
+}
+
+void CatLaSayHello(void *this)
+{
+    char AnyName[20] = {0};
+    char parName[20] = {0};
+    memset(AnyName,0,20);
+    memset(parName,0,20);
+    
+    strcpy(AnyName, ((animal_t*)this)->object.meta->name);
+    strcpy(parName, ((animal_t*)this)->object.meta->parent->name);
+   
+    if(strcmp("Legendary",AnyName))
+    {
+        printf("%s ", AnyName);
+    }
+    if(strcmp("Cat",AnyName))
+    {
+        printf("%s ", parName);
+    }
+   
     printf("Hello!\n");
     printf("I Have %d legs\n",((animal_t*)this)->num_legs);
 }
+
 
 void AnimalShowCounter(void *this)
 {
@@ -232,6 +314,7 @@ int main(void)
     animal_t *any = (animal_t *)ObjectCreate(&animal_metadata);
     dog_t *dogy = NULL;
     cat_t *katy = NULL;
+    la_t *not = NULL;
     Animalctor(any,5,1); 
     /*
     printf("%s\n", ((vfchar_t (*))animal_vt)[2](any));
@@ -246,9 +329,11 @@ int main(void)
     ((object_vt)[2](dogy));
 
      katy = (cat_t *)ObjectCreate(&cat_metadata);
-    Catctor(katy,2);
-
+    Catctor(katy,2, "black");
+    ((object_vt)[2](katy));
      
+     not = (la_t *)ObjectCreate(&la_metadata);
+     LActor(not);
      return 0;
 }
    
