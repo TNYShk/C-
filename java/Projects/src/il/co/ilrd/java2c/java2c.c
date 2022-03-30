@@ -76,7 +76,7 @@ size_t ObjectHashCode(void *);
 void ObjectFinalize(void *);
 static object_t *ObjectCreate(class_t *);
 
-void AnimalLoad(void);
+
 void AnimalStaticBlock(void);
 void DogStaticBlock(void);
 void CatStaticBlock(void);
@@ -113,11 +113,11 @@ void LAFinalize(void *);
 char *LAToString(void *);
 
 void foo(animal_t *);
+
 static void Test(void);
 static int GetID(void *);
 
 static int AnimalCounter = 0;
-
 char buffer[BUFSIZ] = {0};
 
 
@@ -252,7 +252,8 @@ void AnimalInstanceBlock(void)
 *********************************************************************/
 void AnimalCtor(animal_t *this)
 {
-    AnimalLoad();
+    AnimalStaticBlock();
+    AnimalInstanceBlock();
     printf("Animal Ctor\n");
 
     this->id = ++AnimalCounter;
@@ -268,18 +269,14 @@ void AnimalCtor(animal_t *this)
 
 void AnimalCtorInt(animal_t *this, int num_masters)
 {
-    AnimalLoad();
+    AnimalStaticBlock();
+    AnimalInstanceBlock();
     printf("Animal Ctor int\n");
     this->id = ++AnimalCounter;
     this->num_masters = num_masters;
     this->num_legs = 5;
 }
 
-void AnimalLoad(void)
-{
-    AnimalStaticBlock();
-    AnimalInstanceBlock();
-}
 
 void AnimalHello(void *obj)
 {
