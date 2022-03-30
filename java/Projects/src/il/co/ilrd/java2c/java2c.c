@@ -1,3 +1,10 @@
+/*
+* JAVA2C WS
+* by Tanya Shk
+* Mar 30, 2022
+* reviewed by: Shiraz A.
+*/
+
 #include <stdlib.h>  /* size_t */
 #include <stdio.h> /* printf*/
 #include <string.h> /* memset*/
@@ -104,19 +111,15 @@ void LACtor(la_t *);
 void LAHello(void *);
 void LAFinalize(void *);
 char *LAToString(void *);
-static int GetID(void *object);
-void foo(animal_t *);
-static void Test();
- 
-static int AnimalCounter = 0;
-static int static_flag_animal = TRUE;
-static int static_flag_dog = TRUE;
-static int static_flag_cat = TRUE;
-static int static_flag_la = TRUE;
 
+void foo(animal_t *);
+static void Test(void);
+static int GetID(void *);
+
+static int AnimalCounter = 0;
 
 char buffer[BUFSIZ] = {0};
-animal_t *animal_arr[5] = {0}; 
+
 
 
 vf_t object_vt[] = {(vf_t)&ObjectToString, (vf_t)&ObjectHashCode, &ObjectFinalize};
@@ -145,8 +148,6 @@ int main(void)
     return 0;
 }
 
-
-
 static int GetID(void *object)
 {
    return ((animal_t *)object)->id;
@@ -159,22 +160,10 @@ void foo(animal_t *obj)
 
 char *ObjectToString(void *obj)
 {
-    char *name = NULL;
-    char text[100] = {0};
-    char *toString = NULL;
-
     memset(buffer, 0 ,BUFSIZ);
-   
-    name = ((object_t *)obj)->meta->name;
-    sprintf(text, "il.co.ilrd.java2c.%s", name);
-    strcpy(buffer, text);
-    memset(text,0, 100);
-    sprintf(text, "@%p", obj);
-   
-    strcat(buffer, text);
-    toString = buffer;
-
-    return toString;      
+    sprintf(buffer, "il.co.ilrd.java2c.%s@%p",((object_t *)obj)->meta->name ,obj);
+    
+    return buffer;      
 }
 
 size_t ObjectHashCode(void *obj)
@@ -206,8 +195,12 @@ static object_t *ObjectCreate(class_t *meta)
     return obj;
 }
 
+/********************************************************************
+*                 Static & Instance Blocks
+*********************************************************************/
 void AnimalStaticBlock(void)
 {
+    static int static_flag_animal = TRUE;
     if(static_flag_animal)
     {
         printf("Static block Animal 1\n");
@@ -217,6 +210,7 @@ void AnimalStaticBlock(void)
 }
 void DogStaticBlock(void)
 {
+    static int static_flag_dog = TRUE;
     if(static_flag_dog)
     {
         printf("Static block Dog\n");
@@ -225,6 +219,7 @@ void DogStaticBlock(void)
 }
 void CatStaticBlock(void)
 {
+    static int static_flag_cat = TRUE;
     if (static_flag_cat)
     {
         printf("Static block Cat\n");
@@ -234,6 +229,7 @@ void CatStaticBlock(void)
 
 void LAStaticBlock(void)
 {
+    static int static_flag_la = TRUE;
     if (static_flag_la)
     {
         printf("Static block Legendary Animal\n");
@@ -251,6 +247,9 @@ void AnimalInstanceBlock(void)
     printf("Instance initialization block Animal\n");
 }
 
+/********************************************************************
+*                  Animal Class
+*********************************************************************/
 void AnimalCtor(animal_t *this)
 {
     AnimalLoad();
@@ -301,16 +300,10 @@ int AnimalGetNumMaster(void *obj)
 
 char *AnimalToString(void *obj)
 {
-    char text[100] = {'\0'};
     char *toString = NULL;
-    
     memset(buffer, 0, BUFSIZ);
-    memset(text, 0, 100);
-    
-    strcpy(buffer, "Animal with ID: ");
-    sprintf(text, "%d", ((animal_t *)obj)->id);
-    strcat(buffer, text);
-    
+    sprintf(buffer, "Animal with ID: %d",((animal_t *)obj)->id );
+   
     toString = buffer;
     return toString;  
 }
@@ -320,8 +313,9 @@ void AnimalFinalize(void *obj)
     ((*((animal_t *)obj)->object.meta->parent->vtable)[FINALIZE](obj));
 }
 
-
-
+/********************************************************************
+*                  Dog Class
+*********************************************************************/
 void DogHello(void *obj)
 {
     printf("%s Hello!\n",((dog_t *)obj)->animal.object.meta->name);
@@ -360,6 +354,9 @@ void DogCtor(dog_t *this)
     printf("Dog Ctor\n");
 }
 
+/********************************************************************
+*                  Cat Class
+*********************************************************************/
 void CatCtor(cat_t *this)
 {
     CatStaticBlock();
@@ -396,13 +393,15 @@ void CatFinalize(void *obj)
     ((*((cat_t *)obj)->animal.object.meta->parent->parent->vtable)[FINALIZE](obj));
 }
 
+/********************************************************************
+*                  Not Legendary Cat Class
+*********************************************************************/
 void LACtor(la_t *this)
 {
     LAStaticBlock();
     CatCtor(&this->cat);
     printf("Legendary Ctor\n");
 }
-
 
 void LAHello(void *obj)
 {
@@ -430,6 +429,8 @@ char *LAToString(void *obj)
     return toString;  
 }
 
+
+
 static void Test()
 {
     size_t idx = 0;
@@ -437,6 +438,7 @@ static void Test()
     dog_t *dog = NULL;
     cat_t *cat = NULL;
     la_t *la = NULL;
+    animal_t *animal_arr[5] = {0}; 
     
     animal = (animal_t *)ObjectCreate(&animal_metadata);
     AnimalCtor(animal);
