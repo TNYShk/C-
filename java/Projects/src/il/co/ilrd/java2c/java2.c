@@ -13,6 +13,15 @@ typedef void (*vf_t)(void *);
 typedef char * (*vfchar_t)(void *);
 typedef size_t * (*vfsize_t)(void *);
 
+enum FUNCS
+{
+    TOSTRING = 0,
+    MASTERS = 1,
+    SAYHELLO = 1,
+    FINALIZE = 2,
+    COUNTER = 2
+};
+
 struct class 
 {
     char *name;
@@ -219,8 +228,8 @@ void Animalctor(animal_t *this, int num_legs, int num_masters)
     animal_vt[1](this);
     animal_vt[2](this);
 
-    printf("%s\n", ((vfchar_t (*))animal_vt)[0](this));
-    printf("%s\n", ((vfchar_t (*))object_vt)[0](this));
+    printf("%s\n", ((vfchar_t (*))animal_vt)[TOSTRING](this));
+    printf("%s\n", ((vfchar_t (*))object_vt)[TOSTRING](this));
 }
 
 void Dogctor(dog_t *this, int num_legs)
@@ -338,9 +347,8 @@ static object_t *ObjectCreate(class_t *meta)
 
 static void foo(animal_t *animl)
 {
-    (*animl->object.meta->vtable)[1]((void *)animl);   
+    (*animl->object.meta->vtable)[MASTERS]((void *)animl);   
 }
-
 
 
 static void Tests(void)
@@ -385,19 +393,19 @@ static void Tests(void)
     for (idx = 0; idx < 5; ++idx)
     {
         foo(animal_arr_g[idx]);
-        printf(" %ld\n", ((vfsize_t (*))object_vt)[1](animal_arr_g[idx]));
+        printf(" %ld\n", ((vfsize_t (*))object_vt)[SAYHELLO](animal_arr_g[idx]));
        
     }
     for (idx = 0; idx < 5; ++idx)
     {
         
-      ((object_vt)[2](animal_arr_g[idx])); 
+      ((object_vt)[FINALIZE](animal_arr_g[idx])); 
     }
 
 
-    ((object_vt)[2](any));
-     ((object_vt)[2](dogy));
-      ((object_vt)[2](katy));
-       ((object_vt)[2](not));
+    ((object_vt)[FINALIZE](any));
+     ((object_vt)[FINALIZE](dogy));
+      ((object_vt)[FINALIZE](katy));
+       ((object_vt)[FINALIZE](not));
 }
    
