@@ -59,7 +59,7 @@ struct dog
 struct cat
 {
     animal_t animal;
-    char *colors;
+    char *color;
     int num_masters;
 };
 
@@ -110,16 +110,15 @@ char *LAToString(void *obj);
 void foo(animal_t *obj);
 static void Test();
  
-static int AnimalCounter = FALSE;
-static int static_flag_animal = FALSE;
-static int static_flag_animal1 = FALSE;
-static int static_flag_dog = FALSE;
-static int static_flag_cat = FALSE;
-static int static_flag_la = FALSE;
+static int AnimalCounter = 0;
+static int static_flag_animal = TRUE;
+static int static_flag_animal1 = TRUE;
+static int static_flag_dog = TRUE;
+static int static_flag_cat = TRUE;
+static int static_flag_la = TRUE;
 
 
 char buffer[BUFSIZ] = {0};
-static size_t hash_code = 0;
 animal_t *animal_arr[5] = {0}; 
 
 
@@ -264,20 +263,20 @@ object_t *ObjectCreate(class_t *meta)
 
 void AnimalStaticBlock(void)
 {
-    if(!static_flag_animal)
+    if(static_flag_animal)
     {
         printf("Static block Animal 1\n");
          printf("Static block Animal 2\n");
-        static_flag_animal = TRUE;
+        static_flag_animal = FALSE;
     }
 }
 
 void AnimalStaticBlock2(void)
 {
-    if (!static_flag_animal1)
+    if (static_flag_animal1)
     {
         printf("Static block Animal 2\n");
-        static_flag_animal1 = TRUE;
+        static_flag_animal1 = FALSE;
     }
 }
 
@@ -340,14 +339,12 @@ int AnimalGetNumMaster(void *obj)
 
 char *AnimalToString(void *obj)
 {
-    char buufer[2048] = {'\0'};
+    char buufer[100] = {'\0'};
     char *toString = NULL;
     
     memset(buffer, 0, BUFSIZ);
-    memset(buufer, 0, 2048);
+    memset(buufer, 0, 100);
     
-   
-
     strcpy(buffer, "Animal with ID: ");
     sprintf(buufer, "%d", ((animal_t *)obj)->id);
     strcat(buffer, buufer);
@@ -364,10 +361,10 @@ void AnimalFinalize(void *obj)
 
 void DogStaticBlock(void)
 {
-    if(!static_flag_dog)
+    if(static_flag_dog)
     {
         printf("Static block Dog\n");
-        static_flag_dog = TRUE;
+        static_flag_dog = FALSE;
     }
 }
 
@@ -426,16 +423,16 @@ void CatCtor(cat_t *this)
 void CatCtorColor(cat_t *this, char *color)
 {
     AnimalCtor(&this->animal);
-    this->colors = color;
-    printf("Cat Ctor with color: %s\n", this->colors);
+    this->color = color;
+    printf("Cat Ctor with color: %s\n", this->color);
 }
 
 void CatStaticBlock(void)
 {
-    if (!static_flag_cat)
+    if (static_flag_cat)
     {
         printf("Static block Cat\n");
-        static_flag_cat = TRUE;
+        static_flag_cat = FALSE;
     }
 }
 
@@ -470,10 +467,10 @@ void LACtor(la_t *this)
 
 void LAStaticBlock(void)
 {
-    if (!static_flag_la)
+    if (static_flag_la)
     {
         printf("Static block Legendary Animal\n");
-        static_flag_la = TRUE;
+        static_flag_la = FALSE;
     }
 }
 
