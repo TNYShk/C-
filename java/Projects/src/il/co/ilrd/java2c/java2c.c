@@ -104,7 +104,7 @@ void LACtor(la_t *);
 void LAHello(void *);
 void LAFinalize(void *);
 char *LAToString(void *);
-
+static int GetID(void *object);
 void foo(animal_t *);
 static void Test();
  
@@ -145,69 +145,16 @@ int main(void)
     return 0;
 }
 
-static void Test()
+
+
+static int GetID(void *object)
 {
-    size_t idx = 0;
-    animal_t *animal = NULL;
-    dog_t *dog = NULL;
-    cat_t *cat = NULL;
-    la_t *la = NULL;
-    
-    animal = (animal_t *)ObjectCreate(&animal_metadata);
-    AnimalCtor(animal);
-
-    dog = (dog_t *)ObjectCreate(&dog_metadata);
-    DogCtor(dog);
-
-    cat = (cat_t *)ObjectCreate(&cat_metadata);
-    CatCtor(cat);
-
-    la = (la_t *)ObjectCreate(&la_metadata);
-    LACtor(la);
-
-    (*animal->object.meta->vtable)[ShowCounter]((void *)animal); 
-
-    printf("%d\n", animal->id);
-    printf("%d\n", ((animal_t *)dog)->id);
-    printf("%d\n", ((animal_t *)cat)->id);
-    printf("%d\n", ((animal_t *)la)->id);
-
-    animal_arr[0] = (animal_t *)ObjectCreate(&dog_metadata);
-    DogCtor((dog_t *)animal_arr[0]);
-    animal_arr[1] = (animal_t *)ObjectCreate(&cat_metadata);
-    CatCtor((cat_t *)animal_arr[1]);
-    animal_arr[2] = (animal_t *)ObjectCreate(&cat_metadata);
-    CatCtorColor((cat_t *)animal_arr[2], "white");
-    animal_arr[3] = (animal_t *)ObjectCreate(&la_metadata);
-    LACtor((la_t *)animal_arr[3]);
-    animal_arr[4] = (animal_t *)ObjectCreate(&animal_metadata);
-    AnimalCtor((animal_t *)animal_arr[4]);
-
-    for (idx = 0; idx < 5; ++idx)
-    {
-        (*animal_arr[idx]->object.meta->vtable)[SAYHello]((void *)animal_arr[idx]);
-        printf("%d\n", ((vfchar_t (*))(*animal_arr[idx]->object.meta->vtable))[GetNumMaster]((void *)animal_arr[idx]));
-    }
-
-    for (idx = 0; idx < 5; ++idx)
-    {
-        foo(animal_arr[idx]);
-    }
-
-    for (idx = 0; idx < 5; ++idx)
-    {
-        (*animal_arr[idx]->object.meta->vtable)[FINALIZE]((void *)animal_arr[idx]);
-    }
-
-            (*animal->object.meta->parent->vtable)[FINALIZE](animal);
-        (*dog->animal.object.meta->parent->parent->vtable)[FINALIZE](dog);
-        (*cat->animal.object.meta->parent->parent->vtable)[FINALIZE](cat);
-     (*la->cat.animal.object.meta->parent->parent->parent->vtable)[FINALIZE](la);
+   return ((animal_t *)object)->id;
 }
 
 void foo(animal_t *obj)
 {
-    printf("%s\n", ((vfchar_t (*))(*obj->object.meta->vtable))[ToString]((void *)obj));
+    printf("%s\n", ((vfchar_t (*))(*obj->object.meta->vtable))[ToString](obj));
 }
 
 char *ObjectToString(void *obj)
@@ -428,8 +375,6 @@ void CatCtorColor(cat_t *this, char *color)
     printf("Cat Ctor with color: %s\n", this->color);
 }
 
-
-
 char *CatToString(void *obj)
 {
     char text[50] = {'\0'};
@@ -483,4 +428,64 @@ char *LAToString(void *obj)
     
     toString = buffer;
     return toString;  
+}
+
+static void Test()
+{
+    size_t idx = 0;
+    animal_t *animal = NULL;
+    dog_t *dog = NULL;
+    cat_t *cat = NULL;
+    la_t *la = NULL;
+    
+    animal = (animal_t *)ObjectCreate(&animal_metadata);
+    AnimalCtor(animal);
+
+    dog = (dog_t *)ObjectCreate(&dog_metadata);
+    DogCtor(dog);
+
+    cat = (cat_t *)ObjectCreate(&cat_metadata);
+    CatCtor(cat);
+
+    la = (la_t *)ObjectCreate(&la_metadata);
+    LACtor(la);
+
+    (*animal->object.meta->vtable)[ShowCounter](animal); 
+
+    printf("%d\n", GetID(animal));
+    printf("%d\n", GetID(dog));
+    printf("%d\n", GetID(cat));
+    printf("%d\n", GetID(la));
+
+    animal_arr[0] = (animal_t *)ObjectCreate(&dog_metadata);
+    DogCtor((dog_t *)animal_arr[0]);
+    animal_arr[1] = (animal_t *)ObjectCreate(&cat_metadata);
+    CatCtor((cat_t *)animal_arr[1]);
+    animal_arr[2] = (animal_t *)ObjectCreate(&cat_metadata);
+    CatCtorColor((cat_t *)animal_arr[2], "white");
+    animal_arr[3] = (animal_t *)ObjectCreate(&la_metadata);
+    LACtor((la_t *)animal_arr[3]);
+    animal_arr[4] = (animal_t *)ObjectCreate(&animal_metadata);
+    AnimalCtor((animal_t *)animal_arr[4]);
+
+    for (idx = 0; idx < 5; ++idx)
+    {
+        (*animal_arr[idx]->object.meta->vtable)[SAYHello](animal_arr[idx]);
+        printf("%d\n", ((vfchar_t (*))(*animal_arr[idx]->object.meta->vtable))[GetNumMaster](animal_arr[idx]));
+    }
+
+    for (idx = 0; idx < 5; ++idx)
+    {
+        foo(animal_arr[idx]);
+    }
+
+    for (idx = 0; idx < 5; ++idx)
+    {
+        (*animal_arr[idx]->object.meta->vtable)[FINALIZE](animal_arr[idx]);
+    }
+
+            (*animal->object.meta->parent->vtable)[FINALIZE](animal);
+        (*dog->animal.object.meta->parent->parent->vtable)[FINALIZE](dog);
+        (*cat->animal.object.meta->parent->parent->vtable)[FINALIZE](cat);
+     (*la->cat.animal.object.meta->parent->parent->parent->vtable)[FINALIZE](la);
 }
