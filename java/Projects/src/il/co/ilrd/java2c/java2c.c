@@ -108,7 +108,7 @@ void LAFinalize(void *obj);
 char *LAToString(void *obj);
 
 void foo(animal_t *obj);
-
+static void Test();
  
 static int AnimalCounter = FALSE;
 static int static_flag_animal = FALSE;
@@ -140,9 +140,16 @@ class_t dog_metadata = {"Dog", sizeof(dog_t), &animal_metadata, &dog_vt};
 class_t cat_metadata = {"Cat", sizeof(cat_t), &animal_metadata, &cat_vt};
 class_t la_metadata = {"LegendaryAnimal", sizeof(la_t), &cat_metadata, &la_vt};
 
-int main()
+int main(void)
 {
-    size_t i = 0;
+   Test();
+
+    return 0;
+}
+
+static void Test()
+{
+     size_t i = 0;
     animal_t *animal = NULL;
     dog_t *dog = NULL;
     cat_t *cat = NULL;
@@ -199,8 +206,6 @@ int main()
     (*dog->animal.object.meta->parent->parent->vtable)[Finalize](dog);
     (*cat->animal.object.meta->parent->parent->vtable)[Finalize](cat);
     (*la->cat.animal.object.meta->parent->parent->parent->vtable)[Finalize](la);
-
-    return 0;
 }
 
 void foo(animal_t *obj)
