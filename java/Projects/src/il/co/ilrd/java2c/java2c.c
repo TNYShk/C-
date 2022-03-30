@@ -321,15 +321,10 @@ void DogHello(void *obj)
 
 char *DogToString(void *obj)
 {
-    char text[50] = {'\0'};
     char *toString = NULL;
    
     memset(buffer, 0, BUFSIZ);
-    memset(text, 0, 50);
-    
-    strcpy(buffer, "Dog with ID: ");
-    sprintf(text, "%d", ((dog_t *)obj)->animal.id);
-    strcat(buffer, text);
+    sprintf(buffer, "Dog with ID: %d", ((dog_t *)obj)->animal.id);
     
     toString = buffer;
     return toString;  
@@ -371,16 +366,12 @@ void CatCtorColor(cat_t *this, char *color)
 
 char *CatToString(void *obj)
 {
-    char text[50] = {'\0'};
+    
     char *toString = NULL;
    
     memset(buffer, 0, BUFSIZ);
-    memset(text, 0, 50);
-    
-    strcpy(buffer, "Cat with ID: ");
-    sprintf(text, "%d", ((cat_t *)obj)->animal.id);
-    strcat(buffer, text);
-    
+    sprintf(buffer, "Cat with ID: %d",((cat_t *)obj)->animal.id);
+   
     toString = buffer;
     return toString;  
 }
@@ -412,16 +403,12 @@ void LAFinalize(void *obj)
 
 char *LAToString(void *obj)
 {
-    char text[100] = {0};
+   
     char *toString = NULL;
    
     memset(buffer, 0, BUFSIZ);
-    memset(text, 0, 100);
-    
-    strcpy(buffer, "Legendary Animal with ID: ");
-    sprintf(text, "%d", ((la_t *)obj)->cat.animal.id);
-    strcat(buffer, text);
-    
+    sprintf(buffer, "Legendary Animal with ID: %d", ((la_t *)obj)->cat.animal.id);
+   
     toString = buffer;
     return toString;  
 }
