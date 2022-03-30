@@ -124,13 +124,13 @@ char buffer[BUFSIZ] = {0};
 
 vf_t object_vt[] = {(vf_t)&ObjectToString, (vf_t)&ObjectHashCode, &ObjectFinalize};
 
-vf_t animal_vt[] = {(vf_t)&AnimalToString, (vf_t)&ObjectHashCode, &AnimalFinalize, 
+vf_t animal_vt[] = {(vf_t)&AnimalToString, (vf_t)&ObjectHashCode, &ObjectFinalize, 
                     &AnimalHello, &AnimalShowCounter, (vf_t)&AnimalGetNumMaster};
-vf_t dog_vt[] = {(vf_t)&DogToString, (vf_t)&ObjectHashCode, &DogFinalize, 
+vf_t dog_vt[] = {(vf_t)&DogToString, (vf_t)&ObjectHashCode, &ObjectFinalize, 
                  &DogHello, &AnimalShowCounter, (vf_t)&AnimalGetNumMaster};
-vf_t cat_vt[] = {(vf_t)&CatToString, (vf_t)&ObjectHashCode, &CatFinalize, 
+vf_t cat_vt[] = {(vf_t)&CatToString, (vf_t)&ObjectHashCode, &ObjectFinalize, 
                 &AnimalHello, &AnimalShowCounter, (vf_t)&AnimalGetNumMaster};
-vf_t la_vt[] = {(vf_t)&LAToString, (vf_t)&ObjectHashCode, &LAFinalize, 
+vf_t la_vt[] = {(vf_t)&LAToString, (vf_t)&ObjectHashCode, &ObjectFinalize, 
                 &LAHello, &AnimalShowCounter, (vf_t)&AnimalGetNumMaster};
 
 class_t Object_metadata = {"Object", sizeof(object_t), NULL, &object_vt};
@@ -307,7 +307,7 @@ char *AnimalToString(void *obj)
 
 void AnimalFinalize(void *obj)
 {
-    ((*((animal_t *)obj)->object.meta->parent->vtable)[FINALIZE](obj));
+    ((*((animal_t *)obj)->object.meta->parent->vtable)[FINALIZE](obj)); 
 }
 
 /********************************************************************
@@ -332,7 +332,8 @@ char *DogToString(void *obj)
 
 void DogFinalize(void *obj)
 {
-    ((*((dog_t *)obj)->animal.object.meta->parent->parent->vtable)[FINALIZE](obj));
+    
+    ((*((dog_t *)obj)->animal.object.meta->parent->parent->vtable)[FINALIZE](obj)); 
 }
 
 void DogCtor(dog_t *this)
@@ -378,11 +379,12 @@ char *CatToString(void *obj)
 
 void CatFinalize(void *obj)
 {
-    ((*((cat_t *)obj)->animal.object.meta->parent->parent->vtable)[FINALIZE](obj));
+    
+     ((*((cat_t *)obj)->animal.object.meta->parent->parent->vtable)[FINALIZE](obj)); 
 }
 
 /********************************************************************
-*                  Not Legendary Cat Class
+*                  (Not) Legendary Cat Class
 *********************************************************************/
 void LACtor(la_t *this)
 {
@@ -398,12 +400,12 @@ void LAHello(void *obj)
 
 void LAFinalize(void *obj)
 {
-    ((*((la_t *)obj)->cat.animal.object.meta->parent->parent->parent->vtable)[FINALIZE](obj));
+    
+     ((*((la_t *)obj)->cat.animal.object.meta->parent->parent->parent->vtable)[FINALIZE](obj)); 
 }
 
 char *LAToString(void *obj)
 {
-   
     char *toString = NULL;
    
     memset(buffer, 0, BUFSIZ);
