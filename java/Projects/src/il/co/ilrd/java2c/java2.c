@@ -112,7 +112,6 @@ class_t la_metadata =     {"Legendary", sizeof(la_t), &cat_metadata, &animal_vt}
 
 int main(void)
 {
-    
     Tests();
     return 0;
 }

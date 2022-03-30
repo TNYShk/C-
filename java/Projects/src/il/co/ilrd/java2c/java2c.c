@@ -10,15 +10,15 @@ typedef struct cat cat_t;
 typedef struct legendary_animal la_t;
 
 typedef void (*vf_t)(void *);
-typedef char* (*vfchar_t)(void *);  
+typedef char * (*vfchar_t)(void *);  
 
 
 enum func_names
 {
     ToString = 0,
     HashCode = 1,
-    Finalize = 2,
-    SeyHello = 3,
+    FINALIZE = 2,
+    SAYHello = 3,
     ShowCounter = 4,
     GetNumMaster = 5
 };
@@ -33,7 +33,7 @@ struct class
 {
     char *name;
     size_t class_size;
-    class_t* parent;
+    class_t *parent;
     vf_t (*vtable)[];
 };
 
@@ -68,46 +68,48 @@ struct legendary_animal
     cat_t cat;
 };
 
-char *ObjectToString(void *obj);
-size_t ObjectHashCode(void *obj);
-void ObjectFinalize(void *obj);
-object_t *ObjectCreate(class_t *meta);
+char *ObjectToString(void *);
+size_t ObjectHashCode(void *);
+void ObjectFinalize(void *);
+object_t *ObjectCreate(class_t *);
 
+void AnimalLoad(void);
 void AnimalStaticBlock(void);
+void DogStaticBlock(void);
+void CatStaticBlock(void);
+void LAStaticBlock(void);
 
 void AnimalNonStaticBlock(void);
-void AnimalLoad(void);
+void DogNonStaticBlock(void);
 
-void AnimalCtor(animal_t *this);
-void AnimalCtorInt(animal_t *this, int);
+void AnimalCtor(animal_t *);
+void AnimalCtorInt(animal_t *, int);
 
-void AnimalSeyHello(void *);
+void AnimalHello(void *);
 void AnimalShowCounter(void *);
 int AnimalGetNumMaster(void *);
 char *AnimalToString(void *);
 void AnimalFinalize(void *);
 
-void DogCtor(dog_t *this);
-void DogStaticBlock(void);
-void DogNonStaticBlock(void);
+void DogCtor(dog_t *);
 
-void DogSeyHello(void *obj);
-char *DogToString(void *obj);
-void DogFinalize(void *obj);
+void DogHello(void *);
+char *DogToString(void *);
+void DogFinalize(void *);
 
-void CatCtor(cat_t *this);
-void CatStaticBlock(void);
-void CatCtorColor(cat_t *this, char *color);
-void CatFinalize(void *obj);
-char *CatToString(void *obj);
+void CatCtor(cat_t *);
 
-void LACtor(la_t *this);
-void LAStaticBlock(void);
-void LASeyHello(void *obj);
-void LAFinalize(void *obj);
-char *LAToString(void *obj);
+void CatCtorColor(cat_t *, char *);
+void CatFinalize(void *);
+char *CatToString(void *);
 
-void foo(animal_t *obj);
+void LACtor(la_t *);
+
+void LAHello(void *);
+void LAFinalize(void *);
+char *LAToString(void *);
+
+void foo(animal_t *);
 static void Test();
  
 static int AnimalCounter = 0;
@@ -125,13 +127,13 @@ animal_t *animal_arr[5] = {0};
 vf_t object_vt[] = {(vf_t)&ObjectToString, (vf_t)&ObjectHashCode, &ObjectFinalize};
 
 vf_t animal_vt[] = {(vf_t)&AnimalToString, (vf_t)&ObjectHashCode, &AnimalFinalize, 
-                    &AnimalSeyHello, &AnimalShowCounter, (vf_t)&AnimalGetNumMaster};
+                    &AnimalHello, &AnimalShowCounter, (vf_t)&AnimalGetNumMaster};
 vf_t dog_vt[] = {(vf_t)&DogToString, (vf_t)&ObjectHashCode, &DogFinalize, 
-                 &DogSeyHello, &AnimalShowCounter, (vf_t)&AnimalGetNumMaster};
+                 &DogHello, &AnimalShowCounter, (vf_t)&AnimalGetNumMaster};
 vf_t cat_vt[] = {(vf_t)&CatToString, (vf_t)&ObjectHashCode, &CatFinalize, 
-                &AnimalSeyHello, &AnimalShowCounter, (vf_t)&AnimalGetNumMaster};
+                &AnimalHello, &AnimalShowCounter, (vf_t)&AnimalGetNumMaster};
 vf_t la_vt[] = {(vf_t)&LAToString, (vf_t)&ObjectHashCode, &LAFinalize, 
-                &LASeyHello, &AnimalShowCounter, (vf_t)&AnimalGetNumMaster};
+                &LAHello, &AnimalShowCounter, (vf_t)&AnimalGetNumMaster};
 
 class_t Object_metadata = {"Object", sizeof(object_t), NULL, &object_vt};
 class_t animal_metadata = {"Animal", sizeof(animal_t), &Object_metadata, &animal_vt};
@@ -148,7 +150,7 @@ int main(void)
 
 static void Test()
 {
-     size_t i = 0;
+     size_t idx = 0;
     animal_t *animal = NULL;
     dog_t *dog = NULL;
     cat_t *cat = NULL;
@@ -185,26 +187,26 @@ static void Test()
     animal_arr[4] = (animal_t *)ObjectCreate(&animal_metadata);
     AnimalCtor((animal_t *)animal_arr[4]);
 
-    for (i = 0; i < 5; ++i)
+    for (idx = 0; idx < 5; ++idx)
     {
-        (*animal_arr[i]->object.meta->vtable)[SeyHello]((void *)animal_arr[i]);
-        printf("%d\n", ((vfchar_t (*))(*animal_arr[i]->object.meta->vtable))[GetNumMaster]((void *)animal_arr[i]));
+        (*animal_arr[idx]->object.meta->vtable)[SAYHello]((void *)animal_arr[idx]);
+        printf("%d\n", ((vfchar_t (*))(*animal_arr[idx]->object.meta->vtable))[GetNumMaster]((void *)animal_arr[idx]));
     }
 
-    for (i = 0; i < 5; ++i)
+    for (idx = 0; idx < 5; ++idx)
     {
-        foo(animal_arr[i]);
+        foo(animal_arr[idx]);
     }
 
-    for (i = 0; i < 5; ++i)
+    for (idx = 0; idx < 5; ++idx)
     {
-        (*animal_arr[i]->object.meta->vtable)[Finalize]((void *)animal_arr[i]);
+        (*animal_arr[idx]->object.meta->vtable)[FINALIZE]((void *)animal_arr[idx]);
     }
 
-    (*animal->object.meta->parent->vtable)[Finalize](animal);
-    (*dog->animal.object.meta->parent->parent->vtable)[Finalize](dog);
-    (*cat->animal.object.meta->parent->parent->vtable)[Finalize](cat);
-    (*la->cat.animal.object.meta->parent->parent->parent->vtable)[Finalize](la);
+    (*animal->object.meta->parent->vtable)[FINALIZE](animal);
+    (*dog->animal.object.meta->parent->parent->vtable)[FINALIZE](dog);
+    (*cat->animal.object.meta->parent->parent->vtable)[FINALIZE](cat);
+    (*la->cat.animal.object.meta->parent->parent->parent->vtable)[FINALIZE](la);
 }
 
 void foo(animal_t *obj)
@@ -294,7 +296,7 @@ void AnimalCtor(animal_t *this)
     this->num_legs = 5;
     this->num_masters = 1;
 
-    (*this->object.meta->vtable)[SeyHello]((void *)this);
+    (*this->object.meta->vtable)[SAYHello]((void *)this);
     (*this->object.meta->vtable)[ShowCounter]((void *)this);
     
     printf("%s\n", ((vfchar_t (*))(*this->object.meta->vtable))[ToString]((void *)this));
@@ -320,7 +322,7 @@ void AnimalLoad(void)
     AnimalNonStaticBlock();
 }
 
-void AnimalSeyHello(void *obj)
+void AnimalHello(void *obj)
 {
     printf("Animal Hello!\n");
     printf("I have %d legs\n", ((animal_t *)obj)->num_legs);
@@ -356,7 +358,7 @@ char *AnimalToString(void *obj)
 void AnimalFinalize(void *obj)
 {
     printf("finalize Animal with ID: %d\n", ((animal_t *)obj)->id);
-    ((*((animal_t *)obj)->object.meta->parent->vtable)[Finalize](obj));
+    ((*((animal_t *)obj)->object.meta->parent->vtable)[FINALIZE](obj));
 }
 
 void DogStaticBlock(void)
@@ -373,7 +375,7 @@ void DogNonStaticBlock(void)
     printf("Instance initialization block Dog\n");
 }
 
-void DogSeyHello(void *obj)
+void DogHello(void *obj)
 {
     printf("Dog Hello!\n");
     printf("I hava %d legs\n", ((dog_t *)obj)->animal.num_legs);
@@ -398,7 +400,7 @@ char *DogToString(void *obj)
 void DogFinalize(void *obj)
 {
     printf("finalize Animal with ID: %d\n", ((dog_t *)obj)->animal.id);
-    ((*((dog_t *)obj)->animal.object.meta->parent->parent->vtable)[Finalize](obj));
+    ((*((dog_t *)obj)->animal.object.meta->parent->parent->vtable)[FINALIZE](obj));
 }
 
 void DogCtor(dog_t *this)
@@ -455,7 +457,7 @@ char *CatToString(void *obj)
 void CatFinalize(void *obj)
 {
     printf("finalize Animal with ID: %d\n", ((cat_t *)obj)->animal.id);
-    ((*((cat_t *)obj)->animal.object.meta->parent->parent->vtable)[Finalize](obj));
+    ((*((cat_t *)obj)->animal.object.meta->parent->parent->vtable)[FINALIZE](obj));
 }
 
 void LACtor(la_t *this)
@@ -474,7 +476,7 @@ void LAStaticBlock(void)
     }
 }
 
-void LASeyHello(void *obj)
+void LAHello(void *obj)
 {
     printf("%s ",((la_t *)obj)->cat.animal.object.meta->name);
     printf(" Hello!\n");
@@ -483,7 +485,7 @@ void LASeyHello(void *obj)
 void LAFinalize(void *obj)
 {
     printf("finalize LegendaryAnimal with ID: %d\n", ((la_t *)obj)->cat.animal.id);
-    ((*((la_t *)obj)->cat.animal.object.meta->parent->parent->parent->vtable)[Finalize](obj));
+    ((*((la_t *)obj)->cat.animal.object.meta->parent->parent->parent->vtable)[FINALIZE](obj));
 }
 
 char *LAToString(void *obj)
