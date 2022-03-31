@@ -120,9 +120,9 @@ void TestMatrixPoly(void)
         {'d','c','b','a'}
     };
 
-    for(i = 0; i<MAT; ++i)
+    for(i = 0; i < MAT; ++i)
     {
-        for(j = 0 ;j<MAT/2; ++j)
+        for(j = 0 ;j < MAT/2; ++j)
         {
             if(poly_g[i][j] != poly_g[MAT -1 -i][MAT- 1-j])
             {

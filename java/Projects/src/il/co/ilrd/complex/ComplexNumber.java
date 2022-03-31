@@ -78,6 +78,7 @@ public class ComplexNumber implements Comparable<ComplexNumber> {
         complex.replace(" ", "");
         double dReal = 0;
         double dFake = 0;
+
         if(!complex.endsWith("i")){
             dReal = Double.parseDouble(complex);
             return new ComplexNumber(dReal,0);
