@@ -88,7 +88,7 @@ void AnimalCtor(animal_t *);
 void AnimalCtorInt(animal_t *, int);
 
 void AnimalHello(void *);
-void AnimalShowCounter(void *);
+static void AnimalShowCounter(void *);
 int AnimalGetNumMaster(void *);
 char *AnimalToString(void *);
 void AnimalFinalize(void *);
@@ -168,7 +168,6 @@ char *ObjectToString(void *obj)
 size_t ObjectHashCode(void *obj)
 {
     static size_t hash = 31; 
-   /*  printf("ObjectHashCode "); */
     hash <<=  ((animal_t *)obj)->id;
     return hash;
 }
@@ -260,7 +259,7 @@ void AnimalCtor(animal_t *this)
     this->num_masters = 1;
 
     (*this->object.meta->vtable)[SAYHello](this);
-   /*  (*this->object.meta->vtable)[ShowCounter](this); */
+  
     AnimalShowCounter(this);
 
     printf("%s\n", ((vfchar_t (*))(*this->object.meta->vtable))[ToString](this));
@@ -284,7 +283,7 @@ void AnimalHello(void *obj)
     printf("I have %d legs\n", ((animal_t *)obj)->num_legs);
 }
 
-void AnimalShowCounter(void *obj)
+static void AnimalShowCounter(void *obj)
 {
     (void)obj;
     printf("counter %d\n", AnimalCounter);
@@ -339,9 +338,9 @@ void DogFinalize(void *obj)
 
 void DogCtor(dog_t *this)
 {
-    DogStaticBlock();
+   
     AnimalCtorInt(&this->animal, 2);
-
+    DogStaticBlock();
     this->animal.num_legs = 4;
     DogInstanceBlock();
 
@@ -389,8 +388,8 @@ void CatFinalize(void *obj)
 *********************************************************************/
 void LACtor(la_t *this)
 {
-    LAStaticBlock();
     CatCtor(&this->cat);
+    LAStaticBlock();
     printf("Legendary Ctor\n");
 }
 
@@ -402,7 +401,7 @@ void LAHello(void *obj)
 void LAFinalize(void *obj)
 {
     CatFinalize(obj);
-     /* ((*((la_t *)obj)->cat.animal.object.meta->parent->parent->parent->vtable)[FINALIZE](obj));  */
+    /* ((*((la_t *)obj)->cat.animal.object.meta->parent->parent->parent->vtable)[FINALIZE](obj));  */
 }
 
 char *LAToString(void *obj)
@@ -439,8 +438,7 @@ static void Test()
     la = (la_t *)ObjectCreate(&la_metadata);
     LACtor(la);
 
-   /*  (*animal->object.meta->vtable)[ShowCounter](animal);  */
-    
+  
     AnimalShowCounter(animal);
     printf("%d\n", GetID(animal));
     printf("%d\n", GetID(dog));
@@ -473,12 +471,15 @@ static void Test()
     {
         (*animal_arr[idx]->object.meta->vtable)[FINALIZE](animal_arr[idx]);
     }
-             ((object_vt)[FINALIZE](animal));
-             ((object_vt)[FINALIZE](dog));
-             ((object_vt)[FINALIZE](cat));
-             ((object_vt)[FINALIZE](la));
-           /*  (*animal->object.meta->parent->vtable)[FINALIZE](animal); */
+             
+        ((object_vt)[FINALIZE](la));
+        ((object_vt)[FINALIZE](cat));
+        ((object_vt)[FINALIZE](dog));
+        ((object_vt)[FINALIZE](animal));
+
+}
+
+         /*  (*animal->object.meta->parent->vtable)[FINALIZE](animal); */
        /*  (*dog->animal.object.meta->parent->parent->vtable)[FINALIZE](dog);
         (*cat->animal.object.meta->parent->parent->vtable)[FINALIZE](cat);
      (*la->cat.animal.object.meta->parent->parent->parent->vtable)[FINALIZE](la); */
-}
