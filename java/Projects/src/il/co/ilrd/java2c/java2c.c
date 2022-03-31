@@ -20,7 +20,7 @@ typedef struct legendary_animal la_t;
 
 typedef void (*vf_t)(void *);
 typedef char * (*vfchar_t)(void *);  
-
+typedef size_t * (*vfsize_t)(void *);  
 
 enum func_names
 {
@@ -28,8 +28,7 @@ enum func_names
     HashCode = 1,
     FINALIZE = 2,
     SAYHello = 3,
-    ShowCounter = 4,
-    GetNumMaster = 5
+    GetNumMaster = 4
 };
 
 struct class
@@ -121,20 +120,19 @@ static int AnimalCounter = 0;
 char buffer[BUFSIZ] = {0};
 
 
-
 vf_t object_vt[] = {(vf_t)&ObjectToString, (vf_t)&ObjectHashCode, &ObjectFinalize};
 
 vf_t animal_vt[] = {(vf_t)&AnimalToString, (vf_t)&ObjectHashCode, &AnimalFinalize, 
-                    &AnimalHello, &AnimalShowCounter, (vf_t)&AnimalGetNumMaster};
+                    &AnimalHello, (vf_t)&AnimalGetNumMaster};
 vf_t dog_vt[] = {(vf_t)&DogToString, (vf_t)&ObjectHashCode, &DogFinalize, 
-                 &DogHello, &AnimalShowCounter, (vf_t)&AnimalGetNumMaster};
+                 &DogHello, (vf_t)&AnimalGetNumMaster};
 vf_t cat_vt[] = {(vf_t)&CatToString, (vf_t)&ObjectHashCode, &CatFinalize, 
-                &AnimalHello, &AnimalShowCounter, (vf_t)&AnimalGetNumMaster};
+                &AnimalHello,(vf_t)&AnimalGetNumMaster};
 vf_t la_vt[] = {(vf_t)&LAToString, (vf_t)&ObjectHashCode, &LAFinalize, 
-                &LAHello, &AnimalShowCounter, (vf_t)&AnimalGetNumMaster};
+                &LAHello,(vf_t)&AnimalGetNumMaster};
 
-class_t Object_metadata = {"Object", sizeof(object_t), NULL, &object_vt};
-class_t animal_metadata = {"Animal", sizeof(animal_t), &Object_metadata, &animal_vt};
+class_t object_metadata = {"Object", sizeof(object_t), NULL, &object_vt};
+class_t animal_metadata = {"Animal", sizeof(animal_t), &object_metadata, &animal_vt};
 class_t dog_metadata = {"Dog", sizeof(dog_t), &animal_metadata, &dog_vt};
 class_t cat_metadata = {"Cat", sizeof(cat_t), &animal_metadata, &cat_vt};
 class_t la_metadata = {"LegendaryAnimal", sizeof(la_t), &cat_metadata, &la_vt};
@@ -162,14 +160,15 @@ char *ObjectToString(void *obj)
 {
     memset(buffer, 0 ,BUFSIZ);
     sprintf(buffer, "il.co.ilrd.java2c.%s@%p",((object_t *)obj)->meta->name ,obj);
-    
+   /*  sprintf(buffer, "il.co.ilrd.java2c.%s@%ld",((object_t *)obj)->meta->name , ((vfsize_t (*))((object_t *)obj)->meta->vtable)[HashCode](obj)); */
+   
     return buffer;      
 }
 
 size_t ObjectHashCode(void *obj)
 {
     static size_t hash = 31; 
-    printf("ObjectHashCode ");
+   /*  printf("ObjectHashCode "); */
     hash <<=  ((animal_t *)obj)->id;
     return hash;
 }
@@ -261,7 +260,8 @@ void AnimalCtor(animal_t *this)
     this->num_masters = 1;
 
     (*this->object.meta->vtable)[SAYHello](this);
-    (*this->object.meta->vtable)[ShowCounter](this);
+   /*  (*this->object.meta->vtable)[ShowCounter](this); */
+    AnimalShowCounter(this);
 
     printf("%s\n", ((vfchar_t (*))(*this->object.meta->vtable))[ToString](this));
     printf("%s\n", ((vfchar_t (*))object_vt)[ToString](this));
@@ -439,8 +439,9 @@ static void Test()
     la = (la_t *)ObjectCreate(&la_metadata);
     LACtor(la);
 
-    (*animal->object.meta->vtable)[ShowCounter](animal); 
-
+   /*  (*animal->object.meta->vtable)[ShowCounter](animal);  */
+    
+    AnimalShowCounter(animal);
     printf("%d\n", GetID(animal));
     printf("%d\n", GetID(dog));
     printf("%d\n", GetID(cat));
@@ -472,9 +473,12 @@ static void Test()
     {
         (*animal_arr[idx]->object.meta->vtable)[FINALIZE](animal_arr[idx]);
     }
-
-            (*animal->object.meta->parent->vtable)[FINALIZE](animal);
-        (*dog->animal.object.meta->parent->parent->vtable)[FINALIZE](dog);
+             ((object_vt)[FINALIZE](animal));
+             ((object_vt)[FINALIZE](dog));
+             ((object_vt)[FINALIZE](cat));
+             ((object_vt)[FINALIZE](la));
+           /*  (*animal->object.meta->parent->vtable)[FINALIZE](animal); */
+       /*  (*dog->animal.object.meta->parent->parent->vtable)[FINALIZE](dog);
         (*cat->animal.object.meta->parent->parent->vtable)[FINALIZE](cat);
-     (*la->cat.animal.object.meta->parent->parent->parent->vtable)[FINALIZE](la);
+     (*la->cat.animal.object.meta->parent->parent->parent->vtable)[FINALIZE](la); */
 }
