@@ -8,10 +8,20 @@ public class Delete {
 
         boolean []bb = new boolean[4];
         Boolean b = null;
-        
-        System.out.println("bb is "+bb[2] );
-        bb[5] = false;
-        System.out.println(b? true : false);
+
+        System.out.println("\nbb is "+bb[2] );
+        try{
+            bb[5] = false;
+        } catch(ArrayIndexOutOfBoundsException e){
+            System.out.println("OUT OF BOUNDS!");
+            System.err.println(e);
+        }
+        try{
+            System.out.println(b? true : false);
+        } catch(NullPointerException e){
+            System.out.println("NULL!");
+            System.err.println(e);
+        }
 
     }
 }

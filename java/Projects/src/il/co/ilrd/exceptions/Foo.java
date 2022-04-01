@@ -1,11 +1,18 @@
 package il.co.ilrd.exceptions;
 
-import java.io.IOException;
 import java.lang.Throwable;
+import java.lang.Exception;
 public class Foo {
     Boolean obj = null;
 
-
+public void func1(){
+    try{
+        int ans = 50/0;
+    }catch(Exception e){
+        int data2 = 70/0;
+    }
+    System.out.print("enclosing exception in both try and catch blocks");
+}
     public void func2(){
         System.out.println("inside func2, outside try");
             if(obj)
@@ -22,6 +29,7 @@ public class Foo {
         try{
             arry[101] = 1;
         } catch (Exception e){
+            System.out.println("func3 inside catch block!");
             System.err.println(e);
             e.printStackTrace();
         }
@@ -37,60 +45,66 @@ public class Foo {
                 throw new ArithmeticException("cant divide by zero!");
             }
         } catch (Exception cause) {
-            System.out.println("ans is :" +ans);
+            System.out.println("ans is :" + ans);
             StackTraceElement elements[] = cause.getStackTrace();
+
             for (int i = 0, n = elements.length; i < n; i++) {
                 System.err.println(elements[i].getFileName()
                         + ":" + elements[i].getLineNumber()
                         + ">> "
                         + elements[i].getMethodName() + "()");
             }
-            b = 7;
-            try{
-                ans = (a / b);
-                System.out.println("another try " + ans);
-
-            } catch (Exception e){
-                System.err.println(e);
-            }
         }
+        b = 7;
+        try{
+            ans = (a / b);
+            System.out.println("another try " + ans);
 
+        } catch (Exception e){
+            System.out.println("something to catch?");
+            System.err.println(e);
+        }
         System.out.println("ans is "+ ans);
-    System.out.println("end of dive");
+        System.out.println("end of dive");
     }
-    public static void  main(String []args) throws IOException {
+
+    public static void main(String []args) {
         Foo fi = new Foo();
 
         try{
             fi.func2();
         } catch (Exception cause){
             StackTraceElement elements[] = cause.getStackTrace();
-            for (int i = 0, n = elements.length; i < n; i++) {
-                System.err.println(elements[i].getFileName()
-                        + ":" + elements[i].getLineNumber()
-                        + ">> "
-                        + elements[i].getMethodName() + "()");
-            }
-        }finally {
 
+        for (int i = 0, n = elements.length; i < n; i++) {
+            System.err.println(elements[i].getFileName()
+               + ":" + elements[i].getLineNumber()
+               + ">> "
+               + elements[i].getMethodName() + "()");
+        }
+        }finally {
             System.out.println("finally can move on");
         }
 
         fi.func3();
-
         try{
-            fi.divideIt(3,'c');
-            fi.divideIt(3,0.0);
-        }catch( ArithmeticException e){
+            fi.func1();
+        } catch(Exception e){
+            System.out.println("func1");
             System.err.println(e);
         }
-
-
+        try{
+            fi.divideIt(3,'א');
+            fi.divideIt(15,0.0);
+        }catch( Exception e){
+            e.printStackTrace();
+        }
 
         Delete ichs = new Delete();
-        ichs.func4();
-
-
-
+        try{
+            ichs.func4();
+        }catch(Exception e){
+            System.err.println(e);
+        }
     }
 }
