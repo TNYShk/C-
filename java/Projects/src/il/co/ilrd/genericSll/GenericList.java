@@ -16,12 +16,12 @@ public class GenericList<E> implements Iterable<E>  {
 
     public E popFront() {
         ++version;
-        E dataTORemove = null;
+        E dataToRemove = null;
         if(!isEmpty()){
-            dataTORemove = head.data;
+            dataToRemove = head.data;
             this.head = head.next;
         }
-        return dataTORemove;
+        return dataToRemove;
     }
 
     public int size() {
@@ -41,15 +41,21 @@ public class GenericList<E> implements Iterable<E>  {
 
         for (E element : this) {
             if (element.equals(data)) {
-                Node<E> node = new Node<>(element, null);
+                Node<E> node = new Node<>(element, this.head.next);
                 return new ListIteratorIMP(node);
             }
         }
         return null;
     }
 
+
+
     public static <T> GenericList<T> newReverse(GenericList<T> list) {
-        return null;}
+    GenericList<T> reversedList = new GenericList<>();
+    for(T data: list){
+        reversedList.pushFront(list.popFront());
+    }
+        return reversedList;}
 
     public static <T> GenericList<T> merge(GenericList<T> list1, GenericList<T> list2) {
         return null;}

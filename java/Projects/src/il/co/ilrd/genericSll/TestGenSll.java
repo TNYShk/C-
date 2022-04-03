@@ -12,13 +12,14 @@ public class TestGenSll {
     public static void main(String []args){
 
         GenericList<String> genlist = new GenericList<>();
+        assertTrue(genlist.isEmpty());
         genlist.pushFront("Hi");
         genlist.pushFront("my");
         genlist.pushFront("name");
         genlist.pushFront("is");
         genlist.pushFront("Slim Shady");
         System.out.println("size of list is " + genlist.size());
-
+        genlist = GenericList.newReverse(genlist);
         for (String s: genlist){
             System.out.print(s + " ");
         }
@@ -28,7 +29,8 @@ public class TestGenSll {
         Iterator<String> locate = null;
         locate = genlist.find("my");
 
-        assertTrue(locate != null);
+        assertNotNull(locate);
+        genlist = GenericList.newReverse(genlist);
         genlist.popFront();
         System.out.println("pop front,size of list is " + genlist.size());
 
@@ -38,8 +40,13 @@ public class TestGenSll {
         System.out.println();
 
         locate = genlist.find("Slim Shady");
-       assertEquals(null,locate);
+        assertNull(locate);
 
+       genlist = GenericList.newReverse(genlist);
+        for (String s: genlist){
+            System.out.print(s + " ");
+        }
+        System.out.println();
 
 
         //TestStam();
