@@ -1,14 +1,4 @@
 package il.co.ilrd.genericSll;
-   /*
-    generic linked list, its data is generic.
-    class Node should be generic, since it holds the data (generic), also constructor needed.
-    class Iterator, use java iterator interface! class linkedList implements Iterable (has Iterator method, similar to begin().)
-    methods: size, pushFront,PopFront,isEmpty, find
-    new methods: newReverse(List<T>) returns reversed list
-    merge(LinkedList l1, LinkedList l2), merges lists together in any order. return the new merged list.
-    use enhanced loop
-    Iterator type failfast iterator java- read it!
-     */
 
 
 
@@ -21,12 +11,18 @@ public class GenericList<E> implements Iterable<E>  {
 
     public void pushFront(E data) {
         ++version;
+        this.head = new Node<>(data,this.head);
     }
 
     public E popFront() {
         ++version;
-
-        return null;}
+        E dataTORemove = null;
+        if(!isEmpty()){
+            dataTORemove = head.data;
+            this.head = head.next;
+        }
+        return dataTORemove;
+    }
 
     public int size() {
         int count = 0;
@@ -90,7 +86,11 @@ public class GenericList<E> implements Iterable<E>  {
     public E next() {
        E thisData = null;
 
-       return null;
+       if(hasNext()){
+           thisData = currentNode.data;
+           currentNode = currentNode.next;
+       }
+       return thisData;
     }
 }
 
