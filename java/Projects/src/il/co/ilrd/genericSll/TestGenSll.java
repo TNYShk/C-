@@ -1,6 +1,7 @@
 package il.co.ilrd.genericSll;
 
 //import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 
 import static org.junit.Assert.*;
@@ -49,15 +50,27 @@ public class TestGenSll {
         stringList.pushFront("Name");
         stringList.pushFront("was");
         stringList.pushFront("What?");
+        stringList.pushFront("U sure?!");
         stringList.pushFront("It's Britney B*tch!");
         System.out.println("size of another list is " + stringList.size());
         stringList = GenericList.newReverse(stringList);
         printList(stringList);
 
         System.out.println("Merging lists: ");
-        stringList = GenericList.mergeLists(genlist,stringList);
+        try{
+            stringList = GenericList.mergeLists(genlist,stringList);
+        } catch(ConcurrentModificationException e){
+            System.out.println("Lo NOra");
+
+        }
+
         printList(stringList);
+        System.out.println("size of merged list is now " + stringList.size());
+
+        assertEquals(0,genlist.size());
         assertTrue(genlist.isEmpty());
+       /* assertFalse(genlist.isEmpty());
+        assertEquals(3,genlist.size());*/
         //TestStam();
 
 

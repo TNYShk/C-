@@ -2,6 +2,7 @@ package il.co.ilrd.genericSll;
 
 
 
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 
 
@@ -27,7 +28,7 @@ public class GenericList<E> implements Iterable<E>  {
     public int size() {
         int count = 0;
 
-        for(E GenericList : this){
+        for(E list : this){
             ++count;
         }
         return count;
@@ -52,20 +53,21 @@ public class GenericList<E> implements Iterable<E>  {
 
     public static <T> GenericList<T> newReverse(GenericList<T> list) {
     GenericList<T> reversedList = new GenericList<>();
-    for(T ignored : list){
-        reversedList.pushFront(list.popFront());
+    for(T data : list){
+        reversedList.pushFront(data);
     }
         return reversedList;}
 
     public static <T> GenericList<T> mergeLists(GenericList<T> list1, GenericList<T> list2) {
-        for(T ignored : list1){
+        for(T data : list1){
             list2.pushFront(list1.popFront());
+            /*list2.pushFront(data);*/
+
         }
         return list2;}
 
     @Override
     public Iterator<E> iterator() {
-       ++version;
        return new ListIteratorIMP(head);
     }
 
@@ -87,20 +89,29 @@ public class GenericList<E> implements Iterable<E>  {
    private ListIteratorIMP(Node<E> node){
     currentNode = node;
    }
+
     @Override
     public boolean hasNext() {
         return ((null != currentNode) );
     }
 
     @Override
-    public E next() {
+    public E next()  {
        E thisData = null;
+    /*assertEquals(controlVersion,version);*/
+    try{
+        if(controlVersion != version) {
+            throw new ConcurrentModificationException();
+        }
 
-       if(hasNext()){
-           thisData = currentNode.data;
-           currentNode = currentNode.next;
-       }
-       return thisData;
+    }catch(ConcurrentModificationException e){
+        System.err.println(e);
+      e.printStackTrace();
+
+    }
+        thisData = currentNode.data;
+        currentNode = currentNode.next;
+        return thisData;
     }
 }
 
