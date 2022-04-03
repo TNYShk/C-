@@ -52,13 +52,16 @@ public class GenericList<E> implements Iterable<E>  {
 
     public static <T> GenericList<T> newReverse(GenericList<T> list) {
     GenericList<T> reversedList = new GenericList<>();
-    for(T data: list){
+    for(T ignored : list){
         reversedList.pushFront(list.popFront());
     }
         return reversedList;}
 
-    public static <T> GenericList<T> merge(GenericList<T> list1, GenericList<T> list2) {
-        return null;}
+    public static <T> GenericList<T> mergeLists(GenericList<T> list1, GenericList<T> list2) {
+        for(T ignored : list1){
+            list2.pushFront(list1.popFront());
+        }
+        return list2;}
 
     @Override
     public Iterator<E> iterator() {
