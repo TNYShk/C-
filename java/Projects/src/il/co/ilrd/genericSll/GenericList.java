@@ -38,11 +38,12 @@ public class GenericList<E> implements Iterable<E>  {
     }
 
     public Iterator<E> find(E data) {
-        ListIteratorIMP run = new ListIteratorIMP(head);
-        for(E GenericList: this){
-            if(data.equals(run)){
-                return run;
-            }run.next();
+
+        for (E element : this) {
+            if (element.equals(data)) {
+                Node<E> node = new Node<>(element, null);
+                return new ListIteratorIMP(node);
+            }
         }
         return null;
     }
