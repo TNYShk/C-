@@ -11,7 +11,50 @@ public class TestGenSll {
 
     public static void main(String []args){
 
-        //TestUno();
+        TestUno();
+        TestDos();
+    }
+/*
+    static void TestStam(){
+        List<String> v = new ArrayList<>();
+        v.add("hello");
+        String s = v.get(0);
+        System.out.println(s);
+    }*/
+
+    static void TestUno(){
+        GenericList<Number> numList = new GenericList<>();
+        assertTrue(numList.isEmpty());
+        numList.pushFront(3.14);
+        numList.pushFront(4);
+        numList.pushFront(0.005);
+        numList.pushFront(3);
+        numList.pushFront(4);
+        numList.pushFront(2022);
+        assertEquals(6,numList.size());
+        printNumList(numList);
+        Iterator<?> brr = null;
+        brr = numList.find(3.15);
+        Iterator<?> fond = null;
+        fond = numList.find(3.14);
+        assertNotEquals(brr,fond);
+
+        numList = GenericList.newReverse(numList);
+        printNumList(numList);
+        assertEquals(6,numList.size());
+
+        numList.popFront();
+        numList.popFront();
+        numList.popFront();
+        numList.popFront();
+        numList.popFront();
+        numList.popFront();
+        assertTrue(numList.isEmpty());
+        assertEquals(0,numList.size());
+        System.out.println("End test 1\n");
+
+    }
+    static void TestDos(){
         GenericList<String> genlist = new GenericList<>();
         GenericList<String> stringList = new GenericList<>();
         assertTrue(genlist.isEmpty());
@@ -25,22 +68,18 @@ public class TestGenSll {
         genlist = GenericList.newReverse(genlist);
         printList(genlist);
 
-
-
         Iterator<String> locate = null;
         locate = genlist.find("my");
 
         assertNotNull(locate);
         genlist = GenericList.newReverse(genlist);
         genlist.popFront();
-        System.out.println("\npop front,size of list is " + genlist.size());
 
-
-
+        assertEquals(4,genlist.size());
         locate = genlist.find("Slim Shady");
         assertNull(locate);
 
-       genlist = GenericList.newReverse(genlist);
+        genlist = GenericList.newReverse(genlist);
         System.out.println("printing in reverse");
         printList(genlist);
         genlist = GenericList.newReverse(genlist);
@@ -60,7 +99,7 @@ public class TestGenSll {
         try{
             stringList = GenericList.mergeLists(genlist,stringList);
         } catch(ConcurrentModificationException e){
-            System.out.println("Lo NOra");
+            e.printStackTrace();
 
         }
 
@@ -74,29 +113,6 @@ public class TestGenSll {
         //TestStam();
 
 
-
-    }
-/*
-    static void TestStam(){
-        List<String> v = new ArrayList<>();
-        v.add("hello");
-        String s = v.get(0);
-        System.out.println(s);
-    }*/
-
-    static void TestUno(){
-        GenericList<String> stringList = new GenericList<>();
-        assertTrue(stringList.isEmpty());
-        stringList.pushFront("Who?");
-        stringList.pushFront("my");
-        stringList.pushFront("name");
-        stringList.pushFront("is");
-        stringList.pushFront("What?");
-        stringList.pushFront("My name is?");
-        System.out.println("size of list is " + stringList.size());
-        printList(stringList);
-        stringList = GenericList.newReverse(stringList);
-        printList(stringList);
     }
 
     public static void printNumList(GenericList<? extends Number> list){

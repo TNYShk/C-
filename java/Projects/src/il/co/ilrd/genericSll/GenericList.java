@@ -101,12 +101,12 @@ public class GenericList<E> implements Iterable<E>  {
     /*assertEquals(controlVersion,version);*/
     try{
         if(controlVersion != version) {
-            throw new ConcurrentModificationException();
+            throw new ConcurrentModificationException("hmmmm");
         }
 
     }catch(ConcurrentModificationException e){
         System.err.println(e);
-      e.printStackTrace();
+
 
     }
         thisData = currentNode.data;
