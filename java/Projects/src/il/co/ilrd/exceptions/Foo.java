@@ -1,11 +1,12 @@
 package il.co.ilrd.exceptions;
 
+import java.io.IOException;
 import java.lang.Throwable;
 import java.lang.Exception;
 public class Foo {
     Boolean obj = null;
 
-public void func1(){
+public void func1() throws Exception {
     try{
         int ans = 50/0;
     }catch(Exception e){
@@ -13,16 +14,20 @@ public void func1(){
     }
     System.out.print("enclosing exception in both try and catch blocks");
 }
-    public void func2(){
+    public void func2() {
         System.out.println("inside func2, outside try");
-            if(obj)
-            {
-                System.out.println("inside func2, trying!");
-                throw new NullPointerException();
+        try {
+            obj.toString();
+
+            }catch(NullPointerException e) {
+
+             e.printStackTrace();
+            throw new NullPointerException("Tanya's NUllpointer");
             }
             obj = true;
-        System.out.println("inside func2, trying!");
-    }
+            System.out.println("inside func2, trying!");
+        }
+
     public void func3(){
         byte arry[] = new byte[100];
 
@@ -30,7 +35,7 @@ public void func1(){
             arry[101] = 1;
         } catch (Exception e){
             System.out.println("func3 inside catch block!");
-            System.err.println(e);
+            //sSystem.err.println(e);
             e.printStackTrace();
         }
         System.out.println("func3 end!");

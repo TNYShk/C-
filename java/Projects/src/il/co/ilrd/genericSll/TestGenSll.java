@@ -50,6 +50,7 @@ public class TestGenSll {
         numList.popFront();
         numList.popFront();
         numList.popFront();
+
         assertTrue(numList.isEmpty());
         assertEquals(0,numList.size());
         System.out.println("End test 1\n");

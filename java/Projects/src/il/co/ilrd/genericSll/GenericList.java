@@ -6,23 +6,20 @@ import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 
 
+
 public class GenericList<E> implements Iterable<E> {
     private Node<E> head = null;
     private long version = 0;
 
     public void pushFront(E data) {
         ++version;
-        this.head = new Node<>(data,head);
+        head = new Node<>(data,head);
     }
 
     public E popFront() {
+        E dataToRemove = head.data;
+        head = head.next;
         ++version;
-        E dataToRemove = null;
-
-        if(!isEmpty()){
-            dataToRemove = head.data;
-            this.head = head.next;
-        }
         return dataToRemove;
     }
 
@@ -43,7 +40,7 @@ public class GenericList<E> implements Iterable<E> {
 
         for (E element : this) {
             if (element.equals(data)) {
-                Node<E> node = new Node<>(element, this.head.next);
+                Node<E> node = new Node<>(element, null);
                 return new ListIteratorIMP(node);
             }
         }
@@ -54,6 +51,7 @@ public class GenericList<E> implements Iterable<E> {
 
     public static <T> GenericList<T> newReverse(GenericList<T> list) {
     GenericList<T> reversedList = new GenericList<>();
+
     for(T data : list){
         reversedList.pushFront(data);
     }
@@ -61,12 +59,12 @@ public class GenericList<E> implements Iterable<E> {
 
     public static <T> GenericList<T> mergeLists(GenericList<T> list1, GenericList<T> list2) {
         GenericList<T> mergedList = new GenericList<>();
+
         for(T data : list2) {
             mergedList.pushFront(data);
         }
         for(T data : list1){
             mergedList.pushFront(data);
-            /*list2.pushFront(data);*/
         }
         return mergedList;
     }
@@ -77,7 +75,6 @@ public class GenericList<E> implements Iterable<E> {
     }
 
     private static class Node<T> {
-
         private T data = null;
         private Node<T> next = null;
 
@@ -103,7 +100,7 @@ public class GenericList<E> implements Iterable<E> {
     @Override
     public E next()  {
        E thisData = null;
-    /*assertEquals(controlVersion,version);*/
+
     try{
         if(controlVersion != version) {
             throw new ConcurrentModificationException("hmmmm");
@@ -111,8 +108,6 @@ public class GenericList<E> implements Iterable<E> {
 
     }catch(ConcurrentModificationException e){
         System.err.println(e);
-
-
     }
         thisData = currentNode.data;
         currentNode = currentNode.next;
