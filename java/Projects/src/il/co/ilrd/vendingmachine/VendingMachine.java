@@ -1,5 +1,5 @@
 package il.co.ilrd.vendingmachine;
-import com.sun.corba.se.impl.oa.toa.TOA;
+
 
 import java.awt.*;
 import java.util.Timer;
@@ -11,7 +11,6 @@ public class VendingMachine{
     public double balance = 0;
     private final Screen myScreen;
     private Products chosenProduct = Products.EMPTY;
-    Toolkit tools;
     Timer timer;
     private long secondsToWait = 10;
 
@@ -27,7 +26,6 @@ public class VendingMachine{
     class RemindTask extends TimerTask {
         public void run(){
             if (secondsToWait > 0) {
-
                 --secondsToWait;
                 turnON();
             }else{
@@ -154,15 +152,5 @@ public class VendingMachine{
     }
 
     Screen instance = toPrint -> System.out.println(toPrint);
-/*
-    static class Inner{
 
-        void method(VendingMachine vm){
-            Products statProd = Products.BEER;
-            System.out.println(statProd.getName());
-            System.out.println("balance is: " + vm.balance);
-            System.out.println(vm.state);
-        }
-    }
-*/
 }
