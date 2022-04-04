@@ -1,7 +1,5 @@
 package il.co.ilrd.vendingmachine;
 
-
-import java.awt.*;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -11,7 +9,7 @@ public class VendingMachine{
     public double balance = 0;
     private final Screen myScreen;
     private Products chosenProduct = Products.EMPTY;
-    Timer timer;
+    private Timer timer;
     private long secondsToWait = 10;
 
 
@@ -20,21 +18,17 @@ public class VendingMachine{
         this.myScreen = myScreen;
         this.balance = 0;
         timer = new Timer();
-
-
     }
-    class RemindTask extends TimerTask {
+    private class RemindTask extends TimerTask {
         public void run(){
             if (secondsToWait > 0) {
                 --secondsToWait;
                 turnON();
             }else{
-
                 System.out.println("no input, good bye!");
                 cancelReturn();
                 timer.cancel();
             }
-
         }
     }
 
