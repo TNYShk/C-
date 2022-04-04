@@ -6,18 +6,19 @@ import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 
 
-public class GenericList<E> implements Iterable<E>  {
+public class GenericList<E> implements Iterable<E> {
     private Node<E> head = null;
     private long version = 0;
 
     public void pushFront(E data) {
         ++version;
-        this.head = new Node<>(data,this.head);
+        this.head = new Node<>(data,head);
     }
 
     public E popFront() {
         ++version;
         E dataToRemove = null;
+
         if(!isEmpty()){
             dataToRemove = head.data;
             this.head = head.next;
@@ -59,12 +60,16 @@ public class GenericList<E> implements Iterable<E>  {
         return reversedList;}
 
     public static <T> GenericList<T> mergeLists(GenericList<T> list1, GenericList<T> list2) {
-        for(T data : list1){
-            list2.pushFront(list1.popFront());
-            /*list2.pushFront(data);*/
-
+        GenericList<T> mergedList = new GenericList<>();
+        for(T data : list2) {
+            mergedList.pushFront(data);
         }
-        return list2;}
+        for(T data : list1){
+            mergedList.pushFront(data);
+            /*list2.pushFront(data);*/
+        }
+        return mergedList;
+    }
 
     @Override
     public Iterator<E> iterator() {

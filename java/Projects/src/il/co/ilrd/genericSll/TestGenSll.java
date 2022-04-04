@@ -11,6 +11,7 @@ public class TestGenSll {
 
     public static void main(String []args){
 
+
         TestUno();
         TestDos();
     }
@@ -106,10 +107,9 @@ public class TestGenSll {
         printList(stringList);
         System.out.println("size of merged list is now " + stringList.size());
 
-        assertEquals(0,genlist.size());
-        assertTrue(genlist.isEmpty());
-       /* assertFalse(genlist.isEmpty());
-        assertEquals(3,genlist.size());*/
+        assertEquals(4,genlist.size());
+        assertFalse(genlist.isEmpty());
+
         //TestStam();
 
 
