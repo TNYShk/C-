@@ -4,6 +4,7 @@ public class SinglyLinkedList {
     private Node head = null;
 
     //default constructor
+
     private class Node {
         private Object data = null;
         private Node next = null;
@@ -40,16 +41,16 @@ public class SinglyLinkedList {
 
     public void pushFront(Object data) {
         Node newNode = new Node(data, this.head);
-        this.head = newNode;
-        //System.out.println("pushed to list: " + data);
+       head = newNode;
+
     }
 
     public Object popFront() {
         Object removedData = null;
 
         if(!isEmpty()) {
-            removedData = this.head.data;
-            this.head = head.next;
+            removedData = head.data;
+            head = head.next;
         }
     return removedData;
     }
@@ -63,6 +64,8 @@ public class SinglyLinkedList {
     }
 */
 
+
+
     public int listSize() {
         int count = 0;
         ListIteratorImp run = new ListIteratorImp(head);
@@ -71,8 +74,13 @@ public class SinglyLinkedList {
             ++count;
             run.next();
         }
+        Integer c = count;
+
         return count;
+
         }
+
+
 
     public boolean isEmpty(){
         return (head == null);
