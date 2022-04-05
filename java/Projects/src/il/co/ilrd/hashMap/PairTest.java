@@ -37,7 +37,10 @@ public class PairTest {
         assertTrue(s1.getKey().equals("aaaa"));
         assertTrue(s1.getValue().equals("zzz"));
     }
-
+public static void main (String []args){
+        Pair<Integer,Integer> t = Pair.of(2,6);
+        System.out.println(t);
+}
 
 
 }
