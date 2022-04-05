@@ -1,4 +1,4 @@
-package il.co.ilrd.complex.hashMap;
+package il.co.ilrd.hashMap;
 
 import java.util.HashSet;
 import org.junit.jupiter.api.Test;

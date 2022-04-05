@@ -1,4 +1,4 @@
-package il.co.ilrd.complex.hashMap;
+package il.co.ilrd.hashMap;
 
 
 import java.util.*;
@@ -66,7 +66,7 @@ public class Pair <K, V> implements Map.Entry<K, V> {
                 if (0 > cmpFun.compare(elementsArray[2 * i], min) ) {
                     min = elementsArray[2 * i];
                 }
-                if (0 < cmpFun.compare(elementsArray[(2 *i) + 1], max)) {
+                if (0 < cmpFun.compare(elementsArray[(2 * i) + 1], max)) {
                     max = elementsArray[(2 * i) + 1];
                 }
             }
