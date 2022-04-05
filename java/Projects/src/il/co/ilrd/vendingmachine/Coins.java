@@ -4,7 +4,7 @@ public enum Coins {
     AGORA(0.10),
     HALFS(0.5),
     SHEKEL(1.0),
-    SHNEKEL(5.0),
+    SHNEKEL(2.0),
     FIVES(5.0),
     TENS(10);
 
