@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class testSingletons {
+public class testSingletons extends Thread {
 
     @Test
     void TestLazySafeS() {
@@ -20,10 +20,15 @@ public class testSingletons {
 
     @Test
     void TestDoubleSafeS() {
+        LazyDoubleSingleton thread = LazyDoubleSingleton.getInstance();
+        LazyDoubleSingleton thread2 = LazyDoubleSingleton.getInstance();
         LazyDoubleSingleton s1 = LazyDoubleSingleton.getInstance();
         LazyDoubleSingleton s2 = LazyDoubleSingleton.getInstance();
         assertTrue(s1.getInstance().equals(s2.getInstance()));
-
+        thread2.run();
+        thread.run();
+        assertEquals(thread.hashCode(), thread2.hashCode());
+        assertEquals(s1.hashCode(), thread2.hashCode());
         assertEquals(s1.hashCode(), s2.hashCode());
         assertEquals(s1.toString(), s2.toString());
     }

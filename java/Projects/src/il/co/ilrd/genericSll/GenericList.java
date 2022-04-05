@@ -2,9 +2,10 @@ package il.co.ilrd.genericSll;
 
 
 
+import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
-
+import java.util.Map;
 
 
 public class GenericList<E> implements Iterable<E> {
@@ -14,6 +15,7 @@ public class GenericList<E> implements Iterable<E> {
     public void pushFront(E data) {
         ++version;
         head = new Node<>(data,head);
+
     }
 
     public E popFront() {

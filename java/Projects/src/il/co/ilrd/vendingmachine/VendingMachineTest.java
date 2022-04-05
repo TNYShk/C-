@@ -1,11 +1,11 @@
 package il.co.ilrd.vendingmachine;
 
-//import sun.awt.X11.Screen;
+
 
 public class VendingMachineTest {
     public static void main(String[] args) {
 
-    //TestOne();
+        TestOne();
         TestTwo();
     }
     static void TestTwo(){
@@ -60,14 +60,15 @@ public class VendingMachineTest {
         vm.insertCoin(Coins.TENS);
         vm.insertCoin(Coins.TENS);
         vm.chooseProduct(Products.BEER);
+
+        vm.insertCoin(Coins.SHNEKEL);
         vm.insertCoin(Coins.FIVES);
-        vm.insertCoin(Coins.SHEKEL);
         vm.chooseProduct(Products.POISON);
         vm.turnON();
         vm.turnON();
         vm.insertCoin(Coins.TENS);
         vm.insertCoin(Coins.HALFS);
-        vm.insertCoin(Coins.HALFS);
+        vm.insertCoin(Coins.SHEKEL);
         vm.chooseProduct(Products.CANDY);
         vm.chooseProduct(Products.COFFEE);
         vm.insertCoin(Coins.AGORA);

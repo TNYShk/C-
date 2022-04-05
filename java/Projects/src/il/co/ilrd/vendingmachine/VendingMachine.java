@@ -11,7 +11,7 @@ public class VendingMachine{
     private Products chosenProduct = Products.EMPTY;
     private Timer timer;
     private long secondsToWait = 10;
-
+    private Screen instance = toPrint -> System.out.println(toPrint);
 
     public VendingMachine(Products[] catalogMachine, Screen myScreen){
         this.catalogMachine = catalogMachine;
@@ -39,8 +39,8 @@ public class VendingMachine{
 
     public void chooseProduct(Products desired) {
         chosenProduct = desired;
-       timer.scheduleAtFixedRate(new RemindTask(), secondsToWait,5000);
-       state.chooseProduct(this,desired);
+        timer.scheduleAtFixedRate(new RemindTask(), secondsToWait,5000);
+        state.chooseProduct(this,desired);
     }
 
     public void cancelReturn() {
@@ -119,16 +119,16 @@ public class VendingMachine{
 
         };
 
-       // private Screen instance;
-
         public void insertCoin(VendingMachine vm, Coins coin) {}
 
         public void chooseProduct(VendingMachine vm, Products product) {}
 
         public void cancelReturn(VendingMachine mac) {
-            mac.state = WAITPRODUCT;
+
             mac.instance.Print("here's your money back " + mac.balance);
             mac.balance = 0;
+            mac.chosenProduct = Products.EMPTY;
+            mac.state = WAITPRODUCT;
         }
 
         public void turnOFF(VendingMachine mac) {
@@ -145,6 +145,6 @@ public class VendingMachine{
         public void turnON(VendingMachine vm) {}
     }
 
-    Screen instance = toPrint -> System.out.println(toPrint);
+
 
 }
