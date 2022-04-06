@@ -36,13 +36,27 @@ public class Pair <K, V> implements Map.Entry<K, V> {
 
     @Override
     public int hashCode() {
-        return (key.hashCode()^value.hashCode());
+        final int prime = 101;
+        int hash = 11;
+
+        if (null != key) {
+            hash *= prime + key.hashCode();
+        }
+
+        if (null != value) {
+            hash *= prime + value.hashCode();
+        }
+
+        return hash;
+
+
+
     }
 
     @Override
     public boolean equals(Object other) {
         if(other instanceof Pair){
-            return (this.key.equals(((Pair<?, ?>) other).key) && this.value.equals(((Pair<?, ?>) other).value));
+            return (this.key.equals(((Pair<?, ?>) other).key) && this.value.equals(((Pair<?,?>) other).value));
         }
         return false;
     }
@@ -58,13 +72,13 @@ public class Pair <K, V> implements Map.Entry<K, V> {
     //time complex o(1.5)
     public static <E> Pair<E, E> minMax(E [] elementsArray, Comparator<E> cmpFun){
 
-        E min = elementsArray[0];
-        E max = elementsArray[elementsArray.length-1];
+        E min = elementsArray[elementsArray.length - 1];
+        E max = elementsArray[elementsArray.length - 1];
 
-        for (int i = 0; i < (elementsArray.length / 2); ++i) {
+        for (int i = 0; i < (elementsArray.length >>1) ; ++i) {
             if (0 > cmpFun.compare(elementsArray[2 * i], elementsArray[(2 * i) + 1])) {
                 if (0 > cmpFun.compare(elementsArray[2 * i], min) ) {
-                    min = elementsArray[2 * i];
+                    min = elementsArray[ 2 * i ];
                 }
                 if (0 < cmpFun.compare(elementsArray[(2 * i) + 1], max)) {
                     max = elementsArray[(2 * i) + 1];

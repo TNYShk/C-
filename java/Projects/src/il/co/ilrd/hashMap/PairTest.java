@@ -26,16 +26,21 @@ public class PairTest {
     @Test
     void TestArry(){
         Double[] darry = {1.2,3.2,-5.1,4.4, 0.0, -99.9};
-        Pair<Double,Double> pd3 = Pair.minMax(darry);
+        Pair<Double, Double> pd3 = Pair.minMax(darry);
         assertTrue(Pair.of(-99.9,4.4).equals(pd3));
     }
 
     @Test
     void TestString(){
-        String[] strArry = {"aaaa","one", "two", "three","four","zzz" };
-        Pair<String,String> s1 = Pair.minMax(strArry,String::compareTo);
+        String[] strArry = {"zzzzz","two","aaaa", "four", "three","zzz","one"};
+        String shay = "banana";
+        System.out.println(shay.hashCode());
+        Pair<String, String> s1 = Pair.minMax(strArry,String::compareTo);
+        System.out.println(s1.hashCode());
+        System.out.println(s1);
         assertTrue(s1.getKey().equals("aaaa"));
-        assertTrue(s1.getValue().equals("zzz"));
+        assertTrue(s1.getValue().equals("zzzzz"));
+
     }
 public static void main (String []args){
         Pair<Integer,Integer> t = Pair.of(2,6);
