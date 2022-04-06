@@ -1,7 +1,11 @@
 package il.co.ilrd.hashMap;
 
 import java.util.HashSet;
+
+import com.sun.media.sound.SoftMixingSourceDataLine;
 import org.junit.jupiter.api.Test;
+import org.junit.platform.engine.support.descriptor.FileSystemSource;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PairTest {
@@ -42,10 +46,21 @@ public class PairTest {
         assertTrue(s1.getValue().equals("zzzzz"));
 
     }
-public static void main (String []args){
+    public static void main (String []args){
         Pair<Integer,Integer> t = Pair.of(2,6);
         System.out.println(t);
 }
+    @Test
+    void HashTest(){
+        HashMap<String, Integer> myMap = new HashMap<>();
+        assertTrue(myMap.isEmpty());
+        assertEquals(myMap.size(), 0);
+        myMap.put("die",1);
+        myMap.put("antwood",2222);
+        myMap.put("south",3);
+        myMap.put("africa",4);
+        assertFalse(myMap.isEmpty());
+        System.out.println(myMap.size());
 
-
+    }
 }

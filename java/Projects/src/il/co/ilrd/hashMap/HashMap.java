@@ -24,6 +24,9 @@ public class HashMap<K,V> implements Map<K,V> {
 
     public HashMap(int capacity){
       HashMap = new ArrayList<>(capacity);
+      for(int i = 0; i < capacity ; ++i){
+          HashMap.add(new LinkedList<>());
+      }
 
     }
     @Override
@@ -35,7 +38,6 @@ public class HashMap<K,V> implements Map<K,V> {
     @Override
     public boolean isEmpty() {
         for(List<Entry<K, V>> rooms: HashMap){
-
                if(!rooms.isEmpty()){
                    return false;
                }
@@ -45,20 +47,20 @@ public class HashMap<K,V> implements Map<K,V> {
 
     @Override
     public boolean containsKey(Object key) {
-
-        return HashMap.contains(key);
+        int hash =  Math.floorMod(key.hashCode(),16);
+        return HashMap.contains(hash);
     }
 
     @Override
     public boolean containsValue(Object value) {
+        return HashMap.contains(value);
 
-        return false;
     }
 
     @Override
     public V get(Object key) {
         if(containsKey(key)){
-            List<Entry<K, V>> floor = HashMap.get((int)key % 16);
+            List<Entry<K, V>> floor = HashMap.get(Math.floorMod(key.hashCode(), HashMap.size()));
             for(Entry<K, V> room : floor){
                 if(key.equals(room.getKey())){
                     return room.getValue();
@@ -67,20 +69,30 @@ public class HashMap<K,V> implements Map<K,V> {
         }
         return null;
     }
-
+    /* create pair.of (key,value);
+        hash the key, then % on 16, to get the according bucket.
+        in the bucket check if the value isnt already there. if not, store the new pair
+          */
     @Override
-    public Object put(Object key, Object value) {
-        ++version;
-       /* create pair.of (key,value);
-        hash the key, then % on 16, to get the according bucket. in the bucket check if the value isnt already there. if not, store the new pair
-        */
-        return null;
+    public V put(K key, V value) {
 
+        Pair<K,V> newPair =  Pair.of(key,value);
+        int hash =  Math.floorMod(key.hashCode(),16);
+        for(Entry<K,V> match: HashMap.get(hash)) {
+            if (match.getKey().equals(key)) {
+                ++version;
+                return match.setValue(value);
+            }
+        }
+        ++version;
+        HashMap.get(hash).add(newPair);
+        return value;
     }
 
     @Override
     public V remove(Object key) {
-        V dataToRemove = get(key);
+        int hash = Math.floorMod(key.hashCode(),16);
+        V dataToRemove = get(hash);
         HashMap.remove(key);
 
         ++version;
@@ -89,46 +101,78 @@ public class HashMap<K,V> implements Map<K,V> {
 
     @Override
     public void putAll(Map<? extends K, ? extends V> map) {
-        //enhaced loop in entry set
+        //enhanced loop in entry set
+        for (Map.Entry<? extends K, ? extends V> set : map.entrySet()) this.put(set.getKey(), set.getValue());
     }
-
-
 
     @Override
     public Collection<V> values() {
-        return null;
+        return new valuesPairs();
     }
 
     private class valuesPairs extends AbstractCollection<V> {
 
         @Override
         public Iterator<V> iterator() {
-            return null;
+            return (Iterator<V>) new valuesPairsIterator();
         }
 
         @Override
         public int size() {
-            return 0;
+            return HashMap.size();
         }
 
         private class valuesPairsIterator implements Iterator<Entry<K, V>> {
+            private Set<Entry<K, V>> entry = HashMap.this.entrySet();
+            private Iterator<Entry<K, V>> iter = entry.iterator();
+
             @Override
             public boolean hasNext() {
-                return false;
+                return iter.hasNext();
             }
 
             @Override
             public Entry<K, V> next() {
-                return null;
+               return iter.next();
+
             }
         }
     }
 
 
     @Override
-    public Set keySet() {
-        return null;
+    public Set<K> keySet() {
+        return new setOfKeys();
     }
+    private class setOfKeys extends AbstractSet<K>{
+
+        @Override
+        public Iterator<K> iterator() {
+            return new setOfKeysIterator();
+        }
+
+        @Override
+        public int size() {
+           return HashMap.size();
+        }
+
+        private class setOfKeysIterator implements Iterator<K>{
+            private Set<Entry<K, V>> set = HashMap.this.entrySet();
+            private Iterator<Entry<K, V>> iter = set.iterator();
+
+
+            @Override
+            public boolean hasNext() {
+               return iter.hasNext();
+            }
+
+            @Override
+            public K next() {
+                return iterator().next();
+            }
+        }
+    }
+
     @Override
     public Set<Entry<K, V>> entrySet() {
         //Set is ds interface? need inner class for it- collection of unique elements
@@ -140,14 +184,13 @@ public class HashMap<K,V> implements Map<K,V> {
 
         @Override
         public Iterator<Entry<K,V>> iterator() {
-            setOfPairsIterator innerIter =  new setOfPairsIterator();
             return new setOfPairsIterator();
-           /* return innerIter.innerListLocation;*/
+
         }
 
         @Override
         public int size() {
-            return HashMap.this.size();
+            return HashMap.size();
         }
 
         private class setOfPairsIterator implements Iterator<Entry<K,V>>{
@@ -158,16 +201,23 @@ public class HashMap<K,V> implements Map<K,V> {
 
             private setOfPairsIterator(){
                 bucket = HashMap.listIterator();
-                innerListLocation = bucket.next().listIterator();
+                Iterator<List<Entry<K,V>>> runner = bucket;
+                innerListLocation = runner.next().listIterator();
             }
             @Override
             public boolean hasNext() {
-                return bucket.hasNext();
+                List<Entry<K,V>> bucky = null;
+
+                for(Iterator<List<Entry<K,V>>> floor = bucket ; floor.hasNext(); bucky = floor.next()) {
+                    if (!bucky.isEmpty()){
+                        return true;
+                    }
+                }
+                return false;
             }
 
             @Override
             public Entry<K, V> next() {
-
                 if(version != versionNumber){
                         throw new ConcurrentModificationException();
                 }
