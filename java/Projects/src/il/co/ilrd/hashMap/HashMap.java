@@ -28,9 +28,7 @@ public class HashMap<K,V> implements Map<K,V> {
     }
     @Override
     public void clear() {
-        for(List<Entry<K, V>> rooms: HashMap){
-            rooms.clear();
-        }
+      Collections.fill(HashMap, null);
         ++version;
     }
 
@@ -47,6 +45,7 @@ public class HashMap<K,V> implements Map<K,V> {
 
     @Override
     public boolean containsKey(Object key) {
+
         return HashMap.contains(key);
     }
 
@@ -163,10 +162,7 @@ public class HashMap<K,V> implements Map<K,V> {
             }
             @Override
             public boolean hasNext() {
-              if(bucket.hasNext()){
-                  return true;
-              }
-                return false;
+                return bucket.hasNext();
             }
 
             @Override
