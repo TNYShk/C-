@@ -70,6 +70,7 @@ public class HashMap<K,V> implements Map<K,V> {
 
     @Override
     public Object put(Object key, Object value) {
+        ++version;
        /* create pair.of (key,value);
         hash the key, then % on 16, to get the according bucket. in the bucket check if the value isnt already there. if not, store the new pair
         */
@@ -137,7 +138,8 @@ public class HashMap<K,V> implements Map<K,V> {
 
         @Override
         public Iterator<Entry<K,V>> iterator() {
-            return null;
+            setOfPairsIterator innerIter =  new setOfPairsIterator();
+            return innerIter.innerListLocation;
         }
 
         @Override
@@ -151,8 +153,9 @@ public class HashMap<K,V> implements Map<K,V> {
             private Iterator<Entry<K,V>> innerListLocation;
             private final int versionNumber = version;
 
-            setOfPairsIterator(){
-
+            private setOfPairsIterator(){
+                bucket = HashMap.listIterator();
+                innerListLocation = bucket.next().listIterator();
             }
             @Override
             public boolean hasNext() {
