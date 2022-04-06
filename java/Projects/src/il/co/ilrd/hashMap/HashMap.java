@@ -11,7 +11,11 @@ public class HashMap<K,V> implements Map<K,V> {
 
     @Override
     public int size() {
-        return 0;
+        int occupied = 0;
+
+        for(List<Entry<K, V>> rooms: HashMap)
+            occupied += rooms.size();
+        return occupied;
     }
 
     public HashMap(){
@@ -20,28 +24,47 @@ public class HashMap<K,V> implements Map<K,V> {
 
     public HashMap(int capacity){
       HashMap = new ArrayList<List<Entry<K,V>>>(capacity);
-      /*for(List: HashMap){*/
 
-
+    }
+    @Override
+    public void clear() {
+        for(List<Entry<K, V>> rooms: HashMap){
+            rooms.clear();
+        }
     }
 
     @Override
     public boolean isEmpty() {
-        return false;
+        for(List<Entry<K, V>> rooms: HashMap){
+
+               if(!rooms.isEmpty()){
+                   return false;
+               }
+            }
+        return true;
     }
 
     @Override
     public boolean containsKey(Object key) {
-        return false;
+        return HashMap.contains(key);
     }
 
     @Override
     public boolean containsValue(Object value) {
+
         return false;
     }
 
     @Override
-    public V get(Object o) {
+    public V get(Object key) {
+        if(containsKey(key)){
+            List<Entry<K, V>> floor = HashMap.get((int)key % 16);
+            for(Entry<K, V> room: floor){
+                if(key.equals(room)){
+                    return room.getValue();
+                }
+            }
+        }
         return null;
     }
 
@@ -56,7 +79,9 @@ public class HashMap<K,V> implements Map<K,V> {
 
     @Override
     public V remove(Object key) {
-        return null;
+        V dataToRemove = get(key);
+        HashMap.remove(key);
+        return dataToRemove;
     }
 
     @Override
@@ -64,10 +89,7 @@ public class HashMap<K,V> implements Map<K,V> {
         //enhaced loop in entry set
     }
 
-    @Override
-    public void clear() {
-    // empties hash
-    }
+
 
     @Override
     public Collection<V> values() {
