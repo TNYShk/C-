@@ -23,7 +23,7 @@ public class HashMap<K,V> implements Map<K,V> {
     }
 
     public HashMap(int capacity){
-      HashMap = new ArrayList<List<Entry<K,V>>>(capacity);
+      HashMap = new ArrayList<>(capacity);
 
     }
     @Override
@@ -31,6 +31,7 @@ public class HashMap<K,V> implements Map<K,V> {
         for(List<Entry<K, V>> rooms: HashMap){
             rooms.clear();
         }
+        ++version;
     }
 
     @Override
@@ -59,8 +60,8 @@ public class HashMap<K,V> implements Map<K,V> {
     public V get(Object key) {
         if(containsKey(key)){
             List<Entry<K, V>> floor = HashMap.get((int)key % 16);
-            for(Entry<K, V> room: floor){
-                if(key.equals(room)){
+            for(Entry<K, V> room : floor){
+                if(key.equals(room.getKey())){
                     return room.getValue();
                 }
             }
@@ -82,6 +83,8 @@ public class HashMap<K,V> implements Map<K,V> {
     public V remove(Object key) {
         V dataToRemove = get(key);
         HashMap.remove(key);
+
+        ++version;
         return dataToRemove;
     }
 
@@ -139,7 +142,8 @@ public class HashMap<K,V> implements Map<K,V> {
         @Override
         public Iterator<Entry<K,V>> iterator() {
             setOfPairsIterator innerIter =  new setOfPairsIterator();
-            return innerIter.innerListLocation;
+            return new setOfPairsIterator();
+           /* return innerIter.innerListLocation;*/
         }
 
         @Override
@@ -159,13 +163,24 @@ public class HashMap<K,V> implements Map<K,V> {
             }
             @Override
             public boolean hasNext() {
-                //allow null data so extra checks
+              if(bucket.hasNext()){
+                  return true;
+              }
                 return false;
             }
 
             @Override
             public Entry<K, V> next() {
-                return null;
+
+                if(version != versionNumber){
+                        throw new ConcurrentModificationException();
+                }
+                for(Iterator<List<Entry<K,V>>> floor = bucket; floor.hasNext();floor.next()) {
+                    for (Iterator<Entry<K, V>> room = innerListLocation; room.hasNext(); ) {
+                        return (Entry<K, V>) Pair.of(floor, room);
+                    }
+                }
+               return null;
             }
         }
     }
