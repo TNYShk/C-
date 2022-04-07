@@ -104,8 +104,8 @@ public class HashMap<K,V> implements Map<K,V> {
 
     @Override
     public V remove(Object key) {
-        int hash = Math.floorMod(key.hashCode(), Hashmap.size());
-        List<Entry<K, V>> floor = Hashmap.get(Math.floorMod(key.hashCode(), Hashmap.size()));
+        int hash = Math.floorMod(key.hashCode(),capacity);
+        List<Entry<K, V>> floor = Hashmap.get(Math.floorMod(key.hashCode(), capacity));
         for (Entry<K, V> data : floor) {
             if (data.getKey().equals(key)) {
                 V dataToRemove = data.getValue();

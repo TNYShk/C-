@@ -115,13 +115,15 @@ public class PairTest {
         System.out.println(myMap.values());
         System.out.println(myMap.entrySet());
         System.out.println(myMap.keySet());
-
+        myMap.remove("angry");
+        myMap.remove("so");
+        assertEquals(3,myMap.size());
         for(String v: myMap.keySet()) {
-            System.out.println(v);
-
+            System.out.print(v + " ");
         }
+        System.out.println();
         for(Integer v: myMap.values()) {
-            System.out.println(v);
+            System.out.print(v+ " ");
         }
 
 
