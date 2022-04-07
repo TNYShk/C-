@@ -99,17 +99,17 @@ public class HashMap<K,V> implements Map<K,V> {
 
         int hash = Math.floorMod(key.hashCode(), Hashmap.size());
         List<Entry<K, V>> floor = Hashmap.get(Math.floorMod(key.hashCode(), Hashmap.size()));
-        V dataToRemove = get(hash);
+        V dataToRemove = null;
         for (Entry<K, V> data : floor) {
             if (data.getKey().equals(key)) {
                 dataToRemove = data.getValue();
                 Hashmap.get(hash).remove(Hashmap.get(hash).indexOf(data));
                 ++version;
+                return dataToRemove;
             }
-            return dataToRemove;
 
         }
-            return null;
+        return dataToRemove;
 
     }
 
@@ -189,8 +189,7 @@ public class HashMap<K,V> implements Map<K,V> {
 
     @Override
     public Set<Entry<K, V>> entrySet() {
-        //Set is ds interface? need inner class for it- collection of unique elements
-        //return setofPairs object
+
         return new SetOfPairs();
     }
 
@@ -209,27 +208,26 @@ public class HashMap<K,V> implements Map<K,V> {
 
         private class setOfPairsIterator implements Iterator<Entry<K,V>>{
         //fail-fast iterator
-            private Iterator<List<Entry<K,V>>> bucket;
+            private ListIterator<List<Entry<K,V>>> bucket;
             private Iterator<Entry<K,V>> innerListLocation;
             private final int versionNumber = version;
 
             private setOfPairsIterator(){
                 bucket = Hashmap.listIterator();
-                Iterator<List<Entry<K,V>>> runner = bucket;
-                innerListLocation = runner.next().listIterator();
+                innerListLocation = bucket.next().iterator();
             }
+
             @Override
             public boolean hasNext() {
-               if(innerListLocation.hasNext()){
-                   return true;
-               }
-               while(bucket.hasNext()){
-                    Iterator<List<Entry<K,V>>> temp = bucket;
-                    Iterator<Entry<K,V>> innerRunner = temp.next().listIterator();
-                   if(innerRunner.hasNext()){
+
+                ListIterator<List<Entry<K, V>>> roomRunner = bucket;
+
+                while (roomRunner.hasNext()) {
+                   if (!roomRunner.next().isEmpty()){
+                       roomRunner.previous();
                        return true;
                    }
-               }
+                }
                 return false;
             }
 
@@ -238,16 +236,18 @@ public class HashMap<K,V> implements Map<K,V> {
                 if(version != versionNumber){
                         throw new ConcurrentModificationException();
                 }
-               if(innerListLocation.hasNext()){
-                   return innerListLocation.next();
+                if(innerListLocation.hasNext()){
+                    return innerListLocation.next();
                 }
-               while(bucket.hasNext()){
-                   innerListLocation = bucket.next().listIterator();
-                   if(innerListLocation.hasNext()){
-                       return innerListLocation.next();
-                   }
-               }
-               return null;
+
+                while(bucket.hasNext()){
+                    List<Entry<K,V>> bucketIter = bucket.next();
+                    if(!bucketIter.isEmpty()){
+                        innerListLocation = bucketIter.iterator();
+                        return  innerListLocation.next();
+                    }
+                }
+            return null;
             }
         }
     }

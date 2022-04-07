@@ -25,7 +25,7 @@ public class PairTest {
         Pair<Integer,Integer> pp5 = Pair.swap(pp4);
         assertNotEquals(pp1, pp2);
         assertFalse(pp2.equals(pp3));
-        assertFalse(pp4.hashCode()== pp3.hashCode());
+        assertFalse(pp4.hashCode() == pp3.hashCode());
         assertTrue(Pair.swap(pp5).equals(pp4));
 
     }
@@ -61,7 +61,9 @@ public class PairTest {
         myMap.put("antwood",2222);
         myMap.put("south",3);
         myMap.put("africa",4);
-
+        for(Map.Entry v: myMap.entrySet()){
+            System.out.println(v);
+        }
        /* System.out.println("get die value: " + myMap.get("die"));
         System.out.println("get antwood value: " + myMap.get("antwood"));
         myMap.put("antwood",444);
