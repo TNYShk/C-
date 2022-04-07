@@ -32,6 +32,9 @@ public class HashMap<K,V> implements Map<K,V> {
     @Override
     public void clear() {
         Hashmap.clear();
+        for(int i = 0; i < 16 ; ++i){
+            Hashmap.add(new LinkedList<>());
+        }
         ++version;
     }
 
@@ -47,15 +50,19 @@ public class HashMap<K,V> implements Map<K,V> {
 
     @Override
     public boolean containsKey(Object key) {
-        int hash =  Math.floorMod(key.hashCode(),Hashmap.size());
-
-        return Hashmap.contains(hash);
+        List<Entry<K, V>> floor = Hashmap.get(Math.floorMod(key.hashCode(), Hashmap.size()));
+        for(Entry<K, V> room : floor){
+            if(room.getKey().equals(key)){
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
     public boolean containsValue(Object value) {
-    for (List<Entry<K, V>> entry : Hashmap) {
-            if (entry.equals(value)){
+    for (Map.Entry entry : this.entrySet()) {
+            if (entry.getValue().equals(value)){
                 return true;
             }
         }
@@ -81,7 +88,8 @@ public class HashMap<K,V> implements Map<K,V> {
     public V put(K key, V value) {
 
         Pair<K,V> newPair =  Pair.of(key,value);
-        int hash =  Math.floorMod(key.hashCode(), Hashmap.size());
+        int size = (Hashmap.size()== 0)? 16 : Hashmap.size();
+        int hash =  Math.floorMod(key.hashCode(), size);
         for(Entry<K,V> match: Hashmap.get(hash)) {
             if (match.getKey().equals(key)) {
                 ++version;
@@ -99,18 +107,15 @@ public class HashMap<K,V> implements Map<K,V> {
 
         int hash = Math.floorMod(key.hashCode(), Hashmap.size());
         List<Entry<K, V>> floor = Hashmap.get(Math.floorMod(key.hashCode(), Hashmap.size()));
-        V dataToRemove = null;
         for (Entry<K, V> data : floor) {
             if (data.getKey().equals(key)) {
-                dataToRemove = data.getValue();
+                V dataToRemove = data.getValue();
                 Hashmap.get(hash).remove(Hashmap.get(hash).indexOf(data));
                 ++version;
                 return dataToRemove;
             }
-
         }
-        return dataToRemove;
-
+        return null;
     }
 
     @Override
@@ -189,7 +194,6 @@ public class HashMap<K,V> implements Map<K,V> {
 
     @Override
     public Set<Entry<K, V>> entrySet() {
-
         return new SetOfPairs();
     }
 
@@ -198,7 +202,6 @@ public class HashMap<K,V> implements Map<K,V> {
         @Override
         public Iterator<Entry<K,V>> iterator() {
             return new setOfPairsIterator();
-
         }
 
         @Override
@@ -219,7 +222,6 @@ public class HashMap<K,V> implements Map<K,V> {
 
             @Override
             public boolean hasNext() {
-
                 ListIterator<List<Entry<K, V>>> roomRunner = bucket;
 
                 while (roomRunner.hasNext()) {

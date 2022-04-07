@@ -61,23 +61,25 @@ public class PairTest {
         myMap.put("antwood",2222);
         myMap.put("south",3);
         myMap.put("africa",4);
+        assertEquals(true, myMap.containsValue(2222));
         for(Map.Entry v: myMap.entrySet()){
             System.out.println(v);
         }
-       /* System.out.println("get die value: " + myMap.get("die"));
-        System.out.println("get antwood value: " + myMap.get("antwood"));
-        myMap.put("antwood",444);
-        System.out.println("put antwood: " + myMap.put("antwood",444));*/
 
         assertEquals(4, myMap.size());
 
         assertFalse(myMap.isEmpty());
         myMap.remove("die");
+        assertEquals(3, myMap.size());
 
-        System.out.println("trying to remove: " + myMap.size());
         myMap.clear();
-        System.out.println(myMap.size());
         assertTrue(myMap.isEmpty());
+        myMap.put("diennnnnn",2);
+        myMap.put("hell",1);
+        myMap.put("targil",1);
+        for(Map.Entry v: myMap.entrySet()){
+            System.out.println(v);
+        }
         /*assertEquals(true, myMap.containsValue(2222));*/
     }
     @Test
@@ -86,8 +88,13 @@ public class PairTest {
         myMap.put(1,2);
         myMap.put(2,3);
         myMap.put(4,5);
+        myMap.put(47,5666);
         for(Map.Entry v: myMap.entrySet()){
             System.out.println(v);
         }
+        assertEquals(true, myMap.containsValue(5666));
+        assertEquals(true, myMap.containsKey(47));
+        assertEquals(false, myMap.containsKey(55));
+
     }
 }
