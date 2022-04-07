@@ -4,7 +4,7 @@ import java.util.*;
 
 
 public class HashMap<K,V> implements Map<K,V> {
-    private List<List<Entry<K,V>>> HashMap;
+    private List<List<Entry<K,V>>> Hashmap;
     private int version;
     // List-bucket-pair. list of 16 buckets, in each bucket there is a linked list. its nodes are the pairs of key & value
 
@@ -13,7 +13,7 @@ public class HashMap<K,V> implements Map<K,V> {
     public int size() {
         int occupied = 0;
 
-        for(List<Entry<K, V>> rooms: HashMap)
+        for(List<Entry<K, V>> rooms: Hashmap)
             occupied += rooms.size();
         return occupied;
     }
@@ -23,21 +23,21 @@ public class HashMap<K,V> implements Map<K,V> {
     }
 
     public HashMap(int capacity){
-      HashMap = new ArrayList<>(capacity);
+        Hashmap = new ArrayList<>(capacity);
       for(int i = 0; i < capacity ; ++i){
-          HashMap.add(new LinkedList<>());
+          Hashmap.add(new LinkedList<>());
       }
 
     }
     @Override
     public void clear() {
-     HashMap.clear();
+        Hashmap.clear();
         ++version;
     }
 
     @Override
     public boolean isEmpty() {
-        for(List<Entry<K, V>> rooms: HashMap){
+        for(List<Entry<K, V>> rooms: Hashmap){
                if(!rooms.isEmpty()){
                    return false;
                }
@@ -47,13 +47,14 @@ public class HashMap<K,V> implements Map<K,V> {
 
     @Override
     public boolean containsKey(Object key) {
-        int hash =  Math.floorMod(key.hashCode(),16);
-        return HashMap.contains(hash);
+        int hash =  Math.floorMod(key.hashCode(),Hashmap.size());
+
+        return Hashmap.contains(hash);
     }
 
     @Override
     public boolean containsValue(Object value) {
-    for (V entry : this.values()) {
+    for (List<Entry<K, V>> entry : Hashmap) {
             if (entry.equals(value)){
                 return true;
             }
@@ -63,10 +64,9 @@ public class HashMap<K,V> implements Map<K,V> {
 
     @Override
     public V get(Object key) {
-        List<Entry<K, V>> floor = HashMap.get(Math.floorMod(key.hashCode(), HashMap.size()));
+        List<Entry<K, V>> floor = Hashmap.get(Math.floorMod(key.hashCode(), Hashmap.size()));
         for(Entry<K, V> room : floor){
             if(room.getKey().equals(key)){
-
                 return room.getValue();
             }
         }
@@ -81,35 +81,36 @@ public class HashMap<K,V> implements Map<K,V> {
     public V put(K key, V value) {
 
         Pair<K,V> newPair =  Pair.of(key,value);
-        int hash =  Math.floorMod(key.hashCode(),16);
-        for(Entry<K,V> match: HashMap.get(hash)) {
+        int hash =  Math.floorMod(key.hashCode(), Hashmap.size());
+        for(Entry<K,V> match: Hashmap.get(hash)) {
             if (match.getKey().equals(key)) {
                 ++version;
                 return match.setValue(value);
+
             }
         }
         ++version;
-        HashMap.get(hash).add(newPair);
-        return value;
+        Hashmap.get(hash).add(newPair);
+        return null;
     }
 
     @Override
     public V remove(Object key) {
-        if(containsKey(key)){
-            int hash = Math.floorMod(key.hashCode(), HashMap.size());
-            V dataToRemove = get(hash);
-            if(null == dataToRemove){
-                System.out.print("NoSuchElementException");
-                return null;
-            }
-            HashMap.remove(key);
 
-            ++version;
+        int hash = Math.floorMod(key.hashCode(), Hashmap.size());
+        List<Entry<K, V>> floor = Hashmap.get(Math.floorMod(key.hashCode(), Hashmap.size()));
+        V dataToRemove = get(hash);
+        for (Entry<K, V> data : floor) {
+            if (data.getKey().equals(key)) {
+                dataToRemove = data.getValue();
+                Hashmap.get(hash).remove(Hashmap.get(hash).indexOf(data));
+                ++version;
+            }
             return dataToRemove;
-            }
 
-        System.err.print("NoSuchElementException");
-        return null;
+        }
+            return null;
+
     }
 
     @Override
@@ -132,7 +133,7 @@ public class HashMap<K,V> implements Map<K,V> {
 
         @Override
         public int size() {
-            return HashMap.size();
+            return Hashmap.size();
         }
 
         private class valuesPairsIterator implements Iterator<Entry<K, V>> {
@@ -166,7 +167,7 @@ public class HashMap<K,V> implements Map<K,V> {
 
         @Override
         public int size() {
-           return HashMap.size();
+           return Hashmap.size();
         }
 
         private class setOfKeysIterator implements Iterator<K>{
@@ -181,7 +182,7 @@ public class HashMap<K,V> implements Map<K,V> {
 
             @Override
             public K next() {
-                return iterator().next();
+                return iter.next().getKey();
             }
         }
     }
@@ -203,7 +204,7 @@ public class HashMap<K,V> implements Map<K,V> {
 
         @Override
         public int size() {
-            return HashMap.size();
+            return Hashmap.size();
         }
 
         private class setOfPairsIterator implements Iterator<Entry<K,V>>{
@@ -213,19 +214,18 @@ public class HashMap<K,V> implements Map<K,V> {
             private final int versionNumber = version;
 
             private setOfPairsIterator(){
-                bucket = HashMap.listIterator();
+                bucket = Hashmap.listIterator();
                 Iterator<List<Entry<K,V>>> runner = bucket;
                 innerListLocation = runner.next().listIterator();
             }
             @Override
             public boolean hasNext() {
-                List<Entry<K,V>> bucky = null;
                if(innerListLocation.hasNext()){
                    return true;
                }
                while(bucket.hasNext()){
                     Iterator<List<Entry<K,V>>> temp = bucket;
-                   Iterator<Entry<K,V>> innerRunner = temp.next().iterator();
+                    Iterator<Entry<K,V>> innerRunner = temp.next().listIterator();
                    if(innerRunner.hasNext()){
                        return true;
                    }
@@ -242,7 +242,7 @@ public class HashMap<K,V> implements Map<K,V> {
                    return innerListLocation.next();
                 }
                while(bucket.hasNext()){
-                   innerListLocation = bucket.next().iterator();
+                   innerListLocation = bucket.next().listIterator();
                    if(innerListLocation.hasNext()){
                        return innerListLocation.next();
                    }

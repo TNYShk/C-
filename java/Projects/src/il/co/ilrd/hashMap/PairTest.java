@@ -1,6 +1,8 @@
 package il.co.ilrd.hashMap;
 
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 import com.sun.media.sound.SoftMixingSourceDataLine;
 import org.junit.jupiter.api.Test;
@@ -59,13 +61,31 @@ public class PairTest {
         myMap.put("antwood",2222);
         myMap.put("south",3);
         myMap.put("africa",4);
+
+       /* System.out.println("get die value: " + myMap.get("die"));
+        System.out.println("get antwood value: " + myMap.get("antwood"));
+        myMap.put("antwood",444);
+        System.out.println("put antwood: " + myMap.put("antwood",444));*/
+
         assertEquals(4, myMap.size());
-        myMap.remove("antwood");
+
         assertFalse(myMap.isEmpty());
-        System.out.println(myMap.size());
+        myMap.remove("die");
+
+        System.out.println("trying to remove: " + myMap.size());
         myMap.clear();
         System.out.println(myMap.size());
         assertTrue(myMap.isEmpty());
         /*assertEquals(true, myMap.containsValue(2222));*/
+    }
+    @Test
+    void HashPrintTest(){
+        HashMap<Integer, Integer> myMap = new HashMap<>();
+        myMap.put(1,2);
+        myMap.put(2,3);
+        myMap.put(4,5);
+        for(Map.Entry v: myMap.entrySet()){
+            System.out.println(v);
+        }
     }
 }
