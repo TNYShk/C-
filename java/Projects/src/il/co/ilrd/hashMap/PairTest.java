@@ -1,8 +1,6 @@
 package il.co.ilrd.hashMap;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.sun.media.sound.SoftMixingSourceDataLine;
 import org.junit.jupiter.api.Test;
@@ -87,14 +85,45 @@ public class PairTest {
         HashMap<Integer, Integer> myMap = new HashMap<>();
         myMap.put(1,2);
         myMap.put(2,3);
+        Set<Map.Entry<Integer, Integer>> test = myMap.entrySet();
+
         myMap.put(4,5);
         myMap.put(47,5666);
-        for(Map.Entry v: myMap.entrySet()){
-            System.out.println(v);
-        }
+        try{
+            for(Map.Entry v: test) {
+                System.out.println(v);
+                myMap.put(444, 5);
+            }
+            }catch (ConcurrentModificationException e){
+                System.err.println(e);
+            }
+
+        System.out.println("Danila");
         assertEquals(true, myMap.containsValue(5666));
         assertEquals(true, myMap.containsKey(47));
         assertEquals(false, myMap.containsKey(55));
+
+    }
+    @Test
+    void keySetTest(){
+        HashMap<String, Integer> myMap = new HashMap<>();
+        myMap.put("why",1);
+        myMap.put("are",2222);
+        myMap.put("you",333);
+        myMap.put("so",44);
+        myMap.put("angry",54);
+        System.out.println(myMap.values());
+        System.out.println(myMap.entrySet());
+        System.out.println(myMap.keySet());
+
+        for(String v: myMap.keySet()) {
+            System.out.println(v);
+
+        }
+        for(Integer v: myMap.values()) {
+            System.out.println(v);
+        }
+
 
     }
 }

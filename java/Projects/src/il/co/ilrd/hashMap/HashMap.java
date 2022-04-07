@@ -6,7 +6,10 @@ import java.util.*;
 public class HashMap<K,V> implements Map<K,V> {
     private List<List<Entry<K,V>>> Hashmap;
     private int version;
-    // List-bucket-pair. list of 16 buckets, in each bucket there is a linked list. its nodes are the pairs of key & value
+    private Set<Entry<K,V>> SetOfEntries = null;
+    private Set<K> Setofkeys = null;
+    private Collection<V> valuesCollection = null;
+    private final int capacity;
 
 
     @Override
@@ -23,16 +26,18 @@ public class HashMap<K,V> implements Map<K,V> {
     }
 
     public HashMap(int capacity){
+        this.capacity = capacity;
         Hashmap = new ArrayList<>(capacity);
-      for(int i = 0; i < capacity ; ++i){
-          Hashmap.add(new LinkedList<>());
-      }
 
+        for(int i = 0; i < capacity ; ++i){
+          Hashmap.add(new LinkedList<>());
+        }
     }
+
     @Override
     public void clear() {
         Hashmap.clear();
-        for(int i = 0; i < 16 ; ++i){
+        for(int i = 0; i < capacity ; ++i){
             Hashmap.add(new LinkedList<>());
         }
         ++version;
@@ -50,7 +55,7 @@ public class HashMap<K,V> implements Map<K,V> {
 
     @Override
     public boolean containsKey(Object key) {
-        List<Entry<K, V>> floor = Hashmap.get(Math.floorMod(key.hashCode(), Hashmap.size()));
+        List<Entry<K, V>> floor = Hashmap.get(Math.floorMod(key.hashCode(), capacity));
         for(Entry<K, V> room : floor){
             if(room.getKey().equals(key)){
                 return true;
@@ -71,7 +76,7 @@ public class HashMap<K,V> implements Map<K,V> {
 
     @Override
     public V get(Object key) {
-        List<Entry<K, V>> floor = Hashmap.get(Math.floorMod(key.hashCode(), Hashmap.size()));
+        List<Entry<K, V>> floor = Hashmap.get(Math.floorMod(key.hashCode(), capacity));
         for(Entry<K, V> room : floor){
             if(room.getKey().equals(key)){
                 return room.getValue();
@@ -80,21 +85,16 @@ public class HashMap<K,V> implements Map<K,V> {
 
         return null;
     }
-    /* create pair.of (key,value);
-        hash the key, then % on 16, to get the according bucket.
-        in the bucket check if the value isnt already there. if not, store the new pair
-          */
+
     @Override
     public V put(K key, V value) {
-
         Pair<K,V> newPair =  Pair.of(key,value);
-        int size = (Hashmap.size()== 0)? 16 : Hashmap.size();
-        int hash =  Math.floorMod(key.hashCode(), size);
+        int hash =  Math.floorMod(key.hashCode(), capacity);
+
         for(Entry<K,V> match: Hashmap.get(hash)) {
             if (match.getKey().equals(key)) {
                 ++version;
                 return match.setValue(value);
-
             }
         }
         ++version;
@@ -104,7 +104,6 @@ public class HashMap<K,V> implements Map<K,V> {
 
     @Override
     public V remove(Object key) {
-
         int hash = Math.floorMod(key.hashCode(), Hashmap.size());
         List<Entry<K, V>> floor = Hashmap.get(Math.floorMod(key.hashCode(), Hashmap.size()));
         for (Entry<K, V> data : floor) {
@@ -126,14 +125,17 @@ public class HashMap<K,V> implements Map<K,V> {
 
     @Override
     public Collection<V> values() {
-        return new valuesPairs();
+        if(null == valuesCollection){
+            valuesCollection = new valuesPairs();
+        }
+        return valuesCollection;
     }
 
     private class valuesPairs extends AbstractCollection<V> {
 
         @Override
         public Iterator<V> iterator() {
-            return (Iterator<V>) new valuesPairsIterator();
+            return new valuesPairsIterator();
         }
 
         @Override
@@ -141,7 +143,7 @@ public class HashMap<K,V> implements Map<K,V> {
             return Hashmap.size();
         }
 
-        private class valuesPairsIterator implements Iterator<Entry<K, V>> {
+        private class valuesPairsIterator implements Iterator<V> {
             private Set<Entry<K, V>> entry = HashMap.this.entrySet();
             private Iterator<Entry<K, V>> iter = entry.iterator();
 
@@ -151,8 +153,8 @@ public class HashMap<K,V> implements Map<K,V> {
             }
 
             @Override
-            public Entry<K, V> next() {
-               return iter.next();
+            public V next() {
+               return iter.next().getValue();
 
             }
         }
@@ -161,7 +163,10 @@ public class HashMap<K,V> implements Map<K,V> {
 
     @Override
     public Set<K> keySet() {
-        return new setOfKeys();
+        if(null == Setofkeys){
+            Setofkeys = new setOfKeys();
+        }
+        return Setofkeys;
     }
     private class setOfKeys extends AbstractSet<K>{
 
@@ -194,7 +199,10 @@ public class HashMap<K,V> implements Map<K,V> {
 
     @Override
     public Set<Entry<K, V>> entrySet() {
-        return new SetOfPairs();
+        if(null == SetOfEntries){
+            SetOfEntries = new SetOfPairs();
+        }
+        return SetOfEntries;
     }
 
     private class SetOfPairs extends AbstractSet<Entry<K,V>>{
@@ -210,7 +218,6 @@ public class HashMap<K,V> implements Map<K,V> {
         }
 
         private class setOfPairsIterator implements Iterator<Entry<K,V>>{
-        //fail-fast iterator
             private ListIterator<List<Entry<K,V>>> bucket;
             private Iterator<Entry<K,V>> innerListLocation;
             private final int versionNumber = version;
@@ -223,7 +230,6 @@ public class HashMap<K,V> implements Map<K,V> {
             @Override
             public boolean hasNext() {
                 ListIterator<List<Entry<K, V>>> roomRunner = bucket;
-
                 while (roomRunner.hasNext()) {
                    if (!roomRunner.next().isEmpty()){
                        roomRunner.previous();
