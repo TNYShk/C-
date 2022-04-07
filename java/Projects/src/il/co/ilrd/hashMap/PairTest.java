@@ -59,8 +59,13 @@ public class PairTest {
         myMap.put("antwood",2222);
         myMap.put("south",3);
         myMap.put("africa",4);
+        assertEquals(4, myMap.size());
+        myMap.remove("antwood");
         assertFalse(myMap.isEmpty());
         System.out.println(myMap.size());
-
+        myMap.clear();
+        System.out.println(myMap.size());
+        assertTrue(myMap.isEmpty());
+        /*assertEquals(true, myMap.containsValue(2222));*/
     }
 }

@@ -2,9 +2,8 @@ package il.co.ilrd.framework;
 
 
 import static il.co.ilrd.framework.DataObject.setObject;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.*;
+
 
 
 public class FrameworkWS {
@@ -51,6 +50,7 @@ public class FrameworkWS {
           Map<Integer, String> wee = new HashMap<>();
           for (WeekDays i: WeekDays.values()) {
             wee.put(i.ordinal() +1 ,i.getDay());
+
           }
 
         System.out.println(wee);
@@ -61,7 +61,7 @@ public class FrameworkWS {
 
     public static void main(String []args){
         ex1();
-       WeekDays.PrintAll();
+       //WeekDays.PrintAll();
 
         FrameworkWS shoshana = new FrameworkWS(WeekDays.values());
         shoshana.ex2();
@@ -91,7 +91,7 @@ public class FrameworkWS {
         Map<String, Integer> e3 = new HashMap<>();
 
         for (DataObject dataObject : ex3) {
-            e3.merge(dataObject.getCode(), dataObject.getValue(),  /* Integer::sum*/(old, newer) -> old + newer);
+            e3.merge(dataObject.getCode(), dataObject.getValue(),  Integer::sum);
         }
         System.out.println("\nsum is now:\n" + e3);
     }

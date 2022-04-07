@@ -31,7 +31,7 @@ public class HashMap<K,V> implements Map<K,V> {
     }
     @Override
     public void clear() {
-      Collections.fill(HashMap, null);
+     HashMap.clear();
         ++version;
     }
 
@@ -53,20 +53,24 @@ public class HashMap<K,V> implements Map<K,V> {
 
     @Override
     public boolean containsValue(Object value) {
-        return HashMap.contains(value);
-
+    for (V entry : this.values()) {
+            if (entry.equals(value)){
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
     public V get(Object key) {
-        if(containsKey(key)){
-            List<Entry<K, V>> floor = HashMap.get(Math.floorMod(key.hashCode(), HashMap.size()));
-            for(Entry<K, V> room : floor){
-                if(key.equals(room.getKey())){
-                    return room.getValue();
-                }
+        List<Entry<K, V>> floor = HashMap.get(Math.floorMod(key.hashCode(), HashMap.size()));
+        for(Entry<K, V> room : floor){
+            if(room.getKey().equals(key)){
+
+                return room.getValue();
             }
         }
+
         return null;
     }
     /* create pair.of (key,value);
@@ -91,12 +95,21 @@ public class HashMap<K,V> implements Map<K,V> {
 
     @Override
     public V remove(Object key) {
-        int hash = Math.floorMod(key.hashCode(),16);
-        V dataToRemove = get(hash);
-        HashMap.remove(key);
+        if(containsKey(key)){
+            int hash = Math.floorMod(key.hashCode(), HashMap.size());
+            V dataToRemove = get(hash);
+            if(null == dataToRemove){
+                System.out.print("NoSuchElementException");
+                return null;
+            }
+            HashMap.remove(key);
 
-        ++version;
-        return dataToRemove;
+            ++version;
+            return dataToRemove;
+            }
+
+        System.err.print("NoSuchElementException");
+        return null;
     }
 
     @Override
@@ -207,12 +220,16 @@ public class HashMap<K,V> implements Map<K,V> {
             @Override
             public boolean hasNext() {
                 List<Entry<K,V>> bucky = null;
-
-                for(Iterator<List<Entry<K,V>>> floor = bucket ; floor.hasNext(); bucky = floor.next()) {
-                    if (!bucky.isEmpty()){
-                        return true;
-                    }
-                }
+               if(innerListLocation.hasNext()){
+                   return true;
+               }
+               while(bucket.hasNext()){
+                    Iterator<List<Entry<K,V>>> temp = bucket;
+                   Iterator<Entry<K,V>> innerRunner = temp.next().iterator();
+                   if(innerRunner.hasNext()){
+                       return true;
+                   }
+               }
                 return false;
             }
 
@@ -221,11 +238,15 @@ public class HashMap<K,V> implements Map<K,V> {
                 if(version != versionNumber){
                         throw new ConcurrentModificationException();
                 }
-                for(Iterator<List<Entry<K,V>>> floor = bucket; floor.hasNext();floor.next()) {
-                    for (Iterator<Entry<K, V>> room = innerListLocation; room.hasNext(); ) {
-                        return (Entry<K, V>) Pair.of(floor, room);
-                    }
+               if(innerListLocation.hasNext()){
+                   return innerListLocation.next();
                 }
+               while(bucket.hasNext()){
+                   innerListLocation = bucket.next().iterator();
+                   if(innerListLocation.hasNext()){
+                       return innerListLocation.next();
+                   }
+               }
                return null;
             }
         }
