@@ -1,7 +1,11 @@
 package il.co.ilrd.hashMap;
 
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 
 public class Pair <K, V> implements Map.Entry<K, V> {
     private K key;
@@ -115,7 +119,7 @@ public class Pair <K, V> implements Map.Entry<K, V> {
 
     @Override
     public String toString(){
-        return (this.getKey()  + " , " + this.getValue());
+        return ("[" + this.getKey()  + " , " + this.getValue() + "]");
     }
 
 }

@@ -95,7 +95,6 @@ public class PairTest {
                 System.err.println(e);
             }
 
-
         assertEquals(true, myMap.containsValue(5666));
         assertEquals(true, myMap.containsKey(47));
         assertEquals(false, myMap.containsKey(55));
@@ -140,5 +139,24 @@ public class PairTest {
         System.out.println(newwerHashMap.values());
 
         assertEquals(myMap.size(), newwerHashMap.size());
+    }
+
+    @Test
+    void toughTest() {
+        HashMap<Integer, Integer> map1 = new HashMap<>();
+        for (int i = 0; i < 100; ++i) {
+            map1.put(i, i * i);
+        }
+
+        assertEquals(map1.size(), 100);
+        assertEquals(map1.entrySet().size(), 100);
+        assertEquals(map1.keySet().size(), 100);
+        assertEquals(map1.values().size(), 100);
+
+      for (int i = 0; i < 100; ++i) {
+            assertTrue(map1.entrySet().contains(Pair.of(i, i * i)));
+            assertTrue(map1.containsKey(i));
+            assertTrue(map1.containsValue(i * i));
+        }
     }
 }

@@ -1,6 +1,20 @@
 package il.co.ilrd.hashMap;
+// HashMap Project
+// by Tanya Shk
+// April 8, 2022
+// reviewed by Shay Levi
 
-import java.util.*;
+import java.util.AbstractCollection;
+import java.util.AbstractSet;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.ConcurrentModificationException;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Set;
 
 
 public class HashMap<K,V> implements Map<K,V> {
@@ -36,10 +50,11 @@ public class HashMap<K,V> implements Map<K,V> {
 
     @Override
     public void clear() {
-        Hashmap.clear();
-        for(int i = 0; i < capacity ; ++i){
-            Hashmap.add(new LinkedList<>());
+
+        for(List<Entry<K, V>> rooms: Hashmap){
+            rooms.clear();
         }
+
         ++version;
     }
 
@@ -67,8 +82,8 @@ public class HashMap<K,V> implements Map<K,V> {
 
     @Override
     public boolean containsValue(Object value) {
-        for (Map.Entry entry : this.entrySet()) {
-                if (entry.getValue().equals(value)){
+        for (V entry : this.values()) {
+                if (entry.equals(value)){
                     return true;
                 }
             }
@@ -121,8 +136,9 @@ public class HashMap<K,V> implements Map<K,V> {
 
     @Override
     public void putAll(Map<? extends K, ? extends V> map) {
-
-        for (Map.Entry<? extends K, ? extends V> set : map.entrySet()) this.put(set.getKey(), set.getValue());
+        for (Map.Entry<? extends K, ? extends V> set : map.entrySet()) {
+            this.put(set.getKey(), set.getValue());
+        }
     }
 
     @Override
@@ -142,7 +158,7 @@ public class HashMap<K,V> implements Map<K,V> {
 
         @Override
         public int size() {
-            return Hashmap.size();
+            return HashMap.this.size();
         }
 
         private class valuesPairsIterator implements Iterator<V> {
@@ -178,7 +194,7 @@ public class HashMap<K,V> implements Map<K,V> {
 
         @Override
         public int size() {
-           return Hashmap.size();
+           return HashMap.this.size();
         }
 
         private class setOfKeysIterator implements Iterator<K>{
@@ -214,25 +230,41 @@ public class HashMap<K,V> implements Map<K,V> {
 
         @Override
         public int size() {
-            return Hashmap.size();
+            return HashMap.this.size();
         }
 
         private class setOfPairsIterator implements Iterator<Entry<K,V>>{
             private ListIterator<List<Entry<K,V>>> bucket;
-            private Iterator<Entry<K,V>> innerListLocation;
+            private ListIterator<Entry<K,V>> innerListLocation;
             private final int versionNumber = version;
 
             private setOfPairsIterator(){
                 bucket = Hashmap.listIterator();
-                innerListLocation = bucket.next().iterator();
+                GoToNextNotEmptyBucket();
+            }
+
+            private void GoToNextNotEmptyBucket() {
+                while(bucket.next().isEmpty());
+                bucket.previous();
+                innerListLocation = bucket.next().listIterator();
+                bucket.previous();
             }
 
             @Override
             public boolean hasNext() {
+                if(innerListLocation.hasNext() ){
+                    return true;
+                }
 
+                int idx = 0;
+                bucket.next();
                 while (bucket.hasNext()) {
+                    ++idx;
                    if (!bucket.next().isEmpty()){
-                       bucket.previous();
+                      while(0 <= idx){
+                           bucket.previous();
+                          --idx;
+                       }
                        return true;
                    }
                 }
@@ -249,14 +281,14 @@ public class HashMap<K,V> implements Map<K,V> {
                 }
 
                 while(bucket.hasNext()){
-                    List<Entry<K,V>> bucketIter = bucket.next();
-                    if(!bucketIter.isEmpty()){
-                        innerListLocation = bucketIter.iterator();
+                    if(!bucket.next().isEmpty()){
+                        GoToNextNotEmptyBucket();
                         return  innerListLocation.next();
                     }
                 }
             return null;
             }
+
         }
     }
 }
