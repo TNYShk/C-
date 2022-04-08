@@ -233,6 +233,54 @@ public class HashMap<K,V> implements Map<K,V> {
             return HashMap.this.size();
         }
 
+       /* private class setOfPairsIterator implements Iterator <Entry<K, V>> {
+            private ListIterator<List<Entry<K,V>>> floor;
+            private Iterator <Entry<K,V>> floorRooomService;
+            private final int versionNumber = version;
+
+            public setOfPairsIterator() {
+                floor = Hashmap.listIterator();
+                floorRooomService = floor.next().iterator();
+            }
+
+            @Override
+            public boolean hasNext() {
+                if(this.versionNumber != version) {
+                    throw new ConcurrentModificationException();
+                }
+                if (floorRooomService.hasNext()) {
+                    return true;
+                }
+
+                while (floor.hasNext()) {
+                    if (!(floor.next().isEmpty())) {
+                        floor.previous();
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            @Override
+            public Entry<K, V> next() {
+                if(this.versionNumber != version) {
+                    throw new ConcurrentModificationException();
+                }
+                if (floorRooomService.hasNext()) {
+                    return floorRooomService.next();
+                }
+
+                while (floor.hasNext()) {
+                    List<Entry<K,V>> bucketList = floor.next();
+                    if (!(bucketList.isEmpty())) {
+                        floorRooomService = bucketList.iterator();
+                        return floorRooomService.next();
+                    }
+                }
+
+                return null;
+            }*/
+
         private class setOfPairsIterator implements Iterator<Entry<K,V>>{
             private ListIterator<List<Entry<K,V>>> bucket;
             private ListIterator<Entry<K,V>> innerListLocation;
