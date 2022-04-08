@@ -98,7 +98,6 @@ public class HashMap<K,V> implements Map<K,V> {
                 return room.getValue();
             }
         }
-
         return null;
     }
 
@@ -172,7 +171,6 @@ public class HashMap<K,V> implements Map<K,V> {
             @Override
             public V next() {
                return iter.next().getValue();
-
             }
         }
     }
@@ -199,7 +197,6 @@ public class HashMap<K,V> implements Map<K,V> {
 
         private class setOfKeysIterator implements Iterator<K>{
             private Iterator<Entry<K, V>> iter = HashMap.this.entrySet().iterator();
-
 
             @Override
             public boolean hasNext() {
@@ -233,7 +230,7 @@ public class HashMap<K,V> implements Map<K,V> {
             return HashMap.this.size();
         }
 
-       /* private class setOfPairsIterator implements Iterator <Entry<K, V>> {
+        private class setOfPairsIterator implements Iterator <Entry<K, V>> {
             private ListIterator<List<Entry<K,V>>> floor;
             private Iterator <Entry<K,V>> floorRooomService;
             private final int versionNumber = version;
@@ -277,10 +274,9 @@ public class HashMap<K,V> implements Map<K,V> {
                         return floorRooomService.next();
                     }
                 }
-
                 return null;
-            }*/
-
+            }
+/*
         private class setOfPairsIterator implements Iterator<Entry<K,V>>{
             private ListIterator<List<Entry<K,V>>> bucket;
             private ListIterator<Entry<K,V>> innerListLocation;
@@ -335,7 +331,7 @@ public class HashMap<K,V> implements Map<K,V> {
                     }
                 }
             return null;
-            }
+            }*/
 
         }
     }
