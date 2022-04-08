@@ -4,22 +4,13 @@ import java.util.*;
 
 
 public class HashMap<K,V> implements Map<K,V> {
-    private List<List<Entry<K,V>>> Hashmap;
+    private final List<List<Entry<K,V>>> Hashmap;
     private int version;
     private Set<Entry<K,V>> SetOfEntries = null;
     private Set<K> Setofkeys = null;
     private Collection<V> valuesCollection = null;
     private final int capacity;
 
-
-    @Override
-    public int size() {
-        int occupied = 0;
-
-        for(List<Entry<K, V>> rooms: Hashmap)
-            occupied += rooms.size();
-        return occupied;
-    }
 
     public HashMap(){
         this(16);
@@ -32,6 +23,15 @@ public class HashMap<K,V> implements Map<K,V> {
         for(int i = 0; i < capacity ; ++i){
           Hashmap.add(new LinkedList<>());
         }
+    }
+
+    @Override
+    public int size() {
+        int occupied = 0;
+
+        for(List<Entry<K, V>> rooms: Hashmap)
+            occupied += rooms.size();
+        return occupied;
     }
 
     @Override
@@ -56,6 +56,7 @@ public class HashMap<K,V> implements Map<K,V> {
     @Override
     public boolean containsKey(Object key) {
         List<Entry<K, V>> floor = Hashmap.get(Math.floorMod(key.hashCode(), capacity));
+
         for(Entry<K, V> room : floor){
             if(room.getKey().equals(key)){
                 return true;
@@ -66,12 +67,12 @@ public class HashMap<K,V> implements Map<K,V> {
 
     @Override
     public boolean containsValue(Object value) {
-    for (Map.Entry entry : this.entrySet()) {
-            if (entry.getValue().equals(value)){
-                return true;
+        for (Map.Entry entry : this.entrySet()) {
+                if (entry.getValue().equals(value)){
+                    return true;
+                }
             }
-        }
-        return false;
+            return false;
     }
 
     @Override
@@ -106,10 +107,11 @@ public class HashMap<K,V> implements Map<K,V> {
     public V remove(Object key) {
         int hash = Math.floorMod(key.hashCode(),capacity);
         List<Entry<K, V>> floor = Hashmap.get(Math.floorMod(key.hashCode(), capacity));
+
         for (Entry<K, V> data : floor) {
             if (data.getKey().equals(key)) {
                 V dataToRemove = data.getValue();
-                Hashmap.get(hash).remove(Hashmap.get(hash).indexOf(data));
+                Hashmap.get(hash).remove(data);
                 ++version;
                 return dataToRemove;
             }
@@ -119,7 +121,7 @@ public class HashMap<K,V> implements Map<K,V> {
 
     @Override
     public void putAll(Map<? extends K, ? extends V> map) {
-        //enhanced loop in entry set
+
         for (Map.Entry<? extends K, ? extends V> set : map.entrySet()) this.put(set.getKey(), set.getValue());
     }
 
@@ -144,8 +146,7 @@ public class HashMap<K,V> implements Map<K,V> {
         }
 
         private class valuesPairsIterator implements Iterator<V> {
-            private Set<Entry<K, V>> entry = HashMap.this.entrySet();
-            private Iterator<Entry<K, V>> iter = entry.iterator();
+            private Iterator<Entry<K, V>> iter = HashMap.this.entrySet().iterator();
 
             @Override
             public boolean hasNext() {
@@ -160,7 +161,6 @@ public class HashMap<K,V> implements Map<K,V> {
         }
     }
 
-
     @Override
     public Set<K> keySet() {
         if(null == Setofkeys){
@@ -168,6 +168,7 @@ public class HashMap<K,V> implements Map<K,V> {
         }
         return Setofkeys;
     }
+
     private class setOfKeys extends AbstractSet<K>{
 
         @Override
@@ -181,8 +182,7 @@ public class HashMap<K,V> implements Map<K,V> {
         }
 
         private class setOfKeysIterator implements Iterator<K>{
-            private Set<Entry<K, V>> set = HashMap.this.entrySet();
-            private Iterator<Entry<K, V>> iter = set.iterator();
+            private Iterator<Entry<K, V>> iter = HashMap.this.entrySet().iterator();
 
 
             @Override
@@ -229,10 +229,10 @@ public class HashMap<K,V> implements Map<K,V> {
 
             @Override
             public boolean hasNext() {
-                ListIterator<List<Entry<K, V>>> roomRunner = bucket;
-                while (roomRunner.hasNext()) {
-                   if (!roomRunner.next().isEmpty()){
-                       roomRunner.previous();
+
+                while (bucket.hasNext()) {
+                   if (!bucket.next().isEmpty()){
+                       bucket.previous();
                        return true;
                    }
                 }

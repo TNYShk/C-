@@ -1,20 +1,16 @@
 package il.co.ilrd.hashMap;
 
 import java.util.*;
-
-import com.sun.media.sound.SoftMixingSourceDataLine;
 import org.junit.jupiter.api.Test;
-import org.junit.platform.engine.support.descriptor.FileSystemSource;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PairTest {
 
     @Test
-    void testInts(){
+    void PairtestInts(){
         HashSet<Integer> why = new HashSet<>();
         for (int i = 1; i < 5; i++) {
-            why.add(i*2);
+            why.add(i * 2);
         }
         Pair<Integer,Integer> pp1 = Pair.of(why.iterator().next(),19);
         Pair<Integer,Integer> pp2 = Pair.of(why.iterator().next(),3);
@@ -25,17 +21,17 @@ public class PairTest {
         assertFalse(pp2.equals(pp3));
         assertFalse(pp4.hashCode() == pp3.hashCode());
         assertTrue(Pair.swap(pp5).equals(pp4));
-
     }
+
     @Test
-    void TestArry(){
+    void PairTestArry(){
         Double[] darry = {1.2,3.2,-5.1,4.4, 0.0, -99.9};
         Pair<Double, Double> pd3 = Pair.minMax(darry);
         assertTrue(Pair.of(-99.9,4.4).equals(pd3));
     }
 
     @Test
-    void TestString(){
+    void PairTestString(){
         String[] strArry = {"zzzzz","two","aaaa", "four", "three","zzz","one"};
         String shay = "banana";
         System.out.println(shay.hashCode());
@@ -44,12 +40,13 @@ public class PairTest {
         System.out.println(s1);
         assertTrue(s1.getKey().equals("aaaa"));
         assertTrue(s1.getValue().equals("zzzzz"));
-
     }
+
     public static void main (String []args){
         Pair<Integer,Integer> t = Pair.of(2,6);
         System.out.println(t);
-}
+    }
+
     @Test
     void HashTest(){
         HashMap<String, Integer> myMap = new HashMap<>();
@@ -60,26 +57,26 @@ public class PairTest {
         myMap.put("south",3);
         myMap.put("africa",4);
         assertEquals(true, myMap.containsValue(2222));
+
         for(Map.Entry v: myMap.entrySet()){
             System.out.println(v);
         }
 
         assertEquals(4, myMap.size());
-
         assertFalse(myMap.isEmpty());
         myMap.remove("die");
         assertEquals(3, myMap.size());
-
         myMap.clear();
         assertTrue(myMap.isEmpty());
-        myMap.put("diennnnnn",2);
-        myMap.put("hell",1);
-        myMap.put("targil",1);
+        myMap.put("previous",2);
+        myMap.put("was",1);
+        myMap.put("here",1);
+
         for(Map.Entry v: myMap.entrySet()){
             System.out.println(v);
         }
-        /*assertEquals(true, myMap.containsValue(2222));*/
     }
+
     @Test
     void HashPrintTest(){
         HashMap<Integer, Integer> myMap = new HashMap<>();
@@ -98,26 +95,28 @@ public class PairTest {
                 System.err.println(e);
             }
 
-        System.out.println("Danila");
+
         assertEquals(true, myMap.containsValue(5666));
         assertEquals(true, myMap.containsKey(47));
         assertEquals(false, myMap.containsKey(55));
-
+        assertEquals(5, myMap.size());
+        System.out.println("post try catch clause");
     }
     @Test
-    void keySetTest(){
+    void HashkeySetTest(){
         HashMap<String, Integer> myMap = new HashMap<>();
-        myMap.put("why",1);
-        myMap.put("are",2222);
-        myMap.put("you",333);
-        myMap.put("so",44);
-        myMap.put("angry",54);
+        myMap.put("Beer Sheba",4);
+        myMap.put("Hadera",2);
+        myMap.put("Bne Brak",5);
+        myMap.put("Tel Aviv",2);
+        myMap.put("STOP",13);
+
         System.out.println(myMap.values());
         System.out.println(myMap.entrySet());
         System.out.println(myMap.keySet());
-        myMap.remove("angry");
-        myMap.remove("so");
-        assertEquals(3,myMap.size());
+        myMap.remove("STOP");
+
+        assertEquals(4,myMap.size());
         for(String v: myMap.keySet()) {
             System.out.print(v + " ");
         }
@@ -126,6 +125,20 @@ public class PairTest {
             System.out.print(v+ " ");
         }
 
+    }
+    @Test
+    void HashPutAllTest(){
+        HashMap<String, Integer> myMap = new HashMap<>();
+        myMap.put("how",11);
+        myMap.put("many",222);
+        myMap.put("terror",3333);
+        myMap.put("acts?!",44444);
+        myMap.put("enough!",555555);
+        HashMap<String, Integer> newwerHashMap = new HashMap<>();
+        newwerHashMap.putAll(myMap);
+        System.out.println(newwerHashMap.keySet());
+        System.out.println(newwerHashMap.values());
 
+        assertEquals(myMap.size(), newwerHashMap.size());
     }
 }
