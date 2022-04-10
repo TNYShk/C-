@@ -81,7 +81,8 @@ public class HashMap<K,V> implements Map<K,V> {
 
     @Override
     public boolean containsValue(Object value) {
-        for (V entry : this.values()) {
+
+       for (V entry : this.values()) {
                 if (entry.equals(value)){
                     return true;
                 }
@@ -235,7 +236,6 @@ public class HashMap<K,V> implements Map<K,V> {
             private final int versionNumber = version;
 
             public setOfPairsIterator() {
-
                 floor = Hashmap.listIterator();
                 floorRooomService = floor.next().iterator();
             }
@@ -333,6 +333,41 @@ public class HashMap<K,V> implements Map<K,V> {
             return null;
             }*/
 
+
+            /*// shiraz
+            private class setOfPairsIterator implements Iterator<Map.Entry<K, V>> {
+            private Iterator<List<Map.Entry<K, V>>> floor;
+            private Iterator<Map.Entry<K, V>> floorRooomService;
+            private final int versionNumber = version;
+
+        public setOfPairsIterator() {
+            floor = Hashmap.iterator();
+            floorRooomService = Hashmap.iterator().next().iterator();
+            nextNotNullInnerListIterator();
+        }
+
+        @Override
+        public boolean hasNext() {
+
+            return floor.hasNext();
+        }
+
+        @Override
+        public Map.Entry<K, V> next() {
+            if (this.versionNumber != version) {
+                throw new ConcurrentModificationException();
+            }
+            Map.Entry<K, V> current = floorRooomService.next();
+            nextNotNullInnerListIterator();
+
+            return current;
+        }
+
+        private void nextNotNullInnerListIterator() {
+            while (!floorRooomService.hasNext() && floor.hasNext()) {
+                floorRooomService = floor.next().iterator();
+            }
+             */
         }
     }
 }
