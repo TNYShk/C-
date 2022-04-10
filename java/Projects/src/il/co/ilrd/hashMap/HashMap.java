@@ -236,6 +236,7 @@ public class HashMap<K,V> implements Map<K,V> {
             private final int versionNumber = version;
 
             public setOfPairsIterator() {
+
                 floor = Hashmap.listIterator();
                 floorRooomService = floor.next().iterator();
             }

@@ -59,13 +59,18 @@ public class Pair <K, V> implements Map.Entry<K, V> {
 
     }
 
-    @Override
+  @Override
     public boolean equals(Object other) {
         if(other instanceof Pair){
             return (this.key.equals(((Pair<?, ?>) other).key) && this.value.equals(((Pair<?,?>) other).value));
         }
         return false;
     }
+
+
+
+
+
 
 
     public static <E extends Comparable<E>> Pair<E, E> minMax(E [] elementsArray){

@@ -3,6 +3,7 @@ package il.co.ilrd.generics;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class Main<T> {
     private List<T> arr;
 
@@ -24,6 +25,8 @@ public class Main<T> {
         Main.printArr(tanya.arr);
 
     }
+
+
 
     public void populate(T t){
         arr.add(t);

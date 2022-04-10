@@ -1,7 +1,6 @@
 package il.co.ilrd.genericSll;
 
 
-
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
@@ -49,15 +48,14 @@ public class GenericList<E> implements Iterable<E> {
         return null;
     }
 
-
-
     public static <T> GenericList<T> newReverse(GenericList<T> list) {
-    GenericList<T> reversedList = new GenericList<>();
+        GenericList<T> reversedList = new GenericList<>();
 
-    for(T data : list){
-        reversedList.pushFront(data);
+        for(T data : list){
+            reversedList.pushFront(data);
+        }
+        return reversedList;
     }
-        return reversedList;}
 
     public static <T> GenericList<T> mergeLists(GenericList<T> list1, GenericList<T> list2) {
         GenericList<T> mergedList = new GenericList<>();
