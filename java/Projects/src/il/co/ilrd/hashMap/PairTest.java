@@ -158,7 +158,7 @@ public class PairTest {
         assertEquals(map1.values().size(), 100);
 
       for (int i = 0; i < 100; ++i) {
-            assertTrue(map1.entrySet().contains(Pair.of(i, i * i)));
+          assertTrue(map1.entrySet().contains(Pair.of(i, i * i)));
             assertTrue(map1.containsKey(i));
             assertTrue(map1.containsValue(i * i));
         }

@@ -18,24 +18,24 @@ import java.util.Set;
 
 
 public class HashMap<K,V> implements Map<K,V> {
-    private final List<List<Entry<K,V>>> Hashmap;
+    private final List<List<Entry<K, V>>> Hashmap;
     private int version;
-    private Set<Entry<K,V>> SetOfEntries = null;
+    private Set<Entry<K, V>> SetOfEntries = null;
     private Set<K> Setofkeys = null;
     private Collection<V> valuesCollection = null;
     private final int capacity;
 
 
-    public HashMap(){
+    public HashMap() {
         this(16);
     }
 
-    public HashMap(int capacity){
+    public HashMap(int capacity) {
         this.capacity = capacity;
         Hashmap = new ArrayList<>(capacity);
 
-        for(int i = 0; i < capacity ; ++i){
-          Hashmap.add(new LinkedList<>());
+        for (int i = 0; i < capacity; ++i) {
+            Hashmap.add(new LinkedList<>());
         }
     }
 
@@ -43,7 +43,7 @@ public class HashMap<K,V> implements Map<K,V> {
     public int size() {
         int occupied = 0;
 
-        for(List<Entry<K, V>> rooms: Hashmap)
+        for (List<Entry<K, V>> rooms : Hashmap)
             occupied += rooms.size();
         return occupied;
     }
@@ -51,7 +51,7 @@ public class HashMap<K,V> implements Map<K,V> {
     @Override
     public void clear() {
 
-        for(List<Entry<K, V>> rooms: Hashmap){
+        for (List<Entry<K, V>> rooms : Hashmap) {
             rooms.clear();
         }
 
@@ -60,19 +60,19 @@ public class HashMap<K,V> implements Map<K,V> {
 
     @Override
     public boolean isEmpty() {
-        for(List<Entry<K, V>> rooms: Hashmap){
-               if(!rooms.isEmpty()){
-                   return false;
-               }
+        for (List<Entry<K, V>> rooms : Hashmap) {
+            if (!rooms.isEmpty()) {
+                return false;
             }
+        }
         return true;
     }
 
     @Override
     public boolean containsKey(Object key) {
         List<Entry<K, V>> floor = Hashmap.get(Math.floorMod(key.hashCode(), capacity));
-        for(Entry<K, V> room : floor){
-            if(room.getKey().equals(key)){
+        for (Entry<K, V> room : floor) {
+            if (room.getKey().equals(key)) {
                 return true;
             }
         }
@@ -82,19 +82,19 @@ public class HashMap<K,V> implements Map<K,V> {
     @Override
     public boolean containsValue(Object value) {
 
-       for (V entry : this.values()) {
-                if (entry.equals(value)){
-                    return true;
-                }
+        for (V entry : this.values()) {
+            if (entry.equals(value)) {
+                return true;
             }
-            return false;
+        }
+        return false;
     }
 
     @Override
     public V get(Object key) {
         List<Entry<K, V>> floor = Hashmap.get(Math.floorMod(key.hashCode(), capacity));
-        for(Entry<K, V> room : floor){
-            if(room.getKey().equals(key)){
+        for (Entry<K, V> room : floor) {
+            if (room.getKey().equals(key)) {
                 return room.getValue();
             }
         }
@@ -103,10 +103,10 @@ public class HashMap<K,V> implements Map<K,V> {
 
     @Override
     public V put(K key, V value) {
-        Pair<K,V> newPair =  Pair.of(key,value);
-        int hash =  Math.floorMod(key.hashCode(), capacity);
+        Pair<K, V> newPair = Pair.of(key, value);
+        int hash = Math.floorMod(key.hashCode(), capacity);
 
-        for(Entry<K,V> match: Hashmap.get(hash)) {
+        for (Entry<K, V> match : Hashmap.get(hash)) {
             if (match.getKey().equals(key)) {
                 ++version;
                 return match.setValue(value);
@@ -119,7 +119,7 @@ public class HashMap<K,V> implements Map<K,V> {
 
     @Override
     public V remove(Object key) {
-        int hash = Math.floorMod(key.hashCode(),capacity);
+        int hash = Math.floorMod(key.hashCode(), capacity);
         List<Entry<K, V>> floor = Hashmap.get(Math.floorMod(key.hashCode(), capacity));
 
         for (Entry<K, V> data : floor) {
@@ -142,7 +142,7 @@ public class HashMap<K,V> implements Map<K,V> {
 
     @Override
     public Collection<V> values() {
-        if(null == valuesCollection){
+        if (null == valuesCollection) {
             valuesCollection = new valuesPairs();
         }
         return valuesCollection;
@@ -170,20 +170,20 @@ public class HashMap<K,V> implements Map<K,V> {
 
             @Override
             public V next() {
-               return iter.next().getValue();
+                return iter.next().getValue();
             }
         }
     }
 
     @Override
     public Set<K> keySet() {
-        if(null == Setofkeys){
+        if (null == Setofkeys) {
             Setofkeys = new setOfKeys();
         }
         return Setofkeys;
     }
 
-    private class setOfKeys extends AbstractSet<K>{
+    private class setOfKeys extends AbstractSet<K> {
 
         @Override
         public Iterator<K> iterator() {
@@ -192,15 +192,15 @@ public class HashMap<K,V> implements Map<K,V> {
 
         @Override
         public int size() {
-           return HashMap.this.size();
+            return HashMap.this.size();
         }
 
-        private class setOfKeysIterator implements Iterator<K>{
+        private class setOfKeysIterator implements Iterator<K> {
             private Iterator<Entry<K, V>> iter = HashMap.this.entrySet().iterator();
 
             @Override
             public boolean hasNext() {
-               return iter.hasNext();
+                return iter.hasNext();
             }
 
             @Override
@@ -212,16 +212,16 @@ public class HashMap<K,V> implements Map<K,V> {
 
     @Override
     public Set<Entry<K, V>> entrySet() {
-        if(null == SetOfEntries){
+        if (null == SetOfEntries) {
             SetOfEntries = new SetOfPairs();
         }
         return SetOfEntries;
     }
 
-    private class SetOfPairs extends AbstractSet<Entry<K,V>>{
+    private class SetOfPairs extends AbstractSet<Entry<K, V>> {
 
         @Override
-        public Iterator<Entry<K,V>> iterator() {
+        public Iterator<Entry<K, V>> iterator() {
             return new setOfPairsIterator();
         }
 
@@ -230,6 +230,41 @@ public class HashMap<K,V> implements Map<K,V> {
             return HashMap.this.size();
         }
 
+        private class setOfPairsIterator implements Iterator<Entry<K, V>> {
+            private Iterator<List<Entry<K, V>>> floor;
+            private Iterator<Entry<K, V>> floorRooomService;
+            private final int versionNumber = version;
+
+            public setOfPairsIterator() {
+                floor = Hashmap.iterator();
+                floorRooomService = Hashmap.iterator().next().iterator();
+                nextNotNullInnerListIterator();
+            }
+
+            @Override
+            public boolean hasNext() {
+                return floorRooomService.hasNext();
+            }
+
+            @Override
+            public Entry<K, V> next() {
+                if (this.versionNumber != version) {
+                    throw new ConcurrentModificationException();
+                }
+                Entry<K, V> current = floorRooomService.next();
+                nextNotNullInnerListIterator();
+
+                return current;
+            }
+
+            private void nextNotNullInnerListIterator() {
+                while (!floorRooomService.hasNext() && floor.hasNext()) {
+                    floorRooomService = floor.next().iterator();
+                }
+
+            }
+        }
+        /*
         private class setOfPairsIterator implements Iterator <Entry<K, V>> {
             private ListIterator<List<Entry<K,V>>> floor;
             private Iterator <Entry<K,V>> floorRooomService;
@@ -276,6 +311,9 @@ public class HashMap<K,V> implements Map<K,V> {
                 }
                 return null;
             }
+
+         */
+
 /*
         private class setOfPairsIterator implements Iterator<Entry<K,V>>{
             private ListIterator<List<Entry<K,V>>> bucket;
@@ -334,40 +372,5 @@ public class HashMap<K,V> implements Map<K,V> {
             }*/
 
 
-            /*// shiraz
-            private class setOfPairsIterator implements Iterator<Map.Entry<K, V>> {
-            private Iterator<List<Map.Entry<K, V>>> floor;
-            private Iterator<Map.Entry<K, V>> floorRooomService;
-            private final int versionNumber = version;
-
-        public setOfPairsIterator() {
-            floor = Hashmap.iterator();
-            floorRooomService = Hashmap.iterator().next().iterator();
-            nextNotNullInnerListIterator();
-        }
-
-        @Override
-        public boolean hasNext() {
-
-            return floor.hasNext();
-        }
-
-        @Override
-        public Map.Entry<K, V> next() {
-            if (this.versionNumber != version) {
-                throw new ConcurrentModificationException();
-            }
-            Map.Entry<K, V> current = floorRooomService.next();
-            nextNotNullInnerListIterator();
-
-            return current;
-        }
-
-        private void nextNotNullInnerListIterator() {
-            while (!floorRooomService.hasNext() && floor.hasNext()) {
-                floorRooomService = floor.next().iterator();
-            }
-             */
-        }
     }
 }
