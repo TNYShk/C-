@@ -18,16 +18,24 @@ public class Calculator implements Person, Male {
             return a*b;
         }
     }
-    public static void Division(){
+
+    public static int Division(int a, int b){
 
         class local implements Operator{
+
+           // local(){}
 
             @Override
             public int operate(int a, int b) {
                 return a/b;
             }
         }
+
+        local tries = new local();
+        return tries.operate(a,b);
     }
+
+
     interface Operator{
         int operate(int a, int b);
     }
@@ -41,6 +49,8 @@ public class Calculator implements Person, Male {
         System.out.println(sam.add.operate(10,4));
         System.out.println(sam.minus.operate(10,4));
         Multiply div = sam.new Multiply();
+        System.out.println(div.operate(4,5));
+        System.out.println(sam.Division(12,4));
     }
 
 
