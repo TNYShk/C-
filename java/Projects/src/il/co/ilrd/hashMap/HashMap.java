@@ -71,7 +71,6 @@ public class HashMap<K,V> implements Map<K,V> {
     @Override
     public boolean containsKey(Object key) {
         List<Entry<K, V>> floor = Hashmap.get(Math.floorMod(key.hashCode(), capacity));
-
         for(Entry<K, V> room : floor){
             if(room.getKey().equals(key)){
                 return true;

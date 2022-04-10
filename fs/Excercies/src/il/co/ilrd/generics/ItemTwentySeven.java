@@ -52,4 +52,13 @@ public class ItemTwentySeven<T> {
     public String toString(){
         return (this.elements.toString() + " \n size: " + this.size + " \n" + this.myArr.toString());
     }
+
+    @Override
+    public boolean equalsss(Object other) {
+        if (!(other instanceof Pair)) {
+            return false;
+        }
+        return this.key.equals(((Pair<K, V>)other).key) &&
+                this.value.equals(((Pair<K, V>)other).value);
+    }
 }
