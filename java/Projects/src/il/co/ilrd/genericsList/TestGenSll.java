@@ -1,4 +1,4 @@
-package il.co.ilrd.genericSll;
+package il.co.ilrd.genericsList;
 
 //import java.util.ArrayList;
 import java.util.ConcurrentModificationException;

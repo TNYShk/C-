@@ -41,7 +41,7 @@ public class SinglyLinkedList {
 
     public void pushFront(Object data) {
         Node newNode = new Node(data, this.head);
-       head = newNode;
+        head = newNode;
 
     }
 

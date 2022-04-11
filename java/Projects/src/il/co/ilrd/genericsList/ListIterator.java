@@ -1,4 +1,4 @@
-package il.co.ilrd.genericSll;
+package il.co.ilrd.genericsList;
 
 public interface ListIterator<T> {
     public boolean hasNext();

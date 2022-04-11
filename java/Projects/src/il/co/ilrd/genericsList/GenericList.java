@@ -1,10 +1,7 @@
-package il.co.ilrd.genericSll;
+package il.co.ilrd.genericsList;
 
-
-import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
-import java.util.Map;
 
 
 public class GenericList<E> implements Iterable<E> {
@@ -24,10 +21,11 @@ public class GenericList<E> implements Iterable<E> {
         return dataToRemove;
     }
 
+@SuppressWarnings("unused")
     public int size() {
         int count = 0;
 
-        for(E list : this){
+        for(E list  : this){
             ++count;
         }
         return count;
