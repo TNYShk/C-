@@ -33,7 +33,6 @@ public class ExerciseThree {
                 e.printStackTrace();
                 break;
             }
-            // Consume value
             System.out.printf("[%s] Value consumed: %f\n", Thread.currentThread().getName(), value);
         }
     }
