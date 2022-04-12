@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 
 
-public class PingPong implements Runnable{
+public class ExerciseThreeP1 implements Runnable{
     static AtomicBoolean globalAtomicBul = new AtomicBoolean();
     Semaphore sem1 = new Semaphore(1);
     Semaphore sem2 = new Semaphore(0);
@@ -19,11 +19,7 @@ public class PingPong implements Runnable{
             sem1.acquire();
             System.out.println("ping");
             ++count;
-            /*if ( globalAtomicBul.get() == false) {
-                System.out.println("ping");
-                ++count;
-                globalAtomicBul.compareAndSet(false, true);
-            }*/
+
             sem2.release();
         }
     }
@@ -89,7 +85,7 @@ public class PingPong implements Runnable{
 
     public static void main(String args[]) throws InterruptedException {
 
-        PingPong test = new PingPong();
+        ExerciseThreeP1 test = new ExerciseThreeP1();
         Thread consumer = new Thread(test);
         Thread producer = new Thread(test);
         consumer.setName("consumer");

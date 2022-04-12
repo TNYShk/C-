@@ -57,7 +57,7 @@ public class ExerciseOne extends Thread{
         }
     }
 
-/*
+
     public static void main(String args[]) throws InterruptedException {
         ExerciseOne.Ex1();
       ExerciseOne outside = new ExerciseOne();
@@ -76,7 +76,7 @@ public class ExerciseOne extends Thread{
         two.join();
         //System.out.println("counter "+ ExerciseTwo.globalCounter);
 
-    }*/
+    }
 
 }
 
