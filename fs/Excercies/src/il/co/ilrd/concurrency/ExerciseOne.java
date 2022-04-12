@@ -9,11 +9,9 @@ public class ExerciseOne extends Thread{
     @Override
     public void run() {
         while (keepRunning()) {
-
-            System.out.println("MyThread thread is running!" + java.time.LocalDateTime.now() + " " + currentThread().getName());
+            System.out.println("Run Forest Run!");
             try {
-                System.out.println("here???");
-                Thread.sleep(5000);
+                Thread.sleep(2000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -44,10 +42,10 @@ public class ExerciseOne extends Thread{
         @Override
         public void run() {
             while(keepRunning()){
-                System.out.println("Run Forest Run!");
 
+                System.out.println("MyThread thread is running! " + java.time.LocalDateTime.now() );
                 try{
-                    Thread.sleep(3L * 3000L);
+                    Thread.sleep( 5000L);
                 } catch (InterruptedException e){
                     e.printStackTrace();
                 }
@@ -60,10 +58,9 @@ public class ExerciseOne extends Thread{
 
     public static void main(String args[]) throws InterruptedException {
         ExerciseOne.Ex1();
-      ExerciseOne outside = new ExerciseOne();
+        ExerciseOne outside = new ExerciseOne();
         runRunRun inner = outside.new runRunRun();
-       inner.run();
-        System.out.println("in main");
+        inner.run();
 
         ExerciseTwo next = new ExerciseTwo();
 

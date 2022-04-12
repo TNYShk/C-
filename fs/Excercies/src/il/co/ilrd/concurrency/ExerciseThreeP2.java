@@ -12,10 +12,10 @@ public class ExerciseThreeP2 {
     private int semCount_g = 0;
 
     public void produce() {
-        count_g = 10;
+        count_g = 5;
         while(count_g > 0) {
             synchronized(this) {
-                    for (int i = 0; i < 10; ++i) {
+                    for (int i = 0; i < 5; ++i) {
                         list.add( i * i);
                     }
                     System.out.println("production wrap!");
@@ -40,12 +40,12 @@ public class ExerciseThreeP2 {
         semCount_g = 0;
         while(semCount_g < 1) {
             synchronized(this) {
-                for (int i = 0; i < 10; ++i) {
+                for (int i = 0; i < 5; ++i) {
                     list.add(i);
                 }
-                System.out.println("produced!");
+                System.out.println("produced!" + java.time.LocalDateTime.now());
                 ++semCount_g;
-                sem.release(10);
+                sem.release(5);
             }
         }
     }
@@ -57,7 +57,7 @@ public class ExerciseThreeP2 {
                 sem.acquire(1);
                 if (!list.isEmpty()) {
                     System.out.print("consumed message #" + list.remove(0) + " ");
-                    System.out.println(" thread id " + Thread.currentThread().getId());
+                    System.out.println(" thread id " + Thread.currentThread().getId() +" " + java.time.LocalDateTime.now());
                 }
                 ++semCount_g;
             }
@@ -67,10 +67,10 @@ public class ExerciseThreeP2 {
 
     public static void main(String[] args) {
         ExerciseThreeP2 bla = new ExerciseThreeP2();
-        Thread[] producers = new Thread[3];
-        Thread[] consumers = new Thread[3];
+        Thread[] producers = new Thread[5];
+        Thread[] consumers = new Thread[5];
 
-        for (int i = 0; i < 3; ++i) {
+        for (int i = 0; i < 5; ++i) {
             producers[i] = new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -79,7 +79,7 @@ public class ExerciseThreeP2 {
                 }
             });
         }
-        for (int i = 0; i < 3; ++i) {
+        for (int i = 0; i < 5; ++i) {
             consumers[i] = new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -94,7 +94,7 @@ public class ExerciseThreeP2 {
             });
         }
 
-        for (int i = 0; i < 3; ++i) {
+        for (int i = 0; i < 5; ++i) {
             producers[i].start();
             consumers[i].start();
         }

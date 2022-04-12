@@ -17,7 +17,6 @@ public class ExerciseThreeP3 implements Runnable {
     private void produce() throws InterruptedException {
         for (int j = 0; j < 5; ++j) {
             sem.acquire(numOfConsumers);
-
             message += 1;
             lock.lock();
             notReady.signalAll();
@@ -39,12 +38,14 @@ public class ExerciseThreeP3 implements Runnable {
     public void run() {
             if (Thread.currentThread().getName().equals("producer")) {
                 try {
+                    //System.out.println(Thread.currentThread().getName() + " " + java.time.LocalDateTime.now());
                     produce();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             } else {
                 try {
+                    //System.out.println(Thread.currentThread().getName() + " " + java.time.LocalDateTime.now());
                     consume();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -61,6 +62,7 @@ public class ExerciseThreeP3 implements Runnable {
             Thread consumer = new Thread(ex3);
             consumer.start();
         }
+
 
     }
 }

@@ -64,6 +64,7 @@ public class ExerciseThreeP1 implements Runnable{
 
         if (Thread.currentThread().getName() == "consumer") {
             try {
+                System.out.println(Thread.currentThread().getName() + " " + java.time.LocalDateTime.now());
                 consume();
                 consume1();
             } catch (InterruptedException e) {
@@ -71,6 +72,7 @@ public class ExerciseThreeP1 implements Runnable{
             }
         } else {
             try {
+                System.out.println(Thread.currentThread().getName() + " " + java.time.LocalDateTime.now());
                 produce();
                 produce1();
             } catch (InterruptedException e) {
@@ -90,7 +92,7 @@ public class ExerciseThreeP1 implements Runnable{
         Thread producer = new Thread(test);
         consumer.setName("consumer");
         producer.setName("producer");
-        System.out.println(Thread.currentThread().getName() + " " + java.time.LocalDateTime.now());
+
         consumer.start();
         producer.start();
         consumer.join();
