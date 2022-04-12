@@ -43,15 +43,17 @@ public class ExerciseThree {
     }
 
     private void runProducerConsumer() {
-        for (int i = 0; i < 2; i++) {
-            Thread producerThread = new Thread(this::produce);
-            producerThread.start();
-        }
+
+        Thread producerThread = new Thread(this::produce);
+        producerThread.start();
+
+
 
         for (int i = 0; i < 3; i++) {
             Thread consumerThread = new Thread(this::consume);
             consumerThread.start();
         }
+
     }
 
     public static void main(String[] args) throws InterruptedException {
