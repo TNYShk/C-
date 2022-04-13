@@ -26,7 +26,7 @@ public class ExerciseThreeP1 implements Runnable{
     public void consume1() throws InterruptedException {
         int count = 0;
         while( count < 10) {
-            if ( globalAtomicBul.get() == false) {
+            if ( !globalAtomicBul.get()) {
                 System.out.println("ping");
                 ++count;
                 globalAtomicBul.compareAndSet(false, true);
@@ -47,10 +47,10 @@ public class ExerciseThreeP1 implements Runnable{
         }
     }
 
-    public void produce1() throws InterruptedException{
+    public void produce1() {
         int count = 0;
         while( count < 9) {
-            if (globalAtomicBul.get() == true) {
+            if (globalAtomicBul.get()) {
                 System.out.println("pong");
                 ++count;
                 globalAtomicBul.compareAndSet(true, false);
@@ -61,8 +61,7 @@ public class ExerciseThreeP1 implements Runnable{
     @Override
     public void run() {
 
-
-        if (Thread.currentThread().getName() == "consumer") {
+        if (Thread.currentThread().getName().equals("consumer")) {
             try {
                 System.out.println(Thread.currentThread().getName() + " " + java.time.LocalDateTime.now());
                 consume();
@@ -85,20 +84,26 @@ public class ExerciseThreeP1 implements Runnable{
 
 
 
-    public static void main(String args[]) throws InterruptedException {
+
+    public static void main(String[] args){
 
         ExerciseThreeP1 test = new ExerciseThreeP1();
-        Thread consumer = new Thread(test);
-        Thread producer = new Thread(test);
-        consumer.setName("consumer");
-        producer.setName("producer");
+        Thread consumer = new Thread(test, "consumer");
+        Thread producer = new Thread(test, "producer");
 
         consumer.start();
         producer.start();
-        consumer.join();
-        producer.join();
+        try{
+            consumer.join();
+            producer.join();
+        }catch (InterruptedException e){
+            e.printStackTrace();
+        }
+
 
 
     }
+
+
 
 }

@@ -4,12 +4,13 @@ public class ExerciseOne extends Thread{
     private volatile boolean doStop = false;
 
     private synchronized boolean keepRunning(){
-        return (this.doStop == false);
+        return (!this.doStop);
     }
     @Override
     public void run() {
+        System.out.println("Run Forest Run! " + java.time.LocalDateTime.now() );
         while (keepRunning()) {
-            System.out.println("Run Forest Run!");
+
             try {
                 Thread.sleep(2000);
             } catch (InterruptedException e) {
@@ -36,7 +37,7 @@ public class ExerciseOne extends Thread{
         }
 
         private synchronized boolean keepRunning() {
-            return this.pleaseStop == false;
+            return !this.pleaseStop;
         }
 
         @Override
@@ -56,22 +57,20 @@ public class ExerciseOne extends Thread{
     }
 
 
-    public static void main(String args[]) throws InterruptedException {
-        ExerciseOne.Ex1();
+    public static void main(String[] args)  {
+        try{
+            ExerciseOne.Ex1();
+        }catch(InterruptedException e){
+            e.printStackTrace();
+        }
+
         ExerciseOne outside = new ExerciseOne();
         runRunRun inner = outside.new runRunRun();
         inner.run();
 
-        ExerciseTwo next = new ExerciseTwo();
 
-        Thread one = new Thread(next);
-        Thread two = new Thread(next);
 
-        one.start();
-        two.start();
-        one.join();
-        two.join();
-        //System.out.println("counter "+ ExerciseTwo.globalCounter);
+
 
     }
 

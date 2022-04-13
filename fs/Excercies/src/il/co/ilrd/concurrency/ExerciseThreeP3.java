@@ -1,5 +1,10 @@
 package il.co.ilrd.concurrency;
-
+/*
+Concurrency, Producer- Consumer WS
+by Tanya Shk
+reviewed by Amit
+April 13
+ */
 
 import java.util.concurrent.Semaphore;
 
@@ -53,7 +58,7 @@ public class ExerciseThreeP3 implements Runnable {
             }
         }
 
-    public static void main(String args[]){
+    public static void main(String[] args){
         ExerciseThreeP3 ex3 = new ExerciseThreeP3();
         Thread producer = new Thread(ex3, "producer");
         producer.start();

@@ -38,27 +38,27 @@ public class ExerciseThreeP2 {
 
     public void semaphoreProduce() {
         semCount_g = 0;
-        while(semCount_g < 1) {
+        while(semCount_g < 3) {
             synchronized(this) {
-                for (int i = 0; i < 5; ++i) {
+                int msg = 5;
+                for (int i = 0; i < msg; ++i) {
                     list.add(i);
                 }
                 System.out.println("produced!" + java.time.LocalDateTime.now());
                 ++semCount_g;
-                sem.release(5);
+                sem.release(msg);
             }
         }
     }
 
     public void semaphoreConsume() throws InterruptedException {
         semCount_g = 0;
-        while(semCount_g < 2) {
+        while(semCount_g < 3) {
             synchronized(this) {
-                sem.acquire(1);
-                if (!list.isEmpty()) {
+                    sem.acquire(1);
                     System.out.print("consumed message #" + list.remove(0) + " ");
                     System.out.println(" thread id " + Thread.currentThread().getId() +" " + java.time.LocalDateTime.now());
-                }
+
                 ++semCount_g;
             }
         }
@@ -71,25 +71,17 @@ public class ExerciseThreeP2 {
         Thread[] consumers = new Thread[5];
 
         for (int i = 0; i < 5; ++i) {
-            producers[i] = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    //bla.produce();
-                    bla.semaphoreProduce();
-                }
-            });
+            //bla.produce();
+            producers[i] = new Thread(bla::semaphoreProduce);
         }
         for (int i = 0; i < 5; ++i) {
-            consumers[i] = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    //bla.consume();
-                    try {
+            consumers[i] = new Thread(() -> {
+                //bla.consume();
+                try {
 
-                        bla.semaphoreConsume();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                    bla.semaphoreConsume();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             });
         }
