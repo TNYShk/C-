@@ -1,12 +1,18 @@
 package il.co.ilrd.treeprint;
+/*
+    TreePrint - print folders&files in given path
+    by Tanya Shk
+    April 13, 2022
+    reviewed by Daniela
+ */
 
 import java.util.ArrayList;
-
 import java.util.List;
 import java.io.File;
+import java.util.Objects;
 
 public class TreePrint {
-    private TreeFolder root;
+    private final TreeFolder root;
 
     public TreePrint(String path) {
         root = new TreeFolder(path);
@@ -23,14 +29,13 @@ public class TreePrint {
 
     private class TreeFolder implements Component {
         private List<Component> componentsList = new ArrayList<>();
-        private File folder;
-        private File[] folders;
+        private final File folder;
+
         public TreeFolder(String path) {
 
             folder = new File(path);
-            folders = folder.listFiles();
-            //componentsList.toArray(folders);
-            for(File file: folders){
+
+            for(File file: Objects.requireNonNull(folder.listFiles())){
                 if(file.isDirectory()){
                     componentsList.add(new TreeFolder(file.getPath()));
                 }else if(file.isFile()){
@@ -42,7 +47,7 @@ public class TreePrint {
         @Override
         public void print(int level) {
             TreePrint.TreeFile bla = new TreeFile(folder.getPath());
-            System.out.println(bla.getName().toUpperCase());
+            System.out.println(bla.getName() + "\n |_");
             for(Component comp: componentsList ){
                 comp.print(level+1);
             }
@@ -67,17 +72,12 @@ public class TreePrint {
             while(level>0){
                 --level;
                 dash.append("-");
-
             }
-
            System.out.println("\t" + dash + " " +getName());
-
         }
         @Override
         public String getName() {
            return file.getName();
-
         }
-
     }
 }
