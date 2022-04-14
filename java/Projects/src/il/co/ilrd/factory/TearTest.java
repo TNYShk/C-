@@ -7,22 +7,33 @@ public class TearTest implements Function<Integer,TearTest> {
     static int wow = 6;
 
     public TearTest(Integer tearsNumber){
-        this.tearsNumber = tearsNumber;
+        if(tearsNumber != null)
+            this.tearsNumber = tearsNumber;
+        else{this.tearsNumber = 0;}
     }
     public TearTest(){
         this.tearsNumber = 26;
     }
-    public void prnt(){
-        System.out.println("so far tears cried: "+ (++tearsNumber));
+    public void cryAlot(){
+        ++tearsNumber;
+
+    }
+    public void print(){
+
+        System.out.println("so far cried "+ (tearsNumber)+ " tears");
     }
     public static TearTest printWow(Integer n){
         System.out.println("static tears " + (++wow));
         return new TearTest(wow);
     }
 
-    public  TearTest printW(){
+    public TearTest printW(){
         System.out.println("non static tears " + (++wow));
-        return new TearTest(wow);
+        int doubleTears = wow<<1;
+        return new TearTest(doubleTears);
+    }
+    public Integer howManyTears(){
+       return this.tearsNumber;
     }
 
     public Function<Integer,TearTest> cry = (tearsNumber) -> { System.out.println("lambda?"); return new TearTest(tearsNumber);};
@@ -47,15 +58,16 @@ public class TearTest implements Function<Integer,TearTest> {
              Shiraz.name = name;
          }
 
-         public static void getName(){
-            System.out.println(Shiraz.name);
+         public static String getName(){
+            return (Shiraz.name);
          }
 
 
-        public static Function<String, Shiraz> talk = (String s) -> {System.out.println("static lambda!"); return new Shiraz("tt");};
+        public static Function<String, Shiraz> talk = (String s) -> {System.out.println("static lambda!"); return new Shiraz();};
+        public static Function<String, Shiraz> staticTalk = (String s) -> {System.out.println("static lambda!"); return new Shiraz("another");};
          public static Function<String, Shiraz> talks = (String s) -> {System.out.print("recursive? lambda! "); return  Shiraz.talk.apply("");};
 
 
 
-     }
+    }
 }

@@ -2,6 +2,7 @@ package il.co.ilrd.factory;
 
 
 import java.util.HashMap;
+
 import java.util.function.Function;
 
 public class TearFactory<K, T, D>  {
@@ -19,5 +20,7 @@ public class TearFactory<K, T, D>  {
            return factoryFun.get(key).apply(data);
         }
 
-
+        public int mapSize(){
+           return this.factoryFun.size();
+        }
 }

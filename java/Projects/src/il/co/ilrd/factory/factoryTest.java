@@ -1,58 +1,78 @@
 package il.co.ilrd.factory;
 
 
-import il.co.ilrd.treeprint.TreePrint;
-
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 import java.util.function.Function;
 
 public class factoryTest {
 
-    public static void main(String []args) {
-        PrintTree ofer = new PrintTree("/home/tanya/git/fs");
-        ofer.tree();
+    @Test
+    void TreePrintTest(){
+        PrintTree offer = new PrintTree("/home/tanya/git/fs");
+        offer.tree();
+    }
 
-
-        TearFactory<Integer,TearTest,Integer> test = new TearFactory<>();
-        test.add(new TearTest(590).cry,27);
-        test.add(new TearTest(),26);
-        TearTest one = test.create(27,26);
+    @Test
+    void TearsTestAnonymous(){
+        TearFactory<Integer,TearTest,Integer> tears = new TearFactory<>();
+        tears.add(new TearTest(590).cry,27);
+        tears.add(new TearTest(),26);
+        TearTest one = tears.create(27,26);
         TearTest two = new TearTest(5);
-        TearTest three = test.create(26);
-        System.out.println(one.getClass());
-        one.prnt();
-        two.prnt();
-        three.prnt();
-        three.prnt();
-        three.prnt();
+        tears.add(one.apply(111),28);
+        tears.add(two,29);
+        TearTest three = tears.create(26);
+        tears.create(26).cryAlot();
+        one.cryAlot();
+        two.cryAlot();
+        TearTest four =  new TearTest(null);
+        tears.add(four,null);
 
-
-        /* Anonymous class*/
+        tears.create(28).cryAlot();
+        three.cryAlot();
+        three.cryAlot();
+        three.cryAlot();
+        three.print();
+      assertEquals(0,four.howManyTears());
+        assertEquals(29,three.howManyTears());
+        assertEquals(5, tears.mapSize());
         Function<Integer,TearTest> Anonymus = new Function<Integer, TearTest>() {
             @Override
             public TearTest apply(Integer integer) {
-                return new TearTest(570);
+                return new TearTest(three.howManyTears());
             }
         };
-        test.add(Anonymus,1);
+        tears.add(Anonymus,1);
 
-        System.out.println("Anonymous class");
-        test.create(1).prnt();
-        test.create(1).printW().prnt();
+        System.out.println("\nAnonymous class");
+        tears.create(1).cryAlot();
+        tears.create(1).printW().cryAlot();
 
-        System.out.println("test 4? or 5?");
-        test.add(TearTest::printWow,3);
-        TearTest a1 = test.create(3);
-        test.add(a1,4);
-        test.create(4).printW();
+        System.out.println("\ntest 4? or 5?");
+        tears.add(TearTest::printWow,3);
+        TearTest a1 = tears.create(3);
+        tears.add(a1,4);
+        tears.create(4).printW();
+        System.out.println("size is " + tears.mapSize());
 
-
-        /* Static method & lambda*/
+    }
+    @Test
+     void staticLambda(){
         TearFactory<Integer, TearTest.Shiraz,String> statTest = new TearFactory<>();
         statTest.add(TearTest.Shiraz.talk, 1);
         statTest.add(TearTest.Shiraz.talks, 2);
-        statTest.create(1);
-        statTest.create(2);
-        TearTest.Shiraz.getName();
+        statTest.add(TearTest.Shiraz.staticTalk, 3);
+        TearTest.Shiraz shiri = statTest.create(1,"Shiraz");
+        assertEquals("Shiraazzzzzz", TearTest.Shiraz.getName());
+        TearTest.Shiraz shigi = statTest.create(2);
+        assertEquals("Shiraazzzzzz", TearTest.Shiraz.getName());
+        TearTest.Shiraz shibi = statTest.create(3,"data");
+        assertEquals("another", TearTest.Shiraz.getName());
+
+    }
+    public static void main(String []args) {
+
     }
 
 }

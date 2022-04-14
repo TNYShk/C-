@@ -33,12 +33,11 @@ public class PrintTree {
 
         public TreeFolder(String path) {
             folder = new File(path);
-
             treeFactory.add((lambda) -> new TreeFolder(lambda.getPath()), true);
             treeFactory.add((lambda) -> new TreeFile(lambda.getPath()), false);
+
             for(File file: Objects.requireNonNull(folder.listFiles())){
                 componentsList.add( treeFactory.create(file.isDirectory(), file));
-
             }
         }
         @Override
@@ -66,7 +65,7 @@ public class PrintTree {
         @Override
         public void print(int level) {
 
-            System.out.println("\t" + dashMaker(level) + "--- " +getName());
+            System.out.println("\t" + dashMaker(level) + "----" +getName());
         }
         @Override
         public String getName() {
@@ -75,8 +74,8 @@ public class PrintTree {
     }
     private StringBuilder dashMaker(int level){
         StringBuilder dash = new StringBuilder();
-        while(level>0){
-            --level;
+
+        while(--level>0){
             dash.append(" ");
         }
         dash.append("|");
