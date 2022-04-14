@@ -28,11 +28,10 @@ public class TreePrint {
     }
 
     private class TreeFolder implements Component {
-        private List<Component> componentsList = new ArrayList<>();
+        private final List<Component> componentsList = new ArrayList<>();
         private final File folder;
 
         public TreeFolder(String path) {
-
             folder = new File(path);
 
             for(File file: Objects.requireNonNull(folder.listFiles())){
@@ -43,11 +42,11 @@ public class TreePrint {
                 }
             }
         }
-
         @Override
         public void print(int level) {
-            TreePrint.TreeFile bla = new TreeFile(folder.getPath());
-            System.out.println(bla.getName() + "\n |_");
+
+            System.out.println(dashMaker(level) + "_ " + folder.getName());
+
             for(Component comp: componentsList ){
                 comp.print(level+1);
             }
@@ -56,28 +55,32 @@ public class TreePrint {
         @Override
         public String getName() {
            return folder.getName();
-
         }
     }
 
     private class TreeFile implements Component {
-        private File file;
+        private final File file;
 
         public TreeFile(String name) {
             file = new File(name);
         }
         @Override
         public void print(int level) {
-            StringBuilder dash = new StringBuilder(" | ");
-            while(level>0){
-                --level;
-                dash.append("-");
-            }
-           System.out.println("\t" + dash + " " +getName());
+
+           System.out.println("\t" + dashMaker(level) + "--- " +getName());
         }
         @Override
         public String getName() {
            return file.getName();
         }
+    }
+    private StringBuilder dashMaker(int level){
+        StringBuilder dash = new StringBuilder();
+        while(level>0){
+            --level;
+            dash.append(" ");
+        }
+        dash.append("|");
+        return dash;
     }
 }
