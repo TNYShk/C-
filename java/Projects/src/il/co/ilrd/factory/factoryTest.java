@@ -1,11 +1,17 @@
 package il.co.ilrd.factory;
 
 
+import il.co.ilrd.treeprint.TreePrint;
+
 import java.util.function.Function;
 
 public class factoryTest {
 
-    public static void main(String []args){
+    public static void main(String []args) {
+        PrintTree ofer = new PrintTree("/home/tanya/git/fs");
+        ofer.tree();
+
+
         TearFactory<Integer,TearTest,Integer> test = new TearFactory<>();
         test.add(new TearTest(590).cry,27);
         test.add(new TearTest(),26);
@@ -28,10 +34,11 @@ public class factoryTest {
             }
         };
         test.add(Anonymus,1);
-        /* test 4? or 5?*/
 
         System.out.println("Anonymous class");
         test.create(1).prnt();
+        test.create(1).printW().prnt();
+
         System.out.println("test 4? or 5?");
         test.add(TearTest::printWow,3);
         TearTest a1 = test.create(3);
@@ -45,8 +52,7 @@ public class factoryTest {
         statTest.add(TearTest.Shiraz.talks, 2);
         statTest.create(1);
         statTest.create(2);
-
-
-
+        TearTest.Shiraz.getName();
     }
+
 }

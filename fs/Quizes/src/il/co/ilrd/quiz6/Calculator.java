@@ -1,6 +1,5 @@
 package il.co.ilrd.quiz6;
 
-import com.sun.org.apache.xpath.internal.operations.Div;
 
 import java.util.HashMap;
 

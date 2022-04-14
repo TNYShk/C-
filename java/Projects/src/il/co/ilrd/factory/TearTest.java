@@ -8,23 +8,20 @@ public class TearTest implements Function<Integer,TearTest> {
 
     public TearTest(Integer tearsNumber){
         this.tearsNumber = tearsNumber;
-
     }
     public TearTest(){
         this.tearsNumber = 26;
-
     }
     public void prnt(){
-
         System.out.println("so far tears cried: "+ (++tearsNumber));
     }
     public static TearTest printWow(Integer n){
-        System.out.println("wow " + wow);
+        System.out.println("static tears " + (++wow));
         return new TearTest(wow);
     }
 
     public  TearTest printW(){
-        System.out.println("non static wow " + (++wow));
+        System.out.println("non static tears " + (++wow));
         return new TearTest(wow);
     }
 
@@ -40,7 +37,6 @@ public class TearTest implements Function<Integer,TearTest> {
        return new TearTest(integer);
     }
 
-
     static class Shiraz{
         static String name;
 
@@ -48,12 +44,15 @@ public class TearTest implements Function<Integer,TearTest> {
             name = "Shiraazzzzzz";
         }
          public Shiraz(String name){
-             this.name = name;
+             Shiraz.name = name;
+         }
+
+         public static void getName(){
+            System.out.println(Shiraz.name);
          }
 
 
-
-        public static Function<String, Shiraz> talk = (String s) -> {System.out.println("static lambda!"); return new Shiraz();};
+        public static Function<String, Shiraz> talk = (String s) -> {System.out.println("static lambda!"); return new Shiraz("tt");};
          public static Function<String, Shiraz> talks = (String s) -> {System.out.print("recursive? lambda! "); return  Shiraz.talk.apply("");};
 
 
