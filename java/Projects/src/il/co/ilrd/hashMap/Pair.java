@@ -55,23 +55,20 @@ public class Pair <K, V> implements Map.Entry<K, V> {
 
         return hash;
 
-
-
     }
 
   @Override
     public boolean equals(Object other) {
-        if(other instanceof Pair){
-            return (this.key.equals(((Pair<?, ?>) other).key) && this.value.equals(((Pair<?,?>) other).value));
-        }
-        return false;
+      if ((other instanceof Pair)) {
+
+      if (null == ((Pair<?, ?>)other).key || this.key == null) {
+          return this.key == ((Pair<?, ?>)other).key && this.value == ((Pair<?, ?>)other).value;
+      }
+
+      return this.key.equals(((Pair<?, ?>)other).key) && this.value.equals(((Pair<?, ?>)other).value);
     }
-
-
-
-
-
-
+    return false;
+  }
 
     public static <E extends Comparable<E>> Pair<E, E> minMax(E [] elementsArray){
         List<E> list = Arrays.asList(elementsArray);
@@ -82,7 +79,7 @@ public class Pair <K, V> implements Map.Entry<K, V> {
     public static <E> Pair<E, E> LazyMinMax(E [] elementsArray, Comparator<E> cmpFun){
 
         List<E> list = Arrays.asList(elementsArray);
-        return new Pair<E, E>(Collections.min(list, cmpFun), Collections.max(list, cmpFun));
+        return new Pair<>(Collections.min(list, cmpFun), Collections.max(list, cmpFun));
     }
 
     //time complex o(1.5)

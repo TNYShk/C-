@@ -4,17 +4,7 @@ package il.co.ilrd.hashMap;
 // April 8, 2022
 // reviewed by Shay Levi
 
-import java.util.AbstractCollection;
-import java.util.AbstractSet;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.ConcurrentModificationException;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 
 public class HashMap<K,V> implements Map<K,V> {
@@ -24,19 +14,25 @@ public class HashMap<K,V> implements Map<K,V> {
     private Set<K> Setofkeys = null;
     private Collection<V> valuesCollection = null;
     private final int capacity;
+    private final static int DEFAULT_CAP = 16;
 
 
     public HashMap() {
-        this(16);
+        this(DEFAULT_CAP);
     }
 
     public HashMap(int capacity) {
-        this.capacity = capacity;
+        if(capacity < 16){
+           this.capacity = DEFAULT_CAP;
+        }else {
+            this.capacity = capacity;
+        }
         Hashmap = new ArrayList<>(capacity);
 
-        for (int i = 0; i < capacity; ++i) {
-            Hashmap.add(new LinkedList<>());
-        }
+            for (int i = 0; i < capacity; ++i) {
+                Hashmap.add(new LinkedList<>());
+            }
+
     }
 
     @Override
@@ -70,9 +66,14 @@ public class HashMap<K,V> implements Map<K,V> {
 
     @Override
     public boolean containsKey(Object key) {
-        List<Entry<K, V>> floor = Hashmap.get(Math.floorMod(key.hashCode(), capacity));
+        int copyKey = 0;
+        if(null != key){
+            copyKey = Math.floorMod(key.hashCode(), capacity);
+        }
+        List<Entry<K, V>> floor = Hashmap.get(copyKey);
+
         for (Entry<K, V> room : floor) {
-            if (room.getKey().equals(key)) {
+            if (room.getKey() == (key)) {
                 return true;
             }
         }
@@ -92,7 +93,11 @@ public class HashMap<K,V> implements Map<K,V> {
 
     @Override
     public V get(Object key) {
-        List<Entry<K, V>> floor = Hashmap.get(Math.floorMod(key.hashCode(), capacity));
+        int copyKey = 0;
+        if(key != null){
+            copyKey = Math.floorMod(key.hashCode(), capacity);
+        }
+        List<Entry<K, V>> floor = Hashmap.get(copyKey);
         for (Entry<K, V> room : floor) {
             if (room.getKey().equals(key)) {
                 return room.getValue();
@@ -103,34 +108,40 @@ public class HashMap<K,V> implements Map<K,V> {
 
     @Override
     public V put(K key, V value) {
+        int copyKey = 0;
+        if(key != null){
+            copyKey = Math.floorMod(key.hashCode(), capacity);
+        }
         Pair<K, V> newPair = Pair.of(key, value);
-        int hash = Math.floorMod(key.hashCode(), capacity);
 
-        for (Entry<K, V> match : Hashmap.get(hash)) {
+        ++version;
+        for (Entry<K, V> match : Hashmap.get(copyKey)) {
             if (match.getKey().equals(key)) {
-                ++version;
                 return match.setValue(value);
             }
         }
-        ++version;
-        Hashmap.get(hash).add(newPair);
+
+        Hashmap.get(copyKey).add(newPair);
         return null;
     }
 
     @Override
     public V remove(Object key) {
-        int hash = Math.floorMod(key.hashCode(), capacity);
-        List<Entry<K, V>> floor = Hashmap.get(Math.floorMod(key.hashCode(), capacity));
+        V dataToRemove = null;
+        int copyKey = 0;
+        if(key != null){
+            copyKey = Math.floorMod(key.hashCode(), capacity);
+        }
 
+        List<Entry<K, V>> floor = Hashmap.get(copyKey);
         for (Entry<K, V> data : floor) {
-            if (data.getKey().equals(key)) {
-                V dataToRemove = data.getValue();
-                Hashmap.get(hash).remove(data);
+            if (data.getKey() == key) {
+                dataToRemove = data.getValue();
+                Hashmap.get(copyKey).remove(data);
                 ++version;
-                return dataToRemove;
             }
         }
-        return null;
+        return dataToRemove;
     }
 
     @Override

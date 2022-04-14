@@ -21,6 +21,8 @@ public class PairTest {
         Pair<Double,Integer> pp3 = Pair.of(2.0,3);
         Pair<Integer,Integer> pp4 = Pair.of(2,3);
         Pair<Integer,Integer> pp5 = Pair.swap(pp4);
+        Pair<Integer,Integer> pp6 = Pair.of(null,3);
+        System.out.print(pp6);
         assertNotEquals(pp1, pp2);
         assertFalse(pp2.equals(pp3));
         assertFalse(pp4.hashCode() == pp3.hashCode());
@@ -32,6 +34,8 @@ public class PairTest {
         Double[] darry = {1.2,3.2,-5.1,4.4, 0.0, -99.9};
         Pair<Double, Double> pd3 = Pair.minMax(darry);
         assertTrue(Pair.of(-99.9,4.4).equals(pd3));
+
+
     }
 
     @Test
@@ -84,6 +88,7 @@ public class PairTest {
     @Test
     void HashPrintTest(){
         HashMap<Integer, Integer> myMap = new HashMap<>();
+
         myMap.put(1,2);
         myMap.put(2,3);
         Set<Map.Entry<Integer, Integer>> test = myMap.entrySet();
@@ -137,6 +142,8 @@ public class PairTest {
         myMap.put("terror",3333);
         myMap.put("acts?!",44444);
         myMap.put("enough!",555555);
+        myMap.put(null,66666);
+        myMap.remove(null);
         HashMap<String, Integer> newwerHashMap = new HashMap<>();
         newwerHashMap.putAll(myMap);
         System.out.println(newwerHashMap.keySet());
