@@ -1,7 +1,5 @@
 package il.co.ilrd.factory;
 
-
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +8,7 @@ import java.util.Objects;
 
 public class PrintTree {
     private final TreeFolder root;
-     TearFactory<Boolean, Component, File> treeFactory = new TearFactory<>();
+     Factory<Boolean, Component, File> treeFactory = new Factory<>();
 
     public PrintTree(String path) {
         root = new TreeFolder(path);
