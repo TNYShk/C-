@@ -3,7 +3,7 @@ package il.co.ilrd.quiz6;
 
 import java.util.HashMap;
 
-public class Calculator implements Person, Male {
+public class Calculator  {
     HashMap<String,Operator> mapOperaotr = new HashMap<>();
 
     private void addOperator(String key,Operator o){
@@ -64,8 +64,7 @@ public class Calculator implements Person, Male {
         System.out.println(sam.operate("subtract", 4,5));
         System.out.println(sam.operate("divide", 4,5));
         System.out.println(sam.operate("multiply", 4,5));
-        Male.sayHello();
-        sam.sayHello();
+
         System.out.println(sam.add.operate(10,4));
         System.out.println(sam.minus.operate(10,4));
         Multiply div = sam.new Multiply();
@@ -73,17 +72,4 @@ public class Calculator implements Person, Male {
         System.out.println(sam.Division().operate(5,2));
     }
 
-
-
-
-}
-interface Person{
-    default void sayHello(){
-        System.out.println("helloP");
-    }
-}
-interface Male{
-    static void sayHello(){
-        System.out.println("Hi");
-    }
 }
