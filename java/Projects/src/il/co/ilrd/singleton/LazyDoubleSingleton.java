@@ -27,14 +27,14 @@ public void run(){
     /* synchronized  version//
 
         public static LazyDoubleSingleton getInstance(){
-             if (null == instance) {
+            if (null == instance) {
                 synchronized (LazyDoubleSingleton.class){
                     if (null == instance) {
                         instance = new LazyDoubleSingleton();
-              }
+                    }
+                }
             }
+            return instance;
         }
-        return instance;
-    }
      */
 }
