@@ -9,8 +9,11 @@ public class Website {
     }
 
     public void subscribe(Callback<StringBuffer> site){
+
         dispatch.register(site);
+
     }
+
 
     public void unsubscribe(Callback<StringBuffer> site){
         dispatch.unregister(site);

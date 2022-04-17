@@ -16,6 +16,7 @@ public class Dispatcher<D> {
     }
 
     public void notifyAll(D data) {
+
         for (Callback<D> callback : callbacklist) {
             callback.notify(data);
         }

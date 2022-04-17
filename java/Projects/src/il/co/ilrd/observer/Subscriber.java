@@ -6,7 +6,7 @@ import java.util.function.Consumer;
 
 public class Subscriber {
 
-    private final Callback<StringBuffer> provider;
+    private Callback<StringBuffer> provider;
 
     public Subscriber(Consumer<StringBuffer> howNotify, Runnable howStopNotify){
         //Pair<Consumer,Runnable> communicationType = Pair.of(howNotify,howStopNotify);
@@ -15,8 +15,11 @@ public class Subscriber {
 
 
     public void subscribe(Website outlet){
-        System.out.print(outlet.getName() + " ");
+
+        System.out.println("welcome to " + outlet.getName() + " ");
+
         outlet.subscribe(provider);
+
     }
 
     public void unsubscribe(Website outlet){
