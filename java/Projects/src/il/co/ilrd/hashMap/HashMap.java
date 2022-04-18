@@ -32,7 +32,6 @@ public class HashMap<K,V> implements Map<K,V> {
             for (int i = 0; i < capacity; ++i) {
                 Hashmap.add(new LinkedList<>());
             }
-
     }
 
     @Override

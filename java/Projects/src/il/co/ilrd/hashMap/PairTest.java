@@ -61,7 +61,7 @@ public class PairTest {
     void HashTest(){
         HashMap<String, Integer> myMap = new HashMap<>();
         assertTrue(myMap.isEmpty());
-      
+
         myMap.put("die",1);
         myMap.put("antwood",2222);
         myMap.put("south",3);

@@ -1,5 +1,11 @@
 package il.co.ilrd.factory;
+/*
+    Factory Design Pattern WS
+    by Tanya Shk
+    April 17, 2022
+    reviewed by Yehuda
 
+ */
 import java.util.HashMap;
 
 import java.util.function.Function;
@@ -11,7 +17,8 @@ public class Factory<K, T, D> {
     }
 
     public T create(K key){
-        return factoryFun.get(key).apply(null);
+        return this.create(key, null);
+        //return factoryFun.get(key).apply(null);
     }
 
     public T create (K key, D data){
