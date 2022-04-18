@@ -3,10 +3,12 @@ package il.co.ilrd.generics;
 
 import org.testng.annotations.Test;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
+
+import static com.google.common.collect.ImmutableSet.of;
+import static com.google.common.collect.Sets.union;
+import static java.util.Set.*;
 import static org.testng.AssertJUnit.*;
 
 
@@ -58,4 +60,19 @@ public class JewInTest {
               str.addAll((Collection<? extends Double>) byy);*/
 
     }
+
+
+
+    public static void main(String[] args){
+        Set<String> children = of("Maya","Adam");
+        Set<String> animals = of("Twinky","Kika");
+        children.forEach(s -> System.out.print(s + " "));
+        Set<String> parents = of("Tanya","Igal");
+        Set<String> famShkolnik = new HashSet<>();
+        famShkolnik.add(String.valueOf(children));
+        famShkolnik.add(String.valueOf(animals));
+        famShkolnik.add(String.valueOf(parents));
+        System.out.println("\n" + famShkolnik);
+    }
+
 }

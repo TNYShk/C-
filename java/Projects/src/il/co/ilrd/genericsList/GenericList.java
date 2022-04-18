@@ -20,12 +20,13 @@ public class GenericList<E> implements Iterable<E> {
         ++version;
         return dataToRemove;
     }
-
-@SuppressWarnings("unused")
+    //E list isnt used, forEach count
+    @SuppressWarnings("unused parameterized type ")
     public int size() {
         int count = 0;
 
         for(E list  : this){
+
             ++count;
         }
         return count;
@@ -37,13 +38,19 @@ public class GenericList<E> implements Iterable<E> {
 
     public Iterator<E> find(E data) {
 
-        for (E element : this) {
+      for (E element : this) {
             if (element.equals(data)) {
                 Node<E> node = new Node<>(element, null);
                 return new ListIteratorIMP(node);
             }
         }
         return null;
+       /*  Iterator<E> iter = iterator();
+        Iterator<E> prevIter = iterator();
+        while(iter.hasNext() && !iter.equals(data)){
+            iter.next();
+        }
+        return prevIter;*/
     }
 
     public static <T> GenericList<T> newReverse(GenericList<T> list) {
@@ -71,7 +78,7 @@ public class GenericList<E> implements Iterable<E> {
     public Iterator<E> iterator() {
        return new ListIteratorIMP(head);
     }
-
+//node is a static class doesnt need anything from the enclosing class a stand alone and for safety so it wont change something
     private static class Node<T> {
         private T data = null;
         private Node<T> next = null;
@@ -99,14 +106,10 @@ public class GenericList<E> implements Iterable<E> {
     public E next()  {
        E thisData = null;
 
-    try{
         if(controlVersion != version) {
             throw new ConcurrentModificationException("hmmmm");
         }
 
-    }catch(ConcurrentModificationException e){
-        System.err.println(e);
-    }
         thisData = currentNode.data;
         currentNode = currentNode.next;
         return thisData;

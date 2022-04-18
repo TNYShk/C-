@@ -62,7 +62,6 @@ public class FactoryTest {
         };
         annoying.add(Anonymus,1);
 
-
         annoying.create(1).cryAlot();
         annoying.create(1).printW().cryAlot();
 
