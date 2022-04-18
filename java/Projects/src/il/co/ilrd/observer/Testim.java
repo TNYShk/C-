@@ -80,8 +80,6 @@ public class Testim {
         assertEquals(wawwa.getDispatcher().getListSize(),3);
         wawwa.getDispatcher().stopNotification();
         assertEquals(wawwa.getDispatcher().getListSize(),0);
-
-
     }
 
 

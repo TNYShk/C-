@@ -54,10 +54,9 @@ public class TearFactory implements Function<Integer, TearFactory> {
         public Shiraz(){
             name = "Shiraazzzzzz";
         }
-         public Shiraz(String name){
+        public Shiraz(String name){
              Shiraz.name = name;
          }
-
          public static String getName(){
             return (Shiraz.name);
          }
@@ -65,7 +64,7 @@ public class TearFactory implements Function<Integer, TearFactory> {
 
         public static Function<String, Shiraz> talk = (String s) -> {System.out.println("static lambda!"); return new Shiraz();};
         public static Function<String, Shiraz> staticTalk = (String s) -> {System.out.println("static lambda!"); return new Shiraz("another");};
-         public static Function<String, Shiraz> talks = (String s) -> {System.out.print("recursive? lambda! "); return  Shiraz.talk.apply("");};
+        public static Function<String, Shiraz> talks = (String s) -> {System.out.print("recursive? lambda! "); return  Shiraz.talk.apply("");};
 
 
 

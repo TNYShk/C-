@@ -11,7 +11,6 @@ public class Website {
     public void subscribe(Callback<StringBuffer> site){
 
         dispatch.register(site);
-
     }
 
 

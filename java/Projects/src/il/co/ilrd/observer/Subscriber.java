@@ -15,9 +15,7 @@ public class Subscriber {
 
 
     public void subscribe(Website outlet){
-
         System.out.println("welcome to " + outlet.getName() + " ");
-
         outlet.subscribe(provider);
 
     }

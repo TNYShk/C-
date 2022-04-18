@@ -18,7 +18,6 @@ public class Callback<D> {
 
 
     public void notify(D data) {
-
           notification.accept(data);
     }
 
