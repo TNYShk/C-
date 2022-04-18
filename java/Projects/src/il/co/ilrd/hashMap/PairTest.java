@@ -44,8 +44,10 @@ public class PairTest {
         String shay = "banana";
         System.out.println(shay.hashCode());
         Pair<String, String> s1 = Pair.minMax(strArry,String::compareTo);
+        Pair<String, String> s2 = Pair.LazyMinMax(strArry, null);
         System.out.println(s1.hashCode());
         System.out.println(s1);
+        System.out.println(s2);
         assertTrue(s1.getKey().equals("aaaa"));
         assertTrue(s1.getValue().equals("zzzzz"));
     }
@@ -59,7 +61,7 @@ public class PairTest {
     void HashTest(){
         HashMap<String, Integer> myMap = new HashMap<>();
         assertTrue(myMap.isEmpty());
-        assertEquals(myMap.size(), 0);
+      
         myMap.put("die",1);
         myMap.put("antwood",2222);
         myMap.put("south",3);

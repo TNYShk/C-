@@ -70,20 +70,20 @@ public class Pair <K, V> implements Map.Entry<K, V> {
     return false;
   }
 
-    public static <E extends Comparable<E>> Pair<E, E> minMax(E [] elementsArray){
-        List<E> list = Arrays.asList(elementsArray);
+    public static <E extends Comparable<? super E>> Pair<E, E> minMax(E [] elementsArray){
+        List<? extends E> list = Arrays.asList(elementsArray);
         return new Pair<>(Collections.min(list), Collections.max(list));
 
 
     }
-    public static <E> Pair<E, E> LazyMinMax(E [] elementsArray, Comparator<E> cmpFun){
+    public static <E> Pair<E, E> LazyMinMax(E [] elementsArray, Comparator<? super E> cmpFun){
 
-        List<E> list = Arrays.asList(elementsArray);
+        List<? extends E> list = Arrays.asList(elementsArray);
         return new Pair<>(Collections.min(list, cmpFun), Collections.max(list, cmpFun));
     }
 
     //time complex o(1.5)
-    public static <E> Pair<E, E> minMax(E [] elementsArray, Comparator<E> cmpFun){
+    public static <E> Pair<E, E> minMax(E [] elementsArray, Comparator<? super E> cmpFun){
 
         E min = elementsArray[elementsArray.length - 1];
         E max = elementsArray[elementsArray.length - 1];
