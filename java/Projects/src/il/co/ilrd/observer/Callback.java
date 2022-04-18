@@ -1,6 +1,11 @@
 package il.co.ilrd.observer;
+/*
+    Observer Pattern WS
+    by Tanya Shk
+    April 18, 2022
+    reviewed by Shoshana
+ */
 
-import il.co.ilrd.hashMap.Pair;
 
 import java.util.function.Consumer;
 

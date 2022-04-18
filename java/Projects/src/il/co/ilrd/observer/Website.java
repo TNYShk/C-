@@ -13,7 +13,6 @@ public class Website {
         dispatch.register(site);
     }
 
-
     public void unsubscribe(Callback<StringBuffer> site){
         dispatch.unregister(site);
     }

@@ -1,4 +1,11 @@
 package il.co.ilrd.observer;
+/*
+    Observer Pattern WS
+    by Tanya Shk
+    April 18, 2022
+    reviewed by Shoshana
+ */
+
 
 import java.util.List;
 import java.util.ArrayList;
@@ -11,7 +18,7 @@ public class Dispatcher<D> {
         callback.setDispatcher(this);
     }
 
-    public void unregister(Callback<?> callback) {
+    public void unregister(Callback<D> callback) {
         callbacklist.remove(callback);
     }
 
@@ -27,6 +34,7 @@ public class Dispatcher<D> {
         }
         callbacklist.clear();
     }
+    /* for testing purposes, not part of API*/
     public int getListSize(){
         return callbacklist.size();
     }
