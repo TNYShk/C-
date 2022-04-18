@@ -26,25 +26,26 @@ public class Testim {
         Subscriber Poly = new Subscriber(notifyFax, stopByFax);
         Subscriber Shoshi = new Subscriber(notifyBySMS, stopBySMS);
         Subscriber Shayke = new Subscriber(notifyFax, stopByFax);
+        Subscriber Offer = new Subscriber(notifyFax, stopByFax);
 
-        Subscriber[] fs1145 = {Tanya,Poly,Shoshi, Shayke};
+        Subscriber[] fs1145 = {Tanya,Poly,Shoshi, Shayke, Offer};
        for(int i = 0; i< fs1145.length ; ++i){
            fs1145[i].subscribe(ynot);
        }
 
-        assertEquals(ynot.getDispatcher().getListSize(),4);
+        assertEquals(ynot.getSize(),5);
         StringBuffer msg = new StringBuffer();
         msg.append("bla bla bla lie");
 
-        //ynot.getDispatcher().notifyAll(msg);
+
         ynot.notifyAll(msg);
 
         msg = new StringBuffer("חם מוות לא לצאת מהבית");
-        ynot.getDispatcher().notifyAll(msg);
+        ynot.notifyAll(msg);
 
         ynot.notifyAll(new StringBuffer("more bla bla bla!"));
         Tanya.unsubscribe(ynot);
-        assertEquals(ynot.getSize(),3);
+        assertEquals(ynot.getSize(),4);
         Tanya.subscribe(ynot);
 
         ynot.stopNotifications();
@@ -52,6 +53,7 @@ public class Testim {
         Tanya.subscribe(ynot);
 
         assertEquals(ynot.getSize(),1);
+        ynot.stopNotifications();
     }
 
     @Test
@@ -70,12 +72,12 @@ public class Testim {
             fs1145[i].subscribe(Shopping);
         }
 
-        assertEquals(wawwa.getDispatcher().getListSize(),4);
-        assertEquals(Shopping.getDispatcher().getListSize(),4);
+        assertEquals(wawwa.getSize(),4);
+        assertEquals(Shopping.getSize(),4);
         StringBuffer junk = new StringBuffer("get this awesome couch for just 666$");
         StringBuffer walla = new StringBuffer("Scoop: Ben Caspit hates BB");
 
-        wawwa.getDispatcher().notifyAll(walla);
+        wawwa.notifyAll(walla);
         Shopping.notifyAll(junk);
         Tanya.unsubscribe(wawwa);
         Shoshi.unsubscribe(Shopping);

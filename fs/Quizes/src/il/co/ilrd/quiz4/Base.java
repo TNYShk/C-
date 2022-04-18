@@ -40,12 +40,16 @@ class DeriDerived extends Derived{
 
 class Test{
     public static void main(String []args){
-        Derived b = new DeriDerived();
+       // Base1 bb = new Base1();
+        //Base2 bt = new Base1();
+        //bt.test();
+       // bb.test();
+       /* Derived b = new DeriDerived();
         Base a = new Derived("Hello ");
         Base obj = new Base1();
         obj.test(); //cast
 
         Base ob = new Base2();
-        ((Base2)ob).test(); //cast
+        ((Base2)ob).test(); //cast*/
     }
 }

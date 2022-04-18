@@ -25,7 +25,6 @@ public class Callback<D> {
     }
 
     public void stopNotification() {
-
        stopNotification.run();
     }
 
