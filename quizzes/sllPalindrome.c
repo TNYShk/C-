@@ -106,7 +106,7 @@ static sll_node_t *Flip(sll_node_t *head)
 
     assert(NULL != head);
 
-    temp_node = NULL;
+  
     runner = head;
 
     while(NULL != runner->next)

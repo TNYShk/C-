@@ -3,6 +3,8 @@ package il.co.ilrd.genericsList;
 //import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -24,6 +26,8 @@ public class TestGenSll {
     }*/
 
     static void TestUno(){
+
+
         GenericList<Number> numList = new GenericList<>();
         assertTrue(numList.isEmpty());
         numList.pushFront(3.14);

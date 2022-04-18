@@ -1,9 +1,6 @@
 package il.co.ilrd.randomizecr;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class RandomizeCR {
     List<String> reviewers;
@@ -17,7 +14,7 @@ public class RandomizeCR {
     }
 
     public static void fixPrint(List<String> list) {
-        String maxString = Collections.max(list, (str1, str2) -> str1.length() - str2.length());
+        String maxString = Collections.max(list, Comparator.comparingInt(String::length));
         int max = maxString.length();
         for (int j = 0; j < list.size(); ++j) {
             StringBuilder str = new StringBuilder(list.get(j));
@@ -52,7 +49,9 @@ public class RandomizeCR {
     public static void main(String[] args) {
         String[] names = {"Shoshana", "Ori", "Ofer", "Dor", "Tanya", "Nurit", "Shai",
                 "Adrian", "Amit", "Daniela", "Ellie", "Shiraz", "Yehuda", "Polina"};
+
         List<String> nameAsList = Arrays.asList(names);
+
         RandomizeCR cr = new RandomizeCR(nameAsList);
         System.out.println("Reviewer : Reviewee");
         cr.tanyaCodeReview();

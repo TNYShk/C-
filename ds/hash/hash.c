@@ -29,8 +29,6 @@ struct hash
     dlist_t **table;
 };
 
-
-
 hash_t *HashCreate(size_t size, hash_get_key_func_t get_key, 
             hash_cmp_func_t cmp_func, hash_func_t hash_func)
 {
