@@ -23,7 +23,7 @@ public class SyncWriteingReading implements Runnable {
     private final ReentrantLock lock = new ReentrantLock();
     static StringBuilder text = new StringBuilder();
 
-    public SyncWriteingReading(){
+    public SyncWriteingReading() {
 
     /*
      Thread[] readers = new Thread[5];
@@ -44,68 +44,76 @@ public class SyncWriteingReading implements Runnable {
         }*/
     }
 
-    public void startWrite(){
+    public void startWrite() {
         lock.lock();
-        while(cnt.get() != 0);
+        while (cnt.get() != 0) ;
     }
-    public static void write(){
+
+    public static void write() {
         System.out.println(Thread.currentThread().getName() + " wrote ");
         text.append("w");
     }
-    public void endWrite(){
+
+    public void endWrite() {
         lock.unlock();
     }
 
-    public void startRead(){
+    public void startRead() {
         lock.lock();
         cnt.getAndIncrement();
         lock.unlock();
 
     }
-    public static void read(){
+
+    public static void read() {
         System.out.println(Thread.currentThread().getName() + " read " + text);
 
     }
-    public void endRead(){
+
+    public void endRead() {
         cnt.getAndDecrement();
     }
 
     @Override
     public void run() {
 
-        if(Thread.currentThread().getName().equals("writer")){
+        if (Thread.currentThread().getName().equals("writer")) {
             System.out.println("he");
             startWrite();
-        }else{
+            write();
+            endWrite();
+        } else {
             System.out.println("ha");
             startRead();
+            read();
+            endRead();
         }
     }
 
-public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException {
 
-    SyncWriteingReading swr = new SyncWriteingReading();
-    Thread readee = new Thread(swr,"reader");
-    Thread writee = new Thread(swr,"writer");
+        SyncWriteingReading swr = new SyncWriteingReading();
+
+        Thread[] readers = new Thread[5];
+        Thread[] writers = new Thread[5];
+
+        for (int i = 0; i < 5; ++i) {
+            writers[i] = new Thread(swr, "writer");
+            readers[i] = new Thread(swr, "reader");
+        }
+
+        for (int i = 0; i < 5; ++i) {
+            writers[i].start();
+            readers[i].start();
+        }
 
 
-    for(int i =0; i< 5; ++i){
-
-        swr.startWrite();
-        write();
-        swr.endWrite();
-
-
-        swr.startRead();
-        read();
-        swr.endRead();
+        for (int i = 0; i < 5; ++i) {
+            writers[i].join();
+            readers[i].join();
+        }
+        System.out.println("in main");
     }
-/* deadlock
-    writee.start();
-    readee.start();
-*/
-
-
 }
 
-}
+
