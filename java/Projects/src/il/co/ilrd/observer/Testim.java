@@ -42,16 +42,16 @@ public class Testim {
         msg = new StringBuffer("חם מוות לא לצאת מהבית");
         ynot.getDispatcher().notifyAll(msg);
 
-        ynot.getDispatcher().notifyAll(new StringBuffer("more bla bla bla!"));
+        ynot.notifyAll(new StringBuffer("more bla bla bla!"));
         Tanya.unsubscribe(ynot);
-        assertEquals(ynot.getDispatcher().getListSize(),3);
+        assertEquals(ynot.getSize(),3);
         Tanya.subscribe(ynot);
 
-        ynot.getDispatcher().stopNotification();
-        assertEquals(ynot.getDispatcher().getListSize(),0);
+        ynot.stopNotifications();
+        assertEquals(ynot.getSize(),0);
         Tanya.subscribe(ynot);
 
-        assertEquals(ynot.getDispatcher().getListSize(),1);
+        assertEquals(ynot.getSize(),1);
     }
 
     @Test
@@ -76,14 +76,14 @@ public class Testim {
         StringBuffer walla = new StringBuffer("Scoop: Ben Caspit hates BB");
 
         wawwa.getDispatcher().notifyAll(walla);
-        Shopping.getDispatcher().notifyAll(junk);
+        Shopping.notifyAll(junk);
         Tanya.unsubscribe(wawwa);
         Shoshi.unsubscribe(Shopping);
-        Shopping.getDispatcher().notifyAll(new StringBuffer("SALE! this awesome couch is now just 660$"));
-        assertEquals(wawwa.getDispatcher().getListSize(),3);
-        assertEquals(wawwa.getDispatcher().getListSize(),3);
-        wawwa.getDispatcher().stopNotification();
-        assertEquals(wawwa.getDispatcher().getListSize(),0);
+        Shopping.notifyAll(new StringBuffer("SALE! this awesome couch is now just 660$"));
+        assertEquals(wawwa.getSize(),3);
+        assertEquals(wawwa.getSize(),3);
+        wawwa.stopNotifications();
+        assertEquals(wawwa.getSize(),0);
     }
 
 

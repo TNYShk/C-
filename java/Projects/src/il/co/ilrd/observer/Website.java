@@ -24,6 +24,14 @@ public class Website {
     public void notifyAll(StringBuffer msg){
         dispatch.notifyAll(msg);
     }
+
+    public void stopNotifications(){
+        dispatch.stopNotification();
+    }
+
+    public int getSize(){
+       return dispatch.getListSize();
+    }
     public String getName(){
         return name;
     }
