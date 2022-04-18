@@ -89,7 +89,9 @@ public class SyncWriteingReading implements Runnable {
             endRead();
         }
     }
-
+    /*
+        the risk here is deadlock
+     */
     public static void main(String[] args) throws InterruptedException {
 
         SyncWriteingReading swr = new SyncWriteingReading();

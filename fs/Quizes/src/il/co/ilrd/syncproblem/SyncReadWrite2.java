@@ -41,13 +41,12 @@ public class SyncReadWrite2 implements Runnable{
     }
 
     public void endWrite(){
-
         sem.release(MAX_READERS);
         lock.unlock();
-
-
     }
-
+/*
+   the risk here is starvation of readers
+*/
     public static void  main(String[] args){
         SyncReadWrite2 swr = new SyncReadWrite2(10);
         Thread[] readers = new Thread[10];
