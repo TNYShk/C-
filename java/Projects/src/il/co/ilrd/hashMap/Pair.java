@@ -30,13 +30,13 @@ public class Pair <K, V> implements Map.Entry<K, V> {
     @Override
     public V setValue(V value) {
        V current = this.value;
-        this.value = value;
+       this.value = value;
        return current;
     }
 
     public K setKey(K key) {
         K current = this.key;
-       this.key = key;
+        this.key = key;
         return current;
     }
 
@@ -70,20 +70,20 @@ public class Pair <K, V> implements Map.Entry<K, V> {
     return false;
   }
 
-    public static <E extends Comparable<? super E>> Pair<E, E> minMax(E [] elementsArray){
+    public static <E extends Comparable<? super E>> Pair<E, E> LazyMinMax(E [] elementsArray){
         List<? extends E> list = Arrays.asList(elementsArray);
         return new Pair<>(Collections.min(list), Collections.max(list));
 
 
     }
-    public static <E> Pair<E, E> LazyMinMax(E [] elementsArray, Comparator<? super E> cmpFun){
+    public static <E> Pair<E, E> MinMax(E [] elementsArray, Comparator<E> cmpFun){
 
         List<? extends E> list = Arrays.asList(elementsArray);
         return new Pair<>(Collections.min(list, cmpFun), Collections.max(list, cmpFun));
     }
 
     //time complex o(1.5)
-    public static <E> Pair<E, E> minMax(E [] elementsArray, Comparator<? super E> cmpFun){
+    public static <E> Pair<E, E> minMax(E [] elementsArray, Comparator<E> cmpFun){
 
         E min = elementsArray[elementsArray.length - 1];
         E max = elementsArray[elementsArray.length - 1];

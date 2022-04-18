@@ -17,7 +17,7 @@ public class SyncReadWrite2 implements Runnable{
     }
 
     public void startRead() throws InterruptedException {
-        lock.lock();
+       lock.lock();
         sem.acquire();
         lock.unlock();
     }
@@ -41,8 +41,8 @@ public class SyncReadWrite2 implements Runnable{
     }
 
     public void endWrite(){
-        sem.release(MAX_READERS);
         lock.unlock();
+        sem.release(MAX_READERS);
     }
 /*
    the risk here is starvation of readers

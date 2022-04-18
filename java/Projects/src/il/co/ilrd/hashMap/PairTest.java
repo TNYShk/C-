@@ -32,7 +32,7 @@ public class PairTest {
     @Test
     void PairTestArry(){
         Double[] darry = {1.2,3.2,-5.1,4.4, 0.0, -99.9};
-        Pair<Double, Double> pd3 = Pair.minMax(darry);
+        Pair<Double, Double> pd3 = Pair.LazyMinMax(darry);
         assertTrue(Pair.of(-99.9,4.4).equals(pd3));
 
 
@@ -44,10 +44,13 @@ public class PairTest {
         String shay = "banana";
         System.out.println(shay.hashCode());
         Pair<String, String> s1 = Pair.minMax(strArry,String::compareTo);
-        Pair<String, String> s2 = Pair.LazyMinMax(strArry, null);
+        Pair<String, String> s2 = Pair.MinMax(strArry, null);
+        Pair<String, String> s3 = Pair.LazyMinMax(strArry);
+
         System.out.println(s1.hashCode());
         System.out.println(s1);
         System.out.println(s2);
+        System.out.println(s3);
         assertTrue(s1.getKey().equals("aaaa"));
         assertTrue(s1.getValue().equals("zzzzz"));
     }
