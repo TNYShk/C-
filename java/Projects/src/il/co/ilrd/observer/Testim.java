@@ -9,7 +9,7 @@ public class Testim {
 
     Consumer<StringBuffer> notifyByMail = (data) -> System.out.println("by email: " + data);
     //GIANT ASS
-    Runnable stopByMail = System.out::println;
+    Runnable stopByMail = () -> System.out.println("unsubscribed from email notifications");
 
     Consumer<StringBuffer> notifyFax = (data) -> System.out.println("by Fax: " + data);
     //GIANT Runnable ass
@@ -36,11 +36,13 @@ public class Testim {
         StringBuffer msg = new StringBuffer();
         msg.append("bla bla bla lie");
 
-        ynot.getDispatcher().notifyAll(msg);
-
+        //ynot.getDispatcher().notifyAll(msg);
+        ynot.notifyAll(msg);
 
         msg = new StringBuffer("חם מוות לא לצאת מהבית");
         ynot.getDispatcher().notifyAll(msg);
+
+        ynot.getDispatcher().notifyAll(new StringBuffer("more bla bla bla!"));
         Tanya.unsubscribe(ynot);
         assertEquals(ynot.getDispatcher().getListSize(),3);
         Tanya.subscribe(ynot);
@@ -48,6 +50,7 @@ public class Testim {
         ynot.getDispatcher().stopNotification();
         assertEquals(ynot.getDispatcher().getListSize(),0);
         Tanya.subscribe(ynot);
+
         assertEquals(ynot.getDispatcher().getListSize(),1);
     }
 
@@ -76,6 +79,7 @@ public class Testim {
         Shopping.getDispatcher().notifyAll(junk);
         Tanya.unsubscribe(wawwa);
         Shoshi.unsubscribe(Shopping);
+        Shopping.getDispatcher().notifyAll(new StringBuffer("SALE! this awesome couch is now just 660$"));
         assertEquals(wawwa.getDispatcher().getListSize(),3);
         assertEquals(wawwa.getDispatcher().getListSize(),3);
         wawwa.getDispatcher().stopNotification();

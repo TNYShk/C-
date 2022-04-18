@@ -21,6 +21,9 @@ public class Website {
     public Dispatcher<StringBuffer> getDispatcher() {
         return dispatch;
     }
+    public void notifyAll(StringBuffer msg){
+        dispatch.notifyAll(msg);
+    }
     public String getName(){
         return name;
     }
