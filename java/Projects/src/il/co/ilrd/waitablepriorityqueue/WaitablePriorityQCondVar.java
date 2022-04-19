@@ -38,14 +38,14 @@ public class WaitablePriorityQCondVar<E>{
 
     //thread safe
     public void enqueue(E element) throws InterruptedException {
-        lock.lock();
 
+        lock.lock();
         while(myQ.size() == MAXCAPACITY)
             conditionalVar.await();
 
         myQ.add(element);
         System.out.println(Thread.currentThread().getName() + " Q'd here");
-        conditionalVar.signalAll();
+        conditionalVar.signal();
         lock.unlock();
     }
 
@@ -54,10 +54,10 @@ public class WaitablePriorityQCondVar<E>{
         E deQ;
 
         lock.lock();
-        conditionalVar.await();
-
+        while(this.isEmpty())
+            conditionalVar.await();
+        //conditionalVar.await();
         System.out.println(Thread.currentThread().getName() + " DQ'd here");
-
         deQ = myQ.poll();
         lock.unlock();
         return deQ;
@@ -66,7 +66,8 @@ public class WaitablePriorityQCondVar<E>{
     //thread safe
     public boolean remove(E element) throws InterruptedException {
         boolean found;
-        if(myQ.isEmpty()){
+
+        while(myQ.isEmpty()){
             conditionalVar.await();
         }
         lock.lock();
