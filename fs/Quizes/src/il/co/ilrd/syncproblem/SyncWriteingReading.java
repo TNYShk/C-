@@ -23,26 +23,7 @@ public class SyncWriteingReading implements Runnable {
     private final ReentrantLock lock = new ReentrantLock();
     static StringBuilder text = new StringBuilder();
 
-    public SyncWriteingReading() {
-
-    /*
-     Thread[] readers = new Thread[5];
-        Thread[] writers = new Thread[5];
-
-    for (int i = 0; i < 5; ++i) {
-            readers[i] = new Thread(() -> {
-                System.out.println("here?");
-                run();
-            });
-        }
-        for (int i = 0; i < 5; ++i) {
-            writers[i] = new Thread(() -> {
-                System.out.println("where?");
-                run();
-
-            });
-        }*/
-    }
+    public SyncWriteingReading() {}
 
     public void startWrite() {
         lock.lock();
@@ -62,12 +43,10 @@ public class SyncWriteingReading implements Runnable {
         lock.lock();
         cnt.getAndIncrement();
         lock.unlock();
-
     }
 
     public static void read() {
         System.out.println(Thread.currentThread().getName() + " read " + text);
-
     }
 
     public void endRead() {
