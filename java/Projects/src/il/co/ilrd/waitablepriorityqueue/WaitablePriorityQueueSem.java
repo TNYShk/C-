@@ -8,11 +8,11 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class WaitablePriorityQueueSem<E> {
     private PriorityQueue<E> myQ ;
-    private Semaphore sem ;
+    private final Semaphore Qsem;
+    private final Semaphore DQSem;
     private final ReentrantLock lock = new ReentrantLock();
     private static final int INITCAP = 11;
 
-    //private condition var cond1
     private final int MAXCAPACITY;
 
     public WaitablePriorityQueueSem(int maxcapacity) {
@@ -25,50 +25,48 @@ public class WaitablePriorityQueueSem<E> {
 
     public WaitablePriorityQueueSem(Comparator<? super E> compare, int maxcapacity) {
        this(compare,INITCAP, maxcapacity);
-
     }
-
     public WaitablePriorityQueueSem(Comparator<? super E> compare, int initialCapacity, int maxcapacity) {
         if(maxcapacity < INITCAP){
             maxcapacity = INITCAP;}
 
         MAXCAPACITY = maxcapacity;
         myQ =  new PriorityQueue<>(initialCapacity, compare);
-        sem = new Semaphore(MAXCAPACITY);
+        Qsem = new Semaphore(MAXCAPACITY);
+        DQSem = new Semaphore(0);
     }
 
     //thread safe
     public void enqueue(E element) throws InterruptedException {
-        sem.acquire();
-        //lock.lock();
+
+        Qsem.acquire();
+        lock.lock();
         myQ.add(element);
-        //lock.unlock();
+        DQSem.release();
+        lock.unlock();
     }
 
     //thread safe
-    public E dequeue() {
+    public E dequeue() throws InterruptedException {
         E deQ;
-        sem.release();
+        DQSem.acquire();
         lock.lock();
         deQ = myQ.poll();
+        Qsem.release();
         lock.unlock();
         return deQ;
     }
 
     //thread safe
-    public boolean remove(E element) {
-      boolean found  = false;
-        if(myQ.contains(element)){
-           for(Iterator<E> iter = myQ.iterator(); iter.hasNext(); iter.next()){
-                if(iter.equals(element)){
-                    lock.lock();
-                    sem.release();
-                    iter.remove();
-                    found = true;
-                    lock.unlock();
-                }
-           }
-       }
+    public boolean remove(E element) throws InterruptedException {
+        boolean found  = false;
+
+        DQSem.acquire();
+        lock.lock();
+        found = myQ.remove(element);
+        Qsem.release();
+        lock.unlock();
+
         return found;
     }
 

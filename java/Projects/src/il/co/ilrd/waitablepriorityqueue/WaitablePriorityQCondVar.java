@@ -1,14 +1,14 @@
 package il.co.ilrd.waitablepriorityqueue;
 
 import java.util.Comparator;
-import java.util.Iterator;
+
 import java.util.PriorityQueue;
-import java.util.concurrent.Semaphore;
+
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class WaitablePriorityQCondVar<E> {
-    private PriorityQueue<E> myQ;
+public class WaitablePriorityQCondVar<E>{
+    private final PriorityQueue<E> myQ;
     private final ReentrantLock lock = new ReentrantLock();
     private static final int INITCAP = 11;
 
@@ -38,9 +38,13 @@ public class WaitablePriorityQCondVar<E> {
 
     //thread safe
     public void enqueue(E element) throws InterruptedException {
-
         lock.lock();
+
+        while(myQ.size() == MAXCAPACITY)
+            conditionalVar.await();
+
         myQ.add(element);
+        System.out.println(Thread.currentThread().getName() + " Q'd here");
         conditionalVar.signalAll();
         lock.unlock();
     }
@@ -51,24 +55,24 @@ public class WaitablePriorityQCondVar<E> {
 
         lock.lock();
         conditionalVar.await();
+
+        System.out.println(Thread.currentThread().getName() + " DQ'd here");
+
         deQ = myQ.poll();
         lock.unlock();
         return deQ;
     }
 
     //thread safe
-    public boolean remove(E element) {
-        boolean found  = false;
-        if(myQ.contains(element)){
-            for(Iterator<E> iter = myQ.iterator(); iter.hasNext(); iter.next()){
-                if(iter.equals(element)){
-                    lock.lock();
-                    iter.remove();
-                    found = true;
-                    lock.unlock();
-                }
-            }
+    public boolean remove(E element) throws InterruptedException {
+        boolean found;
+        if(myQ.isEmpty()){
+            conditionalVar.await();
         }
+        lock.lock();
+            found = myQ.remove(element);
+        lock.unlock();
+
         return found;
     }
 
