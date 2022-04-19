@@ -2,10 +2,11 @@ package il.co.ilrd.treeprint;
 /*
     TreePrint - print folders&files in given path
     by Tanya Shk
-    April 13, 2022
+    April 13, 2022,
     reviewed by Daniela
  */
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.File;
@@ -13,11 +14,12 @@ import java.util.Objects;
 
 public class TreePrint {
     private final TreeFolder root;
-
     public TreePrint(String path) {
+        if(null == path){
+            throw new IllegalArgumentException();
+        }
         root = new TreeFolder(path);
     }
-
     public void tree() {
         root.print(0);
     }
@@ -29,11 +31,13 @@ public class TreePrint {
 
     private class TreeFolder implements Component {
         private final List<Component> componentsList = new ArrayList<>();
-        private final File folder;
+        //private final File folder;
+        private final String folderName;
 
         public TreeFolder(String path) {
-            folder = new File(path);
-
+            File folder = new File(path);
+           // folder = new File(path);
+            folderName = folder.getName();
             for(File file: Objects.requireNonNull(folder.listFiles())){
                 if(file.isDirectory()){
                     componentsList.add(new TreeFolder(file.getPath()));
@@ -44,9 +48,7 @@ public class TreePrint {
         }
         @Override
         public void print(int level) {
-
-            System.out.println(dashMaker(level) + "_ " + folder.getName());
-
+            System.out.println(dashMaker(level) + "_ " + folderName);
             for(Component comp: componentsList ){
                 comp.print(level+1);
             }
@@ -54,24 +56,24 @@ public class TreePrint {
 
         @Override
         public String getName() {
-           return folder.getName();
+           return folderName;
         }
     }
 
     private class TreeFile implements Component {
-        private final File file;
-
+        //private final File file;
+        private String fileName;
         public TreeFile(String name) {
-            file = new File(name);
+            File file = new File(name);
+            fileName = file.getName();
         }
         @Override
         public void print(int level) {
-
            System.out.println("\t" + dashMaker(level) + "--- " +getName());
         }
         @Override
         public String getName() {
-           return file.getName();
+           return fileName;
         }
     }
     private StringBuilder dashMaker(int level){
