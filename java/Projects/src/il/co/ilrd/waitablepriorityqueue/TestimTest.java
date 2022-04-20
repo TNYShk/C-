@@ -1,9 +1,7 @@
 package il.co.ilrd.waitablepriorityqueue;
 
-import jdk.internal.platform.cgroupv1.SubSystem;
 import org.junit.jupiter.api.Test;
-
-import java.util.Collections;
+import org.junit.jupiter.api.Assertions;
 import java.util.Comparator;
 
 import static org.junit.Assert.assertEquals;
@@ -11,7 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 
-public class Testim   {
+public class TestimTest {
 
     @Test
     void CondVarBasicTest() throws InterruptedException {
@@ -35,21 +33,21 @@ public class Testim   {
         }
         Thread.sleep(1000);
         System.out.println("where?! " + Tanya.size());
-        assertTrue(Tanya.isEmpty());
+        Assertions.assertTrue(Tanya.isEmpty());
         //assertEquals(0,Tanya.size());
         //System.out.println("where?! " + Tanya.size());
 
     }
 
     @Test
-    void anotherCVTest(){
+    void anotherCVTest() throws InterruptedException {
         WaitablePriorityQCondVar<Number> Tanya = new WaitablePriorityQCondVar<>(Comparator.comparingInt(Number::intValue),1,20);
 
-        Thread[] deQer = new Thread[50];
+        Thread[] dQer = new Thread[50];
         Thread[] Qer = new Thread[50];
 
         for(int i = 0 ; i< 50; ++i){
-            deQer[i] = new Thread(() -> {
+            dQer[i] = new Thread(() -> {
                 try{
                     Tanya.dequeue();
 
@@ -57,8 +55,8 @@ public class Testim   {
                     System.err.println("I HATE THIS");
                 }
             });
-            deQer[i].start();
-            assertTrue(Tanya.isEmpty());
+            dQer[i].start();
+            Assertions.assertTrue(Tanya.isEmpty());
 
         }
         for(int i = 0 ;i < 50; ++i){
@@ -73,8 +71,9 @@ public class Testim   {
             });
             Qer[i].start();
         }
-        assertTrue(Tanya.size()> 0);
-        System.out.println("size is:" + Tanya.size());
+        Thread.sleep(1000);
+        assertTrue(Tanya.isEmpty());
+       //System.out.println("size is:" + Tanya.size());
     }
 
     @Test
@@ -135,4 +134,52 @@ public class Testim   {
       //assertFalse(Stanya.remove(sleepDeprived.substring(30)));
         assertTrue(Stanya.remove("zzzzzzzzzz"));
     }
+
+    @Test
+    void test1SemShai() throws InterruptedException {
+        WaitablePriorityQCondVar<Integer> pq = new WaitablePriorityQCondVar<>(10);
+        Thread t1 = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(2000);
+                    int num = pq.dequeue();
+                    assertEquals(num, 1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        assertTrue(pq.isEmpty());
+        assertEquals(pq.size(), 0);
+        pq.enqueue(17);
+        pq.enqueue(5);
+        pq.enqueue(3);
+        pq.enqueue(24);
+        pq.enqueue(67);
+        int num = pq.dequeue();
+        assertEquals(num, 3);
+        assertFalse(pq.isEmpty());
+        assertEquals(pq.size(), 4);
+        pq.enqueue(1);
+        pq.enqueue(7);
+        pq.enqueue(13);
+        pq.enqueue(2);
+        pq.enqueue(6);
+        pq.enqueue(43);
+        pq.enqueue(41);
+
+        t1.start();
+        pq.enqueue(15); // should be blocked untill t1 do dequeue
+        assertEquals(pq.size(), 11);
+
+        assertTrue(pq.remove(7));
+        assertFalse(pq.remove(102));
+        assertEquals(pq.size(), 10);
+
+        t1.join();
+
+        }
+
+
 }

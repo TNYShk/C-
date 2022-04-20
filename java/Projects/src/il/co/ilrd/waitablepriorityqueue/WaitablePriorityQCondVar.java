@@ -11,7 +11,6 @@ public class WaitablePriorityQCondVar<E>{
     private final PriorityQueue<E> myQ;
     private final ReentrantLock lock = new ReentrantLock();
     private static final int INITCAP = 11;
-
     private final Condition conditionalVar = lock.newCondition();
     private final int MAXCAPACITY;
 
@@ -25,9 +24,7 @@ public class WaitablePriorityQCondVar<E>{
 
     public WaitablePriorityQCondVar(Comparator<? super E> compare, int maxcapacity) {
         this(compare,INITCAP, maxcapacity);
-
     }
-
     public WaitablePriorityQCondVar(Comparator<? super E> compare, int initialCapacity, int maxcapacity) {
         if(maxcapacity < INITCAP){
             maxcapacity = INITCAP;}
@@ -36,7 +33,6 @@ public class WaitablePriorityQCondVar<E>{
         myQ =  new PriorityQueue<>(initialCapacity, compare);
     }
 
-    //thread safe
     public void enqueue(E element) throws InterruptedException {
 
         lock.lock();
@@ -56,9 +52,10 @@ public class WaitablePriorityQCondVar<E>{
         lock.lock();
         while(this.isEmpty())
             conditionalVar.await();
-        //conditionalVar.await();
-        System.out.println(Thread.currentThread().getName() + " DQ'd here");
+
         deQ = myQ.poll();
+        System.out.println(Thread.currentThread().getName() + " DQ'd there");
+        conditionalVar.signal();
         lock.unlock();
         return deQ;
     }
@@ -67,11 +64,14 @@ public class WaitablePriorityQCondVar<E>{
     public boolean remove(E element) throws InterruptedException {
         boolean found;
 
+        lock.lock();
         while(myQ.isEmpty()){
             conditionalVar.await();
         }
-        lock.lock();
-            found = myQ.remove(element);
+        found = myQ.remove(element);
+        if(found)
+            System.out.println(Thread.currentThread().getName() + " removed everywhere");
+        conditionalVar.signal();
         lock.unlock();
 
         return found;
