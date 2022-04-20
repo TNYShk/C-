@@ -14,8 +14,6 @@ public enum Coins {
         this.value = value;
     }
 
-
-
     public double getValue() {
         return value;
     }
