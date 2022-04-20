@@ -40,9 +40,13 @@ public class WaitablePriorityQueueSem<E> {
     public void enqueue(E element) throws InterruptedException {
         Qsem.acquire();
         lock.lock();
-        myQ.add(element);
-        //System.out.println(Thread.currentThread().getName() + " Q'd here  " + myQ.peek());
-        lock.unlock();
+        try {
+            myQ.add(element);
+            //System.out.println(Thread.currentThread().getName() + " Q'd here  " + myQ.peek());
+        } finally {
+            lock.unlock();
+        }
+
         DQSem.release();
     }
 
@@ -50,9 +54,13 @@ public class WaitablePriorityQueueSem<E> {
         E deQ;
         DQSem.acquire();
         lock.lock();
-        deQ = myQ.poll();
-        //System.out.println(Thread.currentThread().getName() + " DQ'd here");
-        lock.unlock();
+        try {
+            deQ = myQ.poll();
+            //System.out.println(Thread.currentThread().getName() + " DQ'd here");
+        }finally {
+            lock.unlock();
+        }
+
         Qsem.release();
         return deQ;
     }
@@ -64,7 +72,8 @@ public class WaitablePriorityQueueSem<E> {
         DQSem.acquire();
         lock.lock();
         found = myQ.remove(element);
-        Qsem.release();
+        if(found)
+            Qsem.release();
         lock.unlock();
 
         return found;
