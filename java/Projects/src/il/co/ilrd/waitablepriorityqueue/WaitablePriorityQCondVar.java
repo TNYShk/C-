@@ -9,9 +9,9 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class WaitablePriorityQCondVar<E>{
     private final PriorityQueue<E> myQ;
-    private final ReentrantLock lock = new ReentrantLock();
+    private final ReentrantLock lock;
     private static final int INITCAP = 11;
-    private final Condition conditionalVar = lock.newCondition();
+    private final Condition conditionalVar;
     private final int MAXCAPACITY;
 
     public WaitablePriorityQCondVar(int maxcapacity) {
@@ -31,6 +31,8 @@ public class WaitablePriorityQCondVar<E>{
 
         MAXCAPACITY = maxcapacity;
         myQ =  new PriorityQueue<>(initialCapacity, compare);
+        lock = new ReentrantLock();
+        conditionalVar = lock.newCondition();
     }
 
     public void enqueue(E element) throws InterruptedException {
@@ -40,7 +42,7 @@ public class WaitablePriorityQCondVar<E>{
             conditionalVar.await();
 
         myQ.add(element);
-        System.out.println(Thread.currentThread().getName() + " Q'd here");
+        //System.out.println(Thread.currentThread().getName() + " Q'd here");
         conditionalVar.signal();
         lock.unlock();
     }
@@ -50,11 +52,11 @@ public class WaitablePriorityQCondVar<E>{
         E deQ;
 
         lock.lock();
-        while(this.isEmpty())
+        while(isEmpty())
             conditionalVar.await();
 
         deQ = myQ.poll();
-        System.out.println(Thread.currentThread().getName() + " DQ'd there");
+        //System.out.println(Thread.currentThread().getName() + " DQ'd there");
         conditionalVar.signal();
         lock.unlock();
         return deQ;
@@ -69,8 +71,8 @@ public class WaitablePriorityQCondVar<E>{
             conditionalVar.await();
         }
         found = myQ.remove(element);
-        if(found)
-            System.out.println(Thread.currentThread().getName() + " removed everywhere");
+        /*if(found)
+            System.out.println(Thread.currentThread().getName() + " removed everywhere");*/
         conditionalVar.signal();
         lock.unlock();
 

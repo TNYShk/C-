@@ -170,7 +170,7 @@ public class TestimTest {
         pq.enqueue(41);
 
         t1.start();
-        pq.enqueue(15); // should be blocked untill t1 do dequeue
+        pq.enqueue(15);
         assertEquals(pq.size(), 11);
 
         assertTrue(pq.remove(7));
@@ -180,6 +180,83 @@ public class TestimTest {
         t1.join();
 
         }
+
+    @Test
+    public void DortestSem(){
+        WaitablePriorityQueueSem<Integer> q = new WaitablePriorityQueueSem<>(10);
+
+        Runnable R1 = new Runnable() {
+
+            @Override
+            public void run() {
+                for(int i = 0; i < 12; ++i) {
+                    System.out.println("added " + i );
+                    try {
+                        q.enqueue(i);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+            }
+
+        };
+        Runnable R2 = new Runnable() {
+
+            @Override
+            public void run() {
+                for(int i = 0; i < 11; ++i) {
+                    try {
+                        System.out.println("dequeue :" + q.dequeue());
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        };
+        Runnable R3 = () -> {
+            try {
+                System.out.println("removed :" + q.remove(1));
+            } catch (InterruptedException e) {
+               e.printStackTrace();
+            }
+            try {
+                System.out.println("removed :" + q.remove(11));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        };
+
+        Thread t1 = new Thread(R1);
+        Thread t2 = new Thread(R2);
+        Thread t3 = new Thread(R3);
+
+        t1.start();
+        t2.start();
+        t3.start();
+
+        try {
+            t1.join();
+        } catch (InterruptedException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
+        try {
+            t2.join();
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        try {
+            t3.join();
+        }
+        catch (InterruptedException e) {
+            // TODO: handle exception
+            e.printStackTrace();
+        }
+
+    }
+
 
 
 }

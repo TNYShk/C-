@@ -7,9 +7,9 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class WaitablePriorityQueueSem<E> {
-    private final PriorityQueue<E> myQ ;
+    private final PriorityQueue<E> myQ;
     private final Semaphore Qsem;
-    private final Semaphore DQSem = new Semaphore(0);
+    private final Semaphore DQSem;
     private final ReentrantLock lock = new ReentrantLock();
     private static final int INITCAP = 11;
 
@@ -33,6 +33,7 @@ public class WaitablePriorityQueueSem<E> {
         MAXCAPACITY = maxcapacity;
         myQ =  new PriorityQueue<>(initialCapacity, compare);
         Qsem = new Semaphore(MAXCAPACITY);
+        DQSem = new Semaphore(0);
 
     }
 
@@ -42,12 +43,11 @@ public class WaitablePriorityQueueSem<E> {
         lock.lock();
         try {
             myQ.add(element);
+            DQSem.release();
             //System.out.println(Thread.currentThread().getName() + " Q'd here  " + myQ.peek());
         } finally {
             lock.unlock();
         }
-
-        DQSem.release();
     }
 
     public E dequeue() throws InterruptedException {
@@ -67,15 +67,21 @@ public class WaitablePriorityQueueSem<E> {
 
     //thread safe
     public boolean remove(E element) throws InterruptedException {
-        boolean found ;
+        boolean found = DQSem.tryAcquire();
+        if(!found) { return false;}
 
-        DQSem.acquire();
         lock.lock();
-        found = myQ.remove(element);
-        if(found)
-            Qsem.release();
-        lock.unlock();
+        try {
+            found = myQ.remove(element);
 
+            if (found) {
+                Qsem.release();
+            } else {
+                DQSem.release();
+            }
+        }finally {
+            lock.unlock();
+        }
         return found;
     }
 
