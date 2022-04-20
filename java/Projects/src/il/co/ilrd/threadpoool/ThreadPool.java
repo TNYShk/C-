@@ -2,16 +2,33 @@ package il.co.ilrd.threadpoool;
 
 import il.co.ilrd.waitablepriorityqueue.WaitablePriorityQueueSem;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ThreadPool implements Executor {
-    private WaitablePriorityQueueSem<Task<?>> wpq;
-    private int numOfThread; //(> 0)
+    private final WaitablePriorityQueueSem<Task<?>> wpq;
+
+    private final int NUM_OF_THREADS;
+    private Semaphore runSem = new Semaphore(0);
 
     public ThreadPool(int numberOfThread) {
-        numOfThread = numberOfThread;
-        wpq = new WaitablePriorityQueueSem<>(numberOfThread);
+        if (numberOfThread == 0)
+            numberOfThread = 11;
+
+        NUM_OF_THREADS = numberOfThread;
+
+        wpq = new WaitablePriorityQueueSem<>(NUM_OF_THREADS);
+        List<ThreadAction> deadpool = new ArrayList<>(NUM_OF_THREADS);
+
+        for(ThreadAction ignored : deadpool){
+            deadpool.add(new ThreadAction());
+        }
+        for(ThreadAction thi: deadpool){
+            thi.start();
+        }
+
     }
 
     public enum Priority {
@@ -20,39 +37,60 @@ public class ThreadPool implements Executor {
         HIGH
     }
 
-    public Future<Void> submit(Runnable task, Priority priority) {}
-    // inside we transfer runnable task to callable
+    public Future<Void> submit(Runnable task, Priority priority) throws InterruptedException {
+       return this.submit((Runnable) Executors.callable(task),priority);
+       //return null;
+    }
 
-    public <T> Future<T> submit(Runnable task, Priority priority, T returnValue) {}
-
+    public <T> Future<T> submit(Runnable task, Priority priority, T returnValue) throws InterruptedException {
+       return this.submit(Executors.callable(task,returnValue),priority);
+    }
+    public <T> Future<T> submit(Callable<T> task) throws InterruptedException {
+        return this.submit(task,Priority.MED);
+    }
     public <T> Future<T> submit(Callable<T> task, Priority priority) throws InterruptedException {
-        Task creaTask = new Task<>(task,priority);
+        Task<T> creaTask = new Task<>(task,priority);
         wpq.enqueue(creaTask);
         return creaTask.anotherHolder;
-        //return null;
     }
 
-    public <T> Future<T> submit(Callable<T> task) {
-        return null;
-    }
 
+    @Override
     public void execute(Runnable run) {
-        //calls submit with default priority, creates callable ans submits its to the wpq
+        //calls submit with default priority, creates callable and submits it to the wpq
+        try {
+            this.submit(run,Priority.MED);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public void setNumberOfThreads(int numberOfThreads) {
+    public void setNumberOfThreads(int updateNumberOfThreads) {
+        /*
+
+        idea2:
+        submit new task to pq with pause/terminate thread/semaphore with HIGH priority
+            if newNumofThreads > numberOfThreads
+
+         */
+
     } // numberOfTHreads > 0 // problem if numberOfThreads is less than in Ctor, (the number of threads will be decreased)
 
-    public void pause() {
+    public void pause() throws InterruptedException {
+       //create task with high priority and sempahore.acquire (is zero thus thread is stuck)
+
     } // after pause threads wont take tasks from the queue
 
     public void resume() {
+        //sem.release(numOfThreads)
     } // reverse pause operation
 
     public void shutdown() {
+        //create tasks as number of threads, with low priority and kill, thus all original tasks will be done and then all threads kill
     } // after shutdown submit will throw exceptions, nothing will work. all current tasks in the queue will execute. not blocking
 
     public void awaitTermination() {
+        // call this with time 0 this(0,unit);
     } // wait for all threads to finish?
 
     public void awaitTermination(long timeout, TimeUnit unit) {
@@ -61,16 +99,21 @@ public class ThreadPool implements Executor {
 
     private class Task<T> implements Comparable<Task<?>> {
         private Priority priority;
+        private int realPriority ;
         private TaskFuture anotherHolder;
-        private Callable<T> call;
+        private Callable<T> gullible;
+
         private T result;
         private AtomicBoolean doneFlag = new AtomicBoolean(false);
 
-        public Task(T task, T priority) {}
-        //TaskFutre or Task should hold reference each other somehow||
+        public Task(Callable<T> call, Priority priority) {
+            this.gullible = call;
+            this.priority = priority;
+            anotherHolder = new TaskFuture();
+        }
 
         void execute() throws Exception {
-            result = call.call();
+           result = gullible.call();
         }
 
         @Override
@@ -81,7 +124,7 @@ public class ThreadPool implements Executor {
 
         private class TaskFuture implements Future<T>{
             private Task<T> holder;
-            public boolean cancel(){return true;};
+            public boolean cancel(){return true;}
 
             @Override
             public boolean cancel(boolean b) {
@@ -99,7 +142,8 @@ public class ThreadPool implements Executor {
 
             @Override
             public T get() throws InterruptedException, ExecutionException {
-                return holder.result;
+                return result;
+               
             }
 
             @Override
