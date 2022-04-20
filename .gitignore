@@ -1,7 +1,6 @@
 
 *
 
-*.txt
 !*.c
 !.gitignore
 !*.md
