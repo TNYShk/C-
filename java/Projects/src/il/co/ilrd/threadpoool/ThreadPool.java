@@ -38,8 +38,8 @@ public class ThreadPool implements Executor {
     }
 
     public Future<Void> submit(Runnable task, Priority priority) throws InterruptedException {
-       return this.submit((Runnable) Executors.callable(task),priority);
-       //return null;
+       return this.submit( Executors.callable(task,null),priority);
+
     }
 
     public <T> Future<T> submit(Runnable task, Priority priority, T returnValue) throws InterruptedException {
@@ -143,7 +143,7 @@ public class ThreadPool implements Executor {
             @Override
             public T get() throws InterruptedException, ExecutionException {
                 return result;
-               
+
             }
 
             @Override
