@@ -12,7 +12,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class ThreadPool implements Executor {
     private final WaitablePriorityQueueSem<Task<?>> wpq;
-    private  List<ThreadAction> deadpool;
     private final int NUM_OF_THREADS;
     private Semaphore runSem = new Semaphore(0);
 
@@ -23,7 +22,7 @@ public class ThreadPool implements Executor {
         NUM_OF_THREADS = numberOfThreads;
 
         wpq = new WaitablePriorityQueueSem<>(NUM_OF_THREADS);
-        deadpool = new LinkedList<>();
+        List<ThreadAction> deadpool = new LinkedList<>();
         for(int i =0; i<numberOfThreads;++i){
             deadpool.add(new ThreadAction());
         }
@@ -102,11 +101,10 @@ public class ThreadPool implements Executor {
 
 
     private class Task<T> implements Comparable<Task<?>> {
-        private Priority priority;
+        private final Priority priority;
         private int realPriority ;
         private TaskFuture futureHolder;
         private Callable<T> gullible;
-
         private T result;
         private AtomicBoolean doneFlag = new AtomicBoolean(false);
 
@@ -121,12 +119,12 @@ public class ThreadPool implements Executor {
            doneFlag.set(true);
            futureHolder.futureLock.lock();
            futureHolder.blockResult.signal();
-            futureHolder.futureLock.unlock();
+           futureHolder.futureLock.unlock();
         }
 
         @Override
         public int compareTo(Task<?> task) {
-            return this.priority.compareTo(task.priority);
+            return task.priority.compareTo(this.priority);
         }
 
         private class TaskFuture implements Future<T>{
