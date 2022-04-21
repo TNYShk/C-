@@ -2,7 +2,6 @@ package il.co.ilrd.threadpoool;
 
 import il.co.ilrd.waitablepriorityqueue.WaitablePriorityQueueSem;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.*;
@@ -12,25 +11,25 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class ThreadPool implements Executor {
     private final WaitablePriorityQueueSem<Task<?>> wpq;
-    private final int NUM_OF_THREADS;
+    private int numOfThreadz;
     private Semaphore runSem = new Semaphore(0);
 
     public ThreadPool(int numberOfThreads) {
         if (numberOfThreads <= 0)
-            numberOfThreads = 11;
+           throw new IllegalArgumentException();
 
-        NUM_OF_THREADS = numberOfThreads;
+        numOfThreadz = numberOfThreads;
 
-        wpq = new WaitablePriorityQueueSem<>(NUM_OF_THREADS);
+        wpq = new WaitablePriorityQueueSem<>(numOfThreadz);
         List<ThreadAction> deadpool = new LinkedList<>();
-        for(int i =0; i<numberOfThreads;++i){
+
+        for(int i = 0; i<numberOfThreads;++i){
             deadpool.add(new ThreadAction());
         }
 
         for(ThreadAction begin : deadpool){
             begin.start();
         }
-
 
     }
 
@@ -42,7 +41,6 @@ public class ThreadPool implements Executor {
 
     public Future<Void> submit(Runnable task, Priority priority) throws InterruptedException {
        return this.submit( Executors.callable(task,null), priority);
-
     }
 
     public <T> Future<T> submit(Runnable task, Priority priority, T returnValue) throws InterruptedException {
@@ -102,7 +100,7 @@ public class ThreadPool implements Executor {
 
     private class Task<T> implements Comparable<Task<?>> {
         private final Priority priority;
-        private int realPriority ;
+        private int realPriority;
         private TaskFuture futureHolder;
         private Callable<T> gullible;
         private T result;
@@ -111,7 +109,7 @@ public class ThreadPool implements Executor {
         public Task(Callable<T> call, Priority priority) {
             this.gullible = call;
             this.priority = priority;
-            futureHolder = new TaskFuture();
+            futureHolder = new TaskFuture(this);
         }
 
         void execute() throws Exception {
@@ -133,27 +131,33 @@ public class ThreadPool implements Executor {
             private AtomicBoolean status = new AtomicBoolean();
             private Task<T> holder;
 
+            public TaskFuture(Task<T> newTask){
+                holder = newTask;
+            }
+
             @Override
             public boolean cancel(boolean b) {
                 boolean trial = false;
-                if(!b) {
-                    try {
-                        trial = wpq.remove(holder);
+                if(isCancelled()) {
+                    return false;
+                }
+                try {
+                    trial = wpq.remove(holder);
 
                     } catch (InterruptedException e) {
                        // throw new RuntimeException(e);
+                    }finally {
+                        if(trial){
+                            status.set(true);
+                            doneFlag.set(true);
+                        }
                     }
-                    if(trial){
-                        status.set(true);
-                        doneFlag.set(true);
-                    }
-                }
                 return trial;
             }
+
             @Override
             public boolean isCancelled() {
                 return status.get();
-
             }
             @Override
             public boolean isDone() {
@@ -162,18 +166,23 @@ public class ThreadPool implements Executor {
 
             @Override
             public T get() throws InterruptedException, ExecutionException {
-                futureLock.lock();
+                try {
+                    return get(Long.MAX_VALUE,TimeUnit.DAYS);
+                } catch (TimeoutException e) {
+                    throw new RuntimeException(e);
+                }
+                /*futureLock.lock();
                     while(!isDone()){
                         blockResult.await();
                     }
                     futureLock.unlock();
-                return result;
+                return result;*/
             }
 
             @Override
             public T get(long l, TimeUnit timeUnit) throws InterruptedException, ExecutionException, TimeoutException {
                 futureLock.lock();
-                while(!isDone()){
+                if(!isDone()){
                     blockResult.await(l,timeUnit);
                 }
                 futureLock.unlock();
@@ -184,7 +193,7 @@ public class ThreadPool implements Executor {
 
     private class ThreadAction extends Thread {
     private final AtomicBoolean isRunning = new AtomicBoolean(true);
-   @Override
+        @Override
         public void run(){
             while(isRunning.get()) {
                 Task<?> toDO;
@@ -201,5 +210,6 @@ public class ThreadPool implements Executor {
                 }
             }
         }
+
     }
 }
