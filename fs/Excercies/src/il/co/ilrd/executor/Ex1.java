@@ -10,7 +10,7 @@ public class Ex1  {
 
    public static void main(String[] args) throws ExecutionException, InterruptedException {
       ExecutorService execPool = Executors.newSingleThreadExecutor();
-      execPool.execute(() -> System.out.println("hi!" + Thread.currentThread().getName() + "\n") );
+      execPool.execute(() -> System.out.println("hi! " + Thread.currentThread().getName() + "\n") );
        ExecutorService brara = Executors.newFixedThreadPool(3);
        StringBuffer toAdd = new StringBuffer("");
        Callable<StringBuffer> taskToCall = () -> {
