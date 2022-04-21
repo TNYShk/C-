@@ -13,6 +13,7 @@ public class ThreadPool implements Executor {
     private final WaitablePriorityQueueSem<Task<?>> wpq;
     private int numOfThreadz;
     private Semaphore runSem = new Semaphore(0);
+    List<ThreadAction> deadpool;
 
     public ThreadPool(int numberOfThreads) {
         if (numberOfThreads <= 0)
@@ -21,7 +22,7 @@ public class ThreadPool implements Executor {
         numOfThreadz = numberOfThreads;
 
         wpq = new WaitablePriorityQueueSem<>(numOfThreadz);
-        List<ThreadAction> deadpool = new LinkedList<>();
+         deadpool = new LinkedList<>();
 
         for(int i = 0; i<numberOfThreads;++i){
             deadpool.add(new ThreadAction());
@@ -31,6 +32,7 @@ public class ThreadPool implements Executor {
             begin.start();
         }
 
+
     }
 
     public enum Priority {
@@ -38,6 +40,8 @@ public class ThreadPool implements Executor {
         MED,
         HIGH
     }
+
+
 
     public Future<Void> submit(Runnable task, Priority priority) throws InterruptedException {
        return this.submit( Executors.callable(task,null), priority);
@@ -86,11 +90,32 @@ public class ThreadPool implements Executor {
         //sem.release(numOfThreads)
     } // reverse pause operation
 
-    public void shutdown() {
+    public void shutdown() throws InterruptedException {
+        Callable<Void> shutIt = () -> {
+            ThreadAction shalter = (ThreadAction) ThreadAction.currentThread();
+            shalter.isRunning.set(false);
+            return null;
+        };
+        for(int i =0; i<numOfThreadz;++i) {
+            wpq.enqueue(new Task<>(shutIt,-1));
+        }
+        /*deadpool.clear();
+        System.out.println("cleared pool" + deadpool.size());*/
+    }
         //create tasks as number of threads, with low priority and kill, thus all original tasks will be done and then all threads kill
-    } // after shutdown submit will throw exceptions, nothing will work. all current tasks in the queue will execute. not blocking
+     // after shutdown submit will throw exceptions, nothing will work. all current tasks in the queue will execute. not blocking
 
-    public void awaitTermination() {
+    public void awaitTermination() throws InterruptedException {
+        Callable<Void> time4Death = () -> {
+            ThreadAction.currentThread().join();
+            return null;
+        };
+
+        for(int i =0; i<numOfThreadz;++i) {
+            wpq.enqueue(new Task<>(time4Death,-1));
+        }
+        deadpool.clear();
+        System.out.println("cleared  termination pool" + deadpool.size());
         // call this with time 0 this(0,unit);
     } // wait for all threads to finish?
 
@@ -99,18 +124,26 @@ public class ThreadPool implements Executor {
 
 
     private class Task<T> implements Comparable<Task<?>> {
-        private final Priority priority;
-        private int realPriority;
+        //private Priority priority;
+        private Integer realPriority;
         private TaskFuture futureHolder;
         private Callable<T> gullible;
         private T result;
         private AtomicBoolean doneFlag = new AtomicBoolean(false);
 
-        public Task(Callable<T> call, Priority priority) {
-            this.gullible = call;
-            this.priority = priority;
+        public Task(Callable<T> special, Integer realPriority){
+            this.realPriority = realPriority;
+            this.gullible = special;
             futureHolder = new TaskFuture(this);
         }
+        public Task(Callable<T> call, Priority priority) {
+          this(call, priority.ordinal());
+           /* this.realPriority = priority.ordinal();
+            this.gullible = call;
+            this.priority = priority;
+            futureHolder = new TaskFuture(this);*/
+        }
+
 
         void execute() throws Exception {
            result = gullible.call();
@@ -122,9 +155,8 @@ public class ThreadPool implements Executor {
 
         @Override
         public int compareTo(Task<?> task) {
-            return task.priority.compareTo(this.priority);
+            return task.realPriority.compareTo(this.realPriority);
         }
-
         private class TaskFuture implements Future<T>{
             private ReentrantLock futureLock = new ReentrantLock();
             private Condition blockResult = futureLock.newCondition();
@@ -145,7 +177,7 @@ public class ThreadPool implements Executor {
                     trial = wpq.remove(holder);
 
                     } catch (InterruptedException e) {
-                       // throw new RuntimeException(e);
+                      throw new RuntimeException(e);
                     }finally {
                         if(trial){
                             status.set(true);
@@ -204,7 +236,7 @@ public class ThreadPool implements Executor {
                 }
                 try {
                     toDO.execute();
-                    toDO.doneFlag.getAndSet(true);
+                    //toDO.doneFlag.getAndSet(true);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }

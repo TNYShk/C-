@@ -1,5 +1,5 @@
 package il.co.ilrd.threadpoool;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.testng.AssertJUnit.assertFalse;
 import static org.testng.AssertJUnit.assertTrue;
@@ -43,16 +43,16 @@ public class PoolTest {
         Callable<Integer> call1 = () -> 1;
         Callable<Integer> call2 = () -> 2;
         Callable<Integer> call3 = () -> 3;
-        Callable<Double> complexCalc = () -> (1.0 - (1.0 / 3) + (1 / 5.0) - (1.0 / 7) + (1 / 9.0));
+        Callable<Double> complexCalc = () -> (1.0 - (1.0/3.0) + (1.0/5.0) - (1.0 /7.0) + (1.0/9.0));
         Runnable run1 = () -> System.out.println("im a runner 1");
-
+        Runnable shutter = () -> System.out.println("im done! dont look at me");
         ThreadPool tp = new ThreadPool(3);
         Double answer = 42.0;
         Runnable run = () -> System.out.println("the ans is " + answer);
         Future<Double> c1 = tp.submit(complexCalc, ThreadPool.Priority.MED);
         Future<Integer> f1 = tp.submit(call1, ThreadPool.Priority.LOW);
         Future<Integer> f2 = tp.submit(call2, ThreadPool.Priority.HIGH);
-        Future<Integer> f3 = tp.submit(call3); // should be MID priority
+        Future<Integer> f3 = tp.submit(call3);
         Future<Void> r2 = tp.submit(run1, ThreadPool.Priority.HIGH);
         Future<Double> r1 = tp.submit(run, ThreadPool.Priority.HIGH, answer);
         Future<Long> future = tp.submit(() -> {
@@ -70,21 +70,25 @@ public class PoolTest {
         assertTrue(f2.get().equals(2));
         assertTrue(f3.get().equals(3));
 
-        System.out.println(future.cancel(false));
+        future.cancel(false);
+        assertTrue(future.isDone());
         // System.out.println((c1.get(10l, TimeUnit.SECONDS)));
         assertTrue(c1.get(10l, TimeUnit.SECONDS).equals(0.8349206349206351));
         assertTrue(r2.get() == null);
         assertTrue(r1.get() == 42.0);
+        tp.shutdown();
+        tp.awaitTermination();
+        Thread.sleep(6000);
+        tp.submit(shutter, ThreadPool.Priority.HIGH);
     }
 
     @Test
     void cancelTest() throws InterruptedException, ExecutionException {
         ThreadPool tp = new ThreadPool(1);
-        Callable<Integer> HighPri = (Callable) () -> {
+        Callable HighPri = () -> {
             Integer ret = 13;
             System.out.println("hello from high priority task " + Thread.currentThread().getId());
             Thread.sleep(5000);
-
             return ret;
         };
         Callable<Integer> call2 = () -> 2;
@@ -95,7 +99,7 @@ public class PoolTest {
             public Integer call() throws Exception {
                 Integer ret = 13;
                 Thread.sleep(1000);
-                System.out.println("going to cancel " + Thread.currentThread().getId());
+                System.out.println("going tobe cancel " + Thread.currentThread().getId());
                 return ret;
             }
         };
@@ -107,13 +111,11 @@ public class PoolTest {
         Thread.sleep(5000l);
         assertTrue(f1.get().equals(2));
         assertTrue(f2.get().equals(3));
-        System.out.println();
+
         assertEquals(foo.isDone(), true);
         assertEquals(barf.get(), null);
         assertEquals(barf.isCancelled(), true);
-
     }
-
 
     @Test
     void priorityTest() throws InterruptedException {
@@ -122,6 +124,7 @@ public class PoolTest {
             try {
                 Thread.sleep(2000);
             } catch (InterruptedException e) {
+                e.printStackTrace();
             }
 
         }, ThreadPool.Priority.MED);
@@ -164,6 +167,4 @@ public class PoolTest {
         assertFalse(f2.cancel(false));
     }
 
-
-
-    }
+}
