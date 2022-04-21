@@ -73,7 +73,6 @@ public class ThreadPool implements Executor {
 
     @Override
     public void execute(Runnable run) {
-        //calls submit with default priority, creates callable and submits it to the wpq
         try {
             this.submit(run,Priority.MED);
         } catch (InterruptedException e) {
@@ -96,6 +95,7 @@ public class ThreadPool implements Executor {
         Callable<Void> pauseIt = () ->{
             try {
                 stopLightSem.acquire();
+
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -104,8 +104,6 @@ public class ThreadPool implements Executor {
         for(int i =0; i<numOfThreadz;++i) {
             wpq.enqueue(new Task<>(pauseIt,HIGH_AS_KITE));
         }
-
-       //create task with high priority and sempahore.acquire (is zero thus thread is stuck)
 
     } // after pause threads wont take tasks from the queue
 
