@@ -77,9 +77,12 @@ public class PoolTest {
         assertTrue(r2.get() == null);
         assertTrue(r1.get() == 42.0);
         tp.shutdown();
-        tp.awaitTermination();
+
+        //tp.awaitTermination(10,TimeUnit.SECONDS);
         Thread.sleep(6000);
+        tp.awaitTermination();
         tp.submit(shutter, ThreadPool.Priority.HIGH);
+        System.out.println("threadpool: "+ tp.deadpool.size() + " pqsize: " + tp.wpq.size());
     }
 
     @Test
@@ -166,5 +169,25 @@ public class PoolTest {
         assertTrue(f2.isDone());
         assertFalse(f2.cancel(false));
     }
+    @Test
+    void pauseAndResume() throws InterruptedException {
+        ThreadPool tp = new ThreadPool(2);
+        for (int i = 0; i < 10; ++i) {
+            tp.submit(() -> {
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {}
+                System.out.println("i was here haha");
+            }, ThreadPool.Priority.LOW);
+        }
+        Thread.sleep(1000); // let first two tasks execute
+        tp.pause();
+        Thread.sleep(5000); // semaphore is blocking the tasks
+        tp.resume();
+        Thread.sleep(5000); // tasks should return to execute normally*/
+        tp.shutdown();
+        tp.awaitTermination();
+    }
+
 
 }

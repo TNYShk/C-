@@ -10,29 +10,29 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class ThreadPool implements Executor {
-    private final WaitablePriorityQueueSem<Task<?>> wpq;
+    protected WaitablePriorityQueueSem<Task<?>> wpq;
     private int numOfThreadz;
-    private Semaphore runSem = new Semaphore(0);
-    List<ThreadAction> deadpool;
+    private static final int HIGH_AS_KITE = 100;
+    private static final int LOW_LOW_LOW = -5;
+    private final Semaphore stopLightSem;
+    protected List<ThreadAction> deadpool;
 
     public ThreadPool(int numberOfThreads) {
         if (numberOfThreads <= 0)
            throw new IllegalArgumentException();
 
         numOfThreadz = numberOfThreads;
-
+        stopLightSem = new Semaphore(0);
         wpq = new WaitablePriorityQueueSem<>(numOfThreadz);
          deadpool = new LinkedList<>();
 
-        for(int i = 0; i<numberOfThreads;++i){
+        for(int i = 0; i<numOfThreadz;++i){
             deadpool.add(new ThreadAction());
         }
 
         for(ThreadAction begin : deadpool){
             begin.start();
         }
-
-
     }
 
     public enum Priority {
@@ -40,6 +40,17 @@ public class ThreadPool implements Executor {
         MED,
         HIGH
     }
+    private final Callable<Void> awaitDeath = () -> {
+        ThreadAction.currentThread().join();
+        return null;
+    };
+
+    private final Callable<Void> shutItDown = () -> {
+        ThreadAction shalter = (ThreadAction) ThreadAction.currentThread();
+        shalter.isRunning.set(false);
+        return null;
+    };
+
 
 
 
@@ -82,68 +93,75 @@ public class ThreadPool implements Executor {
     } // numberOfTHreads > 0 // problem if numberOfThreads is less than in Ctor, (the number of threads will be decreased)
 
     public void pause() throws InterruptedException {
+        Callable<Void> pauseIt = () ->{
+            try {
+                stopLightSem.acquire();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            return null;
+        };
+        for(int i =0; i<numOfThreadz;++i) {
+            wpq.enqueue(new Task<>(pauseIt,HIGH_AS_KITE));
+        }
+
        //create task with high priority and sempahore.acquire (is zero thus thread is stuck)
 
     } // after pause threads wont take tasks from the queue
 
     public void resume() {
-        //sem.release(numOfThreads)
+        stopLightSem.release(numOfThreadz);
     } // reverse pause operation
 
     public void shutdown() throws InterruptedException {
-        Callable<Void> shutIt = () -> {
-            ThreadAction shalter = (ThreadAction) ThreadAction.currentThread();
-            shalter.isRunning.set(false);
-            return null;
-        };
         for(int i =0; i<numOfThreadz;++i) {
-            wpq.enqueue(new Task<>(shutIt,-1));
+            wpq.enqueue(new Task<>(shutItDown,LOW_LOW_LOW));
         }
-        /*deadpool.clear();
-        System.out.println("cleared pool" + deadpool.size());*/
+        //while(!wpq.isEmpty());
+        deadpool.clear();
     }
         //create tasks as number of threads, with low priority and kill, thus all original tasks will be done and then all threads kill
      // after shutdown submit will throw exceptions, nothing will work. all current tasks in the queue will execute. not blocking
 
     public void awaitTermination() throws InterruptedException {
-        Callable<Void> time4Death = () -> {
-            ThreadAction.currentThread().join();
-            return null;
-        };
+        this.awaitTermination(0,TimeUnit.MICROSECONDS);
 
-        for(int i =0; i<numOfThreadz;++i) {
-            wpq.enqueue(new Task<>(time4Death,-1));
+     /*   for(int i =0; i<numOfThreadz;++i) {
+            wpq.enqueue(new Task<>(awaitDeath,LOW_LOW_LOW));
         }
-        deadpool.clear();
-        System.out.println("cleared  termination pool" + deadpool.size());
-        // call this with time 0 this(0,unit);
+        deadpool.clear();*/
     } // wait for all threads to finish?
 
-    public void awaitTermination(long timeout, TimeUnit unit) {
+    public void awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
+      long conversion = unit.convert(timeout, unit);
+      while(--conversion > 0);
+      //System.out.println(conversion);
+
+        for(int i =0; i<numOfThreadz;++i) {
+            wpq.enqueue(new Task<>(awaitDeath,LOW_LOW_LOW));
+        }
+        //while(!wpq.isEmpty());
+        deadpool.clear();
+        System.out.println("shutting down!" + " wpq size is: "+ wpq.size());
     }
 
 
     private class Task<T> implements Comparable<Task<?>> {
         //private Priority priority;
         private Integer realPriority;
-        private TaskFuture futureHolder;
+        private final TaskFuture futureHolder;
         private Callable<T> gullible;
         private T result;
         private AtomicBoolean doneFlag = new AtomicBoolean(false);
 
-        public Task(Callable<T> special, Integer realPriority){
+        public Task(Callable<T> gullible, Integer realPriority){
             this.realPriority = realPriority;
-            this.gullible = special;
+            this.gullible = gullible;
             futureHolder = new TaskFuture(this);
         }
         public Task(Callable<T> call, Priority priority) {
           this(call, priority.ordinal());
-           /* this.realPriority = priority.ordinal();
-            this.gullible = call;
-            this.priority = priority;
-            futureHolder = new TaskFuture(this);*/
         }
-
 
         void execute() throws Exception {
            result = gullible.call();
@@ -152,7 +170,6 @@ public class ThreadPool implements Executor {
            futureHolder.blockResult.signal();
            futureHolder.futureLock.unlock();
         }
-
         @Override
         public int compareTo(Task<?> task) {
             return task.realPriority.compareTo(this.realPriority);
@@ -197,7 +214,7 @@ public class ThreadPool implements Executor {
             }
 
             @Override
-            public T get() throws InterruptedException, ExecutionException {
+            public T get() throws InterruptedException {
                 try {
                     return get(Long.MAX_VALUE,TimeUnit.DAYS);
                 } catch (TimeoutException e) {
@@ -212,7 +229,7 @@ public class ThreadPool implements Executor {
             }
 
             @Override
-            public T get(long l, TimeUnit timeUnit) throws InterruptedException, ExecutionException, TimeoutException {
+            public T get(long l, TimeUnit timeUnit) throws InterruptedException, TimeoutException {
                 futureLock.lock();
                 if(!isDone()){
                     blockResult.await(l,timeUnit);
@@ -228,15 +245,15 @@ public class ThreadPool implements Executor {
         @Override
         public void run(){
             while(isRunning.get()) {
-                Task<?> toDO;
+                Task<?> toPerform;
                 try {
-                    toDO = wpq.dequeue();
+                    toPerform = wpq.dequeue();
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
                 try {
-                    toDO.execute();
-                    //toDO.doneFlag.getAndSet(true);
+                    toPerform.execute();
+                   /* toPerform.doneFlag.getAndSet(true);*/
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
