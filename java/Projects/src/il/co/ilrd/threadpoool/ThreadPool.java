@@ -4,7 +4,7 @@ import il.co.ilrd.waitablepriorityqueue.WaitablePriorityQueueSem;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Vector;
+
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Condition;
@@ -52,9 +52,6 @@ public class ThreadPool implements Executor {
         return null;
     };
 
-
-
-
     public Future<Void> submit(Runnable task, Priority priority) throws InterruptedException {
        return this.submit( Executors.callable(task,null), priority);
     }
@@ -71,7 +68,6 @@ public class ThreadPool implements Executor {
         return creaTask.futureHolder;
     }
 
-
     @Override
     public void execute(Runnable run) {
         try {
@@ -85,18 +81,17 @@ public class ThreadPool implements Executor {
         int remainder = updateNumberOfThreads - numOfThreadz;
 
         if (remainder >= 0) {
-            while (0 < remainder--) {
+            while (0 <= --remainder) {
                 ThreadAction added = new ThreadAction();
                 deadpool.add(added);
                 added.start();
             }
         } else {
-            Math.abs(remainder);
-            while (--remainder > 0) {
+            remainder = -remainder;
+            while (0 <= --remainder) {
                 wpq.enqueue(new Task<>(shutItDown, HIGH_AS_KITE));
             }
         }
-
         numOfThreadz = updateNumberOfThreads;
     }
         /*
