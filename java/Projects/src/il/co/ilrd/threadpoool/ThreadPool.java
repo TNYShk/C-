@@ -4,6 +4,7 @@ import il.co.ilrd.waitablepriorityqueue.WaitablePriorityQueueSem;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Vector;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Condition;
@@ -80,7 +81,24 @@ public class ThreadPool implements Executor {
         }
     }
 
-    public void setNumberOfThreads(int updateNumberOfThreads) {
+    public void setNumberOfThreads(int updateNumberOfThreads) throws InterruptedException {
+        int remainder = updateNumberOfThreads - numOfThreadz;
+
+        if (remainder >= 0) {
+            while (0 < remainder--) {
+                ThreadAction added = new ThreadAction();
+                deadpool.add(added);
+                added.start();
+            }
+        } else {
+            Math.abs(remainder);
+            while (--remainder > 0) {
+                wpq.enqueue(new Task<>(shutItDown, HIGH_AS_KITE));
+            }
+        }
+
+        numOfThreadz = updateNumberOfThreads;
+    }
         /*
 
         idea2:
@@ -89,7 +107,7 @@ public class ThreadPool implements Executor {
 
          */
 
-    } // numberOfTHreads > 0 // problem if numberOfThreads is less than in Ctor, (the number of threads will be decreased)
+    // numberOfTHreads > 0 // problem if numberOfThreads is less than in Ctor, (the number of threads will be decreased)
 
     public void pause() throws InterruptedException {
         Callable<Void> pauseIt = () ->{
