@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.testng.AssertJUnit.assertFalse;
 import static org.testng.AssertJUnit.assertTrue;
 
+import java.sql.Time;
 import java.util.concurrent.*;
 
 import org.junit.jupiter.api.Test;
@@ -212,10 +213,10 @@ public class PoolTest {
         Thread.sleep(3000);
         tp.setNumberOfThreads(2);
         assertTrue(tp.deadpool.size() == 2);
-        //prints should start show 2 threads from now
+
         tp.shutdown();
         tp.awaitTermination();
-        //Thread.sleep(7000);
+
     }
 
     @Test
@@ -241,6 +242,42 @@ public class PoolTest {
 
     }
 
+    @Test
+    void awaitTerminationTime() throws InterruptedException {
+        ThreadPool tp = new ThreadPool(2);
+        for (int i = 0; i < 15; ++i) {
+            tp.submit(() -> {
+                System.out.println("wait for me!!");
+            }, ThreadPool.Priority.LOW);
+        }
+
+        try {
+            System.out.println(java.time.LocalTime.now());
+            tp.awaitTermination(5, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+
+            e.printStackTrace();
+        }
+        System.out.println(java.time.LocalTime.now());
+        assertTrue((tp.deadpool.isEmpty()));
+
+    }
+
+    @Test
+    void TimeOut() throws InterruptedException, ExecutionException, TimeoutException {
+        ThreadPool tp = new ThreadPool(1);
+        Future<Integer> f1 = tp.submit(() -> {
+            while(true);
+        } , ThreadPool.Priority.MED);
+
+        assertTrue(f1.get(3, TimeUnit.SECONDS) == null);
+        System.out.println("this line should be printed after 3 seconds");
+        tp.shutdown();
+        System.out.println(java.time.LocalTime.now());
+        tp.awaitTermination(4, TimeUnit.SECONDS);
+        System.out.println("this line should be printed after 7 seconds");
+        System.out.println(java.time.LocalTime.now());
+    }
 
 
 

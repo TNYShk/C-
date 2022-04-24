@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class ThreadPool implements Executor {
@@ -47,7 +46,6 @@ public class ThreadPool implements Executor {
     private final Callable<Void> shutItDown = () -> {
         ThreadAction shalter = (ThreadAction) ThreadAction.currentThread();
         shalter.isRunning.set(false);
-
          return null;
     };
 
@@ -95,15 +93,7 @@ public class ThreadPool implements Executor {
         }
         numOfThreadz = updateNumberOfThreads;
     }
-        /*
 
-        idea2:
-        submit new task to pq with pause/terminate thread/semaphore with HIGH priority
-            if newNumofThreads > numberOfThreads
-
-         */
-
-    // numberOfTHreads > 0 // problem if numberOfThreads is less than in Ctor, (the number of threads will be decreased)
 
     public void pause() throws InterruptedException {
         Callable<Void> pauseIt = () ->{
@@ -140,7 +130,7 @@ private AtomicBoolean shutIt = new AtomicBoolean(false);
     public void awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
 
         for (ThreadAction t : deadpool) {
-            t.join(unit.convert(timeout, unit));
+            t.join(TimeUnit.MILLISECONDS.convert(timeout, unit)/(deadpool.size()));
         }
         deadpool.clear();
     }
