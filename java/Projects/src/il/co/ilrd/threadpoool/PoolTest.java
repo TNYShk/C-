@@ -79,9 +79,16 @@ public class PoolTest {
         tp.shutdown();
 
         //tp.awaitTermination(10,TimeUnit.SECONDS);
-        Thread.sleep(6000);
+        Thread.sleep(3000);
         tp.awaitTermination();
-        tp.submit(shutter, ThreadPool.Priority.HIGH);
+        System.out.println("threadpool: "+ tp.deadpool.size() + " pqsize: " + tp.wpq.size());
+        try {
+            Thread.sleep(5000);
+            tp.submit(shutter, ThreadPool.Priority.HIGH);
+        }catch (InterruptedException e){
+            e.printStackTrace();
+        }
+
         System.out.println("threadpool: "+ tp.deadpool.size() + " pqsize: " + tp.wpq.size());
     }
 
