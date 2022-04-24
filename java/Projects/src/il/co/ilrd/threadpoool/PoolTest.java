@@ -196,5 +196,52 @@ public class PoolTest {
         tp.awaitTermination();
     }
 
+    @Test
+    void setNumberOfThreadsIncrease() throws InterruptedException {
+        ThreadPool tp = new ThreadPool(1);
+        assertTrue(tp.deadpool.size() == 1);
+
+        for (int i = 0; i < 10; ++i) {
+            tp.submit(() -> {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {}
+                System.out.println(Thread.currentThread().getName());
+            }, ThreadPool.Priority.LOW);
+        }
+        Thread.sleep(3000);
+        tp.setNumberOfThreads(2);
+        assertTrue(tp.deadpool.size() == 2);
+        //prints should start show 2 threads from now
+        tp.shutdown();
+        tp.awaitTermination();
+        //Thread.sleep(7000);
+    }
+
+    @Test
+    void setNumberOfThreadsDecrease() throws InterruptedException {
+        ThreadPool tp = new ThreadPool(5);
+        assertTrue(tp.deadpool.size() == 5);
+
+        for (int i = 0; i < 10; ++i) {
+            tp.submit(() -> {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {}
+                System.out.println(Thread.currentThread().getName());
+            }, ThreadPool.Priority.LOW);
+        }
+
+        tp.setNumberOfThreads(1);
+        Thread.sleep(3000);
+        tp.shutdown();
+        tp.awaitTermination();
+        assertTrue(tp.deadpool.size() == 0);
+        assertTrue(tp.wpq.isEmpty());
+
+    }
+
+
+
 
 }

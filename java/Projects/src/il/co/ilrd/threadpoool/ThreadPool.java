@@ -44,15 +44,10 @@ public class ThreadPool implements Executor {
         HIGH
     }
 
-
-
-
-
     private final Callable<Void> shutItDown = () -> {
         ThreadAction shalter = (ThreadAction) ThreadAction.currentThread();
         shalter.isRunning.set(false);
-        //deadpool.remove(ThreadAction.currentThread());
-         //deadpool.clear();
+
          return null;
     };
 
@@ -149,8 +144,6 @@ private AtomicBoolean shutIt = new AtomicBoolean(false);
         }
         deadpool.clear();
     }
-
-
 
 
 
