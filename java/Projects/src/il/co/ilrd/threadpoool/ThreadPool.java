@@ -94,7 +94,6 @@ public class ThreadPool implements Executor {
         numOfThreadz = updateNumberOfThreads;
     }
 
-
     public void pause() throws InterruptedException {
         Callable<Void> pauseIt = () ->{
             stopLightSem.acquire();
@@ -103,24 +102,17 @@ public class ThreadPool implements Executor {
         for(int i =0; i<numOfThreadz;++i) {
             wpq.enqueue(new Task<>(pauseIt,HIGH_AS_KITE));
         }
-
-    } // after pause threads wont take tasks from the queue
-
+    }
     public void resume() {
         stopLightSem.release(numOfThreadz);
-    } // reverse pause operation
-private AtomicBoolean shutIt = new AtomicBoolean(false);
+    }
+    private final AtomicBoolean shutIt = new AtomicBoolean(false);
     public void shutdown() throws InterruptedException {
         shutIt.set(true);
         for(int i =0; i<numOfThreadz;++i) {
             wpq.enqueue(new Task<>(shutItDown,LOW_LOW_LOW));
-
         }
-        //while(!wpq.isEmpty());
-        //deadpool.clear();
     }
-        //create tasks as number of threads, with low priority and kill, thus all original tasks will be done and then all threads kill
-     // after shutdown submit will throw exceptions, nothing will work. all current tasks in the queue will execute. not blocking
 
     public void awaitTermination() throws InterruptedException {
         this.awaitTermination(Long.MAX_VALUE,TimeUnit.DAYS);
@@ -130,13 +122,10 @@ private AtomicBoolean shutIt = new AtomicBoolean(false);
     public void awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
 
         for (ThreadAction t : deadpool) {
-            t.join(TimeUnit.MILLISECONDS.convert(timeout, unit)/(deadpool.size()));
+            t.join(TimeUnit.MILLISECONDS.convert(timeout, unit)/numOfThreadz);
         }
         deadpool.clear();
     }
-
-
-
 
     private class Task<T> implements Comparable<Task<?>> {
         //private Priority priority;
@@ -172,10 +161,10 @@ private AtomicBoolean shutIt = new AtomicBoolean(false);
             return task.realPriority.compareTo(this.realPriority);
         }
         private class TaskFuture implements Future<T>{
-            private ReentrantLock futureLock = new ReentrantLock();
-            private Condition blockResult = futureLock.newCondition();
-            private AtomicBoolean status = new AtomicBoolean();
-            private Task<T> holder;
+            private final ReentrantLock futureLock = new ReentrantLock();
+            private final Condition blockResult = futureLock.newCondition();
+            private final AtomicBoolean status = new AtomicBoolean();
+            private final Task<T> holder;
 
             public TaskFuture(Task<T> newTask){
                 holder = newTask;

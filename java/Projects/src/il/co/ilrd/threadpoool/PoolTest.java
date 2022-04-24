@@ -61,19 +61,19 @@ public class PoolTest {
             int block = 5000;
             while (--block > 0) ;
 
-            for (long i = 0; i <= 10000000l; ++i) {
+            for (long i = 0; i <= 10000000L; ++i) {
                 sum += i;
             }
             return sum;
         }, ThreadPool.Priority.HIGH);
-        System.out.println((future.get(20l, TimeUnit.SECONDS)));
+        System.out.println((future.get(20L, TimeUnit.SECONDS)));
         assertTrue(f1.get().equals(1));
         assertTrue(f2.get().equals(2));
         assertTrue(f3.get().equals(3));
 
         future.cancel(false);
         assertTrue(future.isDone());
-        // System.out.println((c1.get(10l, TimeUnit.SECONDS)));
+
         assertTrue(c1.get(10l, TimeUnit.SECONDS).equals(0.8349206349206351));
         assertTrue(r2.get() == null);
         assertTrue(r1.get() == 42.0);
@@ -104,20 +104,16 @@ public class PoolTest {
         };
         Callable<Integer> call2 = () -> 2;
         Callable<Integer> call3 = () -> 3;
-        Callable<Integer> toCancel = new Callable() {
-
-            @Override
-            public Integer call() throws Exception {
-                Integer ret = 13;
-                Thread.sleep(1000);
-                System.out.println("going tobe cancel " + Thread.currentThread().getId());
-                return ret;
-            }
+        Callable toCancel = (Callable) () -> {
+            Integer ret = 13;
+            Thread.sleep(1000);
+            System.out.println("going tobe cancel " + Thread.currentThread().getId());
+            return ret;
         };
         Future<Integer> f1 = tp.submit(call2, ThreadPool.Priority.LOW);
         Future<Integer> f2 = tp.submit(call3, ThreadPool.Priority.MED);
-        Future<Integer> foo = tp.submit(HighPri);
-        Future<Integer> barf = tp.submit(toCancel, ThreadPool.Priority.LOW);
+        Future foo = tp.submit(HighPri);
+        Future barf = tp.submit(toCancel, ThreadPool.Priority.LOW);
         barf.cancel(false);
         Thread.sleep(5000l);
         assertTrue(f1.get().equals(2));
@@ -244,7 +240,7 @@ public class PoolTest {
 
     @Test
     void awaitTerminationTime() throws InterruptedException {
-        ThreadPool tp = new ThreadPool(2);
+        ThreadPool tp = new ThreadPool(3);
         for (int i = 0; i < 15; ++i) {
             tp.submit(() -> {
                 System.out.println("wait for me!!");
@@ -269,7 +265,7 @@ public class PoolTest {
         Future<Integer> f1 = tp.submit(() -> {
             while(true);
         } , ThreadPool.Priority.MED);
-
+        System.out.println(java.time.LocalTime.now());
         assertTrue(f1.get(3, TimeUnit.SECONDS) == null);
         System.out.println("this line should be printed after 3 seconds");
         tp.shutdown();
