@@ -140,9 +140,7 @@ public class ThreadPool implements Executor {
             this.gullible = gullible;
             futureHolder = new TaskFuture(this);
         }
-        public TaskFuture getIt(){
-            return futureHolder;
-        }
+
         public Task(Callable<T> call, Priority priority) {
           this(call, priority.ordinal());
         }
@@ -154,12 +152,11 @@ public class ThreadPool implements Executor {
            futureHolder.blockResult.signal();
            futureHolder.futureLock.unlock();
         }
-
-
         @Override
         public int compareTo(Task<?> task) {
             return task.realPriority.compareTo(this.realPriority);
         }
+
         private class TaskFuture implements Future<T>{
             private final ReentrantLock futureLock = new ReentrantLock();
             private final Condition blockResult = futureLock.newCondition();
@@ -178,15 +175,14 @@ public class ThreadPool implements Executor {
                 }
                 try {
                     trial = wpq.remove(holder);
-
-                    } catch (InterruptedException e) {
+                } catch (InterruptedException e) {
                       throw new RuntimeException(e);
-                    }finally {
+                }finally {
                         if(trial){
                             status.set(true);
                             doneFlag.set(true);
                         }
-                    }
+                }
                 return trial;
             }
 
@@ -206,13 +202,8 @@ public class ThreadPool implements Executor {
                 } catch (TimeoutException e) {
                     throw new RuntimeException(e);
                 }
-                /*futureLock.lock();
-                    while(!isDone()){
-                        blockResult.await();
-                    }
-                    futureLock.unlock();
-                return result;*/
             }
+
             @Override
             public T get(long l, TimeUnit timeUnit) throws InterruptedException, TimeoutException {
                 futureLock.lock();
@@ -238,7 +229,6 @@ public class ThreadPool implements Executor {
                 }
                 try {
                     toPerform.execute();
-                   /* toPerform.doneFlag.getAndSet(true);*/
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }

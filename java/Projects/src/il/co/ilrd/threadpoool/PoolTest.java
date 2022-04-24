@@ -4,9 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.testng.AssertJUnit.assertFalse;
 import static org.testng.AssertJUnit.assertTrue;
 
-import java.sql.Time;
+
 import java.util.concurrent.*;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class PoolTest {
@@ -79,9 +80,9 @@ public class PoolTest {
         assertTrue(r1.get() == 42.0);
         tp.shutdown();
 
-        //tp.awaitTermination(10,TimeUnit.SECONDS);
-        Thread.sleep(3000);
-        tp.awaitTermination();
+        tp.awaitTermination(5,TimeUnit.SECONDS);
+       // Thread.sleep(3000);
+       // tp.awaitTermination();
         System.out.println("threadpool: "+ tp.deadpool.size() + " pqsize: " + tp.wpq.size());
         try {
             Thread.sleep(5000);
@@ -235,7 +236,6 @@ public class PoolTest {
         tp.awaitTermination();
         assertTrue(tp.deadpool.size() == 0);
         assertTrue(tp.wpq.isEmpty());
-
     }
 
     @Test
@@ -264,9 +264,9 @@ public class PoolTest {
         ThreadPool tp = new ThreadPool(1);
         Future<Integer> f1 = tp.submit(() -> {
             while(true);
-        } , ThreadPool.Priority.MED);
+        }, ThreadPool.Priority.MED);
         System.out.println(java.time.LocalTime.now());
-        assertTrue(f1.get(3, TimeUnit.SECONDS) == null);
+        Assertions.assertNull(f1.get(3, TimeUnit.SECONDS));
         System.out.println("this line should be printed after 3 seconds");
         tp.shutdown();
         System.out.println(java.time.LocalTime.now());
@@ -274,7 +274,4 @@ public class PoolTest {
         System.out.println("this line should be printed after 7 seconds");
         System.out.println(java.time.LocalTime.now());
     }
-
-
-
 }
