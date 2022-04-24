@@ -1,4 +1,4 @@
-package il.co.ilrd.threadpoool;
+package il.co.ilrd.threadpool;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.testng.AssertJUnit.assertFalse;
@@ -81,8 +81,7 @@ public class PoolTest {
         tp.shutdown();
 
         tp.awaitTermination(5,TimeUnit.SECONDS);
-       // Thread.sleep(3000);
-       // tp.awaitTermination();
+
         System.out.println("threadpool: "+ tp.deadpool.size() + " pqsize: " + tp.wpq.size());
         try {
             Thread.sleep(5000);
@@ -108,7 +107,7 @@ public class PoolTest {
         Callable toCancel = (Callable) () -> {
             Integer ret = 13;
             Thread.sleep(1000);
-            System.out.println("going tobe cancel " + Thread.currentThread().getId());
+            System.out.println("going tobe canceled " + Thread.currentThread().getId());
             return ret;
         };
         Future<Integer> f1 = tp.submit(call2, ThreadPool.Priority.LOW);
@@ -217,11 +216,11 @@ public class PoolTest {
     }
 
     @Test
-    void setNumberOfThreadsDecrease() throws InterruptedException {
-        ThreadPool tp = new ThreadPool(5);
-        assertTrue(tp.deadpool.size() == 5);
+    void decreaseNumberOfThreadsTest() throws InterruptedException {
+        ThreadPool tp = new ThreadPool(10);
+        assertTrue(tp.deadpool.size() == 10);
 
-        for (int i = 0; i < 10; ++i) {
+        for (int i = 0; i < 20; ++i) {
             tp.submit(() -> {
                 try {
                     Thread.sleep(1000);
@@ -230,8 +229,9 @@ public class PoolTest {
             }, ThreadPool.Priority.LOW);
         }
 
-        tp.setNumberOfThreads(1);
+        tp.setNumberOfThreads(2);
         Thread.sleep(3000);
+
         tp.shutdown();
         tp.awaitTermination();
         assertTrue(tp.deadpool.size() == 0);
@@ -246,7 +246,6 @@ public class PoolTest {
                 System.out.println("wait for me!!");
             }, ThreadPool.Priority.LOW);
         }
-
         try {
             System.out.println(java.time.LocalTime.now());
             tp.awaitTermination(5, TimeUnit.SECONDS);
