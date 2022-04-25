@@ -18,7 +18,7 @@ public class CalculateTest {
 		          *          -
 		      /     2      8    5
 		    6   3
-		 expected result = 12
+
 		*/
 
         Node<String> node1 = new Node<>("+");
