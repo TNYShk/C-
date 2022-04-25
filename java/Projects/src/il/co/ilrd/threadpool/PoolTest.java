@@ -41,16 +41,16 @@ public class PoolTest {
     }
 
     @Test
-    void testSubmitShai() throws InterruptedException, ExecutionException, TimeoutException {
+    void testSubmit() throws InterruptedException, ExecutionException, TimeoutException {
         Callable<Integer> call1 = () -> 1;
         Callable<Integer> call2 = () -> 2;
         Callable<Integer> call3 = () -> 3;
         Callable<Double> complexCalc = () -> (1.0 - (1.0/3.0) + (1.0/5.0) - (1.0 /7.0) + (1.0/9.0));
-        Runnable run1 = () -> System.out.println("im a runner 1");
+        Runnable run1 = () -> System.out.println("im a runner...");
         Runnable shutter = () -> System.out.println("im done! dont look at me");
         ThreadPool tp = new ThreadPool(3);
         Double answer = 42.0;
-        Runnable run = () -> System.out.println("the ans is " + answer);
+        Runnable run = () -> System.out.println("the answer is " + answer);
         Future<Double> c1 = tp.submit(complexCalc, ThreadPool.Priority.MED);
         Future<Integer> f1 = tp.submit(call1, ThreadPool.Priority.LOW);
         Future<Integer> f2 = tp.submit(call2, ThreadPool.Priority.HIGH);
@@ -98,7 +98,7 @@ public class PoolTest {
         ThreadPool tp = new ThreadPool(1);
         Callable HighPri = () -> {
             Integer ret = 13;
-            System.out.println("hello from high priority task " + Thread.currentThread().getId());
+            System.out.println("hello from a high priority task " + Thread.currentThread().getId());
             Thread.sleep(5000);
             return ret;
         };
@@ -107,7 +107,7 @@ public class PoolTest {
         Callable toCancel = (Callable) () -> {
             Integer ret = 13;
             Thread.sleep(1000);
-            System.out.println("going tobe canceled " + Thread.currentThread().getId());
+            System.out.println("going to be canceled " + Thread.currentThread().getId());
             return ret;
         };
         Future<Integer> f1 = tp.submit(call2, ThreadPool.Priority.LOW);
@@ -164,7 +164,7 @@ public class PoolTest {
         Thread.sleep(3000);
         assertTrue(f1.isDone());
         assertTrue(f1.get().equals("aaaaa"));
-        Callable<String> c2 = () -> "if u see me, your future isnt good :/";
+        Callable<String> c2 = () -> "if u see me, your future isn't good :/";
         tp.submit(c1, ThreadPool.Priority.HIGH);
         Future<String> f2 = tp.submit(c2, ThreadPool.Priority.HIGH);
         assertFalse(f2.isCancelled());

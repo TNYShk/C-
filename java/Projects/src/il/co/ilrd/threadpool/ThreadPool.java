@@ -30,13 +30,11 @@ public class ThreadPool implements Executor {
         wpq = new WaitablePriorityQueueSem<>(numOfThreadz);
         deadpool = new LinkedList<>();
 
-        for(int i = 0; i<numOfThreadz;++i){
+        for(int i = 0; i < numOfThreadz; ++i){
             deadpool.add(new ThreadAction());
+            deadpool.get(i).start();
         }
 
-        for(ThreadAction begin : deadpool){
-            begin.start();
-        }
     }
 
     public enum Priority {
@@ -52,7 +50,7 @@ public class ThreadPool implements Executor {
     };
 
     public Future<Void> submit(Runnable task, Priority priority) throws InterruptedException {
-       return this.submit( Executors.callable(task,null), priority);
+       return this.submit(Executors.callable(task,null), priority);
     }
     public <T> Future<T> submit(Runnable task, Priority priority, T returnValue) throws InterruptedException {
        return this.submit(Executors.callable(task,returnValue),priority);
@@ -61,10 +59,10 @@ public class ThreadPool implements Executor {
         return this.submit(task, Priority.MED);
     }
     public <T> Future<T> submit(Callable<T> task, Priority priority) throws InterruptedException {
-
-        if(shutIt)
+        if(isShut)
            throw new InterruptedException();
-        Task<T> createTask = new Task<>(task,priority);
+
+        Task<T> createTask = new Task<>(task,priority.ordinal());
         wpq.enqueue(createTask);
         return createTask.futureHolder;
     }
@@ -107,11 +105,11 @@ public class ThreadPool implements Executor {
         stopLightSem.release(numOfThreadz);
     }
 
-    private volatile boolean shutIt = false;
+    private volatile boolean isShut = false;
     public void shutdown() throws InterruptedException {
 
-        shutIt = true;
-        for(int i =0; i<numOfThreadz;++i) {
+        isShut = true;
+        for(int i = 0; i < numOfThreadz; ++i) {
             wpq.enqueue(new Task<>(shutItDown,LOW_LOW_LOW));
         }
     }
@@ -130,25 +128,22 @@ public class ThreadPool implements Executor {
 
     private class Task<T> implements Comparable<Task<?>> {
 
-        private Integer realPriority;
+        private final Integer realPriority;
         private final TaskFuture futureHolder;
-        private Callable<T> gullible;
+        private final Callable<T> gullible;
         private T result;
-        private final AtomicBoolean doneFlag = new AtomicBoolean(false);
+        private final AtomicBoolean isTaskDone = new AtomicBoolean(false);
 
         public Task(Callable<T> gullible, Integer realPriority){
+
             this.realPriority = realPriority;
             this.gullible = gullible;
             futureHolder = new TaskFuture(this);
         }
 
-        public Task(Callable<T> call, Priority priority) {
-          this(call, priority.ordinal());
-        }
-
         void execute() throws Exception {
            result = gullible.call();
-           doneFlag.set(true);
+           isTaskDone.set(true);
            futureHolder.futureLock.lock();
            futureHolder.blockResult.signal();
            futureHolder.futureLock.unlock();
@@ -161,7 +156,7 @@ public class ThreadPool implements Executor {
         private class TaskFuture implements Future<T>{
             private final ReentrantLock futureLock = new ReentrantLock();
             private final Condition blockResult = futureLock.newCondition();
-            private final AtomicBoolean status = new AtomicBoolean();
+            private final AtomicBoolean statusTaskFuture = new AtomicBoolean();
             private final Task<T> holder;
 
             public TaskFuture(Task<T> newTask){
@@ -178,22 +173,21 @@ public class ThreadPool implements Executor {
                     trial = wpq.remove(holder);
                 } catch (InterruptedException e) {
                       throw new RuntimeException(e);
-                }finally {
-                        if(trial){
-                            status.set(true);
-                            doneFlag.set(true);
-                        }
+                }
+                if(trial){
+                    statusTaskFuture.set(true);
+                    isTaskDone.set(true);
                 }
                 return trial;
             }
 
             @Override
             public boolean isCancelled() {
-                return status.get();
+                return statusTaskFuture.get();
             }
             @Override
             public boolean isDone() {
-               return doneFlag.get();
+               return isTaskDone.get();
             }
 
             @Override
@@ -235,6 +229,5 @@ public class ThreadPool implements Executor {
                 }
             }
         }
-
     }
 }
