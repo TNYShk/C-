@@ -1,9 +1,8 @@
-package il.co.ilrd.quiz_algebrictree;
+package il.co.ilrd.quiz14_algebrictree;
 
 
 
 import java.util.HashMap;
-import java.util.function.Function;
 
 public class AlgebricExpressionTree<T> {
 

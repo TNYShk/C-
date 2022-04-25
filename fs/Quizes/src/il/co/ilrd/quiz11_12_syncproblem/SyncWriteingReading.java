@@ -1,8 +1,6 @@
-package il.co.ilrd.syncproblem;
+package il.co.ilrd.quiz11_12_syncproblem;
 
-import java.awt.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import static java.lang.Thread.sleep;

@@ -1,4 +1,4 @@
-package il.co.ilrd.quizexception;
+package il.co.ilrd.quiz4_exception;
 
 import java.io.IOException;
 

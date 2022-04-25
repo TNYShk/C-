@@ -1,7 +1,6 @@
-package il.co.ilrd.syncproblem;
+package il.co.ilrd.quiz11_12_syncproblem;
 
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class SyncReadWrite2 implements Runnable{

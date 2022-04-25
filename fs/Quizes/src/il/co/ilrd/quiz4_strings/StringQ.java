@@ -1,4 +1,4 @@
-package il.co.ilrd.strquiz;
+package il.co.ilrd.quiz4_strings;
 
 public class StringQ {
 

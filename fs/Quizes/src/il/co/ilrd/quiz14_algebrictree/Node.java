@@ -1,4 +1,4 @@
-package il.co.ilrd.quiz_algebrictree;
+package il.co.ilrd.quiz14_algebrictree;
 
 public class Node<T> {
     private T data;
