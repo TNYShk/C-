@@ -7,11 +7,12 @@ package il.co.ilrd.observer;
  */
 
 
+import java.util.LinkedList;
 import java.util.List;
-import java.util.ArrayList;
+
 
 public class Dispatcher<D> {
-    private List<Callback<D>> callbacklist = new ArrayList<>();
+    private List<Callback<D>> callbacklist = new LinkedList<>();
 
     public void register(Callback<D> callback) {
         callbacklist.add(callback);

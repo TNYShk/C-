@@ -75,7 +75,7 @@ public class Testim {
         assertEquals(wawwa.getSize(),4);
         assertEquals(Shopping.getSize(),4);
         StringBuffer junk = new StringBuffer("get this awesome couch for just 666$");
-        StringBuffer walla = new StringBuffer("Scoop: Ben Caspit hates BB");
+        StringBuffer walla = new StringBuffer("walla Scoop! Ben Caspit hates BB");
 
         wawwa.notifyAll(walla);
         Shopping.notifyAll(junk);
