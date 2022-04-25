@@ -1,11 +1,17 @@
 package il.co.ilrd.quiz14_algebrictree;
 
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 public class CalculateTest {
     public static void main(String[] args) {
 
+
+
+    }
+    @Test
+    void TestCalc(){
         AlgebricExpressionTree calc = new AlgebricExpressionTree();
-
-
 
 		/*
 		               +
@@ -33,6 +39,11 @@ public class CalculateTest {
         node4.setLeft(node8);
         node4.setRight(node9);
 
+        System.out.println(calc.calculate(node1));
+        assertEquals(7.0,calc.calculate(node1));
+
+        node1.setData("*");
+        assertEquals(12.0,calc.calculate(node1));
         System.out.println(calc.calculate(node1));
     }
 

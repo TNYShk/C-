@@ -10,26 +10,31 @@ public class AlgebricExpressionTree<T> {
     private OperatorComponent root;
      final Operator add = ((a, b) -> a + b);
      final Operator minus = ((a, b) -> a - b);
-    private final Operator multiply = (a, b) -> a * b;
-    private final Operator divide = ((a, b) -> a / b);
+     final Operator multiply = (a, b) -> a * b;
 
     public AlgebricExpressionTree () {
         factoryFun.put("+", add);
         factoryFun.put("-", minus);
         factoryFun.put("*", multiply);
-        factoryFun.put("/", divide);
+        factoryFun.put("/", (a, b) ->  {
+            if (Double.compare(0, b) == 0) {
+                throw new ArithmeticException();
+            }
+            return a / b;
+        });
+
     }
 
     public double calculate(Node<String> root){
         this.root = new OperatorComponent(root);
         return this.root.calculate();
     }
-    private interface Calculator {
-        public double calculate();
+     interface Calculator {
+         double calculate();
     }
 
-     interface Operator{
-        public double operate(double a, double b);
+      interface Operator{
+         double operate(double a, double b);
     }
     private class OperatorComponent implements Calculator{
         private Operator oper;
@@ -57,7 +62,6 @@ public class AlgebricExpressionTree<T> {
          return oper.operate(leftChild.calculate(), rightChild.calculate());
 
         }
-
     }
 
     private class operandComponent implements Calculator{
