@@ -12,7 +12,7 @@ public class Ex2 {
         execPool.execute(() -> System.out.print(" my " ));
         execPool.execute(() -> System.out.print(" name " ));
         execPool.execute(() -> System.out.print(" is "  ));
-
+        execPool.execute(() -> System.out.print("\tTanya "  ));
         execPool.shutdown();
     }
 
