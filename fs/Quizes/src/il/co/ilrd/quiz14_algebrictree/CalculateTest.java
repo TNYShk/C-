@@ -21,7 +21,7 @@ public class CalculateTest {
 
 		*/
 
-        Node<String> node1 = new Node<>("+");
+        Node<String> root = new Node<>("+");
         Node<String> node2 = new Node<>("*");
         Node<String> node3 = new Node<>("-");
         Node<String> node4 = new Node<>("/");
@@ -30,8 +30,8 @@ public class CalculateTest {
         Node<String> node7 = new Node<>("5");
         Node<String> node8 = new Node<>("6");
         Node<String> node9 = new Node<>("3");
-        node1.setLeft(node2);
-        node1.setRight(node3);
+        root.setLeft(node2);
+        root.setRight(node3);
         node2.setLeft(node4);
         node2.setRight(node5);
         node3.setLeft(node6);
@@ -39,12 +39,12 @@ public class CalculateTest {
         node4.setLeft(node8);
         node4.setRight(node9);
 
-        System.out.println(calc.calculate(node1));
-        assertEquals(7.0,calc.calculate(node1));
+        System.out.println(calc.calculate(root));
+        assertEquals(7.0,calc.calculate(root));
 
-        node1.setData("*");
-        assertEquals(12.0,calc.calculate(node1));
-        System.out.println(calc.calculate(node1));
+        root.setData("*");
+        assertEquals(12.0,calc.calculate(root));
+        System.out.println(calc.calculate(root));
     }
 
 
