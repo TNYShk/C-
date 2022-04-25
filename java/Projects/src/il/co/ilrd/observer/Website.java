@@ -17,7 +17,7 @@ public class Website {
         dispatch.unregister(site);
     }
 
-    //public Dispatcher<StringBuffer> getDispatcher() {return dispatch;}
+
     public void notifyAll(StringBuffer msg){
         dispatch.notifyAll(msg);
     }
