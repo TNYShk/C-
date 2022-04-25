@@ -18,7 +18,6 @@ public class Factory<K, T, D> {
 
     public T create(K key){
         return this.create(key, null);
-        //return factoryFun.get(key).apply(null);
     }
 
     public T create (K key, D data){
