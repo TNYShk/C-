@@ -4,7 +4,6 @@ import il.co.ilrd.observer.Callback;
 import il.co.ilrd.observer.Dispatcher;
 
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.*;
@@ -31,15 +30,12 @@ public class FileTracker {
        folderM = new FolderMonitor(realPath);
         FileMonitor fileM = new FileMonitor<>(realPath,backupPath);
         fileM.register(folderM);
-
         Files.copy(realPath,backupPath);
-
         }
 
         //create file Monitor
         //register fileMonitor to folderMonitor
         //create the backup file. duplicate of the initial file
-
 
     private static class FolderMonitor  {
        //watches folder and updates its subjects about the change n folder. subjects are files.
