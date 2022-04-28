@@ -4,20 +4,18 @@ import il.co.ilrd.observer.Callback;
 import il.co.ilrd.observer.Dispatcher;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.WatchService;
+import java.nio.file.*;
 import java.util.List;
 
 public class FileTracker {
     private String path;
     private String backup;
-    private folderMonitor folderM;
+    private FolderMonitor folderM;
 
-    public void startMonitor() {
+    public void startMonitor() throws InterruptedException {
         folderM.run();
         //create inner thread since watcher is blocking
     }
@@ -25,38 +23,65 @@ public class FileTracker {
     public void endMonitor() {
     }
 
-    public FileTracker(String path, String backup) {
+    public FileTracker(String path, String backup) throws IOException {
        this.path = path;
        this.backup = backup;
-       //create folderMonitor
+       Path realPath = Paths.get(path);
+        Path backupPath = Paths.get(backup);
+       folderM = new FolderMonitor(realPath);
+        FileMonitor fileM = new FileMonitor<>(realPath,backupPath);
+        fileM.register(folderM);
+
+        Files.copy(realPath,backupPath);
+
+        }
+
         //create file Monitor
         //register fileMonitor to folderMonitor
         //create the backup file. duplicate of the initial file
-    }
 
-    private class folderMonitor< D>  {
+
+    private static class FolderMonitor  {
        //watches folder and updates its subjects about the change n folder. subjects are files.
-       private WatchService watcher;
-        private Dispatcher<D> dispatch;
-        public folderMonitor(Path folder){
-
+       private final WatchService watcher;
+        private final Dispatcher<String> dispatch;
+        public FolderMonitor(Path folder) throws IOException {
+            dispatch = new Dispatcher<>();
+            watcher =  FileSystems.getDefault().newWatchService();
+          folder.register(watcher, StandardWatchEventKinds.ENTRY_CREATE,
+                    StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_MODIFY);
 
         }
-        public void run(){}
+        public void run() throws InterruptedException {
+            WatchKey watchkey;
+            while ((watchkey = watcher.take()) != null) {
 
-        public void register(Callback<D> call){
+                for (WatchEvent<?> event : watchkey.pollEvents()) {
+                        if(event.kind().name().equals(StandardWatchEventKinds.ENTRY_MODIFY))
+                            dispatch.notifyAll();
+                    System.out.println("Event that happened: " + event.kind());
+
+                    System.out.println("File affected: " + event.context());
+                    System.out.println();
+                }
+                // must reset the watchkey in order for it to be able to use another take().
+                watchkey.reset();
+            }
+        }
+
+        public void register(Callback<String> call){
             dispatch.register(call);
 
         }
     }
 //Analyze changes in file. he is the observer. if the relevant to file, updates the backup file
-    private class fileMonitor<ID,D>{
-        private Callback<D> callback;
-        //private FileCrud<ID,D> crudFile;
+    private class FileMonitor<ID,D>{
+        private Callback<String> callback;
+        private fileCrud<ID,D> crudFile;
 
-        public fileMonitor(Path watchFile, Path backupFile){}
+        public FileMonitor(Path watchFile, Path backupFile){}
 
-        public void register(folderMonitor<D> folderM){
+        public void register(FolderMonitor folderM){
             folderM.register(callback);
         }
 
@@ -69,7 +94,7 @@ public class FileTracker {
         }
         @Override
         public Long create(String data) throws IOException {
-                Long line = null;
+                Long line;
                 FileWriter writing = new FileWriter(file.toFile(),true);
 
                 try (BufferedWriter writer = new BufferedWriter(writing)) {
@@ -77,9 +102,7 @@ public class FileTracker {
                     writer.newLine();
                 }
 
-                line = Files.lines(file).count();
-
-                return line;
+                return Files.lines(file).count();
         }
         public long numberOfLines() throws IOException {
             return Files.lines(file).count();
