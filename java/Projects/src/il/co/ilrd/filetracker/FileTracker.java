@@ -42,15 +42,13 @@ public class FileTracker {
        this.backup = backup;*/
         Path realPath = Paths.get(path);
         Path backupPath = Paths.get(backup);
-        folderM = new FolderMonitor(realPath);
+        folderM = new FolderMonitor(realPath.getParent());
         FileMonitor fileM = new FileMonitor(realPath,backupPath);
         fileM.register(folderM);
         Files.copy(realPath,backupPath);
         }
 
-        //create file Monitor
-        //register fileMonitor to folderMonitor
-        //create the backup file. duplicate of the initial file
+
 
     private class FolderMonitor  {
        //watches folder and updates its subjects about the change n folder. subjects are files.
@@ -67,12 +65,12 @@ public class FileTracker {
             while ((watchkey = watcher.take()) != null && (starter.get())) {
 
                 for (WatchEvent<?> event : watchkey.pollEvents()) {
-                        if(event.kind().name().equals(StandardWatchEventKinds.ENTRY_MODIFY))
-                            dispatch.notifyAll((String) event.context());
-                    /*System.out.println("Event that happened: " + event.kind());
+                        if(event.kind().name().equals(StandardWatchEventKinds.ENTRY_MODIFY.name()))
+                            dispatch.notifyAll(event.context().toString());
+                    System.out.println("Event that happened: " + event.kind());
 
                     System.out.println("File affected: " + event.context());
-                    System.out.println();*/
+                    System.out.println();
                 }
                 // must reset the watchkey in order for it to be able to use another take().
                 watchkey.reset();
@@ -91,7 +89,7 @@ public class FileTracker {
         Path origin;
 
         public FileMonitor(Path watchFile, Path backupFile){
-            Consumer<String> checkFile = (context) -> {
+            Consumer<String> checkFile = (context) -> { System.out.println("here");
                 try {
                     analyzeFile(context);
                 } catch (IOException e) {
@@ -106,21 +104,22 @@ public class FileTracker {
         }
 
         public void analyzeFile(String context) throws IOException {
+            System.out.println(context.equals(origin.getFileName().toString()));
             if (context.equals(origin.getFileName().toString())){
                 filesCompareByLine(origin, crudFile.file);
             }
 
         }
-    public  void filesCompareByLine(Path watchFile, Path backupFile) throws IOException {
+    public void filesCompareByLine(Path watchFile, Path backupFile) throws IOException {
         List<String> originF = Files.readAllLines(watchFile);
         List<String> backUpp = Files.readAllLines(backupFile);
         int where = originF.size() - backUpp.size();
-
+        System.out.println(where);
         if (where > 0) {
-            crudFile.create(originF.get(originF.size() - 1));
+            crudFile.create(originF.get(originF.size()-1));
         } else {
             int lineNum = 0;
-            for (lineNum = 0; lineNum < backUpp.size() && (originF.get(lineNum).equals(backUpp.get(lineNum))); ++lineNum) {
+            for (lineNum = 0; lineNum < originF.size() && (originF.get(lineNum).equals(backUpp.get(lineNum))); ++lineNum) {
             }
             if (where < 0) {
                 crudFile.delete((long) lineNum);
@@ -143,15 +142,15 @@ public class FileTracker {
         }
         @Override
         public Long create(String data) throws IOException {
-                Long line;
-                FileWriter writing = new FileWriter(file.toFile(),true);
 
-                try (BufferedWriter writer = new BufferedWriter(writing)) {
-                    writer.write(data);
-                    writer.newLine();
-                }
+            FileWriter writing = new FileWriter(file.toFile(),true);
 
-                return Files.lines(file).count();
+            try (BufferedWriter writer = new BufferedWriter(writing)) {
+                writer.write(data);
+                writer.newLine();
+            }
+
+            return Files.lines(file).count();
         }
         public long numberOfLines() throws IOException {
             return Files.lines(file).count();
