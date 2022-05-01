@@ -12,34 +12,30 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 public class FileTracker {
-  /*  private String path;
-    private String backup;*/
-    private FolderMonitor folderM;
-    private AtomicBoolean starter = new AtomicBoolean();
+
+    private final FolderMonitor folderM;
+    private final AtomicBoolean starter = new AtomicBoolean();
     public void startMonitor(){
-        Thread runProtection = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                starter.set(true);
-                try {
-                    folderM.run();
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
+        Thread runProtection = new Thread(() -> {
+            starter.set(true);
+            try {
+                folderM.run();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
         });
         runProtection.start();
 
     }
 
-    public void endMonitor() throws IOException {
+    public void endMonitor() {
+
+        folderM.dispatch.stopNotification();
         starter.set(false);
-        folderM.watcher.close();
     }
 
     public FileTracker(String path, String backup) throws IOException {
-       /*this.path = path;
-       this.backup = backup;*/
+
         Path realPath = Paths.get(path);
         Path backupPath = Paths.get(backup);
         folderM = new FolderMonitor(realPath.getParent());
@@ -62,7 +58,7 @@ public class FileTracker {
         }
         public void run() throws InterruptedException {
             WatchKey watchkey;
-            while ((watchkey = watcher.take()) != null && (starter.get())) {
+            while ((starter.get()) && (watchkey = watcher.take()) != null ) {
 
                 for (WatchEvent<?> event : watchkey.pollEvents()) {
                         if(event.kind().name().equals(StandardWatchEventKinds.ENTRY_MODIFY.name()))
@@ -72,7 +68,7 @@ public class FileTracker {
                     System.out.println("File affected: " + event.context());
                     System.out.println();
                 }
-                // must reset the watchkey in order for it to be able to use another take().
+
                 watchkey.reset();
             }
         }
@@ -84,8 +80,8 @@ public class FileTracker {
     }
 //Analyze changes in file. he is the observer. if the relevant to file, updates the backup file
     private class FileMonitor{
-        private Callback<String> callback;
-        private fileCrud crudFile;
+        private final Callback<String> callback;
+        private final fileCrud crudFile;
         Path origin;
 
         public FileMonitor(Path watchFile, Path backupFile){
@@ -118,7 +114,7 @@ public class FileTracker {
         if (where > 0) {
             crudFile.create(originF.get(originF.size()-1));
         } else {
-            int lineNum = 0;
+            int lineNum;
             for (lineNum = 0; lineNum < originF.size() && (originF.get(lineNum).equals(backUpp.get(lineNum))); ++lineNum) {
             }
             if (where < 0) {
@@ -135,7 +131,7 @@ public class FileTracker {
 
 
     private class fileCrud implements CRUD<Long,String> {
-          private Path file;
+          private final Path file;
 
         public fileCrud(Path path){
             file = path;
@@ -148,13 +144,14 @@ public class FileTracker {
             try (BufferedWriter writer = new BufferedWriter(writing)) {
                 writer.write(data);
                 writer.newLine();
+
             }
 
             return Files.lines(file).count();
         }
-        public long numberOfLines() throws IOException {
+      /*  public long numberOfLines() throws IOException {
             return Files.lines(file).count();
-        }
+        }*/
 
         @Override
         public String read(Long line) throws IOException {

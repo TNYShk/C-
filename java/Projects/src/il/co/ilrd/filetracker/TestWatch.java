@@ -9,7 +9,8 @@ public class TestWatch {
         String backFile = "/Users/tanyashkolnik/Documents/Education/Infinity/backup.txt";
         FileTracker test = new FileTracker(filePath, backFile);
         test.startMonitor();
-        Thread.sleep(10000);
+        Thread.sleep(20000);
+        test.endMonitor();
     }
 }
 /*
