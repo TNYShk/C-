@@ -1,22 +1,15 @@
 package il.co.ilrd.filetracker;
 
 import java.io.IOException;
-import java.nio.file.*;
 
 public class TestWatch {
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        FileCrudIMP test = new FileCrudIMP("/home/tanya/Documents/bla.txt");
-       /* test.create("Halloo");
-        test.create("whats going on?");
-        test.create("Shohana");*/
-        test.create("whats going on?");
-        System.out.println(test.numberOfLines());
-        System.out.println(test.read((long)1));
-        System.out.println(test.read((long)0));
-        test.update((long)0,"Zero");
-        System.out.println(test.read((long)0));
-        test.delete((long)3);
+        String filePath = "/Users/tanyashkolnik/Documents/Education/Infinity/shoshana.txt";
+        String backFile = "/Users/tanyashkolnik/Documents/Education/Infinity/backup.txt";
+        FileTracker test = new FileTracker(filePath, backFile);
+        test.startMonitor();
+        Thread.sleep(10000);
     }
 }
 /*
