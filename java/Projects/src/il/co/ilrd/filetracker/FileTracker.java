@@ -1,5 +1,9 @@
 package il.co.ilrd.filetracker;
-
+/*
+ * FileTracker WS by Tanya Shk
+ * May 01,2022,
+ * reviewed by Adrian A.A.concurrency
+ */
 import il.co.ilrd.observer.Callback;
 import il.co.ilrd.observer.Dispatcher;
 
@@ -29,7 +33,6 @@ public class FileTracker {
     }
 
     public void endMonitor() {
-
         folderM.dispatch.stopNotification();
         starter.set(false);
     }
@@ -47,7 +50,7 @@ public class FileTracker {
 
 
     private class FolderMonitor  {
-       //watches folder and updates its subjects about the change n folder. subjects are files.
+
        private final WatchService watcher;
         private final Dispatcher<String> dispatch;
         public FolderMonitor(Path folder) throws IOException {
@@ -63,22 +66,20 @@ public class FileTracker {
                 for (WatchEvent<?> event : watchkey.pollEvents()) {
                         if(event.kind().name().equals(StandardWatchEventKinds.ENTRY_MODIFY.name()))
                             dispatch.notifyAll(event.context().toString());
-                    System.out.println("Event that happened: " + event.kind());
+                    System.out.println("Event happened: " + event.kind());
 
                     System.out.println("File affected: " + event.context());
                     System.out.println();
                 }
-
                 watchkey.reset();
             }
         }
 
         public void register(Callback<String> call){
             dispatch.register(call);
-
         }
     }
-//Analyze changes in file. he is the observer. if the relevant to file, updates the backup file
+
     private class FileMonitor{
         private final Callback<String> callback;
         private final fileCrud crudFile;
@@ -96,28 +97,26 @@ public class FileTracker {
             origin = watchFile;
             crudFile = new fileCrud(backupFile);
             callback = new Callback<>(checkFile, stopMonitor);
-
         }
 
         public void analyzeFile(String context) throws IOException {
             System.out.println(context.equals(origin.getFileName().toString()));
             if (context.equals(origin.getFileName().toString())){
-                filesCompareByLine(origin, crudFile.file);
+                filesCompareByLine(origin, crudFile.backUPfile);
             }
 
         }
     public void filesCompareByLine(Path watchFile, Path backupFile) throws IOException {
         List<String> originF = Files.readAllLines(watchFile);
         List<String> backUpp = Files.readAllLines(backupFile);
-        int where = originF.size() - backUpp.size();
-        System.out.println(where);
-        if (where > 0) {
+        int whatToDo = originF.size() - backUpp.size();
+        System.out.println(whatToDo);
+        if (whatToDo > 0) {
             crudFile.create(originF.get(originF.size()-1));
         } else {
             int lineNum;
-            for (lineNum = 0; lineNum < originF.size() && (originF.get(lineNum).equals(backUpp.get(lineNum))); ++lineNum) {
-            }
-            if (where < 0) {
+            for (lineNum = 0; lineNum < originF.size() && (originF.get(lineNum).equals(backUpp.get(lineNum))); ++lineNum) {}
+            if (whatToDo < 0) {
                 crudFile.delete((long) lineNum);
             } else {
                 crudFile.update((long) lineNum, originF.get(lineNum));
@@ -131,15 +130,15 @@ public class FileTracker {
 
 
     private class fileCrud implements CRUD<Long,String> {
-          private final Path file;
+          private final Path backUPfile;
 
         public fileCrud(Path path){
-            file = path;
+            backUPfile = path;
         }
         @Override
         public Long create(String data) throws IOException {
 
-            FileWriter writing = new FileWriter(file.toFile(),true);
+            FileWriter writing = new FileWriter(backUPfile.toFile(),true);
 
             try (BufferedWriter writer = new BufferedWriter(writing)) {
                 writer.write(data);
@@ -147,29 +146,29 @@ public class FileTracker {
 
             }
 
-            return Files.lines(file).count();
+            return Files.lines(backUPfile).count();
         }
       /*  public long numberOfLines() throws IOException {
-            return Files.lines(file).count();
+            return Files.lines(backUPfile).count();
         }*/
 
         @Override
         public String read(Long line) throws IOException {
-            return  Files.readAllLines(file).get(line.intValue());
+            return  Files.readAllLines(backUPfile).get(line.intValue());
         }
 
         @Override
         public void update(Long line, String data) throws IOException {
-            List<String> lines = Files.readAllLines(file);
+            List<String> lines = Files.readAllLines(backUPfile);
             lines.set(line.intValue(), data);
-            Files.write(file, lines);
+            Files.write(backUPfile, lines);
         }
 
         @Override
         public void delete(Long line) throws IOException {
-            List<String> lines = Files.readAllLines(file);
+            List<String> lines = Files.readAllLines(backUPfile);
             lines.remove(line.intValue());
-            Files.write(file, lines);
+            Files.write(backUPfile, lines);
         }
     }
     }
