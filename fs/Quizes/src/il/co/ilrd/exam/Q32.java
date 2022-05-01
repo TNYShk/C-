@@ -1,5 +1,6 @@
 package il.co.ilrd.exam;
 
+/*
 public class Q32 {
     class B{
          enum DayOfWeek{
@@ -12,3 +13,4 @@ public class Q32 {
         }
     }
 }
+*/

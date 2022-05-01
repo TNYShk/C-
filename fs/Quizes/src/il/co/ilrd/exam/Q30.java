@@ -1,5 +1,6 @@
 package il.co.ilrd.exam;
 
+
 public class Q30<T> {
     T t1;
     static T t = new T();
@@ -10,13 +11,14 @@ public class Q30<T> {
         }
     }
     static class H<J>{
-        T t;
+      //  T t;
+
         static J j;
         private void foo(T t){
             System.out.println(t);
         }
         public static void foo2(J j){
-           // T t;
+            T t;
             this.t = new T();
             System.out.println(j);
         }
@@ -28,3 +30,4 @@ public class Q30<T> {
         }
     }
 }
+
