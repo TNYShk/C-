@@ -1,14 +1,13 @@
 package il.co.ilrd.threadpool;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.testng.AssertJUnit.assertFalse;
-import static org.testng.AssertJUnit.assertTrue;
-
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.*;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class PoolTest {
 
@@ -86,7 +85,7 @@ public class PoolTest {
         try {
             Thread.sleep(5000);
             tp.submit(shutter, ThreadPool.Priority.HIGH);
-        }catch (InterruptedException e){
+        }catch (RejectedExecutionException e){
             e.printStackTrace();
         }
 
@@ -219,6 +218,29 @@ public class PoolTest {
     void decreaseNumberOfThreadsTest() throws InterruptedException {
         ThreadPool tp = new ThreadPool(10);
         assertTrue(tp.deadpool.size() == 10);
+
+        for (int i = 0; i < 20; ++i) {
+            tp.submit(() -> {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {}
+                System.out.println(Thread.currentThread().getName());
+            }, ThreadPool.Priority.LOW);
+        }
+
+        tp.setNumberOfThreads(2);
+        Thread.sleep(3000);
+
+        tp.shutdown();
+        tp.awaitTermination();
+        assertTrue(tp.deadpool.size() == 0);
+        assertTrue(tp.wpq.isEmpty());
+    }
+    @Test
+    void decreaseEmptyCtorTest() throws InterruptedException {
+        ThreadPool tp = new ThreadPool();
+        assertTrue(tp.deadpool.size() == 16);
+
 
         for (int i = 0; i < 20; ++i) {
             tp.submit(() -> {

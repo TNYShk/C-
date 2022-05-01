@@ -4,7 +4,9 @@ package il.co.ilrd.threadpool;
  * April 24,2022,
  * reviewed by Adrian A.A.concurrency
  */
+
 import il.co.ilrd.waitablepriorityqueue.WaitablePriorityQueueSem;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.*;
@@ -21,6 +23,10 @@ public class ThreadPool implements Executor {
     private static final int LOW_LOW_LOW = -5;
     private final Semaphore stopLightSem;
 
+
+   public ThreadPool(){
+        this(Runtime.getRuntime().availableProcessors() * 2);
+   }
     public ThreadPool(int numberOfThreads) {
         if (numberOfThreads <= 0)
            throw new IllegalArgumentException();
@@ -60,7 +66,7 @@ public class ThreadPool implements Executor {
     }
     public <T> Future<T> submit(Callable<T> task, Priority priority) throws InterruptedException {
         if(isShut)
-           throw new InterruptedException();
+           throw new RejectedExecutionException();
 
         Task<T> createTask = new Task<>(task,priority.ordinal());
         wpq.enqueue(createTask);
@@ -72,7 +78,7 @@ public class ThreadPool implements Executor {
         try {
             this.submit(run, Priority.MED);
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            throw new RejectedExecutionException(e);
         }
     }
 
@@ -127,7 +133,6 @@ public class ThreadPool implements Executor {
     }
 
     private class Task<T> implements Comparable<Task<?>> {
-
         private final Integer realPriority;
         private final TaskFuture futureHolder;
         private final Callable<T> gullible;
@@ -135,14 +140,17 @@ public class ThreadPool implements Executor {
         private final AtomicBoolean isTaskDone = new AtomicBoolean(false);
 
         public Task(Callable<T> gullible, Integer realPriority){
-
             this.realPriority = realPriority;
             this.gullible = gullible;
             futureHolder = new TaskFuture(this);
         }
 
-        void execute() throws Exception {
-           result = gullible.call();
+        void execute() {
+           try {
+               result = gullible.call();
+           }catch(Exception e){
+                e.printStackTrace();
+           }
            isTaskDone.set(true);
            futureHolder.futureLock.lock();
            futureHolder.blockResult.signal();
@@ -165,7 +173,7 @@ public class ThreadPool implements Executor {
 
             @Override
             public boolean cancel(boolean b) {
-                 boolean trial = false;
+                 boolean trial;
                 if(isCancelled()) {
                     return false;
                 }
@@ -222,11 +230,7 @@ public class ThreadPool implements Executor {
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
-                try {
-                    toPerform.execute();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
+                toPerform.execute();
             }
         }
     }
