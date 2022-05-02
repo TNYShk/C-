@@ -18,24 +18,7 @@ import java.util.function.Consumer;
 public class FileTracker {
 
     private final FolderMonitor folderM;
-    private final AtomicBoolean starter = new AtomicBoolean();
-    public void startMonitor(){
-        Thread runProtection = new Thread(() -> {
-            starter.set(true);
-            try {
-                folderM.run();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        });
-        runProtection.start();
-
-    }
-
-    public void endMonitor() {
-        folderM.dispatch.stopNotification();
-        starter.set(false);
-    }
+    private final AtomicBoolean isMonitoring = new AtomicBoolean();
 
     public FileTracker(String path, String backup) throws IOException {
 
@@ -45,8 +28,25 @@ public class FileTracker {
         FileMonitor fileM = new FileMonitor(realPath,backupPath);
         fileM.register(folderM);
         Files.copy(realPath,backupPath);
-        }
+    }
 
+    public void startMonitor(){
+        Thread runProtection = new Thread(() -> {
+            isMonitoring.set(true);
+            try {
+                folderM.run();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        runProtection.start();
+    }
+
+    public void endMonitor() {
+        folderM.dispatch.stopNotification();
+
+       // isMonitoring.set(false);
+    }
 
 
     private class FolderMonitor  {
@@ -61,7 +61,7 @@ public class FileTracker {
         }
         public void run() throws InterruptedException {
             WatchKey watchkey;
-            while ((starter.get()) && (watchkey = watcher.take()) != null ) {
+            while ((isMonitoring.get()) && (watchkey = watcher.take()) != null ) {
 
                 for (WatchEvent<?> event : watchkey.pollEvents()) {
                         if(event.kind().name().equals(StandardWatchEventKinds.ENTRY_MODIFY.name()))
@@ -86,31 +86,30 @@ public class FileTracker {
         Path origin;
 
         public FileMonitor(Path watchFile, Path backupFile){
-            Consumer<String> checkFile = (context) -> { System.out.println("here");
+            Consumer<String> checkFile = (context) -> {
                 try {
                     analyzeFile(context);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
             };
-            Runnable stopMonitor = () -> starter.set(false);
+            Runnable stopMonitor = () -> isMonitoring.set(false);
             origin = watchFile;
             crudFile = new fileCrud(backupFile);
             callback = new Callback<>(checkFile, stopMonitor);
         }
 
         public void analyzeFile(String context) throws IOException {
-            System.out.println(context.equals(origin.getFileName().toString()));
+            //System.out.println(context.equals(origin.getFileName().toString()));
             if (context.equals(origin.getFileName().toString())){
                 filesCompareByLine(origin, crudFile.backUPfile);
             }
-
         }
     public void filesCompareByLine(Path watchFile, Path backupFile) throws IOException {
         List<String> originF = Files.readAllLines(watchFile);
         List<String> backUpp = Files.readAllLines(backupFile);
         int whatToDo = originF.size() - backUpp.size();
-        System.out.println(whatToDo);
+        //System.out.println(whatToDo);
         if (whatToDo > 0) {
             crudFile.create(originF.get(originF.size()-1));
         } else {
@@ -129,8 +128,8 @@ public class FileTracker {
         }
 
 
-    private class fileCrud implements CRUD<Long,String> {
-          private final Path backUPfile;
+    protected class fileCrud implements CRUD<Long,String> {
+        private final Path backUPfile;
 
         public fileCrud(Path path){
             backUPfile = path;
@@ -154,7 +153,7 @@ public class FileTracker {
 
         @Override
         public String read(Long line) throws IOException {
-            return  Files.readAllLines(backUPfile).get(line.intValue());
+            return  Files.readAllLines(backUPfile).get(line.intValue()-1);
         }
 
         @Override
