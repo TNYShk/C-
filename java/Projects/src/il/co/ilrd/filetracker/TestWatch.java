@@ -11,7 +11,8 @@ import static org.junit.Assert.assertEquals;
 
 public class TestWatch {
 
-    public static void main(String[] args)  {
+    public static void main(String[] args) {
+
 
     }
 
@@ -21,7 +22,7 @@ public class TestWatch {
         String backFile = "/Users/tanyashkolnik/Documents/Education/Infinity/backup.txt";
         FileTracker test = new FileTracker(filePath, backFile);
         test.startMonitor();
-        Thread.sleep(30000);
+        Thread.sleep(40000);
         test.endMonitor();
         Files.delete(Paths.get(backFile));
     }

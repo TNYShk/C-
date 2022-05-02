@@ -30,12 +30,12 @@ public class FileTracker {
         Files.copy(realPath,backupPath);
     }
 
-    public void startMonitor(){
+    public void startMonitor() {
         Thread runProtection = new Thread(() -> {
             isMonitoring.set(true);
             try {
                 folderM.run();
-            } catch (InterruptedException e) {
+            } catch (InterruptedException | IOException e) {
                 throw new RuntimeException(e);
             }
         });
@@ -43,9 +43,8 @@ public class FileTracker {
     }
 
     public void endMonitor() {
-        folderM.dispatch.stopNotification();
-
-       // isMonitoring.set(false);
+        //folderM.dispatch.stopNotification();
+        isMonitoring.set(false);
     }
 
 
@@ -59,7 +58,7 @@ public class FileTracker {
           folder.register(watcher, StandardWatchEventKinds.ENTRY_CREATE,
                     StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_MODIFY);
         }
-        public void run() throws InterruptedException {
+        public void run() throws InterruptedException, IOException {
             WatchKey watchkey;
             while ((isMonitoring.get()) && (watchkey = watcher.take()) != null ) {
 
@@ -73,6 +72,8 @@ public class FileTracker {
                 }
                 watchkey.reset();
             }
+            if(!isMonitoring.get())
+                watcher.close();
         }
 
         public void register(Callback<String> call){
@@ -93,10 +94,10 @@ public class FileTracker {
                     throw new RuntimeException(e);
                 }
             };
-            Runnable stopMonitor = () -> isMonitoring.set(false);
+           // Runnable stopMonitor = () -> isMonitoring.set(false);
             origin = watchFile;
             crudFile = new fileCrud(backupFile);
-            callback = new Callback<>(checkFile, stopMonitor);
+            callback = new Callback<>(checkFile, null);
         }
 
         public void analyzeFile(String context) throws IOException {
