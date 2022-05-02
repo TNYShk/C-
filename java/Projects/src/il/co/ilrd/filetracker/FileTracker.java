@@ -100,7 +100,6 @@ public class FileTracker {
         }
 
         public void analyzeFile(String context) throws IOException {
-            //System.out.println(context.equals(origin.getFileName().toString()));
             if (context.equals(origin.getFileName().toString())){
                 filesCompareByLine(origin, crudFile.backUPfile);
             }

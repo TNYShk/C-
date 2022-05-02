@@ -37,18 +37,19 @@ public class TestWatch {
         String filePath = "/Users/tanyashkolnik/Documents/Education/Infinity/shoshana.txt";
         String backFile = "/Users/tanyashkolnik/Documents/Education/Infinity/backup.txt";
         FileTracker monitor = new FileTracker(filePath, backFile);
+        File bb = new File(backFile);
+
+        bb.createNewFile();
+
+
         monitor.startMonitor();
 
 
         filing.create("let the games begin!");
         filing.delete(1L);
-        //Thread.sleep(30000);
-        File bb = new File(backFile);
-        File origin = new File(filePath);
-        bb.createNewFile();
-        origin.createNewFile();
-        Thread.sleep(30000);
-        //assertEquals(bb.compareTo(origin),0);
+        filing.update(1L,"update is here");
+
+        Thread.sleep(20000);
 
         monitor.endMonitor();
 
