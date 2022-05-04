@@ -4,6 +4,7 @@ package il.co.ilrd.filetracker;
  * May 01,2022,
  * reviewed by Adrian A.A.concurrency
  */
+
 import il.co.ilrd.observer.Callback;
 import il.co.ilrd.observer.Dispatcher;
 
@@ -43,8 +44,8 @@ public class FileTracker {
     }
 
     public void endMonitor() {
-        //folderM.dispatch.stopNotification();
-        isMonitoring.set(false);
+       folderM.dispatch.stopNotification();
+
     }
 
 
@@ -72,8 +73,7 @@ public class FileTracker {
                 }
                 watchkey.reset();
             }
-            if(!isMonitoring.get())
-                watcher.close();
+
         }
 
         public void register(Callback<String> call){
@@ -94,10 +94,10 @@ public class FileTracker {
                     throw new RuntimeException(e);
                 }
             };
-           // Runnable stopMonitor = () -> isMonitoring.set(false);
+          Runnable stopMonitor = () -> isMonitoring.set(false);
             origin = watchFile;
             crudFile = new fileCrud(backupFile);
-            callback = new Callback<>(checkFile, null);
+            callback = new Callback<>(checkFile, stopMonitor);
         }
 
         public void analyzeFile(String context) throws IOException {
@@ -109,7 +109,6 @@ public class FileTracker {
         List<String> originF = Files.readAllLines(watchFile);
         List<String> backUpp = Files.readAllLines(backupFile);
         int whatToDo = originF.size() - backUpp.size();
-        //System.out.println(whatToDo);
         if (whatToDo > 0) {
             crudFile.create(originF.get(originF.size()-1));
         } else {

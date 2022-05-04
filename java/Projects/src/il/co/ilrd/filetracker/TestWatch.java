@@ -31,6 +31,7 @@ public class TestWatch {
     void anotherTest() throws IOException, InterruptedException {
 
         FileCrudIMP filing = new FileCrudIMP("/Users/tanyashkolnik/Documents/Education/Infinity/shoshana.txt");
+        FileCrudIMP fling = new FileCrudIMP("/Users/tanyashkolnik/Documents/Education/Infinity/backup.txt");
         filing.create("adding data!");
         long checkLine = filing.create("give me more data!");
         assertEquals(checkLine,filing.numberOfLines());
@@ -42,17 +43,18 @@ public class TestWatch {
 
         bb.createNewFile();
 
-
         monitor.startMonitor();
 
-
         filing.create("let the games begin!");
-        filing.delete(1L);
+        Thread.sleep(9000);
         filing.update(1L,"update is here");
+        Thread.sleep(9000);
+        filing.delete(1L);
 
         Thread.sleep(20000);
-
+        assertEquals(filing.numberOfLines(),fling.numberOfLines());
         monitor.endMonitor();
+        Files.delete(Paths.get(backFile));
 
 
 
