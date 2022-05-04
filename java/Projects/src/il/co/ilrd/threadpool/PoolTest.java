@@ -261,6 +261,31 @@ public class PoolTest {
     }
 
     @Test
+    void IllegualTest() throws InterruptedException {
+        ThreadPool tp = new ThreadPool();
+        assertTrue(tp.deadpool.size() == 16);
+
+        for (int i = 0; i < 20; ++i) {
+            tp.submit(() -> {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {}
+                System.out.println(Thread.currentThread().getName());
+            }, ThreadPool.Priority.LOW);
+        }
+        try {
+            tp.setNumberOfThreads(-9);
+        }catch(Exception e){
+            System.err.println(e);
+        }
+
+        tp.shutdown();
+        tp.awaitTermination();
+        assertTrue(tp.deadpool.size() == 0);
+        assertTrue(tp.wpq.isEmpty());
+    }
+
+    @Test
     void awaitTerminationTime() throws InterruptedException {
         ThreadPool tp = new ThreadPool(3);
         for (int i = 0; i < 15; ++i) {

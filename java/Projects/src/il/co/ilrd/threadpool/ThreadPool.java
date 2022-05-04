@@ -23,7 +23,6 @@ public class ThreadPool implements Executor {
     private static final int LOW_LOW_LOW = -5;
     private final Semaphore stopLightSem;
 
-
    public ThreadPool(){
         this(Runtime.getRuntime().availableProcessors() * 2);
    }
@@ -82,7 +81,10 @@ public class ThreadPool implements Executor {
         }
     }
 
-    public void setNumberOfThreads(int updateNumberOfThreads) throws InterruptedException {
+    public void setNumberOfThreads(int updateNumberOfThreads) {
+        if(updateNumberOfThreads < 0)
+            throw new IllegalArgumentException();
+
         int remainder = updateNumberOfThreads - numOfThreadz;
         if (remainder >= 0) {
             while (0 <= --remainder) {
@@ -92,7 +94,11 @@ public class ThreadPool implements Executor {
             }
         } else {
             while (0 > remainder++) {
-                wpq.enqueue(new Task<>(shutItDown, HIGH_AS_KITE));
+                try {
+                    wpq.enqueue(new Task<>(shutItDown, HIGH_AS_KITE));
+                }catch(InterruptedException e){
+                    System.err.println(e);
+                }
             }
         }
         numOfThreadz = updateNumberOfThreads;
@@ -119,12 +125,10 @@ public class ThreadPool implements Executor {
             wpq.enqueue(new Task<>(shutItDown,LOW_LOW_LOW));
         }
     }
-
     public void awaitTermination() throws InterruptedException {
         this.awaitTermination(Long.MAX_VALUE,TimeUnit.DAYS);
     }
-
-
+    
     public void awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
         for (ThreadAction t : deadpool) {
             t.join(TimeUnit.MILLISECONDS.convert(timeout, unit)/numOfThreadz);
@@ -138,7 +142,6 @@ public class ThreadPool implements Executor {
         private final Callable<T> gullible;
         private T result;
         private final AtomicBoolean isTaskDone = new AtomicBoolean(false);
-
         public Task(Callable<T> gullible, Integer realPriority){
             this.realPriority = realPriority;
             this.gullible = gullible;
