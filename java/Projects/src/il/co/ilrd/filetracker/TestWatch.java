@@ -53,6 +53,7 @@ public class TestWatch {
 
         Thread.sleep(20000);
         assertEquals(filing.numberOfLines(),fling.numberOfLines());
+        assertEquals(filing.read(4L),fling.read(4L));
         monitor.endMonitor();
         Files.delete(Paths.get(backFile));
 
