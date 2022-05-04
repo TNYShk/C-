@@ -320,4 +320,11 @@ public class PoolTest {
         System.out.println("this line should be printed after 7 seconds");
         System.out.println(java.time.LocalTime.now());
     }
+
+    @Test
+    void arrayTest(){
+        int[][] test = {{1,2,3},{4,5,6},{7,8,9}};
+        int s = test.length;
+        System.out.println(s);
+    }
 }

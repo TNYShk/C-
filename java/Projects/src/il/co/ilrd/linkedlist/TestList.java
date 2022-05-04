@@ -2,9 +2,6 @@ package il.co.ilrd.linkedlist;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -16,7 +13,7 @@ public class TestList {
         JunitTest tanya = new JunitTest();
 
 
-        tanya.testEmptyNullSLL();
+
 
         testUno();
         testDos();
@@ -99,7 +96,6 @@ public class TestList {
         System.out.println(testTwo);
         ListIterator getBegin = testTwo.begin();
         System.out.println("list begins with: " + getBegin.next());
-
         testTwo.popFront();
         testTwo.popFront();
         System.out.println("size is " + testTwo.listSize());
@@ -109,7 +105,7 @@ public class TestList {
  class JunitTest{
         private SinglyLinkedList myList = new SinglyLinkedList();
 
-
+        private
         @Test
         void testEmptyNullSLL(){
             assertEquals(true,myList.isEmpty());
@@ -117,6 +113,15 @@ public class TestList {
 
             System.out.println("equals and assert null done!\n");
 
+        }
+
+        @Test
+     void flipTest(){
+            myList.pushFront(1L);
+            myList.pushFront(2L);
+            myList.pushFront(3L);
+            myList.pushFront(4L);
+            myList.pushFront(5L);
         }
     }
 
