@@ -1,29 +1,24 @@
 package il.co.ilrd.concurrency;
 
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class ZeroEvenOdd {
     private final int n;
-    AtomicInteger nInt;
-    Semaphore semZero;
-    Semaphore semOdd;
-    Semaphore semEven;
+    static volatile int inti = 0;
+    private final Semaphore semZero = new Semaphore(1);
+    private final Semaphore semEven = new Semaphore(0);
+    private final Semaphore semOdd = new Semaphore(0);
     static volatile boolean isEven = false;
 
     public ZeroEvenOdd(int n) {
         this.n = n;
-        semZero = new Semaphore(1);
-        semEven = new Semaphore(0);
-        semOdd = new Semaphore(0);
-        nInt = new AtomicInteger(0);
     }
 
     public void zero() throws InterruptedException {
-        while(nInt.get() < n){
+        for(int i =0; i< n; ++i){
             semZero.acquire();
             System.out.print("0");
-            nInt.getAndAdd(1);
+           ++inti;
 
             if(isEven){
                 semEven.release();
@@ -38,26 +33,26 @@ public class ZeroEvenOdd {
     }
 
     public void even() throws InterruptedException {
-        while(nInt.get() < n){
+        for(int i =2; i<= n; i+=2){
             semEven.acquire();
-            System.out.print(nInt.get());
+            System.out.print(inti);
             semZero.release();
         }
-        //throw new InterruptedException("even enough");
+
     }
 
     public void odd() throws InterruptedException {
-        while(nInt.get() < n){
+        for(int i =1; i<= n; i+=2) {
             semOdd.acquire();
-            System.out.print(nInt.get());
+            System.out.print(inti);
             semZero.release();
         }
-        //throw new InterruptedException("odd enough");
+
     }
 
     public static void main(String[] args) throws InterruptedException {
 
-        ZeroEvenOdd test = new ZeroEvenOdd(7);
+        ZeroEvenOdd test = new ZeroEvenOdd(5);
         Thread[] threads = new Thread[3];
 
         threads[0] = new Thread(() -> {
@@ -87,7 +82,7 @@ public class ZeroEvenOdd {
 
         for(int i = 0; i<3; ++i) {
             threads[i].start();
-            threads[i].join(10);
+            //threads[i].join(10);
         }
     }
 
