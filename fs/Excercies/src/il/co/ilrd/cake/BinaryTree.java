@@ -41,7 +41,6 @@ public class BinaryTree {
             right = null;
         }
     }
-
     public static void main(String[] args){
         int[] arr = {4,5,6,7,8,9};
         int[] barr = {2,3,4,5,72};
@@ -53,8 +52,6 @@ public class BinaryTree {
         int nn = barr.length;
         head = test.makeBST(barr,0,nn-1);
         test.printTree(head);
-
-
 
     }
     /** LEETCODE
