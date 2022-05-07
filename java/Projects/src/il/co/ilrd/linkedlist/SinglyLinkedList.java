@@ -101,6 +101,7 @@ public class SinglyLinkedList {
         return headbanger;
     }
 
+
     @Override
     public String toString() {
         Node runner = this.head;
@@ -115,5 +116,29 @@ public class SinglyLinkedList {
         return list;
     }
 
+    public void reverseList(){
+        if(head != null)
+            head = flipList(null, head);
+    }
 
+    public Node flipList(Node parent, Node child){
+        Node run = child.next;
+        child.next = parent;
+        return (run == null)? child:flipList(child,run);
+    }
+
+    public void FlipIt(){
+
+        Node prev = null;
+        Node current = head;
+        Node next ;
+        while (current != null) {
+            next = current.next;
+            current.next = prev;
+            prev = current;
+            current = next;
+        }
+        head = prev;
+
+    }
 }

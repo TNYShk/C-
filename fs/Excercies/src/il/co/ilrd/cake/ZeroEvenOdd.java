@@ -1,4 +1,4 @@
-package il.co.ilrd.concurrency;
+package il.co.ilrd.cake;
 
 import java.util.concurrent.Semaphore;
 
@@ -18,7 +18,7 @@ public class ZeroEvenOdd {
         for(int i =0; i< n; ++i){
             semZero.acquire();
             System.out.print("0");
-           ++inti;
+            ++inti;
 
             if(isEven){
                 semEven.release();
@@ -28,9 +28,8 @@ public class ZeroEvenOdd {
                 semOdd.release();
                 isEven = true;
             }
-
         }
-    //throw new InterruptedException("zero enough");
+        //throw new InterruptedException("zero enough");
     }
 
     public void even() throws InterruptedException {
@@ -58,12 +57,12 @@ public class ZeroEvenOdd {
 
         threads[0] = new Thread(() -> {
 
-                try {
-                   test.zero();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            });
+            try {
+                test.zero();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
         threads[1] = new Thread(() -> {
             try {
                 test.odd();
@@ -87,31 +86,4 @@ public class ZeroEvenOdd {
         }
     }
 
-
-   /* @Override
-    public void run() {
-
-            if (Thread.currentThread().getName().equals("zero")) {
-                try {
-                    zero();
-
-                } catch (InterruptedException e) {
-                   System.err.println(e);
-                }
-            } else if (Thread.currentThread().getName().equals("hero")) {
-                try {
-                    even();
-
-                } catch (InterruptedException e) {
-                    System.err.println(e);
-                }
-            } else {
-                try {
-                    odd();
-                } catch (InterruptedException e) {
-                    System.err.println(e);
-                }
-            }
-
-    }*/
 }

@@ -122,6 +122,12 @@ public class TestList {
             myList.pushFront(3L);
             myList.pushFront(4L);
             myList.pushFront(5L);
+
+            System.out.println(myList.toString());
+            myList.reverseList();
+            System.out.println(myList.toString());
+            myList.FlipIt();
+            System.out.println(myList.toString());
         }
     }
 
