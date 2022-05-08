@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 public class Question2 {
 
-   // static int[] array = {1,5,8,11};
+
 
     public static int[] sumOfTwo(int[] arr, int target){
         Arrays.sort(arr);
@@ -28,7 +28,7 @@ public class Question2 {
 
     public static void main(String[] args){
         int[] array = {1,5,8,11};
-        int []result = sumOfTwo(array,6);
+        int []result = sumOfTwo(array,70);
         System.out.println(result[0] + " " + result[1]);
     }
 }

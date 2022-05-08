@@ -13,31 +13,32 @@ public class Question1 {
         element = new V(0);
     }
     class V{
-        int version = 0;
+        int ver;
         int value;
 
         public V(int val){
-            this(0,val);
+            this(version,val);
         }
-        private V(int version,int val){
+        private V(int version, int val){
             value = val;
-            this.version = ++version;
+            ver = version;
+            ++ver;
         }
     }
 
     public void setVal(int idx, int val){
-        ++version;
+
         array[idx] = new V(val);
     }
 
     public int getVal(int idx){
-        if(element.version < array[idx].version)
+        if(version < array[idx].ver)
             return element.value;
         return array[idx].value;
     }
 
     public void setAll(int val){
-        element.version = ++version;
+        element.ver = ++version;
         element.value = val;
     }
 
