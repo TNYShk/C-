@@ -91,7 +91,11 @@ public class StackNode {
         Stack<Node> sorted = new Stack<>();
        while(!stacky.isEmpty()){
            Node peeky = stacky.pop();
-
+            String str = "234234";
+            String an = "";
+            an.
+           if (str.charAt(1) == '}')
+                an +=  (str.charAt(1));
            while(!sorted.isEmpty()  && ((int)peeky.data)> ((int)sorted.peek().data)){
                stacky.push(sorted.pop());
            }
