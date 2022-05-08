@@ -1,6 +1,6 @@
 package il.co.ilrd.dsexam;
 
-public class Question6 {
+public class Question8 {
 
 
     public static int multiply(int a, int b){
