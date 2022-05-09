@@ -1,21 +1,33 @@
 package il.co.ilrd.dsexam;
-import java.io.File;
+import java.io.*;
+import java.util.Arrays;
+import java.util.HashSet;
+
 public class Question10 {
 
-    static char[] charArray;
+    private static char[] charArray;
+    private static HashSet<String> dictionary = new HashSet<>();
 
-    public static  void printPermutation(String str){
-       /* byte[] fileBytes = null;
-        try(InputStream input = new FileInputStream("/Users/tanyashkolnik/Documents/Education/Infinity/words.txt")) {
-            fileBytes = input.readALlBytes();
+    public static boolean findInDictionary(String word) throws IOException {
+        try( BufferedReader rd = new BufferedReader( new FileReader ("/Users/tanyashkolnik/Documents/Education/Infinity/words.txt"))) {
+            String line;
+            int i = 0;
+            while ((line = rd.readLine()) != null) {
+                dictionary.add(line);
+                i++;
+            }
         }
-        Reader inputStreamReader = new InputStreamReader(inputStream);*/
+        return dictionary.contains(word);
+    }
+    public static void printPermutation(String str) throws IOException {
+            Permutations("", str);
+        }
 
-        Permutations("", str);
-}
-    private static void Permutations(String prefix, String str){
+
+
+    private static void Permutations(String prefix, String str) throws IOException {
         if(0 == str.length()){
-            if(checkDictionary(prefix))
+            if(findInDictionary(prefix))
                 System.out.print(prefix + " ");
             return;
         }
@@ -26,16 +38,15 @@ public class Question10 {
         }
     }
 
-    private static void printAllPermutation(String str) {
+    private static void printAllPermutation(String str) throws IOException {
         int start = 0;
         int end = str.length() - 1;
         charArray = str.toCharArray();
         printAllPermutationRec( start, end);
     }
 
-    private static void printAllPermutationRec( int start, int end) {
+    private static void printAllPermutationRec( int start, int end){
         if (start == end) {
-            if(checkDictionary(charArray))
                 System.out.println(charArray);
             return;
         }
@@ -55,20 +66,15 @@ public class Question10 {
     }
 
 
-    private static boolean checkDictionary(String prefix){
-        return prefix.length() == 5;
-    }
-    private static boolean checkDictionary(char[] prefix){
-        return prefix.length == 5;
-    }
 
-    public static void main(String[] args){
-        String str = "tasty";
+
+    public static void main(String[] args) throws IOException {
+        String str = "taste";
         printPermutation(str);
-        String str1 = "fault";
+        //String str1 = "fault";
 
-        printAllPermutation(str);
-        printAllPermutation(str1);
+        //printAllPermutation(str);
+        //printAllPermutation(str1);
 
     }
 }
