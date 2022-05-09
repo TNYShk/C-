@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 public class quizLRUCache<K,V> {
-    private int capacity;
+    private final int capacity;
     private static final int MIN_CAP = 16;
     private Deque<K> keyQ;
     private HashMap<K,V> hashMap;
@@ -30,9 +30,9 @@ public class quizLRUCache<K,V> {
         }
         else{
             keyQ.remove(key);
-            hashMap.remove(key);
+            hashMap.remove(key,value);
         }
-        keyQ.addFirst(key);
+        keyQ.push(key);
         hashMap.put(key,value);
     }
 
@@ -46,7 +46,7 @@ public class quizLRUCache<K,V> {
     }
 
     public void print(){
-        System.out.println(hashMap.keySet());
+        //System.out.println(hashMap.keySet());
         System.out.println(hashMap.values());
     }
 
@@ -59,7 +59,7 @@ public class quizLRUCache<K,V> {
         cache.put(5, 50);
 
         cache.put(3, 300);
-        cache.put(0, 400);
+        cache.put(0, 0);
         cache.put(6, 60);
         cache.put(7, 18);
         cache.print();
