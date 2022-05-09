@@ -8,31 +8,29 @@ public class Question1 {
     private int version;
 
     public Question1(int size){
-        array = new V[size];
+
         version = 0;
-        element = new V(0);
+        element = new V();
+        array = new V[size];
+        for(int i =0; i<size;++i){
+            array[i] = new V();
+
+        }
     }
-    class V{
+    private class V{
         int ver;
         int value;
 
-        public V(int val){
-            this(version,val);
-        }
-        private V(int version, int val){
-            value = val;
-            ver = version;
-            //++ver;
-        }
     }
 
     public void setVal(int idx, int val){
-        array[idx] = new V(val);
+        array[idx].value = val;
         ++version;
+
     }
 
     public int getVal(int idx){
-        if(version <= array[idx].ver)
+        if(version < array[idx].ver)
             return element.value;
         return array[idx].value;
     }
