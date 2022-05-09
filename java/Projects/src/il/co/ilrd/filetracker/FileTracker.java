@@ -75,7 +75,6 @@ public class FileTracker {
             }
 
         }
-
         public void register(Callback<String> call){
             dispatch.register(call);
         }
