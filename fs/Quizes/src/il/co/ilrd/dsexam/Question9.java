@@ -1,96 +1,53 @@
 package il.co.ilrd.dsexam;
 
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
-
+import java.util.List;
 
 
 public class Question9 {
 
-    private Node head;
+    private static Object[] converter;
+   private static void listToArray(List<Integer> list){
+       converter = list.toArray();
+   }
 
+   public static void pivotList(List<Integer> list, int pivot){
+       listToArray(list);
+    LinkedList<Integer> temp = new LinkedList<>();
 
-
-    public Question9(Node header){
-        this.head = header;
+    for(int i =0; i<converter.length; ++i){
+        if ((Integer)converter[i] < pivot){
+            temp.addFirst((Integer)converter[i]);
+        }
+        else{
+            temp.addLast((Integer)converter[i]);
+        }
     }
 
-    public void pivotList( int pivot){
+       System.out.println(temp);
 
-        LinkedList<Node> list = new LinkedList<>();
-        Node<Object> pivo = new Node<>(pivot,null);
-        //list.add(pivo);
+       }
 
-        Node runner = head;
+       public static void main(String[] args){
+        LinkedList<Integer> test = new LinkedList<>();
+        test.add(1);
+        test.add(8);
+        test.add(13);
+        test.add(3);
+        test.add(5);
+        test.add(8);
+        test.add(6);
+        test.add(2);
+        test.add(5);
+        System.out.println(test);
+       Question9.pivotList(test,6);
 
-        while(runner != null){
+       }
+   }
 
-            if((Integer)runner.data < pivot){
-                list.addFirst(new Node(runner.data));
-            }else{
-                list.addLast(new Node(runner.data));
-            }
-            runner = runner.next;
-        }
-        //list.remove(pivo);
-       head = list.get(0);
-        System.out.println(list + " " + head.toString());
-    }
-
-
-
-
-     static class Node<T>  {
-        private T data;
-        private Node next;
-
-        public Node(T data){
-            this.data = data;
-            this.next = null;
-        }
-        public Node(T data, Node<T> next){
-                this.data =  data;
-                this.next = next;
-            }
-         @Override
-         public String toString(){
-             return ( " "+ this.data + " ");
-         }
-    }
-
-
-    public static void main(String[] args){
-
-        Node another = new Node(99);
-        Node fifth = new Node(5);
-        Node four = new Node(700);
-        Node third = new Node(9);
-        Node second = new Node(7);
-        Node first = new Node(4);
-        first.next = second;
-        second.next = third;
-        third.next = four;
-        four.next = fifth;
-        fifth.next = another;
-
-        Question9 test = new Question9(first);
-
-        while(test.head != null) {
-            System.out.print(test);
-          test.head = test.head.next;
-        }
-        System.out.println();
-        test.head = first;
-       test.pivotList(8);
-
-        while(test.head != null) {
-            System.out.print(test.head);
-            test.head = test.head.next;
-        }
-        System.out.println();
-
-    }
-}
 
 
 
