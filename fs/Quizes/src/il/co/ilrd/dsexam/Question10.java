@@ -1,13 +1,22 @@
 package il.co.ilrd.dsexam;
 import java.io.*;
-import java.util.Arrays;
 import java.util.HashSet;
 
+/*
+    english dictionary loaded into hashSet,
+    each input string permutates
+    only available words (in the dictionary) are printed.
+    WORDLE here we go:)
+ */
 public class Question10 {
 
     private static char[] charArray;
     private static HashSet<String> dictionary = new HashSet<>();
 
+
+    private static void loadDictionary(){
+
+    }
     public static boolean findInDictionary(String word) throws IOException {
         try( BufferedReader rd = new BufferedReader( new FileReader ("/Users/tanyashkolnik/Documents/Education/Infinity/words.txt"))) {
             String line;
@@ -23,8 +32,6 @@ public class Question10 {
             Permutations("", str);
         }
 
-
-
     private static void Permutations(String prefix, String str) throws IOException {
         if(0 == str.length()){
             if(findInDictionary(prefix))
@@ -38,7 +45,7 @@ public class Question10 {
         }
     }
 
-    private static void printAllPermutation(String str) throws IOException {
+    private static void printAllPermutation(String str) {
         int start = 0;
         int end = str.length() - 1;
         charArray = str.toCharArray();
@@ -73,7 +80,8 @@ public class Question10 {
         printPermutation(str);
         //String str1 = "fault";
 
-        //printAllPermutation(str);
+        printAllPermutation(str);
+       // printPermutation("fault");
         //printAllPermutation(str1);
 
     }
