@@ -22,23 +22,23 @@ public class Question1 {
         private V(int version, int val){
             value = val;
             ver = version;
-            ++ver;
+            //++ver;
         }
     }
 
     public void setVal(int idx, int val){
-
         array[idx] = new V(val);
+        ++version;
     }
 
     public int getVal(int idx){
-        if(version < array[idx].ver)
+        if(version <= array[idx].ver)
             return element.value;
         return array[idx].value;
     }
 
     public void setAll(int val){
-        element.ver = ++version;
+        element.ver = version;
         element.value = val;
     }
 
