@@ -76,7 +76,7 @@ public class Question10 {
 
 
     public static void main(String[] args) throws IOException {
-        String str = "taste";
+        String str = "soare";
         printPermutation(str);
         //String str1 = "fault";
 

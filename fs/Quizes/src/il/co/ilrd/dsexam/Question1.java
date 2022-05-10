@@ -1,6 +1,6 @@
 package il.co.ilrd.dsexam;
 
-import java.nio.file.Watchable;
+
 
 public class Question1 {
     private V element;
@@ -36,8 +36,9 @@ public class Question1 {
     }
 
     public void setAll(int val){
-        element.ver = version;
+        //element.ver = version;
         element.value = val;
+        ++version;
     }
 
 

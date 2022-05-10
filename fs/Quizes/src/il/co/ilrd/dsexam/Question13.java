@@ -6,21 +6,25 @@ public class Question13 {
     public Question13() {}
 
 
-    public void insert(int data){
-        if(root == null){
-            root =  new Node(data);
-            return;
-        }
-
+    public Node insert(Node root, int data){
         Node runner = root;
         Node parent = runner;
+
+        if(root == null){
+            return new Node(data);
+        }
+
         Node newNode = new Node(data);
 
         while (runner != null) {
-            parent = runner;
+            //parent = runner;
+
             runner = runner.children[whichChild(runner, data)];
         }
-        parent.children[whichChild(runner, data)] = newNode;
+        runner = newNode;
+        parent = runner;
+
+        return root;
     }
 
     public Node insertRec(int data){
@@ -76,7 +80,7 @@ public class Question13 {
 
         test.printTree(head);
         System.out.println();
-        test.insert(17);
+        test.insert(head,17);
         test.printTree(head);
     }
 }

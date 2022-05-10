@@ -17,13 +17,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 public class FileTracker {
-
     private final FolderMonitor folderM;
     private final AtomicBoolean isMonitoring = new AtomicBoolean();
-
     public FileTracker(String path, String backup) throws IOException {
-
         Path realPath = Paths.get(path);
+       if(!Files.exists(realPath)){
+           throw new NoSuchFileException("no file");
+       }
         Path backupPath = Paths.get(backup);
         folderM = new FolderMonitor(realPath.getParent());
         FileMonitor fileM = new FileMonitor(realPath,backupPath);
@@ -45,12 +45,12 @@ public class FileTracker {
 
     public void endMonitor() {
        folderM.dispatch.stopNotification();
+       //isMonitoring.set(false);
 
     }
 
 
     private class FolderMonitor  {
-
        private final WatchService watcher;
         private final Dispatcher<String> dispatch;
         public FolderMonitor(Path folder) throws IOException {
@@ -61,19 +61,22 @@ public class FileTracker {
         }
         public void run() throws InterruptedException, IOException {
             WatchKey watchkey;
-            while ((isMonitoring.get()) && (watchkey = watcher.take()) != null ) {
+            try {
+                while ((isMonitoring.get()) && (watchkey = watcher.take()) != null) {
 
-                for (WatchEvent<?> event : watchkey.pollEvents()) {
-                        if(event.kind().name().equals(StandardWatchEventKinds.ENTRY_MODIFY.name()))
+                    for (WatchEvent<?> event : watchkey.pollEvents()) {
+                        if (event.kind().name().equals(StandardWatchEventKinds.ENTRY_MODIFY.name()))
                             dispatch.notifyAll(event.context().toString());
-                    System.out.println("Event happened: " + event.kind());
+                        System.out.println("Event happened: " + event.kind());
 
-                    System.out.println("File affected: " + event.context());
-                    System.out.println();
+                        System.out.println("File affected: " + event.context());
+                        System.out.println();
+                    }
+                    watchkey.reset();
                 }
-                watchkey.reset();
+            }finally{
+                watcher.close();
             }
-
         }
         public void register(Callback<String> call){
             dispatch.register(call);
@@ -151,6 +154,7 @@ public class FileTracker {
 
         @Override
         public String read(Long line) throws IOException {
+            //int localLine = Math.toIntExact(line);
             return  Files.readAllLines(backUPfile).get(line.intValue()-1);
         }
 
