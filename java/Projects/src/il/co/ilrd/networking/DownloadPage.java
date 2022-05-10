@@ -12,7 +12,12 @@ import java.nio.file.Paths;
 
 public class DownloadPage {
 
-
+    public static void downloadFile(URL url, String outputFileName) throws IOException
+    {
+        try (InputStream in = url.openStream()) {
+            Files.copy(in, Paths.get(outputFileName));
+        }
+    }
     public static void downloadFileChannel(URL url, String outputFileName) throws IOException
     {
         try (InputStream in = url.openStream();
@@ -21,12 +26,7 @@ public class DownloadPage {
             fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
         }
     }
-    public static void downloadFile(URL url, String outputFileName) throws IOException
-    {
-        try (InputStream in = url.openStream()) {
-            Files.copy(in, Paths.get(outputFileName));
-        }
-    }
+
     public static void main(String[] args) throws Exception {
         String outputFileName = "/Users/tanyashkolnik/Documents/Education/Infinity/download.html";
         try {
