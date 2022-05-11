@@ -239,7 +239,7 @@ public class PoolTest {
     @Test
     void decreaseEmptyCtorTest() throws InterruptedException {
         ThreadPool tp = new ThreadPool();
-        assertTrue(tp.deadpool.size() == 16);
+        assertTrue(tp.deadpool.size() == 8);
 
 
         for (int i = 0; i < 20; ++i) {

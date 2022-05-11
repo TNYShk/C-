@@ -1,5 +1,6 @@
 package il.co.ilrd.randomizecr;
 
+import java.time.LocalDate;
 import java.util.*;
 
 public class RandomizeCR {
@@ -11,6 +12,7 @@ public class RandomizeCR {
         reviewers = new ArrayList<>(names);
         reviewees = new ArrayList<>(names);
         Collections.shuffle(reviewees);
+        improve(reviewees);
     }
 
     public static void fixPrint(List<String> list) {
@@ -28,6 +30,7 @@ public class RandomizeCR {
 
     public void tanyaCodeReview() {
         boolean flag = false;
+
         for (int i = 0; i < reviewers.size(); ++i) {
             if (reviewers.get(i).equals(reviewees.get(i))) {
                 flag = true;
@@ -36,14 +39,17 @@ public class RandomizeCR {
         }
 
         if (flag) {
-            Collections.shuffle(reviewees);
-            tanyaCodeReview();
+            improve(reviewees);
         }
-        else {
-            for (int i = 0; i < reviewers.size(); ++i) {
-                System.out.println(reviewers.get(i) + " --> " + reviewees.get(i));
-            }
+
+        for (int i = 0; i < reviewers.size(); ++i) {
+            System.out.println(reviewers.get(i) + " --> " + reviewees.get(i));
         }
+    }
+
+    public void improve(List<String> reviewees) {
+        LocalDate currentdate = LocalDate.now();
+        Collections.rotate(reviewees, currentdate.getDayOfMonth());
     }
 
     public static void main(String[] args) {

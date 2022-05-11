@@ -18,11 +18,11 @@ public class TestWatch {
 
     @Test
     void Test() throws IOException, InterruptedException {
-        String filePath = "/Users/tanyashkolnik/Documents/Education/Infinity/shoshana.txt";
-        String backFile = "/Users/tanyashkolnik/Documents/Education/Infinity/backup.txt";
+        String filePath = "/home/tanya/Documents/bla.txt";
+        String backFile = "/home/tanya/Documents/backup.txt";
         FileTracker test = new FileTracker(filePath, backFile);
         test.startMonitor();
-        Thread.sleep(40000);
+        Thread.sleep(60000);
         test.endMonitor();
         Files.delete(Paths.get(backFile));
     }
@@ -30,32 +30,29 @@ public class TestWatch {
     @Test
     void anotherTest() throws IOException, InterruptedException {
 
-        FileCrudIMP filing = new FileCrudIMP("/Users/tanyashkolnik/Documents/Education/Infinity/shoshana.txt");
-        FileCrudIMP fling = new FileCrudIMP("/Users/tanyashkolnik/Documents/Education/Infinity/backup.txt");
+        FileCrudIMP filing = new FileCrudIMP("/home/tanya/Documents/bla.txt");
         filing.create("adding data!");
         long checkLine = filing.create("give me more data!");
         assertEquals(checkLine,filing.numberOfLines());
         assertEquals(filing.read(checkLine),"give me more data!");
-        String filePath = "/Users/tanyashkolnik/Documents/Education/Infinity/shoshana.txt";
-        String backFile = "/Users/tanyashkolnik/Documents/Education/Infinity/backup.txt";
+        String filePath = "/home/tanya/Documents/bla.txt";
+        String backFile = "/home/tanya/Documents/bbackup.txt";
         FileTracker monitor = new FileTracker(filePath, backFile);
         File bb = new File(backFile);
 
         bb.createNewFile();
 
+
         monitor.startMonitor();
 
-        filing.create("let the games begin!");
-        Thread.sleep(9000);
-        filing.update(1L,"update is here");
-        Thread.sleep(9000);
-        filing.delete(1L);
 
-        Thread.sleep(20000);
-        assertEquals(filing.numberOfLines(),fling.numberOfLines());
-        assertEquals(filing.read(4L),fling.read(4L));
-        monitor.endMonitor();
-        Files.delete(Paths.get(backFile));
+        filing.create("let the games begin!");
+
+        filing.update(1L,"update is here");
+        filing.delete(1L);
+        //Thread.sleep(20000);
+
+        //monitor.endMonitor();
 
 
 

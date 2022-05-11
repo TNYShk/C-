@@ -43,6 +43,7 @@ public class FactoryTest {
 
         System.out.println("\ntest 4 & | 5");
         tears.add(TearFactory::printWow,3);
+
         TearFactory a1 = tears.create(3);
         tears.add(a1,4);
         tears.create(4).printW();

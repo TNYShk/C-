@@ -145,7 +145,7 @@ public class ThreadPool implements Executor {
         public Task(Callable<T> gullible, Integer realPriority){
             this.realPriority = realPriority;
             this.gullible = gullible;
-            futureHolder = new TaskFuture(this);
+            futureHolder = new TaskFuture(Task.this);
         }
 
         void execute() {
@@ -164,14 +164,15 @@ public class ThreadPool implements Executor {
             return task.realPriority.compareTo(this.realPriority);
         }
 
-        private class TaskFuture implements Future<T>{
+            private class TaskFuture implements Future<T>{
             private final ReentrantLock futureLock = new ReentrantLock();
             private final Condition blockResult = futureLock.newCondition();
             private final AtomicBoolean statusTaskFuture = new AtomicBoolean();
-            private final Task<T> holder;
+            //private final Task<T> holder;
 
             public TaskFuture(Task<T> newTask){
-                holder = newTask;
+                 newTask = Task.this;
+                //holder = newTask;
             }
 
             @Override
@@ -181,7 +182,7 @@ public class ThreadPool implements Executor {
                     return false;
                 }
                 try {
-                    trial = wpq.remove(holder);
+                    trial = wpq.remove(Task.this);
                 } catch (InterruptedException e) {
                       throw new RuntimeException(e);
                 }
