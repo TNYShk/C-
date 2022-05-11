@@ -65,6 +65,13 @@ public class Question13 {
         printTree(node.children[1]);
     }
 
+    public static int getTreeDepth(Node node){
+        if(node == null){
+            return 0;
+        }
+
+       return (1 + Math.max(getTreeDepth(node.children[0]), getTreeDepth(node.children[1])));
+    }
 
 
     protected class Node {
@@ -99,9 +106,11 @@ public class Question13 {
 
         test.printTree(head);
         System.out.println();
-    test.insert(head,17);
+        test.insert(head,17);
+        test.insert(head,18);
         test.printTree(head);
-
+        System.out.println();
+        System.out.println("tree height: " + test.getTreeDepth(head));
      //System.out.print(test.tree.toString());
     }
 }
