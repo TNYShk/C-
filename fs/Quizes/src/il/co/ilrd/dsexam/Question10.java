@@ -1,6 +1,7 @@
 package il.co.ilrd.dsexam;
 import java.io.*;
 import java.util.HashSet;
+import java.util.Scanner;
 
 /*
     english dictionary loaded into hashSet,
@@ -12,13 +13,19 @@ public class Question10 {
 
     private static char[] charArray;
     private static HashSet<String> dictionary = new HashSet<>();
+    //public static Scanner sc = new Scanner(System.in);
+    //static String wor = sc.nextLine();
 
-
-    private static void loadDictionary(){
-
-    }
+/*    public static void loadDictionary(String word){
+        while(!wor.equals("666")){
+            word = wor;
+            if(dictionary.contains(word))
+                System.out.println(word);
+            wor = sc.nextLine();
+        }
+    }*/
     public static boolean findInDictionary(String word) throws IOException {
-        try( BufferedReader rd = new BufferedReader( new FileReader ("/Users/tanyashkolnik/Documents/Education/Infinity/words.txt"))) {
+        try( BufferedReader rd = new BufferedReader( new FileReader ("/home/tanya/Documents/words.txt"))) {
             String line;
             int i = 0;
             while ((line = rd.readLine()) != null) {
@@ -78,6 +85,7 @@ public class Question10 {
     public static void main(String[] args) throws IOException {
         String str = "soare";
         printPermutation(str);
+
         //String str1 = "fault";
 
         printAllPermutation(str);

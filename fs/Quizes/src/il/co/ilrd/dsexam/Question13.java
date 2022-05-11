@@ -16,26 +16,24 @@ public class Question13 {
 
 
 
-    /*public Node insert(Node root, int data){
+    public Node insert(Node root, int data){
         Node runner = root;
-        Node parent = runner;
+        Node parent = null;
 
         if(root == null){
             return new Node(data);
         }
 
-        Node newNode = new Node(data);
-
         while (runner != null) {
-            //parent = runner;
+            parent = runner;
 
             runner = runner.children[whichChild(runner, data)];
         }
-        runner = newNode;
-        parent = runner;
+
+        parent.children[whichChild(parent, data)] = new Node(data);
 
         return root;
-    }*/
+    }
 
     public Node insertRec(int data){
         return insertRec(root,data);
@@ -83,23 +81,27 @@ public class Question13 {
     public static void main(String[] args) {
         Question13 test = new Question13();
         Node head = test.insertRec(14);
-        test.insert(14);
-        test.insert(3);
-        test.insert(16);
-        test.insert(15);
+
         test.insertRec(head,3);
         test.insertRec(head,16);
         test.insertRec(head,15);
 
+       /* test.insert(14);
+        test.insert(3);
+        test.insert(16);
+        test.insert(15);*/
+
         for (int i = 6; i < 10; ++i){
             test.insertRec(head, i);
-            test.insert(i);
+            //test.insert(i);
         }
 
 
         test.printTree(head);
         System.out.println();
+    test.insert(head,17);
+        test.printTree(head);
 
-     System.out.print(test.tree.toString());
+     //System.out.print(test.tree.toString());
     }
 }
