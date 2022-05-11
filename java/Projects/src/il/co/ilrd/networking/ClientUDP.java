@@ -23,7 +23,6 @@ public class ClientUDP {
            echo("Enter message to send: ");
             while(true)
             {
-                //take input and send the packet
 
                 s = cin.readLine();
                 byte[] b = s.getBytes();
@@ -31,8 +30,7 @@ public class ClientUDP {
                 DatagramPacket  dp = new DatagramPacket(b , b.length , host , port);
                 sock.send(dp);
 
-                //now receive reply
-                //buffer to receive incoming data
+
                 byte[] buffer = new byte[65536];
                 DatagramPacket reply = new DatagramPacket(buffer, buffer.length);
                 sock.receive(reply);
@@ -40,10 +38,8 @@ public class ClientUDP {
                 byte[] data = reply.getData();
                 s = new String(data, 0, reply.getLength());
 
-                //echo the details of incoming data - client ip : client port - client message
-                //echo(reply.getAddress().getHostAddress() + " : " + reply.getPort() + " - " + s);
                 if(s.equals("ping"))
-                echo("pong");
+                    echo("pong");
             }
         }
 
