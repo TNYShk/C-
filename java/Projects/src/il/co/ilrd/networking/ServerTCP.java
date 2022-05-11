@@ -31,12 +31,11 @@ public class ServerTCP {
                 System.out.println("ping");
 
                 String line = "ping";
-                if (reader.readLine().equals(line)) {
-                    System.out.println("ping");
-                    //System.out.println(line);
+                if ( reader.readLine().equals(line)) {
+                    System.out.println(line);
                     writer.println("pong");
                 }
-            }
+           }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -61,7 +60,7 @@ public class ServerTCP {
             ServerTCP tennisServer  = new ServerTCP(8080);
 
             tennisServer.listenToClient();
-            tennisServer.closing();
+            //tennisServer.closing();
         } catch (IOException e) {
             e.printStackTrace();
         }

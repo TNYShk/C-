@@ -15,10 +15,11 @@ public class ClientTCP {
            writer.println("ping");
 
             for (int i =0; i<10; ++i) {
-                writer.println("ping");
+                System.out.println("ping");
                 String out = reader.readLine();
                 System.out.println(out);
-            }
+                writer.println("ping");
+           }
 
        } catch (IOException ex) {
            System.out.println("Server not found: " + ex.getMessage());
