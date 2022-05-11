@@ -12,29 +12,29 @@ import java.net.InetAddress;
 public class ServerBroadcast {
 
     public static void main(String [] args) throws IOException {
-        DatagramSocket socket = new DatagramSocket(51666);
-        socket.setBroadcast(true);
-        int i = 0;
 
-        while(i < 10) {
-            DatagramPacket request = new DatagramPacket(new byte[1024], 1024);
-            socket.receive(request);
-            byte[] answer = request.getData();
-            ByteArrayInputStream bais = new ByteArrayInputStream(answer);
-            InputStreamReader isr = new InputStreamReader(bais);
-            BufferedReader br = new BufferedReader(isr);
-            String msg = br.readLine();
-            System.out.println("message from client: " + msg);
+        try(DatagramSocket socket = new DatagramSocket(44444)) {
+            socket.setBroadcast(true);
+            int i = 0;
 
-            InetAddress ch = request.getAddress();
-            byte[] ans = "bla bla".getBytes();
-            DatagramPacket reply = new DatagramPacket(ans, ans.length, ch, request.getPort());
-            socket.send(reply);
+            while (i < 10) {
+                DatagramPacket request = new DatagramPacket(new byte[1024], 1024);
+                socket.receive(request);
+                byte[] answer = request.getData();
+                ByteArrayInputStream bais = new ByteArrayInputStream(answer);
+                InputStreamReader isr = new InputStreamReader(bais);
+                BufferedReader br = new BufferedReader(isr);
+                String msg = br.readLine();
+                System.out.println("message from client: " + msg);
 
-            ++i;
+                InetAddress ch = request.getAddress();
+                byte[] ans = "bla bla".getBytes();
+                DatagramPacket reply = new DatagramPacket(ans, ans.length, ch, request.getPort());
+                socket.send(reply);
+
+                ++i;
+            }
+
         }
-
-        socket.close();
     }
-
 }

@@ -6,32 +6,30 @@ import java.io.InputStreamReader;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.util.Scanner;
+
 
 public class ClientUDP {
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         int port = 7878;
         String str;
         int i = 0;
 
-       try( BufferedReader clientInput = new BufferedReader(new InputStreamReader(System.in))){
+       try( BufferedReader clientInput = new BufferedReader(new InputStreamReader(System.in));
+            DatagramSocket sock = new DatagramSocket()){
 
-           DatagramSocket sock = new DatagramSocket();
            InetAddress host = InetAddress.getByName("localhost");
            echo("Enter message to send: ");
 
             while(i<10)
             {
                 str = clientInput.readLine();
-                byte[] b = str.getBytes();
 
-                DatagramPacket  dp = new DatagramPacket(b , b.length , host , port);
+                DatagramPacket  dp = new DatagramPacket(str.getBytes(), str.getBytes().length , host , port);
                 sock.send(dp);
 
-
-                byte[] buffer = new byte[100];
+                byte[] buffer = new byte[1024];
                 DatagramPacket reply = new DatagramPacket(buffer, buffer.length);
                 sock.receive(reply);
 
@@ -43,7 +41,6 @@ public class ClientUDP {
 
                 ++i;
             }
-            sock.close();
         }
 
         catch(IOException e)
@@ -52,7 +49,7 @@ public class ClientUDP {
         }
     }
 
-    //simple function to echo data to terminal
+
     public static void echo(String msg)
     {
         System.out.println(msg);
