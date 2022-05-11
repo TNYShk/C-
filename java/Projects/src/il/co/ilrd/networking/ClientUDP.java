@@ -13,34 +13,37 @@ public class ClientUDP {
 
     public static void main(String[] args) {
         int port = 7878;
-        String s;
-
-       try( BufferedReader cin = new BufferedReader(new InputStreamReader(System.in))){
+        String str;
+        int i = 0;
+        Scanner in = new Scanner(System.in);
+       try( BufferedReader clientInput = new BufferedReader(new InputStreamReader(System.in))){
 
            DatagramSocket sock = new DatagramSocket();
-
-            InetAddress host = InetAddress.getByName("localhost");
+           InetAddress host = InetAddress.getByName("localhost");
            echo("Enter message to send: ");
-            while(true)
-            {
 
-                s = cin.readLine();
-                byte[] b = s.getBytes();
+            while(i<10)
+            {
+                str = clientInput.readLine();
+                byte[] b = str.getBytes();
 
                 DatagramPacket  dp = new DatagramPacket(b , b.length , host , port);
                 sock.send(dp);
 
 
-                byte[] buffer = new byte[65536];
+                byte[] buffer = new byte[100];
                 DatagramPacket reply = new DatagramPacket(buffer, buffer.length);
                 sock.receive(reply);
 
                 byte[] data = reply.getData();
-                s = new String(data, 0, reply.getLength());
+                str = new String(data, 0, reply.getLength());
 
-                if(s.equals("ping"))
+                if(str.equals("ping"))
                     echo("pong");
+
+                ++i;
             }
+            sock.close();
         }
 
         catch(IOException e)
@@ -66,11 +69,11 @@ public class ClientUDP {
 
         this.port = port;
 
-        try(BufferedReader cin = new BufferedReader(new InputStreamReader(System.in))) {
+        try(BufferedReader clientInput = new BufferedReader(new InputStreamReader(System.in))) {
             udpSocket = new DatagramSocket(port);
             InetAddress host = InetAddress.getByName("localhost");
             while (true) {
-                s = cin.readLine();
+                s = clientInput.readLine();
                 byte[] data = s.getBytes();
                 DatagramPacket dp = new DatagramPacket(data, data.length, host, port);
                 udpSocket.send(dp);

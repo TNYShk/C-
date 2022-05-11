@@ -12,12 +12,12 @@ import static il.co.ilrd.networking.ClientUDP.echo;
 public class ServerUDP {
     private DatagramSocket udpSocket;
     private int port;
-    private volatile boolean isRun;
+
     private DatagramPacket incoming;
 
     public ServerUDP(int port){
         this.port = port;
-        isRun = true;
+
     }
 
     private void listen() throws Exception{
@@ -30,16 +30,23 @@ public class ServerUDP {
         String msg;
         String sendMsg = "ping";
 
-        while(isRun){
+        while(true){
             udpSocket.receive(incoming);
 
             msg = new String(incoming.getData(),0, incoming.getLength());
 
-            echo(msg);
+            //echo(msg);
 
             DatagramPacket dp = new DatagramPacket(sendMsg.getBytes() , sendMsg.getBytes().length , incoming.getAddress() , incoming.getPort());
             udpSocket.send(dp);
+
+            if(msg.equals("bye")){
+                break;
+            }
+
         }
+
+        udpSocket.close();
     }
 
     public static void main(String[] args) throws Exception {
