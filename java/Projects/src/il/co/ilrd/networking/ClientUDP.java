@@ -15,7 +15,7 @@ public class ClientUDP {
         int port = 7878;
         String str;
         int i = 0;
-        Scanner in = new Scanner(System.in);
+
        try( BufferedReader clientInput = new BufferedReader(new InputStreamReader(System.in))){
 
            DatagramSocket sock = new DatagramSocket();

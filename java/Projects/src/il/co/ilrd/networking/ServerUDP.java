@@ -33,16 +33,13 @@ public class ServerUDP {
         while(true){
             udpSocket.receive(incoming);
 
-            msg = new String(incoming.getData(),0, incoming.getLength());
-
-            //echo(msg);
+           msg = new String(incoming.getData(),0, incoming.getLength());
 
             DatagramPacket dp = new DatagramPacket(sendMsg.getBytes() , sendMsg.getBytes().length , incoming.getAddress() , incoming.getPort());
             udpSocket.send(dp);
 
-            if(msg.equals("bye")){
+            if(msg.equals("bye"))
                 break;
-            }
 
         }
 
