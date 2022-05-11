@@ -1,12 +1,22 @@
 package il.co.ilrd.dsexam;
+
+import java.util.Comparator;
+import java.util.TreeSet;
+
 //insert to binary search tree
 public class Question13 {
     public static Node root;
-
+    private static TreeSet<Integer> tree = new TreeSet<>();
+    private static TreeSet<Comparator<Node>> nodeTree = new TreeSet<>();
     public Question13() {}
 
+    public void insert(Integer val){
+        tree.add(val);
+    }
 
-    public Node insert(Node root, int data){
+
+
+    /*public Node insert(Node root, int data){
         Node runner = root;
         Node parent = runner;
 
@@ -25,7 +35,7 @@ public class Question13 {
         parent = runner;
 
         return root;
-    }
+    }*/
 
     public Node insertRec(int data){
         return insertRec(root,data);
@@ -57,6 +67,8 @@ public class Question13 {
         printTree(node.children[1]);
     }
 
+
+
     protected class Node {
         Integer data;
         Node[] children = new Node[2];
@@ -71,16 +83,23 @@ public class Question13 {
     public static void main(String[] args) {
         Question13 test = new Question13();
         Node head = test.insertRec(14);
+        test.insert(14);
+        test.insert(3);
+        test.insert(16);
+        test.insert(15);
         test.insertRec(head,3);
         test.insertRec(head,16);
         test.insertRec(head,15);
 
-        for (int i = 6; i < 10; ++i)
+        for (int i = 6; i < 10; ++i){
             test.insertRec(head, i);
+            test.insert(i);
+        }
+
 
         test.printTree(head);
         System.out.println();
-        test.insert(head,17);
-        test.printTree(head);
+
+     System.out.print(test.tree.toString());
     }
 }
