@@ -40,7 +40,6 @@ public class ServerMultiThread implements Runnable {
                 }
             }
         });
-        udpThread.start();
     }
 
     public void broadway(){
@@ -57,7 +56,7 @@ public class ServerMultiThread implements Runnable {
                 }
             }
         });
-        broadcatUDP.start();
+
     }
     @Override
     public void run() {
@@ -132,8 +131,22 @@ public class ServerMultiThread implements Runnable {
     public static void main(String[] args){
         ServerMultiThread server = new ServerMultiThread(26666,25666);
         new Thread(server).start();
+        server.broadcatUDP = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                server.broadway();
+            }
+        });
 
-        server.runUDP();
+        server.udpThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                server.runUDP();
+            }
+        });
+
+        server.broadcatUDP.start();
+        server.udpThread.start();
 
       try {
             Thread.sleep(20 * 1000);
