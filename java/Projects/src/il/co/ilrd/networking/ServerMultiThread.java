@@ -10,17 +10,19 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ServerMultiThread implements Runnable {
     protected int serverPort;
     protected int UDPport;
+
     protected ServerSocket serverSocket = null;
     protected volatile boolean isRunning;
     protected Thread runningThread = null;
     protected Thread udpThread = null;
+    protected Thread broadcatUDP = null;
     protected AtomicInteger counter = new AtomicInteger(0);
     protected ServerUDP serverUdp = null;
+    protected ServerBroadcast broadcast = null;
     public ServerMultiThread(int port, int udport) {
         serverPort = port;
         isRunning = true;
         UDPport = udport;
-
     }
 
     public void runUDP(){
@@ -31,6 +33,7 @@ public class ServerMultiThread implements Runnable {
                     try {
                         serverUdp = new ServerUDP(UDPport);
                         serverUdp.listen();
+                        new Thread(() -> broadway());
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
@@ -38,6 +41,23 @@ public class ServerMultiThread implements Runnable {
             }
         });
         udpThread.start();
+    }
+
+    public void broadway(){
+        broadcatUDP = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                synchronized (this) {
+                    try {
+                        broadcast = new ServerBroadcast();
+
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        });
+        broadcatUDP.start();
     }
     @Override
     public void run() {
@@ -76,7 +96,7 @@ public class ServerMultiThread implements Runnable {
         try {
             this.serverSocket = new ServerSocket(this.serverPort);
         } catch (IOException e) {
-            throw new RuntimeException("Cannot open port 8080", e);
+            throw new RuntimeException("Cannot open port ", e);
         }
     }
     class WorkerRunnable implements Runnable{
