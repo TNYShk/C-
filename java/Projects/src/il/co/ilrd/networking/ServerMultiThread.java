@@ -53,7 +53,7 @@ public class ServerMultiThread implements Runnable {
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-            new Thread(new WorkerRunnable(clientSocket,"Tanyas")
+            new Thread(new WorkerRunnable(clientSocket,"10.1.0.164 ")
             ).start();
         }
         System.out.println("Server Stopped.") ;

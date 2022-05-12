@@ -19,6 +19,7 @@ public class ClientTCP {
                 String out = reader.readLine();
                 System.out.println(out);
                 writer.println("ping");
+                //writer.println(out);
            }
 
        } catch (IOException ex) {
@@ -26,7 +27,7 @@ public class ClientTCP {
        }
    }
     public static void main(String[] args) {
-        connectToServer("10.1.0.116",11122 );
+        connectToServer("10.1.0.164",26666 );
     }
 
 }

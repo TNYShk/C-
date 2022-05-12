@@ -19,7 +19,7 @@ public class ServerUDP {
         this.port = port;
     }
 
-    private void listen() throws Exception{
+    protected void listen() throws Exception{
 
         echo("Server is listening on port: "+ port+ "" + InetAddress.getLocalHost() + "--");
         try(DatagramSocket udpSocket = new DatagramSocket(port)) {
