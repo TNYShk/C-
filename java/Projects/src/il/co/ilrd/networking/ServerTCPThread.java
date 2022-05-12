@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.Scanner;
 
 public class ServerTCPThread implements Runnable {
-    protected int serverPort = 8080;
+    protected int serverPort;
     protected ServerSocket serverSocket = null;
     protected volatile boolean isRunning;
     protected Thread runningThread = null;
@@ -70,10 +70,10 @@ public class ServerTCPThread implements Runnable {
         public void run() {
         try{
             Scanner input  = new Scanner(clientSocket.getInputStream());
-            //OutputStream output = clientSocket.getOutputStream();
-           // long time = System.currentTimeMillis();
+            OutputStream output = clientSocket.getOutputStream();
+
             PrintWriter out =  new PrintWriter(clientSocket.getOutputStream(), true);
-           // output.write(("Greetings!! from the underworld\n\nWorkerRunnable: " + this.serverText + " - " + time + "").getBytes());
+           output.write(("Greetings!! from the underworld\n\nWorkerRunnable: " + this.serverText + " - " ).getBytes());
             while (isRunning){
                 String msg = input.nextLine();
                 out.println("greetings");
@@ -90,9 +90,9 @@ public class ServerTCPThread implements Runnable {
     }
 
     public static void main(String[] args){
-        ServerTCPThread server = new ServerTCPThread(8000);
+        ServerTCPThread server = new ServerTCPThread(11122);
         new Thread(server).start();
-        /*try {
+      /*  try {
             Thread.sleep(20 * 1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
