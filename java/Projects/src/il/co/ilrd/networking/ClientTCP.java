@@ -26,7 +26,7 @@ public class ClientTCP {
        }
    }
     public static void main(String[] args) {
-        connectToServer("localhost", 8080);
+        connectToServer("10.1.0.164",8000 );
     }
 
 }

@@ -93,7 +93,7 @@ public class StackNode {
            Node peeky = stacky.pop();
             String str = "234234";
             String an = "";
-            an.
+
            if (str.charAt(1) == '}')
                 an +=  (str.charAt(1));
            while(!sorted.isEmpty()  && ((int)peeky.data)> ((int)sorted.peek().data)){
