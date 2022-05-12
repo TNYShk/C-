@@ -21,9 +21,8 @@ public class ServerBroadcast {
                 DatagramPacket request = new DatagramPacket(new byte[1024], 1024);
                 socket.receive(request);
                 byte[] answer = request.getData();
-                ByteArrayInputStream bais = new ByteArrayInputStream(answer);
-                InputStreamReader isr = new InputStreamReader(bais);
-                BufferedReader br = new BufferedReader(isr);
+
+                BufferedReader br = new BufferedReader( new InputStreamReader(new ByteArrayInputStream(answer)));
                 String msg = br.readLine();
                 System.out.println("message from client: " + msg);
 

@@ -41,7 +41,9 @@ public class Question10 {
 
     private static void Permutations(String prefix, String str) throws IOException {
         if(0 == str.length()){
-            if(findInDictionary(prefix))
+
+            //if(findInDictionary(prefix))
+            if(findOnline(prefix))
                 System.out.print(prefix + " ");
             return;
         }
@@ -80,10 +82,35 @@ public class Question10 {
     }
 
 
+    public static boolean findOnline(String w){
+        /*System.out.println("enter word: ");
+        Scanner input = new Scanner(System.in);
+        String word = input.nextLine();
+        System.out.println(word);*/
+        boolean isWord = false;
+        String requestURL = "https://api.dictionaryapi.dev/api/v2/entries/en/";
+        requestURL = requestURL.concat(w);
+       // System.out.println(requestURL);
+        try {
+            Dictionary.sendGetRequest(requestURL);
+            String result = Dictionary.readSingleLineRespone();
+           /* String[] response = Dictionary.readMultipleLinesRespone();
+            for (String line : response) {
+                System.out.println(line);
+            }*/
+            //System.out.println(result);
+            isWord =  true;
+        } catch (IOException ex) {
+            isWord =  false;
 
+        }finally {
+            Dictionary.disconnect();
+        }
+        return isWord;
+    }
 
     public static void main(String[] args) throws IOException {
-        String str = "soare";
+        String str = "lake";
         printPermutation(str);
 
         //String str1 = "fault";

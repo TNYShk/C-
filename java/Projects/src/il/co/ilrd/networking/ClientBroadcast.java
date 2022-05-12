@@ -7,7 +7,7 @@ import java.net.InetAddress;
 
 public class ClientBroadcast {
     public static void main(String[] args) throws IOException {
-        int port = 51666;
+        int port = 44444;
         int i = 0;
         byte[] test = "נו זה כמו מו".getBytes();
 

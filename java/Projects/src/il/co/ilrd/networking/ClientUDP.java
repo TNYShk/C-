@@ -12,14 +12,14 @@ public class ClientUDP {
 
 
     public static void main(String[] args) throws IOException {
-        int port = 26666;
+        int port = 25666;
         String str;
         int i = 0;
 
        try( BufferedReader clientInput = new BufferedReader(new InputStreamReader(System.in));
             DatagramSocket sock = new DatagramSocket()){
 
-           InetAddress host = InetAddress.getByName("10.1.0.164");
+           InetAddress host = InetAddress.getByName("10.111.0.10");
            echo("Enter message to send: ");
 
             while(i<10)
@@ -55,35 +55,3 @@ public class ClientUDP {
         System.out.println(msg);
     }
 }
-
- /*private DatagramSocket udpSocket;
-    private String ping = "ping";
-    private String s;
-    private int port;
-    //private Scanner scanner;
-
-    public ClientUDP(int port) throws IOException{
-
-        this.port = port;
-
-        try(BufferedReader clientInput = new BufferedReader(new InputStreamReader(System.in))) {
-            udpSocket = new DatagramSocket(port);
-            InetAddress host = InetAddress.getByName("localhost");
-            while (true) {
-                s = clientInput.readLine();
-                byte[] data = s.getBytes();
-                DatagramPacket dp = new DatagramPacket(data, data.length, host, port);
-                udpSocket.send(dp);
-
-                byte[] buffer = new byte[100];
-                DatagramPacket reply = new DatagramPacket(buffer, buffer.length);
-                udpSocket.receive(reply);
-
-                byte[] d = reply.getData();
-                s = new String(d, 0, reply.getLength());
-                echo(reply.getAddress().getHostAddress() + " : " + reply.getPort() + " - " + s);
-            }
-        }
-
-    }
-*/

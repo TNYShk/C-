@@ -27,7 +27,9 @@ public class ClientTCP {
        }
    }
     public static void main(String[] args) {
-        connectToServer("10.1.0.164",26666 );
+       connectToServer("10.111.0.10",26666);
+        //connectToServer("10.1.0.116",12212);
+       // connectToServer("10.10.1.32",50001);
     }
 
 }
