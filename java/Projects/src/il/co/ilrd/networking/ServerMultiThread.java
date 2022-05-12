@@ -33,7 +33,7 @@ public class ServerMultiThread implements Runnable {
                     try {
                         serverUdp = new ServerUDP(UDPport);
                         serverUdp.listen();
-                        new Thread(() -> broadway());
+                        //new Thread(() -> broadway());
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
@@ -131,19 +131,9 @@ public class ServerMultiThread implements Runnable {
     public static void main(String[] args){
         ServerMultiThread server = new ServerMultiThread(26666,25666);
         new Thread(server).start();
-        server.broadcatUDP = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                server.broadway();
-            }
-        });
+        server.broadcatUDP = new Thread(() -> server.broadway());
 
-        server.udpThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                server.runUDP();
-            }
-        });
+        server.udpThread = new Thread(() -> server.runUDP());
 
         server.broadcatUDP.start();
         server.udpThread.start();
