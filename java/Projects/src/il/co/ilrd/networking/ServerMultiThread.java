@@ -9,15 +9,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class ServerMultiThread implements Runnable {
     protected int serverPort;
+    protected int UDPport;
     protected ServerSocket serverSocket = null;
     protected volatile boolean isRunning;
     protected Thread runningThread = null;
     protected AtomicInteger counter = new AtomicInteger(0);
     protected ServerUDP serverUdp = null;
-    public ServerMultiThread(int port) {
+    public ServerMultiThread(int port, int udport) {
         serverPort = port;
         isRunning = true;
-        serverUdp = new ServerUDP(port);
+        UDPport = udport;
+        serverUdp = new ServerUDP(udport);
     }
 
     public void runUDP(){
@@ -53,7 +55,7 @@ public class ServerMultiThread implements Runnable {
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-            new Thread(new WorkerRunnable(clientSocket,"10.1.0.164 ")
+            new Thread(new WorkerRunnable(clientSocket,"10.1.0.164")
             ).start();
         }
         System.out.println("Server Stopped.") ;
@@ -106,7 +108,7 @@ public class ServerMultiThread implements Runnable {
     }
 
     public static void main(String[] args){
-        ServerMultiThread server = new ServerMultiThread(26666);
+        ServerMultiThread server = new ServerMultiThread(26666,25666);
         new Thread(server).start();
         server.runUDP();
       /*try {
