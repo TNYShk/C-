@@ -13,21 +13,23 @@ public class ServerMultiThread implements Runnable {
     protected ServerSocket serverSocket = null;
     protected volatile boolean isRunning;
     protected Thread runningThread = null;
+    protected Thread udpThread = null;
     protected AtomicInteger counter = new AtomicInteger(0);
     protected ServerUDP serverUdp = null;
     public ServerMultiThread(int port, int udport) {
         serverPort = port;
         isRunning = true;
         UDPport = udport;
-        serverUdp = new ServerUDP(udport);
+
     }
 
     public void runUDP(){
-        Thread udpRun = new Thread(new Runnable() {
+        udpThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 synchronized (this) {
                     try {
+                        serverUdp = new ServerUDP(UDPport);
                         serverUdp.listen();
                     } catch (Exception e) {
                         throw new RuntimeException(e);
@@ -35,7 +37,7 @@ public class ServerMultiThread implements Runnable {
                 }
             }
         });
-        udpRun.start();
+        udpThread.start();
     }
     @Override
     public void run() {
@@ -55,7 +57,7 @@ public class ServerMultiThread implements Runnable {
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-            new Thread(new WorkerRunnable(clientSocket,"10.1.0.164")
+            new Thread(new WorkerRunnable(clientSocket,"10.111.0.10")
             ).start();
         }
         System.out.println("Server Stopped.") ;
@@ -110,14 +112,16 @@ public class ServerMultiThread implements Runnable {
     public static void main(String[] args){
         ServerMultiThread server = new ServerMultiThread(26666,25666);
         new Thread(server).start();
+
         server.runUDP();
-      /*try {
+
+      try {
             Thread.sleep(20 * 1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         System.out.println("Stopping Server");
-        server.stop();*/
+        server.stop();
 
     }
 }
