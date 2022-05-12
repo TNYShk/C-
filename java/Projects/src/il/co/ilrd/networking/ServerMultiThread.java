@@ -1,23 +1,40 @@
 package il.co.ilrd.networking;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.io.IOException;
 import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicInteger;
 
-public class ServerTCPThread implements Runnable {
+public class ServerMultiThread implements Runnable {
     protected int serverPort;
     protected ServerSocket serverSocket = null;
     protected volatile boolean isRunning;
     protected Thread runningThread = null;
-
-    public ServerTCPThread(int port) {
+    protected AtomicInteger counter = new AtomicInteger(0);
+    protected ServerUDP serverUdp = null;
+    public ServerMultiThread(int port) {
         serverPort = port;
         isRunning = true;
+        serverUdp = new ServerUDP(port);
     }
 
+    public void runUDP(){
+        Thread udpRun = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                synchronized (this) {
+                    try {
+                        serverUdp.listen();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        });
+        udpRun.start();
+    }
     @Override
     public void run() {
         synchronized (this) {
@@ -28,12 +45,13 @@ public class ServerTCPThread implements Runnable {
             Socket clientSocket = null;
             try{
                 clientSocket = this.serverSocket.accept();
-
             } catch (IOException e) {
                 if(!isRunning){
                     throw new RuntimeException("server stopped");
                 }
                 throw new RuntimeException("error signing up client",e);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
             new Thread(new WorkerRunnable(clientSocket,"Tanyas")
             ).start();
@@ -68,20 +86,18 @@ public class ServerTCPThread implements Runnable {
 
         @Override
         public void run() {
-        try{
-            Scanner input  = new Scanner(clientSocket.getInputStream());
-            OutputStream output = clientSocket.getOutputStream();
 
-            PrintWriter out =  new PrintWriter(clientSocket.getOutputStream(), true);
-           output.write(("Greetings!! from the underworld\n\nWorkerRunnable: " + this.serverText + " - " ).getBytes());
-            while (isRunning){
-                String msg = input.nextLine();
-                out.println("greetings");
-
-//            output.close();
-//            input.close();
-                System.out.println("Request processed: " +  msg);
-            }
+           try( Scanner input  = new Scanner(clientSocket.getInputStream());
+                OutputStream output = clientSocket.getOutputStream();
+               PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true)) {
+               output.write(("Greetings!! from the underworld\nWorkerRunnable: " + this.serverText + " - ").getBytes());
+               counter.getAndIncrement();
+               out.println("greetings user: " + counter);
+               while (isRunning) {
+                   String msg = input.nextLine();
+                   output.write(("מקלידה כפרעעע").getBytes());
+                   System.out.println("Request processed: " + msg);
+               }
 
             }catch(IOException e){
                 e.printStackTrace();
@@ -90,9 +106,10 @@ public class ServerTCPThread implements Runnable {
     }
 
     public static void main(String[] args){
-        ServerTCPThread server = new ServerTCPThread(11122);
+        ServerMultiThread server = new ServerMultiThread(26666);
         new Thread(server).start();
-      /*  try {
+        server.runUDP();
+      /*try {
             Thread.sleep(20 * 1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
