@@ -5,6 +5,8 @@ import java.net.Socket;
 
 public class ClientTCP {
 
+
+
    public static void connectToServer(String hostname, int port){
        try (Socket socket = new Socket(hostname, port)) {
            InputStream input = socket.getInputStream();
@@ -14,10 +16,11 @@ public class ClientTCP {
 
            writer.println("ping");
 
-            for (int i =0; i<10; ++i) {
-                //System.out.println("ping");
+           for(int i =0; i<10;++i){
+               System.out.println("ping");
                 String out = reader.readLine();
-                System.out.println(out);
+                //System.out.println(out);
+                System.out.println("msg from server: "+out);
                 writer.println("ping");
                 //writer.println(out);
            }
@@ -30,7 +33,7 @@ public class ClientTCP {
       // connectToServer("10.111.0.10",26666);
         //connectToServer("10.1.0.116",12212);
        // connectToServer("10.10.1.32",50001);
-        connectToServer("192.168.68.101",10523);
+        connectToServer("192.168.68.101",26666);
     }
 
 }

@@ -88,7 +88,7 @@ public class ServerSelector {
     }
 
     private void broadcast(String msg) throws IOException {
-        ByteBuffer msgBuf=ByteBuffer.wrap(msg.getBytes());
+        ByteBuffer msgBuf = ByteBuffer.wrap(msg.getBytes());
         for(SelectionKey key : selector.keys()) {
             if(key.isValid() && key.channel() instanceof SocketChannel) {
                 SocketChannel sch = (SocketChannel) key.channel();
@@ -99,7 +99,7 @@ public class ServerSelector {
     }
 
     public static void main(String[] args) throws IOException {
-        ServerSelector server = new ServerSelector(10523);
+        ServerSelector server = new ServerSelector(26666);
         server.startServer();
     }
 }
