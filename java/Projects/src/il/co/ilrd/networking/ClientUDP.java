@@ -12,14 +12,14 @@ public class ClientUDP {
 
 
     public static void main(String[] args) throws IOException {
-        int port = 25666;
+        int port = 10523;
         String str;
         int i = 0;
 
        try( BufferedReader clientInput = new BufferedReader(new InputStreamReader(System.in));
             DatagramSocket sock = new DatagramSocket()){
 
-           InetAddress host = InetAddress.getByName("10.111.0.10");
+           InetAddress host = InetAddress.getByName("192.168.68.101");
            echo("Enter message to send: ");
 
             while(i<10)
