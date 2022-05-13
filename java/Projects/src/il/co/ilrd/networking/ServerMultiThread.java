@@ -31,9 +31,10 @@ public class ServerMultiThread implements Runnable {
             public void run() {
                 synchronized (this) {
                     try {
-                        serverUdp = new ServerUDP(UDPport);
+
+                       serverUdp = new ServerUDP(UDPport);
                         serverUdp.listen();
-                        //new Thread(() -> broadway());
+
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
@@ -76,7 +77,7 @@ public class ServerMultiThread implements Runnable {
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-            new Thread(new WorkerRunnable(clientSocket,"10.111.0.10")
+            new Thread(new WorkerRunnable(clientSocket,"192.168.68.101")
             ).start();
         }
         System.out.println("Server Stopped.") ;
@@ -118,7 +119,7 @@ public class ServerMultiThread implements Runnable {
                out.println("greetings user: " + counter);
                while (isRunning) {
                    String msg = input.nextLine();
-                   output.write(("מקלידה כפרעעע").getBytes());
+                   output.write(("im typing capara").getBytes());
                    System.out.println("Request processed: " + msg);
                }
 
@@ -131,9 +132,10 @@ public class ServerMultiThread implements Runnable {
     public static void main(String[] args){
         ServerMultiThread server = new ServerMultiThread(26666,25666);
         new Thread(server).start();
-        server.broadcatUDP = new Thread(() -> server.broadway());
+
 
         server.udpThread = new Thread(() -> server.runUDP());
+        server.broadcatUDP = new Thread(() -> server.broadway());
 
         server.broadcatUDP.start();
         server.udpThread.start();
