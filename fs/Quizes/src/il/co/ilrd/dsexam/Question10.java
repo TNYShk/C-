@@ -83,10 +83,7 @@ public class Question10 {
 
 
     public static boolean findOnline(String w){
-        /*System.out.println("enter word: ");
-        Scanner input = new Scanner(System.in);
-        String word = input.nextLine();
-        System.out.println(word);*/
+   
         boolean isWord = false;
         String requestURL = "https://api.dictionaryapi.dev/api/v2/entries/en/";
         requestURL = requestURL.concat(w);
