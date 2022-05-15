@@ -14,41 +14,51 @@ import java.util.Set;
 
 public class SelectorServer {
     //private final int TCPort;
-   // private final int UDPort;
+   private final int UDPort;
     SocketAddress localport;
+
     ServerSocketChannel tcpserver;
     DatagramChannel udpserver;
+
+    DatagramChannel broadccast;
+
     private Selector selector;
     private volatile boolean isRun;
     private ByteBuffer byteBuf = ByteBuffer.allocate(512);
     private final ByteBuffer welcomeBuf = ByteBuffer.wrap("Welcome to Chat!\n".getBytes());
 
-    public SelectorServer(int port) {
+    public SelectorServer(int port, int broadcast) {
         localport = new InetSocketAddress(port);
+        UDPort = broadcast;
         isRun = true;
     }
 
     public void InitServer() throws IOException {
         tcpserver = ServerSocketChannel.open();
         udpserver = DatagramChannel.open();
+        broadccast = DatagramChannel.open();
 
         tcpserver.socket().bind(localport);
         udpserver.socket().bind(localport);
+        broadccast.socket().bind(new InetSocketAddress(UDPort));
 
         tcpserver.configureBlocking(false);
         udpserver.configureBlocking(false);
+        broadccast.configureBlocking(false);
+
 
         selector = Selector.open();
 
         tcpserver.register(selector, SelectionKey.OP_ACCEPT);
         udpserver.register(selector, SelectionKey.OP_READ);
+        broadccast.register(selector, SelectionKey.OP_READ);
 
         System.out.println("Server Started on port: " + localport + "!");
 
         listenServer();
     }
 
-    public void listenServer() {
+    public void listenServer() throws IOException {
 
         while (isRun) {
             try {
@@ -67,18 +77,27 @@ public class SelectorServer {
                         this.handleAccept(key);
                        // tcpserver.accept().socket();
 
-                    } else if (key.isReadable() && c == udpserver) {
+                    } else if (key.isReadable() &&  (c == udpserver) ) {
                         //udpserver.socket();
                         this.readableUDP(key);
 
                     }else if(key.isReadable() ) {
                         this.handleRead(key); /* tcp read*/
                     }
+                    else if(c == broadccast){
+                        this.readableUDP(key);
+                    }
                 }
                 iter.remove();
 
             } catch (IOException e) {
                 throw new RuntimeException(e);
+            }finally{
+                
+                broadccast.close();
+                udpserver.close();
+                tcpserver.close();
+                selector.close();
             }
 
         }
@@ -142,7 +161,7 @@ public class SelectorServer {
     }
 
     public static void main(String[] args) throws IOException {
-        SelectorServer server = new SelectorServer(10523);
+        SelectorServer server = new SelectorServer(10523,10521);
         server.InitServer();
 
     }
