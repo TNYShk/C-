@@ -29,7 +29,7 @@ static String host = "localhost";
     }
 
     public static void listenUDP(){
-        int port = 25666;
+        int port = 10523;
         String str;
         int i = 0;
 
@@ -56,7 +56,7 @@ static String host = "localhost";
                 if(str.equals("ping"))
                     echo("pong");
 
-                //echo(answerMsg);
+                echo(answerMsg);
 
                 ++i;
             }
