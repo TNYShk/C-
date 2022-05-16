@@ -10,6 +10,7 @@ import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.util.Iterator;
+import java.util.Scanner;
 import java.util.Set;
 
 public class SelectorServer {
@@ -19,12 +20,12 @@ public class SelectorServer {
 
     ServerSocketChannel tcpserver;
     DatagramChannel udpserver;
-
+    private SelectionKey sKey;
     DatagramChannel broadccast;
 
     private Selector selector;
     private volatile boolean isRun;
-    private ByteBuffer byteBuf = ByteBuffer.allocate(512);
+    private ByteBuffer byteBuf = ByteBuffer.allocate(1024);
     private final ByteBuffer welcomeBuf = ByteBuffer.wrap("Welcome to Chat!\n".getBytes());
 
     public SelectorServer(int port, int broadcast) {
@@ -45,11 +46,12 @@ public class SelectorServer {
         tcpserver.configureBlocking(false);
         udpserver.configureBlocking(false);
         broadccast.configureBlocking(false);
-
+        int ops = tcpserver.validOps();
 
         selector = Selector.open();
 
         tcpserver.register(selector, SelectionKey.OP_ACCEPT);
+        sKey = tcpserver.register(selector,ops,null);
         udpserver.register(selector, SelectionKey.OP_READ);
         broadccast.register(selector, SelectionKey.OP_READ);
 
@@ -59,59 +61,63 @@ public class SelectorServer {
     }
 
     public void listenServer() throws IOException {
-
-        while (isRun) {
+        synchronized (this) {
             try {
-                selector.select();
-                Set<SelectionKey> keys = selector.selectedKeys();
+            Iterator<SelectionKey> iter;
+            SelectionKey key;
 
-                // Iterate through the Set of keys.
-                Iterator<SelectionKey> iter = keys.iterator();
-                SelectionKey key;
+            while (isRun) {
+                    selector.select();
+                    iter = selector.selectedKeys().iterator();
+                    // Iterate through the Set of keys.
 
-                while (iter.hasNext() ) {
-                    key = iter.next();
-                    Channel c = key.channel();
+                    while (iter.hasNext()) {
+                        key = iter.next();
+                        iter.remove();
 
-                    if (key.isAcceptable() && c == tcpserver) {
-                        this.handleAccept(key);
-                       // tcpserver.accept().socket();
+                        Channel c = key.channel();
 
-                    } else if (key.isReadable() &&  (c == udpserver) ) {
-                        //udpserver.socket();
-                        this.readableUDP(key);
-
-                    }else if(key.isReadable() ) {
-                        this.handleRead(key); /* tcp read*/
+                        if (key.isAcceptable())
+                            handleAccept(key);
+                            // tcpserver.accept().socket();
+                        else if (key.isReadable()) {
+                            if ((c == udpserver) || (c == broadccast)) {
+                                readableUDP(key);
+                            } else {
+                                handleRead(key); /* tcp read*/
+                            }
+                        }
                     }
-                    else if(c == broadccast){
-                        this.readableUDP(key);
-                    }
-                }
-                iter.remove();
-
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }finally{
-                
-                broadccast.close();
-                udpserver.close();
-                tcpserver.close();
-                selector.close();
             }
-
+            } catch (IOException e) {
+                    throw new RuntimeException(e);
+            } finally {
+                cancel();
+            }
         }
+    }
 
+
+    public void cancel() throws IOException {
+        isRun = false;
+        broadccast.close();
+        udpserver.close();
+        tcpserver.close();
+        selector.close();
     }
 
     private void readableUDP(SelectionKey key) throws IOException {
         DatagramChannel clientCh = (DatagramChannel)  key.channel();
         SocketAddress clientAdrs = clientCh.receive(byteBuf);
-        System.out.println("hi!");
+        System.out.println("write: ");
+        Scanner sc = new Scanner(System.in);
+        String response = sc.nextLine();
+
         System.out.println(new String(byteBuf.array()).trim());
         byteBuf.flip();
         clientCh.send(byteBuf,clientAdrs);
         byteBuf.clear();
+        broadcast(response);
 
     }
 
@@ -119,7 +125,7 @@ public class SelectorServer {
         SocketChannel sc = ((ServerSocketChannel) key.channel()).accept();
         String address = sc.socket().getInetAddress().toString() + ":" + sc.socket().getPort();
         sc.configureBlocking(false);
-        sc.register(selector, SelectionKey.OP_READ /*| SelectionKey.OP_ACCEPT*/);
+        sc.register(selector, SelectionKey.OP_READ, address);
         sc.write(welcomeBuf);
         welcomeBuf.rewind();
         System.out.println("accepted connection from: "+ address);
