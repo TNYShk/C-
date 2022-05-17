@@ -9,9 +9,9 @@ public enum PingPongKeys {
         @Override
         public PingPongKeys reply() {return PING;}
     },
-    NOTP_ERROR{
+    NOT_P_ERROR{
         @Override
-        public PingPongKeys reply() {return NOTP_ERROR;}
+        public PingPongKeys reply() {return NOT_P_ERROR;}
     };
 
 
