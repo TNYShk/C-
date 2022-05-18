@@ -2,7 +2,7 @@ package il.co.ilrd.megaserver;
 
 import org.omg.PortableInterceptor.ORBInitInfoPackage.DuplicateName;
 
-import java.io.IOException;
+import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.SocketException;
@@ -162,14 +162,11 @@ public class MultiProtocolServer {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-
         }
     }
         private class TCPCommunicator extends ConnectionCommunicator {
             private SocketChannel client;
             private ByteBuffer buffer;
-
-
             public TCPCommunicator(){
                 buffer = ByteBuffer.allocate(1024);
             }
@@ -199,33 +196,82 @@ public class MultiProtocolServer {
         }
 
         private class UDPCommunicator extends ConnectionCommunicator {
-
             private DatagramChannel client;
             private ByteBuffer buffer;
             private SocketAddress socketAdrsUDP;
 
+            public UDPCommunicator(){
+                buffer = ByteBuffer.allocate(1024);
+            }
+
             @Override
             public void handle(SelectionKey key) {
-                // TODO Auto-generated method stub
+                try {
+                    client = (DatagramChannel) key.channel();
+                    socketAdrsUDP = client.receive(buffer);
+                    buffer.flip();
+                    msgHandler.handleMessage(buffer, this);
+                }catch(IOException | ClassNotFoundException e){
+                    System.err.println(e);
+                }
             }
 
             @Override
             public void send(ByteBuffer buffer) {
-                // TODO Auto-generated method stub
-
-            }
-
+                try {
+                    client.send(buffer, socketAdrsUDP);
+                }catch(IOException e){
+                    System.err.println(e);
+                }
+                finally {
+                    buffer.clear();
+                }
             }
         }
+    }
 
         private class MessageHandler{
-            Map<ServerProtocol,Protocol> serverProtocol;
+            private Map<ServerProtocol,Protocol> serverProtocol;
+            private connectionHandler.ConnectionCommunicator handlerConnectin;
 
             public MessageHandler(){
                 serverProtocol = new HashMap<>();
+                serverProtocol.put(ServerProtocol.PINGPONG, new PingPong());
+               // serverProtocol.put(ServerProtocol.CHAT, new Chat());
+
             }
             // can pass id instead of connection..
-            public void handleMessage(ByteBuffer buffer, connectionHandler.Connection connection) {}
+            public void handleMessage(ByteBuffer buffer, connectionHandler.ConnectionCommunicator connection) throws IOException, ClassNotFoundException {
+                handlerConnectin = connection;
+
+                Object object = deserialize(buffer);
+                if (!(object instanceof ServerMessage)) {
+                    throw new ClassCastException();
+                }
+                ServerMessage serverMessage = (ServerMessage)object;
+                Protocol protocol = serverProtocol.get(serverMessage.getKey());
+                protocol.action(serverMessage.getData());
+            }
+            private Object deserialize(ByteBuffer buffer) throws IOException, ClassNotFoundException {
+                try (ObjectInputStream objOIS = new ObjectInputStream(new ByteArrayInputStream(buffer.array()))) {
+                        return objOIS.readObject();
+                    }
+            }
+            private ByteBuffer serialize(Object serverMsg) throws IOException {
+                try(ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                    ObjectOutputStream oos = new ObjectOutputStream(bos)) {
+                        oos.writeObject(serverMsg);
+                        oos.flush();
+                        return ByteBuffer.wrap(bos.toByteArray());
+                    }
+            }
+
+            private void sendToHandler(ServerMessage servermessage) throws IOException {
+                ByteBuffer message = serialize(servermessage);
+                handlerConnectin.send(message);
+            }
+
+
 
             private abstract class Protocol {
                 public abstract void action(Message<?, ?> msg);
@@ -235,8 +281,19 @@ public class MultiProtocolServer {
 
                 @Override
                 public void action(Message<?, ?> msg) {
-                    // TODO Auto-generated method stub
+                    if (!(msg instanceof PingPongMessage)) {
+                        throw new ClassCastException();
+                    }
+                    System.out.println("in pingpong class " + msg.getKey());
 
+                    PingPongKeys key = (PingPongKeys)msg.getKey();
+                    PingPongMessage replyb = new PingPongMessage(key.reply());
+                    ServerMessage servermessage = new ServerMessage(replyb, ServerProtocol.PINGPONG);
+                    try{
+                        sendToHandler(servermessage);
+                    }catch (IOException e){
+                        e.printStackTrace();
+                    }
                 }
             }
 
