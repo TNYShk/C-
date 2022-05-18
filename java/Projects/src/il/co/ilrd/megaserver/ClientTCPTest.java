@@ -12,19 +12,20 @@ public class ClientTCPTest implements SerializeIt{
 
     public ClientTCPTest() throws IOException {
         buffer = ByteBuffer.allocate(1024);
-        socketChannel = SocketChannel.open(new InetSocketAddress("10.10.1.77", 10523));
+        socketChannel = SocketChannel.open(new InetSocketAddress("10.1.0.164", 10523));
         socketChannel.configureBlocking(false);
     }
 
     public void communicate() throws IOException, InterruptedException, ClassNotFoundException {
         PingPongMessage msg = new PingPongMessage(PingPongKeys.PING);
-        smsg = new ServerMessage(msg, ServerProtocol.PINGPONG);
+        smsg = new ServerMessage(ServerProtocol.PINGPONG, msg);
         buffer.put(serialize(smsg));
         //buffer.rewind();
         buffer.clear();
         socketChannel.write(buffer);
         Thread.sleep(1000);
         buffer.rewind();
+
         socketChannel.read(buffer);
 
 

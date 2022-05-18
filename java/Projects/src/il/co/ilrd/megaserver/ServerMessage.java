@@ -6,7 +6,7 @@ public class ServerMessage implements Message<ServerProtocol, Message<?,?>>, Ser
 private Message<?,?> msg;
 private ServerProtocol serverProtocol;
 
-    public ServerMessage(Message<?, ?> msg,ServerProtocol serverProtocol) {
+    public ServerMessage(ServerProtocol serverProtocol, Message<?, ?> msg) {
         this.msg = msg;
         this.serverProtocol = serverProtocol;
     }
