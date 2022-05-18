@@ -19,7 +19,7 @@ public class ClientTCP {
            for(int i =0; i<10;++i){
                System.out.println("pong");
                 String out = reader.readLine();
-                //System.out.println(out);
+                System.out.println(out);
                 System.out.println("msg from server: "+out);
                 writer.println("ping");
                 //writer.println(out);
@@ -34,7 +34,7 @@ public class ClientTCP {
         //connectToServer("10.1.0.116",12212);
        // connectToServer("10.10.1.32",50001);
         //connectToServer("10.10.1.116",10523);
-        connectToServer("10.111.0.12",10523);
+        connectToServer("10.10.1.77",10523);
     }
 
 }

@@ -16,4 +16,9 @@ public class PingPongMessage implements Message<PingPongKeys, Void>, Serializabl
     public Void getData() {
         return null;
     }
+    @Override
+    public String toString(){
+        return key.equals(PingPongKeys.PING)?" "+ PingPongKeys.PONG:""+PingPongKeys.PING;
+        //return ""+ this.key;
+    }
 }
