@@ -4,6 +4,7 @@ import org.omg.PortableInterceptor.ORBInitInfoPackage.DuplicateName;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
@@ -136,6 +137,7 @@ public class MultiProtocolServer {
 
     private class acceptConnectionTCP extends Connection {
         private SocketChannel client;
+        private final ByteBuffer welcomeBuf = ByteBuffer.wrap("TCP communicator handler\n".getBytes());
         private ServerSocketChannel serverSocketChannel;
 
         public acceptConnectionTCP(ServerSocketChannel serverSocketChannel) {
@@ -145,47 +147,62 @@ public class MultiProtocolServer {
 
 
         @Override
-          public void handle(SelectionKey key) {
-          // TODO Auto-generated method stub
+        public void handle(SelectionKey key) {
+            try {
+                client = ((ServerSocketChannel) key.channel()).accept();
+                String address = client.socket().getInetAddress().toString() + ":" + client.socket().getPort();
+                client.configureBlocking(false);
+                client.register(selector, SelectionKey.OP_READ, address);
+                client.write(welcomeBuf);
+                welcomeBuf.rewind();
+                System.out.println("accepted connection from: " + address);
 
-          }
+            } catch (ClosedChannelException e) {
+                throw new RuntimeException(e);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
 
-       }
+        }
+    }
         private class TCPCommunicator extends ConnectionCommunicator {
             private SocketChannel client;
-            private final ByteBuffer welcomeBuf = ByteBuffer.wrap("TCP communicator handler\n".getBytes());
-            @Override
-            public void handle(SelectionKey key) {
-
-                try {
-                  client = ((ServerSocketChannel) key.channel()).accept();
-                    String address = client.socket().getInetAddress().toString() + ":" + client.socket().getPort();
-                    client.configureBlocking(false);
-                    client.register(selector, SelectionKey.OP_READ, address);
-                    client.write(welcomeBuf);
-                    welcomeBuf.rewind();
-                    System.out.println("accepted connection from: "+ address);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+            private ByteBuffer buffer;
 
 
+            public TCPCommunicator(){
+                buffer = ByteBuffer.allocate(1024);
             }
+            @Override
+        public void handle(SelectionKey key) {
+            try {
+                client = (SocketChannel) key.channel();
+                client.read(buffer);
+                buffer.flip();
+
+            }catch(IOException e){
+               System.err.println(e);
+                throw new RuntimeException();
+            }
+        }
 
             @Override
             public void send(ByteBuffer buffer) {
                 try {
-                    buffer.flip();
+                    //buffer.rewind();
                     client.write(buffer);
-                    buffer.rewind();
+                    buffer.clear();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
-
         }
 
         private class UDPCommunicator extends ConnectionCommunicator {
+
+            private DatagramChannel client;
+            private ByteBuffer buffer;
+            private SocketAddress socketAdrsUDP;
 
             @Override
             public void handle(SelectionKey key) {
