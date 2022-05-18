@@ -69,7 +69,7 @@ public class ServerUDP {
     }
 
     public static void main(String[] args) throws Exception {
-        ServerUDP udp = new ServerUDP(25666);
+        ServerUDP udp = new ServerUDP(10522);
         //udp.setUDPserver();
         /*ServerUDP udp = new ServerUDP(25666);*/
         udp.listen();

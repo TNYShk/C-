@@ -60,7 +60,7 @@ public class ServerTCP {
 
     public static void main(String[] args) {
         try {
-            ServerTCP tennisServer = new ServerTCP(26666);
+            ServerTCP tennisServer = new ServerTCP(10523);
 
             tennisServer.listenToClient();
             tennisServer.closing();

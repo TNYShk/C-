@@ -1,5 +1,6 @@
 package il.co.ilrd.dsexam;
 import java.io.*;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Scanner;
 
@@ -25,7 +26,7 @@ public class Question10 {
         }
     }*/
     public static boolean findInDictionary(String word) throws IOException {
-        try( BufferedReader rd = new BufferedReader( new FileReader ("/home/tanya/Documents/words.txt"))) {
+        try( BufferedReader rd = new BufferedReader( new FileReader ("/Users/tanyashkolnik/Documents/Education/Infinity/words.txt"))) {
             String line;
             int i = 0;
             while ((line = rd.readLine()) != null) {
@@ -41,10 +42,10 @@ public class Question10 {
 
     private static void Permutations(String prefix, String str) throws IOException {
         if(0 == str.length()){
-
-            //if(findInDictionary(prefix))
-            if(findOnline(prefix))
-                System.out.print(prefix + " ");
+           // if(findInDictionary(prefix)) /* local file*/
+            //if(isInMiriamWebsterDict(prefix)) /* MiriamWebster thesaurus API*/
+                if(findOnline(prefix)) /* free dictionary API*/
+                    System.out.print(prefix + " ");
             return;
         }
 
@@ -84,7 +85,7 @@ public class Question10 {
 
     public static boolean findOnline(String w){
    
-        boolean isWord = false;
+        boolean isWord;
         String requestURL = "https://api.dictionaryapi.dev/api/v2/entries/en/";
         requestURL = requestURL.concat(w);
        // System.out.println(requestURL);
@@ -106,13 +107,37 @@ public class Question10 {
         return isWord;
     }
 
-    public static void main(String[] args) throws IOException {
-        String str = "lake";
+    public static boolean isInMiriamWebsterDict(String word) {
+
+        boolean isFound = false;
+        String requestURL = "https://dictionaryapi.com/api/v3/references/ithesaurus/json/";
+        String myAPI = "?key=e3b0322b-c7f8-401c-ac77-ca4c84aa62a5";
+        requestURL = requestURL.concat(word);
+        requestURL = requestURL.concat(myAPI);
+
+        try {
+            Dictionary.sendGetRequest(requestURL);
+            String result = Dictionary.readSingleLineRespone();
+            //String[] response = Dictionary.readMultipleLinesRespone();
+            System.out.println(result);
+            if (!result.isEmpty()){
+                isFound = true;
+            }
+        } catch (IOException e) {
+            return false;
+        }finally {
+            Dictionary.disconnect();
+        }
+        return isFound;
+    }
+
+        public static void main(String[] args) throws IOException {
+        String str = "lab";
         printPermutation(str);
 
         //String str1 = "fault";
 
-        printAllPermutation(str);
+        //printAllPermutation(str);
        // printPermutation("fault");
         //printAllPermutation(str1);
 

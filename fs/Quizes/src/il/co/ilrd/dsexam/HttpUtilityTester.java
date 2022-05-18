@@ -13,17 +13,22 @@ public class HttpUtilityTester {
         Scanner input = new Scanner(System.in);
         String word = input.nextLine();
         System.out.println(word);
-        String requestURL = "https://api.dictionaryapi.dev/api/v2/entries/en/";
+        //String requestURL = "https://api.dictionaryapi.dev/api/v2/entries/en/";  /* free Dictionary, no key required*/
+        String requestURL = "https://dictionaryapi.com/api/v3/references/ithesaurus/json/";
+        //String requestURL = "https://dictionaryapi.com/api/v3/references/thesaurus/json/";
+        String myAPI = "?key=b7f20b3e-7111-404c-a30b-28751d6a027b"; /* thesaurus MW*/
+        String anotherAPI = "?key=e3b0322b-c7f8-401c-ac77-ca4c84aa62a5";  /* intermediate thesaurus MW*/
         requestURL = requestURL.concat(word);
+        requestURL = requestURL.concat(anotherAPI); /* MW required API key*/
         System.out.println(requestURL);
         try {
             Dictionary.sendGetRequest(requestURL);
-            String result = Dictionary.readSingleLineRespone();
-           /* String[] response = Dictionary.readMultipleLinesRespone();
+            //String result = Dictionary.readSingleLineRespone();
+          String[] response = Dictionary.readMultipleLinesRespone();
             for (String line : response) {
                 System.out.println(line);
-            }*/
-            System.out.println(result);
+            }
+            //System.out.println(result);
         } catch (IOException ex) {
             ex.printStackTrace();
         }

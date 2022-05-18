@@ -56,10 +56,10 @@ public class ServerSelector {
         SocketChannel sc = ((ServerSocketChannel) key.channel()).accept();
         String address = sc.socket().getInetAddress().toString() + ":" + sc.socket().getPort();
         sc.configureBlocking(false);
-        sc.register(selector, SelectionKey.OP_READ, address);
+        sc.register(selector, SelectionKey.OP_READ| SelectionKey.OP_READ, address);
         sc.write(welcomeBuf);
         welcomeBuf.rewind();
-        System.out.println("accepted connection from: "+address);
+        System.out.println("accepted connection from: "+ address);
     }
 
     private void handleRead(SelectionKey key) throws IOException {
@@ -73,17 +73,16 @@ public class ServerSelector {
             byteBuf.get(bytes);
             sb.append(new String(bytes));
             byteBuf.clear();
-            byteBuf.clear();
         }
         String msg;
         if(read < 0) {
-            msg = key.attachment()+" has left the building\n";
+            msg = key.attachment() + " has left the building\n";
             ch.close();
         }
         else {
             msg = key.attachment()+": "+ sb;
         }
-        System.out.println(msg);
+        //System.out.println(msg);
         broadcast(msg);
     }
 
@@ -99,7 +98,7 @@ public class ServerSelector {
     }
 
     public static void main(String[] args) throws IOException {
-        ServerSelector server = new ServerSelector(26666);
+        ServerSelector server = new ServerSelector(10523);
         server.startServer();
     }
 }
