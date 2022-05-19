@@ -4,7 +4,7 @@ import java.io.*;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
-import java.util.concurrent.TimeUnit;
+
 
 public class Client1TCP implements SerializeIt{
     private SocketChannel client;
@@ -13,13 +13,16 @@ public class Client1TCP implements SerializeIt{
     public static void main(String args[]) throws IOException, ClassNotFoundException, InterruptedException {
         PingPongMessage messagePing1 = new PingPongMessage(PingPongKeys.PING);
         ServerMessage message1 = new ServerMessage(ServerProtocol.PINGPONG, messagePing1);
+        PingPongMessage messagePing2 = new PingPongMessage(PingPongKeys.PONG);
+        ServerMessage message2 = new ServerMessage(ServerProtocol.PINGPONG, messagePing2);
         Client1TCP client = new Client1TCP("192.168.68.101", 10523);
 
 
         for (int i = 0; i < 6; ++i) {
             client.sendMessage(message1);
+            client.sendMessage(message2);
         }
-        TimeUnit.SECONDS.sleep(5);
+        //TimeUnit.SECONDS.sleep(5);
         client.closeClient();
 
     }
@@ -44,7 +47,7 @@ public class Client1TCP implements SerializeIt{
 
         buffer = buffer.put(serializeB(msg));
         try {
-            buffer.clear();
+            buffer.flip();
             client.write(buffer);
             buffer.clear();
             client.read(buffer);
@@ -69,11 +72,10 @@ public class Client1TCP implements SerializeIt{
             return null;
         }
 
-        try (ByteArrayInputStream b = new ByteArrayInputStream(buffer.array())) {
-            try (ObjectInputStream o = new ObjectInputStream(b)) {
+        try (ByteArrayInputStream b = new ByteArrayInputStream(buffer.array());
+             ObjectInputStream o = new ObjectInputStream(b)) {
                 return o.readObject();
             }
-        }
     }
 
     @Override
