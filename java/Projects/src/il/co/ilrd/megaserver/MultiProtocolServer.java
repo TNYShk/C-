@@ -16,11 +16,15 @@ public class MultiProtocolServer {
     private MessageHandler msgHandler;
     private Set<Integer> portList;
      private volatile boolean isRun;
+    protected Selector selector;
+    private ByteBuffer buffer;
 
     public MultiProtocolServer() throws IOException {
         connectHandler = new connectionHandler();
         msgHandler = new MessageHandler();
         portList = new HashSet<>();
+        selector = Selector.open();
+        buffer = ByteBuffer.allocate(8192);
     }
 
 
@@ -40,7 +44,6 @@ public class MultiProtocolServer {
         isRun = true;
         Thread srvrUpper = new Thread(() -> {
             try {
-
                 connectHandler.start();
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -52,32 +55,25 @@ public class MultiProtocolServer {
 
     public void serverDown() throws IOException {
         isRun = false;
-        connectHandler.selector.close();
+        selector.close();
     }
 
     private class connectionHandler{
         //List<SelectionKey> tcpserverList;
        // List<SelectionKey> udpserverList;
-        private Selector selector;
 
 
-        public connectionHandler() throws IOException {
-           // tcpserverList = new ArrayList<>();
-            //udpserverList = new ArrayList<>();
-
-            selector = Selector.open();
-        }
         public void addTCP(int port) throws IOException {
             if(!portList.add(port))
                 throw new IllegalArgumentException("duplicate port");
 
-                ServerSocketChannel tcp = ServerSocketChannel.open();
-                tcp.socket().bind(new InetSocketAddress(port));
-                tcp.configureBlocking(false);
+            ServerSocketChannel tcp = ServerSocketChannel.open();
+            tcp.socket().bind(new InetSocketAddress(port));
+            tcp.configureBlocking(false);
 
-                tcp.register(selector, SelectionKey.OP_ACCEPT, tcp);
-                System.out.println("tcp added!");
-                //tcpserverList.add(sKey);
+            tcp.register(selector, SelectionKey.OP_ACCEPT, tcp);
+            System.out.println("tcp added!");
+            //tcpserverList.add(sKey);
 
         }
 
@@ -85,17 +81,17 @@ public class MultiProtocolServer {
             if(!portList.add(port))
                 throw new IllegalArgumentException("duplicate port");
 
-                DatagramChannel udp = DatagramChannel.open();
-                udp.socket().bind(new InetSocketAddress(port));
-                udp.configureBlocking(false);
-                udp.register(selector, SelectionKey.OP_READ, udp);
-                System.out.println("udp added!");
-               // udpserverList.add(sKey);
+            DatagramChannel udp = DatagramChannel.open();
+            udp.socket().bind(new InetSocketAddress(port));
+            udp.configureBlocking(false);
+            udp.register(selector, SelectionKey.OP_READ, udp);
+            System.out.println("udp added!");
+            // udpserverList.add(sKey);
 
         }
 
         public void start() throws IOException {
-            selector = Selector.open();
+           // selector = Selector.open();
             System.out.println(Thread.currentThread().getName());
             try {
                 Iterator<SelectionKey> iter;
@@ -111,7 +107,6 @@ public class MultiProtocolServer {
                         if (key.attachment() instanceof DatagramChannel) {
                             UDPCommunicator udpConnect = new UDPCommunicator();
                             udpConnect.handle(key);
-
                         }
                         else {
                             if (key.isAcceptable()) {
@@ -125,7 +120,7 @@ public class MultiProtocolServer {
                                 tcpConnect.handle(key);
                             }
                         }
-                    iter.remove();
+                        iter.remove();
                     }
                 }
             }catch (IOException e){
@@ -142,7 +137,7 @@ public class MultiProtocolServer {
         }
 
     private class acceptConnectionTCP extends Connection {
-        private final ByteBuffer welcomeBuf = ByteBuffer.wrap("TCP communicator handler\n".getBytes());
+
         private ServerSocketChannel serverSocketChannel;
 
         public acceptConnectionTCP(ServerSocketChannel serverSocketChannel) {
@@ -156,11 +151,9 @@ public class MultiProtocolServer {
                 SocketChannel client = serverSocketChannel.accept();
                 String address = client.socket().getInetAddress().toString() + ":" + client.socket().getPort();
                 client.configureBlocking(false);
-                client.register(selector, SelectionKey.OP_READ | SelectionKey.OP_ACCEPT);
+                client.register(selector, SelectionKey.OP_READ);
                 System.out.println("accepted connection from: " + address);
-                client.write(welcomeBuf);
-                welcomeBuf.rewind();
-                System.out.println("done with the handle");
+                //System.out.println("done with the handle");
             } catch (IOException e) {
                 e.printStackTrace();
                 throw new RuntimeException(e);
@@ -169,26 +162,28 @@ public class MultiProtocolServer {
     }
         private class TCPCommunicator extends ConnectionCommunicator {
             private SocketChannel client;
-            private ByteBuffer buffer;
-            public TCPCommunicator(){
-                buffer = ByteBuffer.allocate(1024);
-            }
+
+
             @Override
         public void handle(SelectionKey key) {
-            try {
                 client = (SocketChannel) key.channel();
-                client.read(buffer);
-                buffer.flip();
+            try {
+                ByteBuffer tmp = ByteBuffer.allocate(8192);
+                client.read(tmp);
+                msgHandler.handleMessage(tmp,this);
 
-            }catch(IOException e){
-                throw new RuntimeException();
+            }catch(IOException | ClassNotFoundException | RuntimeException e){
+               System.err.print(e);
+               throw new RuntimeException("oh no!");
             }
+
         }
 
             @Override
             public void send(ByteBuffer buffer) {
+
                 try {
-                    buffer.rewind();
+                    buffer.flip();
                     client.write(buffer);
                     buffer.clear();
                 } catch (IOException e) {
@@ -199,20 +194,20 @@ public class MultiProtocolServer {
 
         private class UDPCommunicator extends ConnectionCommunicator {
             private DatagramChannel client;
-            private ByteBuffer buffer;
+            private ByteBuffer UDbuffer;
             private SocketAddress socketAdrsUDP;
 
             public UDPCommunicator(){
-                buffer = ByteBuffer.allocate(1024);
+                UDbuffer = ByteBuffer.allocate(8192);
             }
 
             @Override
             public void handle(SelectionKey key) {
                 try {
                     client = (DatagramChannel) key.channel();
-                    socketAdrsUDP = client.receive(buffer);
-                    buffer.flip();
-                    msgHandler.handleMessage(buffer, this);
+                    socketAdrsUDP = client.receive(UDbuffer);
+                    UDbuffer.flip();
+                    msgHandler.handleMessage(UDbuffer, this);
                 }catch(IOException | ClassNotFoundException e){
                     System.err.println(e);
                 }
@@ -221,6 +216,7 @@ public class MultiProtocolServer {
             @Override
             public void send(ByteBuffer buffer) {
                 try {
+                    //buffer.flip();
                     client.send(buffer, socketAdrsUDP);
                 }catch(IOException e){
                     System.err.println(e);
@@ -235,7 +231,6 @@ public class MultiProtocolServer {
         private class MessageHandler implements SerializeIt{
             private Map<ServerProtocol,Protocol> serverProtocol;
 
-
             public MessageHandler(){
                 serverProtocol = new HashMap<>();
                 serverProtocol.put(ServerProtocol.PINGPONG, new PingPong());
@@ -245,8 +240,8 @@ public class MultiProtocolServer {
             // can pass id instead of connection..
             public void handleMessage(ByteBuffer buffer, connectionHandler.ConnectionCommunicator connection) throws IOException, ClassNotFoundException {
 
-
                 Object object = deserialize(buffer);
+
                 if (!(object instanceof ServerMessage)) {
                     throw new ClassCastException();
                 }
@@ -272,14 +267,11 @@ public class MultiProtocolServer {
 
 
 
-
-
             private abstract class Protocol {
                 public abstract void action(Message<?, ?> msg, connectionHandler.ConnectionCommunicator connect);
             }
 
             private class PingPong extends Protocol {
-
 
                 @Override
                 public void action(Message<?, ?> msg, connectionHandler.ConnectionCommunicator connect )  {
@@ -288,17 +280,21 @@ public class MultiProtocolServer {
                     }
 
                     PingPongKeys key = (PingPongKeys)msg.getKey();
-                    System.out.println("in pingpong class " + key);
-                    //PingPongMessage replyb = new PingPongMessage(key.reply());
-                    ServerMessage servermessage = new ServerMessage(ServerProtocol.PINGPONG,new PingPongMessage(key.reply()));
+                    System.out.println("in ping pong class received " + key);
+                    key = key.reply();
+
+                    ServerMessage servermessage = new ServerMessage(ServerProtocol.PINGPONG, new PingPongMessage(key));
+                    ByteBuffer temp;
                     try{
-                        ByteBuffer temp = serialize(servermessage);
+                        temp = serialize(servermessage);
+                        System.out.println("in ping pong class sending data " + servermessage.getData());
+                        //temp.flip();
 
                         connect.send(temp);
+
                     }catch (IOException e){
                         e.printStackTrace();
                     }
-
                 }
             }
         }
@@ -307,8 +303,10 @@ public class MultiProtocolServer {
     public static void main(String[] args) throws IOException, InterruptedException {
         MultiProtocolServer testS = new MultiProtocolServer();
         testS.addTCP(10523);
+        testS.addUDP(10521);
         testS.serverUp();
-        TimeUnit.SECONDS.sleep(10);
+       /* TimeUnit.SECONDS.sleep(4);
+        testS.serverDown();*/
 
         }
     }

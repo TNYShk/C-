@@ -7,7 +7,7 @@ import java.net.InetAddress;
 
 public class ClientBroadcast {
     public static void main(String[] args) throws IOException {
-        int port = 44444;
+        int port = 10521;
         int i = 0;
         byte[] test = "נו זה כמו מו".getBytes();
 
@@ -16,9 +16,8 @@ public class ClientBroadcast {
                 sock.setBroadcast(true);
 
                 while (i < 10) {
-
-
                     DatagramPacket dp = new DatagramPacket(test, test.length, host, port);
+                    echo(dp.getData().toString());
                     sock.send(dp);
 
                     DatagramPacket reply = new DatagramPacket(new byte[1024], 1024);
