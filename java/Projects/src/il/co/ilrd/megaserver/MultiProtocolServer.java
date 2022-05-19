@@ -61,25 +61,19 @@ public class MultiProtocolServer {
     private class connectionHandler{
         //List<SelectionKey> tcpserverList;
        // List<SelectionKey> udpserverList;
-        //protected Selector selector;
 
 
-        public connectionHandler() throws IOException {
-           // tcpserverList = new ArrayList<>();
-            //udpserverList = new ArrayList<>();
-            //selector = Selector.open();
-        }
         public void addTCP(int port) throws IOException {
             if(!portList.add(port))
                 throw new IllegalArgumentException("duplicate port");
 
-                ServerSocketChannel tcp = ServerSocketChannel.open();
-                tcp.socket().bind(new InetSocketAddress(port));
-                tcp.configureBlocking(false);
+            ServerSocketChannel tcp = ServerSocketChannel.open();
+            tcp.socket().bind(new InetSocketAddress(port));
+            tcp.configureBlocking(false);
 
-                tcp.register(selector, SelectionKey.OP_ACCEPT, tcp);
-                System.out.println("tcp added!");
-                //tcpserverList.add(sKey);
+            tcp.register(selector, SelectionKey.OP_ACCEPT, tcp);
+            System.out.println("tcp added!");
+            //tcpserverList.add(sKey);
 
         }
 
@@ -87,12 +81,12 @@ public class MultiProtocolServer {
             if(!portList.add(port))
                 throw new IllegalArgumentException("duplicate port");
 
-                DatagramChannel udp = DatagramChannel.open();
-                udp.socket().bind(new InetSocketAddress(port));
-                udp.configureBlocking(false);
-                udp.register(selector, SelectionKey.OP_READ, udp);
-                System.out.println("udp added!");
-               // udpserverList.add(sKey);
+            DatagramChannel udp = DatagramChannel.open();
+            udp.socket().bind(new InetSocketAddress(port));
+            udp.configureBlocking(false);
+            udp.register(selector, SelectionKey.OP_READ, udp);
+            System.out.println("udp added!");
+            // udpserverList.add(sKey);
 
         }
 
@@ -109,7 +103,6 @@ public class MultiProtocolServer {
 
                     while (iter.hasNext()) {
                         key = iter.next();
-
 
                         if (key.attachment() instanceof DatagramChannel) {
                             UDPCommunicator udpConnect = new UDPCommunicator();
@@ -176,17 +169,12 @@ public class MultiProtocolServer {
                 client = (SocketChannel) key.channel();
             try {
                 ByteBuffer tmp = ByteBuffer.allocate(8192);
+                client.read(tmp);
+                msgHandler.handleMessage(tmp,this);
 
-               if(client.read(tmp) != -1)
-                   msgHandler.handleMessage(tmp,this);
-                //client.read(buffer);
-                //buffer.flip();
-               else{
-                   System.out.println("something is wrong!");
-               }
-                tmp.clear();
             }catch(IOException | ClassNotFoundException | RuntimeException e){
-                e.printStackTrace();
+               System.err.print(e);
+               throw new RuntimeException("oh no!");
             }
 
         }
@@ -253,6 +241,7 @@ public class MultiProtocolServer {
             public void handleMessage(ByteBuffer buffer, connectionHandler.ConnectionCommunicator connection) throws IOException, ClassNotFoundException {
 
                 Object object = deserialize(buffer);
+
                 if (!(object instanceof ServerMessage)) {
                     throw new ClassCastException();
                 }
@@ -262,7 +251,6 @@ public class MultiProtocolServer {
             }
             @Override
             public Object deserialize(ByteBuffer buffer) throws IOException, ClassNotFoundException {
-                buffer.flip();
                 try (ObjectInputStream objOIS = new ObjectInputStream(new ByteArrayInputStream(buffer.array()))) {
                         return objOIS.readObject();
                     }
@@ -292,21 +280,21 @@ public class MultiProtocolServer {
                     }
 
                     PingPongKeys key = (PingPongKeys)msg.getKey();
-
-                    key = key.reply();
                     System.out.println("in ping pong class received " + key);
-                    //PingPongMessage replyb = new PingPongMessage(key.reply());
+                    key = key.reply();
+
                     ServerMessage servermessage = new ServerMessage(ServerProtocol.PINGPONG, new PingPongMessage(key));
                     ByteBuffer temp;
                     try{
                         temp = serialize(servermessage);
+                        System.out.println("in ping pong class sending data " + servermessage.getData());
+                        //temp.flip();
+
                         connect.send(temp);
 
                     }catch (IOException e){
                         e.printStackTrace();
                     }
-
-
                 }
             }
         }

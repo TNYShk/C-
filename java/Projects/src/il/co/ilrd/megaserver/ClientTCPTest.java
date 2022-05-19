@@ -20,8 +20,8 @@ public class ClientTCPTest implements SerializeIt{
         PingPongMessage msgping = new PingPongMessage(PingPongKeys.PING);
         ServerMessage smsg = new ServerMessage(ServerProtocol.PINGPONG, msgping);
         buffer = buffer.put(serialize(smsg));
-        //buffer.rewind();
-        buffer.clear();
+        buffer.flip();
+       // buffer.clear();
         socketChannel.write(buffer);
         Thread.sleep(1000);
         //buffer.rewind();
@@ -31,10 +31,11 @@ public class ClientTCPTest implements SerializeIt{
 
 
         Object obj = deserialize(buffer);
+        buffer.flip();
         ServerMessage respond = (ServerMessage) obj;
         System.out.println("message form server: " + respond.getKey().toString());
 
-        socketChannel.close();
+        //socketChannel.close();
 
     }
 
