@@ -16,12 +16,15 @@ public class MultiProtocolServer {
     private MessageHandler msgHandler;
     private Set<Integer> portList;
      private volatile boolean isRun;
+    protected Selector selector;
+    private ByteBuffer buffer;
 
     public MultiProtocolServer() throws IOException {
         connectHandler = new connectionHandler();
         msgHandler = new MessageHandler();
         portList = new HashSet<>();
-        Selector.open();
+        selector = Selector.open();
+        buffer = ByteBuffer.allocate(1024);
     }
 
 
@@ -52,19 +55,19 @@ public class MultiProtocolServer {
 
     public void serverDown() throws IOException {
         isRun = false;
-        connectHandler.selector.close();
+        selector.close();
     }
 
     private class connectionHandler{
         //List<SelectionKey> tcpserverList;
        // List<SelectionKey> udpserverList;
-        protected Selector selector;
+        //protected Selector selector;
 
 
         public connectionHandler() throws IOException {
            // tcpserverList = new ArrayList<>();
             //udpserverList = new ArrayList<>();
-            selector = Selector.open();
+            //selector = Selector.open();
         }
         public void addTCP(int port) throws IOException {
             if(!portList.add(port))
@@ -94,7 +97,7 @@ public class MultiProtocolServer {
         }
 
         public void start() throws IOException {
-            selector = Selector.open();
+           // selector = Selector.open();
             System.out.println(Thread.currentThread().getName());
             try {
                 Iterator<SelectionKey> iter;
@@ -107,24 +110,24 @@ public class MultiProtocolServer {
                     while (iter.hasNext()) {
                         key = iter.next();
 
+
                         if (key.attachment() instanceof DatagramChannel) {
                             UDPCommunicator udpConnect = new UDPCommunicator();
                             udpConnect.handle(key);
-
                         }
                         else {
                             if (key.isAcceptable()) {
                                 ServerSocketChannel ssChannel = (ServerSocketChannel)key.attachment();
-                                System.out.println("here");
+                                //System.out.println("here");
                                 acceptConnectionTCP tcpAccept = new acceptConnectionTCP(ssChannel);
                                 tcpAccept.handle(key);
                             } else if (key.isReadable()) {
                                 TCPCommunicator tcpConnect = new TCPCommunicator();
-                                System.out.println("there");
+                               // System.out.println("there");
                                 tcpConnect.handle(key);
                             }
                         }
-                    iter.remove();
+                        iter.remove();
                     }
                 }
             }catch (IOException e){
@@ -155,7 +158,7 @@ public class MultiProtocolServer {
                 SocketChannel client = serverSocketChannel.accept();
                 String address = client.socket().getInetAddress().toString() + ":" + client.socket().getPort();
                 client.configureBlocking(false);
-                client.register(selector,  SelectionKey.OP_ACCEPT);
+                client.register(selector, SelectionKey.OP_READ);
                 System.out.println("accepted connection from: " + address);
                 client.write(welcomeBuf);
                 welcomeBuf.rewind();
@@ -168,31 +171,34 @@ public class MultiProtocolServer {
     }
         private class TCPCommunicator extends ConnectionCommunicator {
             private SocketChannel client;
-            private ByteBuffer buffer;
+            // private ByteBuffer buffer;
             public TCPCommunicator(){
-                buffer = ByteBuffer.allocate(1024);
+                //buffer = ByteBuffer.allocate(1024);
             }
             @Override
         public void handle(SelectionKey key) {
+
             try {
                 client = (SocketChannel) key.channel();
                 client.read(buffer);
-                buffer.flip();
+                //buffer.flip();
+                msgHandler.handleMessage(buffer,this);
 
-            }catch(IOException e){
+            }catch(IOException | ClassNotFoundException e){
                 throw new RuntimeException();
             }
         }
 
             @Override
             public void send(ByteBuffer buffer) {
+                buffer.rewind();
                 try {
-                    buffer.rewind();
                     client.write(buffer);
-                    buffer.clear();
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                buffer.clear();
             }
         }
 
@@ -220,6 +226,7 @@ public class MultiProtocolServer {
             @Override
             public void send(ByteBuffer buffer) {
                 try {
+                    //buffer.flip();
                     client.send(buffer, socketAdrsUDP);
                 }catch(IOException e){
                     System.err.println(e);
@@ -253,6 +260,7 @@ public class MultiProtocolServer {
             }
             @Override
             public Object deserialize(ByteBuffer buffer) throws IOException, ClassNotFoundException {
+                buffer.flip();
                 try (ObjectInputStream objOIS = new ObjectInputStream(new ByteArrayInputStream(buffer.array()))) {
                         return objOIS.readObject();
                     }
@@ -303,7 +311,8 @@ public class MultiProtocolServer {
         testS.addTCP(10523);
         testS.addUDP(10521);
         testS.serverUp();
-        TimeUnit.SECONDS.sleep(10);
+       /* TimeUnit.SECONDS.sleep(4);
+        testS.serverDown();*/
 
         }
     }

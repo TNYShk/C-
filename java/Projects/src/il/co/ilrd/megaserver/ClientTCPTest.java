@@ -43,7 +43,10 @@ public class ClientTCPTest implements SerializeIt{
         if (buffer == null) {
             return null;
         }
-        try (ByteArrayInputStream bAis = new ByteArrayInputStream(buffer.array())) {
+        //buffer.rewind();
+        byte[] tempBuf = buffer.array();
+        //buffer.rewind();
+        try (ByteArrayInputStream bAis = new ByteArrayInputStream(tempBuf)) {
             try (ObjectInputStream obj = new ObjectInputStream(bAis)) {
                 return obj.readObject();
             }
