@@ -21,6 +21,7 @@ public class MultiProtocolServer {
         connectHandler = new connectionHandler();
         msgHandler = new MessageHandler();
         portList = new HashSet<>();
+        Selector.open();
     }
 
 
@@ -40,7 +41,6 @@ public class MultiProtocolServer {
         isRun = true;
         Thread srvrUpper = new Thread(() -> {
             try {
-
                 connectHandler.start();
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -58,13 +58,12 @@ public class MultiProtocolServer {
     private class connectionHandler{
         //List<SelectionKey> tcpserverList;
        // List<SelectionKey> udpserverList;
-        private Selector selector;
+        protected Selector selector;
 
 
         public connectionHandler() throws IOException {
            // tcpserverList = new ArrayList<>();
             //udpserverList = new ArrayList<>();
-
             selector = Selector.open();
         }
         public void addTCP(int port) throws IOException {
@@ -156,7 +155,7 @@ public class MultiProtocolServer {
                 SocketChannel client = serverSocketChannel.accept();
                 String address = client.socket().getInetAddress().toString() + ":" + client.socket().getPort();
                 client.configureBlocking(false);
-                client.register(selector, SelectionKey.OP_READ | SelectionKey.OP_ACCEPT);
+                client.register(selector,  SelectionKey.OP_ACCEPT);
                 System.out.println("accepted connection from: " + address);
                 client.write(welcomeBuf);
                 welcomeBuf.rewind();
@@ -235,7 +234,6 @@ public class MultiProtocolServer {
         private class MessageHandler implements SerializeIt{
             private Map<ServerProtocol,Protocol> serverProtocol;
 
-
             public MessageHandler(){
                 serverProtocol = new HashMap<>();
                 serverProtocol.put(ServerProtocol.PINGPONG, new PingPong());
@@ -244,7 +242,6 @@ public class MultiProtocolServer {
             }
             // can pass id instead of connection..
             public void handleMessage(ByteBuffer buffer, connectionHandler.ConnectionCommunicator connection) throws IOException, ClassNotFoundException {
-
 
                 Object object = deserialize(buffer);
                 if (!(object instanceof ServerMessage)) {
@@ -272,14 +269,11 @@ public class MultiProtocolServer {
 
 
 
-
-
             private abstract class Protocol {
                 public abstract void action(Message<?, ?> msg, connectionHandler.ConnectionCommunicator connect);
             }
 
             private class PingPong extends Protocol {
-
 
                 @Override
                 public void action(Message<?, ?> msg, connectionHandler.ConnectionCommunicator connect )  {
@@ -307,6 +301,7 @@ public class MultiProtocolServer {
     public static void main(String[] args) throws IOException, InterruptedException {
         MultiProtocolServer testS = new MultiProtocolServer();
         testS.addTCP(10523);
+        testS.addUDP(10521);
         testS.serverUp();
         TimeUnit.SECONDS.sleep(10);
 
