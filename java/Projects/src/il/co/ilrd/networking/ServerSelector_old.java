@@ -6,16 +6,19 @@ import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.util.Iterator;
 
-public class ServerSelector {
+public class ServerSelector_old {
     private final int port;
+    private int udPort;
     private ServerSocketChannel ssc;
+    private DatagramChannel dcb;
     private Selector selector;
     private ByteBuffer byteBuf = ByteBuffer.allocate(512);
     private SelectionKey selectionKey;
     private final ByteBuffer welcomeBuf = ByteBuffer.wrap("Welcome to Chat!\n".getBytes());
 
-    public ServerSelector(int port) throws IOException {
+    public ServerSelector_old(int port) throws IOException {
         this.port = port;
+
         ssc = ServerSocketChannel.open();
         ssc.socket().bind(new InetSocketAddress(port));
         ssc.configureBlocking(false);
@@ -56,7 +59,7 @@ public class ServerSelector {
         SocketChannel sc = ((ServerSocketChannel) key.channel()).accept();
         String address = sc.socket().getInetAddress().toString() + ":" + sc.socket().getPort();
         sc.configureBlocking(false);
-        sc.register(selector, SelectionKey.OP_READ| SelectionKey.OP_READ, address);
+        sc.register(selector, SelectionKey.OP_READ, address);
         sc.write(welcomeBuf);
         welcomeBuf.rewind();
         System.out.println("accepted connection from: "+ address);
@@ -98,7 +101,7 @@ public class ServerSelector {
     }
 
     public static void main(String[] args) throws IOException {
-        ServerSelector server = new ServerSelector(10523);
+        ServerSelector_old server = new ServerSelector_old(10523);
         server.startServer();
     }
 }

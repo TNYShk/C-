@@ -6,13 +6,12 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 
-import static il.co.ilrd.networking.ClientUDP.echo;
+import static il.co.ilrd.networking.ClientBroadcast.echo;
 
 
 public class ServerUDP {
 
-    private int port;
-    private DatagramPacket incoming;
+    private final int port;
 
     public ServerUDP(int port){
         this.port = port;
@@ -23,7 +22,7 @@ public class ServerUDP {
         echo("Server is listening on port: "+ port+ "" + InetAddress.getLocalHost() + "--");
         try(DatagramSocket udpSocket = new DatagramSocket(port)) {
 
-            incoming = new DatagramPacket(new byte[1024], 1024);
+            DatagramPacket incoming = new DatagramPacket(new byte[1024], 1024);
 
             String msg;
             String sendMsg = "ping";
@@ -63,13 +62,16 @@ public class ServerUDP {
                 udpSocket.send(client);
 
         }catch(IOException e){
-            System.err.println(e);
+            throw new RuntimeException(e);
         }
 
     }
 
+
+
+
     public static void main(String[] args) throws Exception {
-        ServerUDP udp = new ServerUDP(10522);
+        ServerUDP udp = new ServerUDP(10523);
         //udp.setUDPserver();
         /*ServerUDP udp = new ServerUDP(25666);*/
         udp.listen();

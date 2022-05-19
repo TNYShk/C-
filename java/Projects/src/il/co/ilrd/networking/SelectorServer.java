@@ -16,12 +16,11 @@ import java.util.Set;
 public class SelectorServer {
     //private final int TCPort;
    private final int UDPort;
-    SocketAddress localport;
+    private final SocketAddress localport;
 
-    ServerSocketChannel tcpserver;
-    DatagramChannel udpserver;
-    private SelectionKey sKey;
-    DatagramChannel broadccast;
+    private ServerSocketChannel tcpserver;
+    private DatagramChannel udpserver;
+    private DatagramChannel broadccast;
 
     private Selector selector;
     private volatile boolean isRun;
@@ -51,7 +50,7 @@ public class SelectorServer {
         selector = Selector.open();
 
         tcpserver.register(selector, SelectionKey.OP_ACCEPT);
-        sKey = tcpserver.register(selector,ops,null);
+        SelectionKey sKey = tcpserver.register(selector, ops, null);
         udpserver.register(selector, SelectionKey.OP_READ);
         broadccast.register(selector, SelectionKey.OP_READ);
 
@@ -107,17 +106,18 @@ public class SelectorServer {
     }
 
     private void readableUDP(SelectionKey key) throws IOException {
-        DatagramChannel clientCh = (DatagramChannel)  key.channel();
-        SocketAddress clientAdrs = clientCh.receive(byteBuf);
-        System.out.println("write: ");
-        Scanner sc = new Scanner(System.in);
-        String response = sc.nextLine();
+        try(DatagramChannel clientCh = (DatagramChannel)  key.channel()) {
+            SocketAddress clientAdrs = clientCh.receive(byteBuf);
+            System.out.println("write: ");
+            Scanner sc = new Scanner(System.in);
+            String response = sc.nextLine();
 
-        System.out.println(new String(byteBuf.array()).trim());
-        byteBuf.flip();
-        clientCh.send(byteBuf,clientAdrs);
-        byteBuf.clear();
-        broadcast(response);
+            System.out.println(new String(byteBuf.array()).trim());
+            byteBuf.flip();
+            clientCh.send(byteBuf, clientAdrs);
+            byteBuf.clear();
+            broadcast(response);
+        }
 
     }
 
