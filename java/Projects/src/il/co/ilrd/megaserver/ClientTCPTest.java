@@ -5,7 +5,7 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
-public class ClientTCPTest implements SerializeIt{
+public class ClientTCPTest {
     private ByteBuffer buffer;
 
     private SocketChannel socketChannel;
@@ -29,44 +29,35 @@ public class ClientTCPTest implements SerializeIt{
 
         socketChannel.read(buffer);
 
+        ServerMessage serverMessage = (ServerMessage)deserialize(buffer.array());
 
-        Object obj = deserialize(buffer);
-        buffer.flip();
-        ServerMessage respond = (ServerMessage) obj;
-        System.out.println("message form server: " + respond.getKey().toString());
+        System.out.println("message form server: " + serverMessage.getKey().toString());
 
         //socketChannel.close();
 
     }
 
 
-    @Override
-    public Object deserialize(ByteBuffer buffer) throws IOException, ClassNotFoundException {
-        if (buffer == null) {
-            return null;
-        }
-        //buffer.rewind();
-        byte[] tempBuf = buffer.array();
-        //buffer.rewind();
-        try (ByteArrayInputStream bAis = new ByteArrayInputStream(tempBuf);
-             ObjectInputStream obj = new ObjectInputStream(bAis)) {
-                return obj.readObject();
+    public byte[] serialize(Object object) throws IOException {
+        try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+            try (ObjectOutputStream oos = new ObjectOutputStream(bos)){
+                oos.writeObject(object);
+                oos.flush();
+                return bos.toByteArray();
             }
         }
-
-
-
-    @Override
-    public ByteBuffer serialize(Object serverMsg) throws IOException {
-        try(ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            ObjectOutputStream oos = new ObjectOutputStream(bos)) {
-                oos.writeObject(serverMsg);
-                oos.flush();
-                return ByteBuffer.wrap(bos.toByteArray());
-
-        }
-
     }
 
+    private static Object deserialize(byte[] bytes) throws IOException, ClassNotFoundException {
+        if (bytes == null) {
+            return null;
+        }
+
+        try (ByteArrayInputStream b = new ByteArrayInputStream(bytes)) {
+            try (ObjectInputStream o = new ObjectInputStream(b)) {
+                return o.readObject();
+            }
+        }
+    }
 
 }
