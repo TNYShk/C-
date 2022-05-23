@@ -107,12 +107,12 @@ public class MultiProtocolServer {
                         else {
                             if (key.isAcceptable()) {
                                 ServerSocketChannel ssChannel = (ServerSocketChannel)key.attachment();
-                                System.out.println("here");
+                               // System.out.println("here");
                                 acceptConnectionTCP tcpAccept = new acceptConnectionTCP(ssChannel);
                                 tcpAccept.handle(key);
                             } else if (key.isReadable()) {
                                 TCPCommunicator tcpConnect = new TCPCommunicator();
-                                System.out.println("there");
+                                //System.out.println("there");
                                 tcpConnect.handle(key);
                             }
                         }
@@ -133,14 +133,11 @@ public class MultiProtocolServer {
         }
 
     private class acceptConnectionTCP extends Connection {
-
         private ServerSocketChannel serverSocketChannel;
-
         public acceptConnectionTCP(ServerSocketChannel serverSocketChannel) {
             super();
             this.serverSocketChannel = serverSocketChannel;
         }
-
         @Override
         public void handle(SelectionKey key) {
             try {
@@ -158,8 +155,6 @@ public class MultiProtocolServer {
     }
         private class TCPCommunicator extends ConnectionCommunicator {
             private SocketChannel client;
-
-
             @Override
         public void handle(SelectionKey key) {
                 client = (SocketChannel) key.channel();
@@ -168,7 +163,7 @@ public class MultiProtocolServer {
                 client.read(tmp);
                 msgHandler.handleMessage(tmp,this);
 
-            }catch(IOException | ClassNotFoundException | RuntimeException e){
+            }catch(IOException | ClassNotFoundException e){
                System.err.print(e);
                throw new RuntimeException("oh no!");
             }
@@ -224,24 +219,23 @@ public class MultiProtocolServer {
     }
 
         private class MessageHandler implements SerializeIt{
-            private Map<ServerProtocol,Protocol> serverProtocol;
+            private final Map<ServerProtocol,Protocol> serverProtocolMap;
 
             public MessageHandler(){
-                serverProtocol = new HashMap<>();
-                serverProtocol.put(ServerProtocol.PINGPONG, new PingPong());
-               // serverProtocol.put(ServerProtocol.CHAT, new Chat());
+                serverProtocolMap = new HashMap<>();
+                serverProtocolMap.put(ServerProtocol.PINGPONG, new PingPong());
+               // serverProtocolMap.put(ServerProtocol.CHAT, new Chat());
 
             }
             // can pass id instead of connection..
             public void handleMessage(ByteBuffer buffer, connectionHandler.ConnectionCommunicator connection) throws IOException, ClassNotFoundException {
-
                 Object object = deserialize(buffer);
 
                 if (!(object instanceof ServerMessage)) {
                     throw new ClassCastException();
                 }
                 ServerMessage serverMessage = (ServerMessage)object;
-                Protocol protocol = serverProtocol.get(serverMessage.getKey());
+                Protocol protocol = serverProtocolMap.get(serverMessage.getKey());
                 protocol.action(serverMessage.getData(),connection);
             }
             @Override
