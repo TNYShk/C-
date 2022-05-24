@@ -51,12 +51,12 @@ public class Client1UDP {
         socket.close();
     }
     public byte[] serialize(Object object) throws IOException {
-        try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
-            try (ObjectOutputStream oos = new ObjectOutputStream(bos)){
+        try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
+             ObjectOutputStream oos = new ObjectOutputStream(bos)) {
                 oos.writeObject(object);
                 oos.flush();
                 return bos.toByteArray();
-            }
+
         }
     }
 
@@ -65,10 +65,10 @@ public class Client1UDP {
             return null;
         }
 
-        try (ByteArrayInputStream b = new ByteArrayInputStream(bytes)) {
-            try (ObjectInputStream o = new ObjectInputStream(b)) {
+        try (ByteArrayInputStream b = new ByteArrayInputStream(bytes);
+             ObjectInputStream o = new ObjectInputStream(b)) {
                 return o.readObject();
-            }
+
         }
     }
 
