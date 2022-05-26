@@ -10,30 +10,25 @@ public class Client1TCP {
         PingPongMessage messagePing1 = new PingPongMessage(PingPongKeys.PONG);
         ServerMessage message1 = new ServerMessage(ServerProtocol.PINGPONG, messagePing1);
 
-        Client1TCP client = new Client1TCP("192.168.68.101", 10523);
-
+        //Client1TCP client = new Client1TCP("192.168.68.101", 10523);
+        Client1TCP client = new Client1TCP("10.1.0.97", 10523);
         client.sendMessage(message1);
     }
 
     private SocketChannel client;
     private ByteBuffer buffer;
 
-    public Client1TCP(String address, int port) {
-        try {
+    public Client1TCP(String address, int port) throws IOException  {
             client = SocketChannel.open(new InetSocketAddress(address, port));
             buffer = ByteBuffer.allocate(8192);
             System.out.println("Connected");
-        } catch(IOException e) {
-            System.out.println(e);
-        }
+
     }
 
     public void sendMessage(Message<?, ?> msg) throws IOException, ClassNotFoundException {
 
         buffer = buffer.put(serialize(msg));
 
-
-        try {
             buffer.rewind();
             client.write(buffer);
             buffer.clear();
@@ -41,9 +36,9 @@ public class Client1TCP {
 
             Object object = deserialize(buffer.array());
             buffer.flip();
-            if (!(object instanceof ServerMessage)) {
+          /*  if (!(object instanceof ServerMessage)) {
                 throw new ClassCastException();
-            }
+            }*/
             ServerMessage serverMessage = (ServerMessage)object;
 //			ServerProtocol protocol = serverMessage.getKey();
 //			if (!(protocol instanceof PingPongMessage)) {
@@ -52,9 +47,6 @@ public class Client1TCP {
             System.out.println("message data " + serverMessage.getData());
             System.out.println("message key" + serverMessage.getKey());
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     public byte[] serialize(Object object) throws IOException {

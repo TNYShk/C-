@@ -33,7 +33,7 @@ public class ClientTCPTest {
 
         System.out.println("message form server: " + serverMessage.getData().toString());
 
-        //socketChannel.close();
+        socketChannel.close();
 
     }
 

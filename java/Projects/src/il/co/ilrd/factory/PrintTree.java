@@ -1,14 +1,13 @@
 package il.co.ilrd.factory;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 
 public class PrintTree {
     private final TreeFolder root;
      Factory<Boolean, Component, File> treeFactory = new Factory<>();
+     static Map<String,Integer> dogMap = new HashMap<>(); /* to store all occurrences of 'dog'*/
 
     public PrintTree(String path) {
         root = new TreeFolder(path);
@@ -36,6 +35,8 @@ public class PrintTree {
 
             for(File file: Objects.requireNonNull(folder.listFiles())){
                 componentsList.add( treeFactory.create(file.isDirectory(), file));
+               if(file.getName().contains(new StringBuffer("dog")))
+                   dogMap.merge(file.getName(),1,Integer::sum);
             }
         }
         @Override

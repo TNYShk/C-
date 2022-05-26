@@ -2,15 +2,22 @@ package il.co.ilrd.factory;
 
 
 import org.junit.jupiter.api.Test;
+
+import static il.co.ilrd.factory.PrintTree.dogMap;
 import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.Collections;
 import java.util.function.Function;
 
 public class FactoryTest {
 
     @Test
     void TreePrintTest(){
-        PrintTree offer = new PrintTree("/home/tanya/git/fs");
-        offer.tree();
+        PrintTree test = new PrintTree("/home/tanya/Downloads");
+        System.out.println(dogMap.entrySet());
+
+        System.out.println(Collections.max(dogMap.values()));
+        //test.tree();
     }
 
     @Test

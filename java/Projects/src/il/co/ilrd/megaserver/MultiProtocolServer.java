@@ -58,7 +58,8 @@ public class MultiProtocolServer {
     }
 
     private class connectionHandler{
-
+        UDPCommunicator udpConnect;
+        TCPCommunicator tcpConnect;
         public void addTCP(int port) throws IOException {
             if(!portList.add(port))
                 throw new IllegalArgumentException("duplicate port");
@@ -69,7 +70,7 @@ public class MultiProtocolServer {
 
             tcp.register(selector, SelectionKey.OP_ACCEPT, tcp);
             System.out.println("tcp added!");
-
+            tcpConnect = new TCPCommunicator();
 
         }
 
@@ -82,6 +83,7 @@ public class MultiProtocolServer {
             udp.configureBlocking(false);
             udp.register(selector, SelectionKey.OP_READ, udp);
             System.out.println("udp added!");
+             udpConnect = new UDPCommunicator();
 
 
         }
@@ -101,7 +103,7 @@ public class MultiProtocolServer {
                         key = iter.next();
 
                         if (key.attachment() instanceof DatagramChannel) {
-                            UDPCommunicator udpConnect = new UDPCommunicator();
+                            //UDPCommunicator udpConnect = new UDPCommunicator();
                             udpConnect.handle(key);
                         }
                         else {
@@ -111,7 +113,7 @@ public class MultiProtocolServer {
                                 acceptConnectionTCP tcpAccept = new acceptConnectionTCP(ssChannel);
                                 tcpAccept.handle(key);
                             } else if (key.isReadable()) {
-                                TCPCommunicator tcpConnect = new TCPCommunicator();
+                                //TCPCommunicator tcpConnect = new TCPCommunicator();
                                 //System.out.println("there");
                                 tcpConnect.handle(key);
                             }
@@ -229,6 +231,7 @@ public class MultiProtocolServer {
             }
             // can pass id instead of connection..
             public void handleMessage(ByteBuffer buffer, connectionHandler.ConnectionCommunicator connection) throws IOException, ClassNotFoundException {
+               buffer.flip();
                 Object object = deserialize(buffer);
 
                 if (!(object instanceof ServerMessage)) {
