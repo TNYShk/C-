@@ -17,12 +17,14 @@ public class ClientTCP {
            writer.println("ping");
 
            for(int i =0; i<10;++i){
-               System.out.println("pong");
+              // System.out.println("pong");
                 String out = reader.readLine();
-                System.out.println(out);
+                //System.out.println(out);
                 System.out.println("msg from server: "+out);
-                writer.println("ping");
-                //writer.println(out);
+                if(out.equals("ping"))
+                    writer.println("pong");
+                else
+                 writer.println(out);
            }
 
        } catch (IOException ex) {

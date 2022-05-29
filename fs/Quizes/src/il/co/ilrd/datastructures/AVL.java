@@ -1,4 +1,4 @@
-package il.co.ilrd.trees;
+package il.co.ilrd.datastructures;
 
 import java.util.LinkedList;
 import java.util.Queue;

@@ -1,4 +1,4 @@
-package il.co.ilrd.trees;
+package il.co.ilrd.datastructures;
 
 public class BinaryTree {
     static Node head;
