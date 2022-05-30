@@ -3,32 +3,63 @@ package il.co.ilrd.varonis;
 
 import jdk.nashorn.internal.codegen.CompilerConstants;
 
-import java.io.File;
+
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.function.Function;
+
+import java.util.Scanner;
+
 
 public class Factory {
 
-    //private HashMap<String, Function<String, Void>> operations = new HashMap<>();
-    StringCounter test = new StringCounter("/Users/tanyashkolnik/Documents/F1.txt");
+
+    //StringCounter test = new StringCounter("/Users/tanyashkolnik/Documents/F1.txt");
     public Factory() throws IOException {
-     //operations.put("split",test.printSplit("-c"));
+
     }
 
     public static void main(String[] args) throws IOException {
+
         StringCounter test = new StringCounter("/Users/tanyashkolnik/Documents/F1.txt");
-        test.work();
+        System.out.println("enter desired command: ");
+        test.counter();
         test.produceOutput();
-        test.printSplit("-c");
-        test.printSplit("-n");
-        test.printSplit("-s");
+        Scanner sc = new Scanner(System.in);
+       String input =  sc.nextLine();
+       boolean keepIt = true;
+       while(keepIt){
+
+        if(input.equals("split -c")){
+            test.printSplit("-c");
+         break;
+        }
+      if(input.equals("split -n")){
+          test.printSplit("-n");
+          break;
+      }
+       if( input.equals("split -s")){
+           test.printSplit("-s");
+           break;
+       }
+       if(input.equals("exit"))
+           keepIt  = false;
+        else{
+           test.operate(input);
+           input =  sc.nextLine();
+        }
+
+       }
+
+       /*
+        test.counter();
+        test.produceOutput();
+        //test.printSplit("-c");
+        //test.printSplit("-n");
+        //test.printSplit("-s");
         test.maxWord();
         test.sortDesc();
         test.sortAsc();
-
+*/
 
 
     }

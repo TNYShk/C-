@@ -7,16 +7,32 @@ import java.util.function.Function;
 
 import static il.co.ilrd.varonis.Dictionary.*;
 
-public class StringCounter implements Function {
+public class StringCounter  {
     //private LinkedList<Integer> list = new LinkedList<>();
-    private  HashMap<String, Integer> dictionary;
+    private HashMap<String,Oper> operMap = new HashMap<>();
+    private HashMap<String, Integer> dictionary;
     private static String path;
     public StringCounter(String files) {
         dictionary = new HashMap<>();
         path = files;
 
+        operMap.put("sort -d",sortDesc);
+        operMap.put("sort -a",this::sortAsc);
+        operMap.put("count", this::produceOutput);
+        operMap.put("by", this::maxWord);
+
+
+
     }
-    public  void work(){
+    public void operate(String str) throws IOException {
+        operMap.get(str).oper();
+    }
+
+
+    interface Oper{
+        public void oper() throws IOException;
+    }
+    public void counter(){
         List<String> textFileList = Arrays.asList(path);
         try {
 
@@ -88,7 +104,7 @@ public class StringCounter implements Function {
         }
 
     }
-    public void sortDesc() throws IOException {
+    Oper sortDesc = () -> {
         FileWriter writing = new FileWriter("/Users/tanyashkolnik/Documents/F5.txt", false);
         List<String> sorted = new ArrayList<>(dictionary.keySet());
 
@@ -97,12 +113,12 @@ public class StringCounter implements Function {
         try (BufferedWriter writer = new BufferedWriter(writing)) {
             for (String w : sorted) {
                 writer.write(w);
-                 writer.newLine();
+                writer.newLine();
             }
 
         }
+    };
 
-    }
     public  void sortAsc() throws IOException {
         FileWriter writing = new FileWriter("/Users/tanyashkolnik/Documents/F6.txt", false);
         List<String> sorted = new ArrayList<>(dictionary.keySet());
@@ -116,15 +132,6 @@ public class StringCounter implements Function {
         }
 
     }
-
-
-
-    @Override
-    public Object apply(Object o) {
-        return null;
-    }
-
-
 
 }
 
