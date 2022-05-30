@@ -22,7 +22,6 @@ public class Dictionary<K,V> {
 
                 while (textFile.hasNext()) {
                     dictionary.merge(textFile.next().toLowerCase().trim(),1,Integer::sum);
-
                 }
 
                 textFile.close();
@@ -38,7 +37,6 @@ public class Dictionary<K,V> {
         }
     public static Integer getMax() {
         int max = Collections.max(dictionary.values());
-
             return max;
         }
 
