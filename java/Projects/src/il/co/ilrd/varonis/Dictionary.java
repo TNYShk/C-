@@ -36,10 +36,10 @@ public class Dictionary<K,V> {
             System.out.println(dictionary.keySet());
 
         }
-    public static void getMax(HashMap<String, Integer> dictionary) {
+    public static Integer getMax() {
         int max = Collections.max(dictionary.values());
-       System.out.println(max);
 
+            return max;
         }
 
 

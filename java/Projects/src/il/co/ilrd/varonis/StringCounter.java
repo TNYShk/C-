@@ -58,6 +58,13 @@ public class StringCounter {
             }
         }
     }
+    public static void maxWord(){
+        Integer max = Dictionary.getMax();
+        for (Map.Entry<String, Integer> entry : dictionary.entrySet()) {
+            if(entry.getValue().equals(max))
+                System.out.println(entry.getKey()+ ": "+ entry.getValue());
+        }
+    }
 
     public static void printComma() throws IOException {
         FileWriter writing = new FileWriter("/Users/tanyashkolnik/Documents/F4.txt", false);
