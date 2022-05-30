@@ -1,11 +1,9 @@
 package il.co.ilrd.varonis;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.util.*;
-import java.util.function.Function;
 
-import static il.co.ilrd.varonis.Dictionary.*;
+import java.util.*;
+
 
 public class StringCounter  {
     //private LinkedList<Integer> list = new LinkedList<>();
@@ -21,8 +19,6 @@ public class StringCounter  {
         operMap.put("count", this::produceOutput);
         operMap.put("by", this::maxWord);
 
-
-
     }
     public void operate(String str) throws IOException {
         operMap.get(str).oper();
@@ -35,7 +31,6 @@ public class StringCounter  {
     public void counter(){
         List<String> textFileList = Arrays.asList(path);
         try {
-
             Dictionary reader = new Dictionary(dictionary);
 
             for (String text : textFileList) {
@@ -51,18 +46,17 @@ public class StringCounter  {
 
             for (String word : file) {
                 dictionary.merge(word, 1, Integer::sum);
-                //Integer dict = dictionary.get(word);
             }
             textFile.close();
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-    }
+        }
     }
 
     public void produceOutput() throws IOException {
 
-        FileWriter writing = new FileWriter("/Users/tanyashkolnik/Documents/F3.txt", false);
+        FileWriter writing = new FileWriter("/Users/tanyashkolnik/Documents/F2.txt", false);
 
         try (BufferedWriter writer = new BufferedWriter(writing)) {
             for (Map.Entry<String, Integer> entry : dictionary.entrySet()) {
@@ -70,6 +64,7 @@ public class StringCounter  {
                 writer.newLine();
             }
         }
+        System.out.println("created file: F2.txt with words and their according count");
     }
     public void maxWord(){
         Integer max = Dictionary.getMax();
@@ -82,7 +77,7 @@ public class StringCounter  {
     }
 
     public void printSplit(String some) throws IOException {
-        FileWriter writing = new FileWriter("/Users/tanyashkolnik/Documents/F4.txt", false);
+        FileWriter writing = new FileWriter("/Users/tanyashkolnik/Documents/F2.txt", false);
         List<String> sorted = new ArrayList<>(dictionary.keySet());
 
         Collections.sort(sorted);
@@ -102,10 +97,10 @@ public class StringCounter  {
             }
 
         }
-
+        System.out.println("created file: F2.txt with the desired split");
     }
     Oper sortDesc = () -> {
-        FileWriter writing = new FileWriter("/Users/tanyashkolnik/Documents/F5.txt", false);
+        FileWriter writing = new FileWriter("/Users/tanyashkolnik/Documents/F2.txt", false);
         List<String> sorted = new ArrayList<>(dictionary.keySet());
 
         Collections.sort(sorted);
@@ -117,10 +112,11 @@ public class StringCounter  {
             }
 
         }
+        System.out.println("created file: F2.txt with the desired sort");
     };
 
     public  void sortAsc() throws IOException {
-        FileWriter writing = new FileWriter("/Users/tanyashkolnik/Documents/F6.txt", false);
+        FileWriter writing = new FileWriter("/Users/tanyashkolnik/Documents/F2.txt", false);
         List<String> sorted = new ArrayList<>(dictionary.keySet());
         Collections.sort(sorted);
         try (BufferedWriter writer = new BufferedWriter(writing)) {
@@ -130,7 +126,7 @@ public class StringCounter  {
             }
 
         }
-
+        System.out.println("created file: F2.txt with the desired sort");
     }
 
 }
