@@ -26,7 +26,7 @@ public class StringCounter  {
 
 
     interface Oper{
-        public void oper() throws IOException;
+         void oper() throws IOException;
     }
     public void counter(){
         List<String> textFileList = Arrays.asList(path);

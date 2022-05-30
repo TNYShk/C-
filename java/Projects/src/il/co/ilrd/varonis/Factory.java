@@ -1,17 +1,10 @@
 package il.co.ilrd.varonis;
 
-
-
-
-
 import java.io.IOException;
-
 
 import java.util.Scanner;
 
-
 public class Factory {
-
 
     public static void main(String[] args) throws IOException {
 
@@ -33,6 +26,7 @@ public class Factory {
             }
            if( input.equals("split -s")){
                test.printSplit("-s");
+               break;
            }
            else{
                test.operate(input);
