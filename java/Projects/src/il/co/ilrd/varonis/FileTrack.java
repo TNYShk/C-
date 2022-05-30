@@ -55,8 +55,8 @@ public static void read(String files) throws IOException {
 
 
     public static void main(String[]args) throws IOException {
-        FileTrack test = new FileTrack("/home/tanya/F1.txt");
-        read("/home/tanya/F1.txt");
+        FileTrack test = new FileTrack("/Users/tanyashkolnik/Documents/F1.txt");
+        read("/Users/tanyashkolnik/Documents/F1.txt");
         System.out.println(dictionary.values());
 
 

@@ -9,17 +9,14 @@ import static il.co.ilrd.varonis.Dictionary.*;
 public class StringCounter {
     private LinkedList<Integer> list = new LinkedList<>();
     private static HashMap<String, Integer> dictionary;
-
-    public StringCounter(LinkedList<Integer> list) {
-        this.list = list;
-    }
-
-    public static void main(String[] args) throws IOException {
-
+    private static String path;
+    public StringCounter(String files) {
         dictionary = new HashMap<>();
+        path = files;
 
-        List<String> textFileList = Arrays.asList("/home/tanya/F1.txt");
-
+    }
+    public static void work(){
+        List<String> textFileList = Arrays.asList(path);
         try {
 
             Dictionary reader = new Dictionary(dictionary);
@@ -28,7 +25,7 @@ public class StringCounter {
                 reader.fileScanner(text);
             }
 
-            Scanner textFile = new Scanner(new File("/home/tanya/F1.txt"));
+            Scanner textFile = new Scanner(new File(path));
             ArrayList<String> file = new ArrayList<>();
 
             while (textFile.hasNext()) {
@@ -45,39 +42,12 @@ public class StringCounter {
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-        } finally {
-            Vector<Integer> vec1 = new Vector<>(dictionary.values());
-            //System.out.println(dictionary.values());
-            //System.out.println(dictionary.keySet());
-            //printDict(dictionary);
-            //getMax(dictionary);
-            /*List<Map.Entry<String, Integer>> words = new LinkedList<>();
-            for (Map.Entry<String, Integer> entry :
-                    dictionary.entrySet()) {
-                words.add((Map.Entry<String, Integer>) dictionary.entrySet());
-            }
-*/
-            produceOutput();
-            printComma();
-            //System.out.println(words);
-/*
-            FileWriter writing = new FileWriter("/home/tanya/F2.txt",true);
-               // for(String word: dictionary.keySet()){
-
-                    try (BufferedWriter writer = new BufferedWriter(writing)) {
-                        for (Map.Entry<String, Integer> entry :
-                                dictionary.entrySet()) {
-                        writer.write(entry.getKey() + ": " + entry.getValue());
-                        writer.newLine();
-                    }
-                }*/
-
-        }
+    }
     }
 
     public static void produceOutput() throws IOException {
 
-        FileWriter writing = new FileWriter("/home/tanya/F3.txt", true);
+        FileWriter writing = new FileWriter("/Users/tanyashkolnik/Documents/F3.txt", false);
         // for(String word: dictionary.keySet()){
 
         try (BufferedWriter writer = new BufferedWriter(writing)) {
@@ -90,7 +60,7 @@ public class StringCounter {
     }
 
     public static void printComma() throws IOException {
-        FileWriter writing = new FileWriter("/home/tanya/F4.txt", true);
+        FileWriter writing = new FileWriter("/Users/tanyashkolnik/Documents/F4.txt", false);
         List<String> sorted = new ArrayList<>(dictionary.keySet());
         List<Map.Entry<String,Integer>> mix = new ArrayList<>();
 
