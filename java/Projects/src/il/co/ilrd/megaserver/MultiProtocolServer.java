@@ -293,7 +293,7 @@ public class MultiProtocolServer {
 
                     if(key.equals(ChatKeys.REGISTER)) {
                         chatClient.add(connection);
-                        craftMsg(ChatKeys.PUBLISH,"welcome!");
+                        craftMsg(ChatKeys.PUBLISH,"welcome! " + msgg);
                     }
                     else if(key.equals(ChatKeys.UNREGISTER)){
                         chatClient.remove(connection);
