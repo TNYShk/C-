@@ -11,8 +11,9 @@ public class Client1TCP {
         ServerMessage message1 = new ServerMessage(ServerProtocol.PINGPONG, messagePing1);
 
         //Client1TCP client = new Client1TCP("192.168.68.101", 10523);
-        Client1TCP client = new Client1TCP("10.1.0.97", 10523);
-        client.sendMessage(message1);
+        Client1TCP client = new Client1TCP("localhost", 10523);
+        for(int i =0; i<2; ++i)
+            client.sendMessage(message1);
     }
 
     private SocketChannel client;
@@ -28,7 +29,7 @@ public class Client1TCP {
     public void sendMessage(Message<?, ?> msg) throws IOException, ClassNotFoundException {
 
         buffer = buffer.put(serialize(msg));
-
+            //buffer.flip();
             buffer.rewind();
             client.write(buffer);
             buffer.clear();
@@ -44,8 +45,9 @@ public class Client1TCP {
 //			if (!(protocol instanceof PingPongMessage)) {
 //				throw new ClassCastException();
 //			}
-            System.out.println("message data " + serverMessage.getData());
-            System.out.println("message key" + serverMessage.getKey());
+            System.out.println("(data)message from server:   " + serverMessage.getData());
+            System.out.println("(data.key)message from server:  " + serverMessage.getData().getKey());
+
 
     }
 

@@ -9,7 +9,7 @@ public interface SerializeIt {
     Object deserialize(ByteBuffer buffer) throws IOException, ClassNotFoundException;
     ByteBuffer serialize(Object serverMsg) throws IOException;
 
-     default byte[] serializeB(Object object) throws IOException {
+     static byte[] serializeB(Object object) throws IOException {
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
             try (ObjectOutputStream oos = new ObjectOutputStream(bos)){
                 oos.writeObject(object);

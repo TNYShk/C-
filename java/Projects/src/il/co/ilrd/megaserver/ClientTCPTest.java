@@ -12,7 +12,7 @@ public class ClientTCPTest {
 
     public ClientTCPTest() throws IOException {
         buffer = ByteBuffer.allocate(1024);
-        socketChannel = SocketChannel.open(new InetSocketAddress("192.168.68.101", 10523));
+        socketChannel = SocketChannel.open(new InetSocketAddress("10.1.0.77", 10523));
         socketChannel.configureBlocking(false);
     }
 
