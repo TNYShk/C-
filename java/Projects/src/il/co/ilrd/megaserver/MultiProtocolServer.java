@@ -236,16 +236,17 @@ public class MultiProtocolServer {
 
         private class MessageHandler implements SerializeIt{
             private final Map<ServerProtocol,Protocol> serverProtocolMap;
-
+            private connectionHandler.ConnectionCommunicator connection;
             public MessageHandler(){
                 serverProtocolMap = new HashMap<>();
                 serverProtocolMap.put(ServerProtocol.PINGPONG, new PingPong());
-               // serverProtocolMap.put(ServerProtocol.CHAT, new Chat());
+               serverProtocolMap.put(ServerProtocol.CHAT, new Chat());
 
             }
             // can pass id instead of connection..
             public void handleMessage(ByteBuffer buffer, connectionHandler.ConnectionCommunicator connection) throws IOException, ClassNotFoundException {
-               buffer.flip();
+               this.connection = connection;
+                buffer.flip();
                 Object object = deserialize(buffer);
 
                 if (!(object instanceof ServerMessage)) {
@@ -253,7 +254,7 @@ public class MultiProtocolServer {
                 }
                 ServerMessage serverMessage = (ServerMessage)object;
                 Protocol protocol = serverProtocolMap.get(serverMessage.getKey());
-                protocol.action(serverMessage.getData(),connection);
+                protocol.action(serverMessage.getData());
             }
             @Override
             public Object deserialize(ByteBuffer buffer) throws IOException, ClassNotFoundException {
@@ -275,13 +276,51 @@ public class MultiProtocolServer {
 
 
             private abstract class Protocol {
-                public abstract void action(Message<?, ?> msg, connectionHandler.ConnectionCommunicator connect);
+                public abstract void action(Message<?, ?> msg);
             }
+            private class Chat extends Protocol {
+                private HashSet<connectionHandler.ConnectionCommunicator> chatClient = new HashSet<>();
+                private ByteBuffer bufferChat = ByteBuffer.allocate(8192);
 
+                @Override
+                public void action(Message<?, ?> msg )  {
+                   /* if (!(msg instanceof ChatMessage)) {
+                        throw new ClassCastException();
+                    }*/
+
+                   ChatKeys key = (ChatKeys)msg.getKey();
+                    String msgg  = (String)msg.getData();
+
+                    if(key.equals(ChatKeys.REGISTER)) {
+                        chatClient.add(connection);
+                        craftMsg(ChatKeys.PUBLISH,"welcome!");
+                    }
+                    else if(key.equals(ChatKeys.UNREGISTER)){
+                        chatClient.remove(connection);
+                        craftMsg(ChatKeys.PUBLISH,"good bye!");
+                    }
+                    else if(key.equals(ChatKeys.BROADCAST)){
+                        for(connectionHandler.ConnectionCommunicator c: chatClient)
+                            craftMsg(ChatKeys.PUBLISH,msgg);
+                    }
+
+                }
+
+                private void craftMsg(ChatKeys key, String msg){
+                    ChatMessage servermessage = new ChatMessage(key, msg);
+                 //   ServerMessage servermessage = new ServerMessage(ServerProtocol.CHAT, new ChatMessage(key,msg));
+                    //ByteBuffer bufferChat = ByteBuffer.allocate(8192);
+                    try{
+                        connection.send(serialize(servermessage));
+                    }catch (IOException e){
+                        e.printStackTrace();
+                    }
+                }
+            }
             private class PingPong extends Protocol {
 
                 @Override
-                public void action(Message<?, ?> msg, connectionHandler.ConnectionCommunicator connect )  {
+                public void action(Message<?, ?> msg)  {
                     if (!(msg instanceof PingPongMessage)) {
                         throw new ClassCastException();
                     }
@@ -297,7 +336,7 @@ public class MultiProtocolServer {
                         System.out.println("server sending data " + servermessage.getData());
                         //temp.flip();
 
-                        connect.send(temp);
+                        connection.send(temp);
 
                     }catch (IOException e){
                         e.printStackTrace();
