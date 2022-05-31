@@ -48,7 +48,6 @@ public class ThreadSafeQueue<E> {
             System.out.print(e + " ");
         }
     }
-
 }
 class Testing{
 
