@@ -21,5 +21,5 @@ public class ChatMessage implements Message<ChatKeys,String> {
     }
 
     @Override
-    public String toString(){return null;}
+    public String toString(){return "ChatMessage";}
 }

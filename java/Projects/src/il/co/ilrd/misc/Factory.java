@@ -1,11 +1,11 @@
-package il.co.ilrd.varonis;
+package il.co.ilrd.misc;
 
 import java.io.IOException;
 
 import java.util.Scanner;
 
 public class Factory {
-
+    //Varonis
     public static void main(String[] args) throws IOException {
 
         StringCounter test = new StringCounter("/Users/tanyashkolnik/Documents/F1.txt");

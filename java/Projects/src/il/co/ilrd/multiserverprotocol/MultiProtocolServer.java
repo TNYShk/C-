@@ -45,7 +45,7 @@ public class MultiProtocolServer {
             }
         });
         srvrUpper.start();
-        System.out.println(Thread.currentThread().getName());
+
     }
 
     public void serverDown() throws IOException {
@@ -55,7 +55,7 @@ public class MultiProtocolServer {
 
     private class connectionHandler{
         UDPCommunicator udpConnect;
-        //TCPCommunicator tcpConnect;
+
         public void addTCP(int port) throws IOException {
             if(!portList.add(port))
                 throw new IllegalArgumentException("duplicate port");
@@ -86,7 +86,7 @@ public class MultiProtocolServer {
         }
 
         public void start() throws IOException {
-           // selector = Selector.open();
+
             System.out.println(Thread.currentThread().getName());
             try {
                 Iterator<SelectionKey> iter;
@@ -100,18 +100,13 @@ public class MultiProtocolServer {
                         key = iter.next();
 
                         if (key.attachment() instanceof DatagramChannel) {
-                            //UDPCommunicator udpConnect = new UDPCommunicator();
                             udpConnect.handle(key);
                         }
                         else {
                             if (key.isAcceptable()) {
-                                //ServerSocketChannel ssChannel = (ServerSocketChannel)key.attachment();
-                               // System.out.println("here");
-                                //acceptConnectionTCP tcpAccept = new acceptConnectionTCP(ssChannel);
                                 ((acceptConnectionTCP)key.attachment()).handle(key);
+
                             } else if (key.isReadable()) {
-                                //TCPCommunicator tcpConnect = new TCPCommunicator();
-                                //System.out.println("there");
                                 ((ConnectionCommunicator)key.attachment()).handle(key);
                             }
                         }
@@ -123,7 +118,7 @@ public class MultiProtocolServer {
             }
         }
 
-        private abstract class Connection{    // need to pass key?
+        private abstract class Connection{
             public abstract void handle(SelectionKey key);
         }
 
@@ -148,10 +143,9 @@ public class MultiProtocolServer {
                 System.out.println("accepted connection from: " + address);
                 SelectionKey tcpKey = client.register(selector, SelectionKey.OP_READ);
                 tcpKey.attach(tcpConnect);
-                //System.out.println("done with the handle");
+
             } catch (IOException e) {
                 e.printStackTrace();
-                throw new RuntimeException(e);
             }
         }
     }
@@ -177,15 +171,12 @@ public class MultiProtocolServer {
             }catch(IOException | ClassNotFoundException e){
 
                System.err.print(e);
-               //throw new RuntimeException("oh no!");
             }
-
         }
 
             @Override
             public void send(ByteBuffer buffer) {
                 try {
-                    //buffer.flip();
                     client.write(buffer);
                     buffer.clear();
                 } catch (IOException e) {
@@ -236,21 +227,25 @@ public class MultiProtocolServer {
             public MessageHandler(){
                 serverProtocolMap = new HashMap<>();
                 serverProtocolMap.put(ServerProtocol.PINGPONG, new PingPong());
-               serverProtocolMap.put(ServerProtocol.CHAT, new Chat());
+                serverProtocolMap.put(ServerProtocol.CHAT, new Chat());
 
             }
-            // can pass id instead of connection..
+
             public void handleMessage(ByteBuffer buffer, connectionHandler.ConnectionCommunicator connection) throws IOException, ClassNotFoundException {
                this.connection = connection;
                 buffer.flip();
                 Object object = deserialize(buffer);
-
-                if (!(object instanceof ServerMessage)) {
-                    throw new ClassCastException();
+                if(object.toString().equals("ServerMessage")){
+                    ServerMessage serverMessage = (ServerMessage)object;
+                    Protocol protocol = serverProtocolMap.get(serverMessage.getKey());
+                    protocol.action(serverMessage.getData());
+                }else{
+                    System.out.println("im here error");
+                    ServerMessage errMsg = new ServerMessage(ServerProtocol.ERROR_SERVER_PROTOCOL, null);
+                    connection.send(serialize(errMsg));
                 }
-                ServerMessage serverMessage = (ServerMessage)object;
-                Protocol protocol = serverProtocolMap.get(serverMessage.getKey());
-                protocol.action(serverMessage.getData());
+
+
             }
             @Override
             public Object deserialize(ByteBuffer buffer) throws IOException, ClassNotFoundException {
@@ -280,32 +275,30 @@ public class MultiProtocolServer {
 
                 @Override
                 public void action(Message<?, ?> msg )  {
-                   /* if (!(msg instanceof ChatMessage)) {
-                        throw new ClassCastException();
-                    }*/
+                    if(msg.toString().equals("ChatMessage")) {
 
-                   ChatKeys key = (ChatKeys)msg.getKey();
-                    String msgg  = (String)msg.getData();
+                        ChatKeys key = (ChatKeys) msg.getKey();
+                        String msgg = (String) msg.getData();
 
-                    if(key.equals(ChatKeys.REGISTER)) {
-                        chatClient.add(connection);
-                        craftMsg(ChatKeys.PUBLISH,"welcome! " + msgg);
+                        if (key.equals(ChatKeys.REGISTER)) {
+                            chatClient.add(connection);
+                            craftMsg(ChatKeys.PUBLISH, "welcome! " + msgg);
+                        } else if (key.equals(ChatKeys.UNREGISTER)) {
+                            chatClient.remove(connection);
+                            craftMsg(ChatKeys.PUBLISH, "good bye!");
+                        } else if (key.equals(ChatKeys.BROADCAST)) {
+                            for (connectionHandler.ConnectionCommunicator c : chatClient)
+                                craftMsg(ChatKeys.PUBLISH, c.toString() + " : "+ msgg);
+                        }
+                        else{
+                            craftMsg(ChatKeys.ERROR_CHAT_KEYS, "ERROR");
+                        }
                     }
-                    else if(key.equals(ChatKeys.UNREGISTER)){
-                        chatClient.remove(connection);
-                        craftMsg(ChatKeys.PUBLISH,"good bye!");
-                    }
-                    else if(key.equals(ChatKeys.BROADCAST)){
-                        for(connectionHandler.ConnectionCommunicator c: chatClient)
-                            craftMsg(ChatKeys.PUBLISH,msgg);
-                    }
-
                 }
 
                 private void craftMsg(ChatKeys key, String msg){
                     ChatMessage servermessage = new ChatMessage(key, msg);
-                 //   ServerMessage servermessage = new ServerMessage(ServerProtocol.CHAT, new ChatMessage(key,msg));
-                    //ByteBuffer bufferChat = ByteBuffer.allocate(8192);
+
                     try{
                         connection.send(serialize(servermessage));
                     }catch (IOException e){
@@ -330,7 +323,6 @@ public class MultiProtocolServer {
                     try{
                         temp = serialize(servermessage);
                         System.out.println("server sending data " + servermessage.getData());
-                        //temp.flip();
 
                         connection.send(temp);
 

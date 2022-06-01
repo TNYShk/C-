@@ -26,7 +26,7 @@ public class Client1UDP {
 
     public Client1UDP() throws SocketException, UnknownHostException {
         socket = new DatagramSocket();
-        address = InetAddress.getByName("192.168.68.103");
+        address = InetAddress.getByName("192.168.68.107");
        // address = InetAddress.getByName("localhost");
         buf = ByteBuffer.allocate(8192);
 
@@ -36,7 +36,7 @@ public class Client1UDP {
 
         buf = buf.put(serialize(msg));
 //		buffer.clear();
-        DatagramPacket packet = new DatagramPacket(buf.array(), buf.array().length, address, 10521);
+        DatagramPacket packet = new DatagramPacket(buf.array(), buf.array().length, address, 11111);
         socket.send(packet);
 //		buffer.clear();
         packet = new DatagramPacket(buf.array(), buf.array().length);

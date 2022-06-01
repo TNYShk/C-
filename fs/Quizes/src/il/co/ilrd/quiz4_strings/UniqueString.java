@@ -5,7 +5,6 @@ public class UniqueString {
         if (str.length() > 128)
             return false;
         boolean[] charSet = new boolean[128];
-        char[]tt = str.toCharArray();
 
         for (int i = 0; i < str.length(); ++i) {
             int temp = str.charAt(i);
@@ -19,13 +18,15 @@ public class UniqueString {
     public static boolean isUniqueChar(String str) {
         int checkAgainst = 0;
         for (int i = 0; i < str.length(); ++i) {
-            int temp = Character.toLowerCase(str.charAt(i)) - 'a';
-
-            if ((checkAgainst & (1 << temp)) > 0) {
+            int tmp = Character.getNumericValue(str.charAt(i) - 10);
+            //int tmp = Character.toLowerCase(str.charAt(i)) - 'a';
+            //System.out.println(temp);
+            //System.out.println(tmp);
+            if ((checkAgainst & (1 << tmp)) > 0) {
                 System.out.println("duplicate: " + str.charAt(i));
                 return false;
             }
-            checkAgainst |= (1 << temp);
+            checkAgainst |= (1 << tmp);
 
         }
         return true;
@@ -36,7 +37,7 @@ public class UniqueString {
             return false;
 
         int[] letters = new int[128];
-        for(int j = 0; j<s1.length();++j)
+        for(int j = 0; j < s1.length();++j)
             letters[s1.charAt(j)]++;
 
         for (int i = 0; i < s2.length(); ++i) {
@@ -146,10 +147,13 @@ public class UniqueString {
         return compress.length() < str.length()? String.valueOf(compress) : str;
     }
     public static void main(String[] args) {
+
         String test = "tatyanna";
         String perm = "abcdr";
         //System.out.println(isUnique(test));
-        //System.out.println(isUniqueChar(test));
+        //System.out.println(isUnique(perm));
+
+        System.out.println(isUniqueChar(perm));
         /*System.out.println(Permutations(perm, "radcb"));
         System.out.println(Permutations(perm, "tatya"));
         System.out.println(Permutations(perm, test));*/

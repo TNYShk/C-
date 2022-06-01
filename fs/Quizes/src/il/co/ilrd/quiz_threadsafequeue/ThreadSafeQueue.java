@@ -1,5 +1,8 @@
 package quiz_threadsafequeue;
 
+import il.co.ilrd.quiz11_12_syncproblem.FizzBuzzThread;
+import il.co.ilrd.quiz11_12_syncproblem.NumberThread;
+
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -53,24 +56,30 @@ class Testing{
 
     private static final int limit = 26;
 
-    private static ThreadSafeQueue<Integer> fsq = new ThreadSafeQueue<>(limit);
+    //private static ThreadSafeQueue<Integer> fsq = new ThreadSafeQueue<>(limit);
 
     public static void main(String[] args) {
-        int x;
+        ThreadSafeQueue<Integer> fsq = new ThreadSafeQueue<>(limit);
+
         Thread t1 = new Thread(()->{
             for(int i = 0; i < limit; ++i) {
                 fsq.enqueue(i);
-//                try {
-//                    Thread.sleep(1000);
-//                } catch (InterruptedException e) {
-//                    throw new RuntimeException(e);
-//                }
+               try {
+                    Thread.sleep(500);
+              } catch (InterruptedException e) {
+                   throw new RuntimeException(e);
+                }
             }
         });
 
         Thread  t2 = new Thread(()->{
             for(int i = 0; i < limit; ++i){
                 System.out.println(fsq.dequeue());
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
                 fsq.enqueue(2 * i);
             }
 

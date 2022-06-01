@@ -24,5 +24,5 @@ private Message<?,?> msg;
     }
 
     @Override
-    public String toString(){return null;}
+    public String toString(){return "ServerMessage";}
 }

@@ -2,7 +2,7 @@ package il.co.ilrd.multiserverprotocol;
 
 import java.io.Serializable;
 
-public class PingPongMessage implements Message<PingPongKeys, Void>, Serializable {
+public class PingPongMessage implements Message<PingPongKeys, Void> {
     private static final long serialVersionUID = 1L;
     private PingPongKeys key;
     public PingPongMessage(PingPongKeys key) {
@@ -20,6 +20,6 @@ public class PingPongMessage implements Message<PingPongKeys, Void>, Serializabl
     @Override
     public String toString(){
         //return key.equals(PingPongKeys.PING)?" "+ PingPongKeys.PONG:""+PingPongKeys.PING;
-        return ""+ this.key;
+        return "PingPongMessage";
     }
 }

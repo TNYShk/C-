@@ -16,7 +16,7 @@ public class Client4TCP {
     public Client4TCP() throws IOException {
         scaner = new Scanner(System.in);
         s = SocketChannel.open(new InetSocketAddress("192.168.68.107", 55555));
-        buffer = ByteBuffer.allocate(4048);
+        buffer = ByteBuffer.allocate(8192);
     }
 
     public void produceRegisterMsg() throws IOException, ClassNotFoundException, InterruptedException {

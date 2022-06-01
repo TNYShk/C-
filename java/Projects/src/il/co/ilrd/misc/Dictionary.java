@@ -1,14 +1,13 @@
-package il.co.ilrd.varonis;
+package il.co.ilrd.misc;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.nio.file.Files;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Scanner;
 
-public class Dictionary<K,V> {
-
+public class Dictionary {
+//Varonis
         private static HashMap<String, Integer> dictionary = new HashMap<>();
 
         public Dictionary(HashMap<String, Integer> dictionary) {

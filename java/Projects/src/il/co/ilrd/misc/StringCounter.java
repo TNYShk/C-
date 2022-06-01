@@ -1,10 +1,10 @@
-package il.co.ilrd.varonis;
+package il.co.ilrd.misc;
 
 import java.io.*;
 
 import java.util.*;
 
-
+//Varonis
 public class StringCounter  {
     //private LinkedList<Integer> list = new LinkedList<>();
     private HashMap<String,Oper> operMap = new HashMap<>();
