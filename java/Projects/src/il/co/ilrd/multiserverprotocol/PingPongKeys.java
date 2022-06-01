@@ -1,4 +1,4 @@
-package il.co.ilrd.megaserver;
+package il.co.ilrd.multiserverprotocol;
 
 public enum PingPongKeys {
     PING{

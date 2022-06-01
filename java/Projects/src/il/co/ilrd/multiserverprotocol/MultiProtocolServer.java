@@ -1,15 +1,11 @@
-package il.co.ilrd.megaserver;
-
-import org.omg.PortableInterceptor.ORBInitInfoPackage.DuplicateName;
+package il.co.ilrd.multiserverprotocol;
 
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 public class MultiProtocolServer {
     private connectionHandler connectHandler;

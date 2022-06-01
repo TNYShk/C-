@@ -1,4 +1,4 @@
-package il.co.ilrd.megaserver;
+package il.co.ilrd.multiserverprotocol;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

@@ -1,8 +1,7 @@
-package il.co.ilrd.megaserver;
+package il.co.ilrd.multiserverprotocol;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 
 public class TestServer {

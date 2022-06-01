@@ -1,8 +1,7 @@
-package il.co.ilrd.megaserver;
+package il.co.ilrd.multiserverprotocol;
 
-import java.io.Serializable;
-
-public class ChatMessage implements Message<ChatKeys,String>, Serializable {
+public class ChatMessage implements Message<ChatKeys,String> {
+    private static final long serialVersionUID = 1L;
     private ChatKeys chatKey;
     private String text;
 
@@ -10,6 +9,7 @@ public class ChatMessage implements Message<ChatKeys,String>, Serializable {
         this.chatKey = chatKey;
         this.text = msg;
     }
+
     @Override
     public ChatKeys getKey() {
        return chatKey;
@@ -19,4 +19,7 @@ public class ChatMessage implements Message<ChatKeys,String>, Serializable {
     public String getData() {
        return text;
     }
+
+    @Override
+    public String toString(){return null;}
 }

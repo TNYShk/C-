@@ -1,8 +1,9 @@
-package il.co.ilrd.megaserver;
+package il.co.ilrd.multiserverprotocol;
 
 import java.io.Serializable;
 
 public class PingPongMessage implements Message<PingPongKeys, Void>, Serializable {
+    private static final long serialVersionUID = 1L;
     private PingPongKeys key;
     public PingPongMessage(PingPongKeys key) {
         this.key = key;
