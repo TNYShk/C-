@@ -26,8 +26,8 @@ public class Client1UDP {
 
     public Client1UDP() throws SocketException, UnknownHostException {
         socket = new DatagramSocket();
-        //address = InetAddress.getByName("192.168.68.101");
-        address = InetAddress.getByName("localhost");
+        address = InetAddress.getByName("192.168.68.103");
+       // address = InetAddress.getByName("localhost");
         buf = ByteBuffer.allocate(8192);
 
     }

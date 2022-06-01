@@ -9,12 +9,12 @@ import java.nio.channels.SocketChannel;
 
 public class Client3TCP {
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
-        SocketChannel s = SocketChannel.open(new InetSocketAddress("192.168.68.103", 10523));
+        SocketChannel s = SocketChannel.open(new InetSocketAddress("192.168.68.107", 55555));
         ByteBuffer buffer;
 
         // s.configureBlocking(true);
 
-        ChatMessage msgC = new ChatMessage(ChatKeys.REGISTER, "tanya");
+        ChatMessage msgC = new ChatMessage(ChatKeys.REGISTER, "shoshi");
         ServerMessage smsg = new ServerMessage(ServerProtocol.CHAT, msgC);
 
         buffer = ByteBuffer.wrap(SerializeIt.serializeB(smsg));
@@ -47,6 +47,8 @@ public class Client3TCP {
         System.out.println("message from server: " + chatd.getData());
 
         //s.close();
+
+        Thread.sleep(1000);
 
     }
 
