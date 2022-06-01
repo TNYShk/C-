@@ -54,7 +54,7 @@ public class MultiProtocolServer {
     }
 
     private class connectionHandler{
-        UDPCommunicator udpConnect;
+        //UDPCommunicator udpConnect;
 
         public void addTCP(int port) throws IOException {
             if(!portList.add(port))
@@ -77,10 +77,13 @@ public class MultiProtocolServer {
 
             DatagramChannel udp = DatagramChannel.open();
             udp.socket().bind(new InetSocketAddress(port));
+
+            UDPCommunicator udpConnect = new UDPCommunicator(udp);
             udp.configureBlocking(false);
-            udp.register(selector, SelectionKey.OP_READ, udp);
+            udp.register(selector, SelectionKey.OP_READ, udpConnect);
             System.out.println("udp added!");
-             udpConnect = new UDPCommunicator();
+
+
 
 
         }
@@ -99,17 +102,17 @@ public class MultiProtocolServer {
                     while (iter.hasNext()) {
                         key = iter.next();
 
-                        if (key.attachment() instanceof DatagramChannel) {
+                     /*   if (key.attachment() instanceof DatagramChannel) {
                             udpConnect.handle(key);
-                        }
-                        else {
+                        }*/
+
                             if (key.isAcceptable()) {
                                 ((acceptConnectionTCP)key.attachment()).handle(key);
 
                             } else if (key.isReadable()) {
                                 ((ConnectionCommunicator)key.attachment()).handle(key);
                             }
-                        }
+
                         iter.remove();
                     }
                 }
@@ -190,8 +193,9 @@ public class MultiProtocolServer {
             private ByteBuffer UDbuffer;
             private SocketAddress socketAdrsUDP;
 
-            public UDPCommunicator(){
+            public UDPCommunicator(DatagramChannel client){
                 UDbuffer = ByteBuffer.allocate(8192);
+                this.client = client;
             }
 
             @Override
@@ -263,15 +267,12 @@ public class MultiProtocolServer {
                     }
             }
 
-
-
-
             private abstract class Protocol {
                 public abstract void action(Message<?, ?> msg);
             }
             private class Chat extends Protocol {
                 private HashSet<connectionHandler.ConnectionCommunicator> chatClient = new HashSet<>();
-                private ByteBuffer bufferChat = ByteBuffer.allocate(8192);
+                private final ByteBuffer bufferChat = ByteBuffer.allocate(8192);
 
                 @Override
                 public void action(Message<?, ?> msg )  {
