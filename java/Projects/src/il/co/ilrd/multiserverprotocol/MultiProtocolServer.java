@@ -66,7 +66,6 @@ public class MultiProtocolServer {
             acceptConnectionTCP tcpAccept = new acceptConnectionTCP(tcp);
             SelectionKey key = tcp.register(selector, SelectionKey.OP_ACCEPT, tcp);
             key.attach(tcpAccept);
-
             System.out.println("tcp added!");
 
         }
@@ -82,8 +81,6 @@ public class MultiProtocolServer {
             udp.configureBlocking(false);
             udp.register(selector, SelectionKey.OP_READ, udpConnect);
             System.out.println("udp added!");
-
-
 
 
         }
@@ -102,17 +99,12 @@ public class MultiProtocolServer {
                     while (iter.hasNext()) {
                         key = iter.next();
 
-                     /*   if (key.attachment() instanceof DatagramChannel) {
-                            udpConnect.handle(key);
-                        }*/
-
                             if (key.isAcceptable()) {
                                 ((acceptConnectionTCP)key.attachment()).handle(key);
 
                             } else if (key.isReadable()) {
                                 ((ConnectionCommunicator)key.attachment()).handle(key);
                             }
-
                         iter.remove();
                     }
                 }
@@ -190,7 +182,7 @@ public class MultiProtocolServer {
 
         private class UDPCommunicator extends ConnectionCommunicator {
             private DatagramChannel client;
-            private ByteBuffer UDbuffer;
+            private final ByteBuffer UDbuffer;
             private SocketAddress socketAdrsUDP;
 
             public UDPCommunicator(DatagramChannel client){
@@ -272,7 +264,6 @@ public class MultiProtocolServer {
             }
             private class Chat extends Protocol {
                 private HashSet<connectionHandler.ConnectionCommunicator> chatClient = new HashSet<>();
-                private final ByteBuffer bufferChat = ByteBuffer.allocate(8192);
 
                 @Override
                 public void action(Message<?, ?> msg )  {
@@ -289,7 +280,7 @@ public class MultiProtocolServer {
                             craftMsg(ChatKeys.PUBLISH, "good bye!");
                         } else if (key.equals(ChatKeys.BROADCAST)) {
                             for (connectionHandler.ConnectionCommunicator c : chatClient)
-                                craftMsg(ChatKeys.PUBLISH, c.toString() + " : "+ msgg);
+                                craftMsg(ChatKeys.PUBLISH,  msgg);
                         }
                         else{
                             craftMsg(ChatKeys.ERROR_CHAT_KEYS, "ERROR");
