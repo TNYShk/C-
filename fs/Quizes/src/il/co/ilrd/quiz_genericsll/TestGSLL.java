@@ -3,7 +3,9 @@ package il.co.ilrd.quiz_genericsll;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 public class TestGSLL {
 
@@ -28,11 +30,48 @@ public class TestGSLL {
       Assert.assertNotNull(find);
 
       Assert.assertEquals(5,test.size());
-      for(String s: test){
-          System.out.print(s+" ");
-      }
 
-
+      test.printGenList();
 
    }
+
+   @Test
+    public void testDos(){
+       GenericLinkedList<Number> dos = new GenericLinkedList<>();
+       dos.pushFront(1);
+       dos.pushFront(21);
+       dos.pushFront(321);
+       dos.pushFront(4321);
+       dos.printGenList();
+
+       dos.reverseList();
+       System.out.println();
+       dos.printGenList();
+       System.out.println();
+       dos.flipList();
+       dos.printGenList();
+
+    }
+
+    @Test
+    public void testTres(){
+        GenericLinkedList<Number> dos = new GenericLinkedList<>();
+        dos.pushFront(1);
+        dos.pushFront(21);
+        dos.pushFront(321);
+        dos.pushFront(4321);
+        dos.pushFront(54321);
+        dos.printGenList();
+
+        System.out.println(dos.getNthFromEnd(1));
+        System.out.println(dos.getNthFromEnd(2));
+        dos.printGenList();
+        dos.circularShiftInPlace(2);
+        dos.printGenList();
+        dos.circularShiftInPlace(1);
+        dos.printGenList();
+
+
+    }
+
 }
