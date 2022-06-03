@@ -27,21 +27,23 @@ public class FirstNonDuplicateSequence {
                    out.add(run);
                    map.merge(run,1,Integer::sum);
                    found = true;
+                   break;
                }
            }
            if(!found){
-               out.add(holder);
-               holder = N;
+               out.add(0l);
+              // holder = N;
            }
        }
-       else if(out.get(out.size() - 1) != N){
+       else if(out.get(out.size() - 1) != N && (out.get(out.size() - 1) != 0l)){
            out.add(out.get(out.size() - 1));
+       }
+       else{
+           out.add(N);
        }
 
 
     }
-
-
 
     public void printOut(){
       System.out.println(out);
@@ -71,7 +73,8 @@ public class FirstNonDuplicateSequence {
             test.input(5);
 
 
-            //test.printOut();
+
+            test.printOut();
             //System.out.println();
 
 
