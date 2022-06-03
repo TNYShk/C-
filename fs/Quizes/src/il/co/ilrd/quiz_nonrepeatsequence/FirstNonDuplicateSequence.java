@@ -1,53 +1,54 @@
 package il.co.ilrd.quiz_nonrepeatsequence;
 
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.Stack;
+import java.util.*;
+
 import org.junit.jupiter.api.Test;
 
 
 
-import static org.testng.AssertJUnit.assertEquals;
+
 
 public class FirstNonDuplicateSequence {
-    Stack<Long> stack = new Stack<>();
-    Deque<Long> uniq = new LinkedList<>();
-    static long holder = 0;
+   static LinkedHashMap<Long,Integer> map = new LinkedHashMap<>();
+   static List<Long> out = new ArrayList<>();
+   static long holder = 0;
 
    public void input(long N){
-        if(stack.isEmpty()){
-            stack.push(N);
-            uniq.add(N);
-        }
-        else{
-            if( N != stack.peek() ){
-                stack.push(stack.peek());
+       map.merge(N,1,Integer::sum);
+       if(out.isEmpty()){
+           out.add(N);
+           return;
+       }
 
-                if(uniq.peek() != N){
-                    holder = N;
-                    uniq.push(N);
+       if(out.get(out.size() - 1) == N) {
+           boolean found = false;
+           for(Long run: map.keySet()){
+               if(map.get(run) == 1){
+                   out.add(run);
+                   map.merge(run,1,Integer::sum);
+                   found = true;
+               }
+           }
+           if(!found){
+               out.add(holder);
+               holder = N;
+           }
+       }
+       else if(out.get(out.size() - 1) != N){
+           out.add(out.get(out.size() - 1));
+       }
 
-                }
-                else if(uniq.peek() == N){
-                    holder = 0;
-                    uniq.push(uniq.pollLast());
-                    uniq.push(N);
-                }
-            }else if(N == stack.peek()){
-                stack.push(holder);
-            }
-        }
 
     }
 
 
 
-    public void printDQ(){
-      System.out.print(uniq);
+    public void printOut(){
+      System.out.println(out);
     }
 
     public long output(){
-        return stack.pop();
+       return out.remove(0);
     }
 
     public static void main(String[] args) {
@@ -69,13 +70,11 @@ public class FirstNonDuplicateSequence {
             test.input(4);
             test.input(5);
 
-            test.printDQ();
-            System.out.println();
-            //System.out.println(test.uniq.peekFirst());
-            //System.out.println(holder);
-            while(!test.stack.isEmpty()){
-                System.out.print(" "+test.output());
-            }
+
+            //test.printOut();
+            //System.out.println();
+
+
         }
 
 
@@ -94,11 +93,11 @@ public class FirstNonDuplicateSequence {
         test.input(4);
         test.input(8);
 
-        test.printDQ();
+        test.printOut();
         System.out.println();
-        while(!test.stack.isEmpty()){
-            System.out.print(" "+test.stack.pop());
-        }
+       while(!test.out.isEmpty())
+            System.out.print(test.output() + " ");
+
 
     }
 }
