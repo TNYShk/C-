@@ -74,7 +74,7 @@ public class SinglyLinkedList {
             ++count;
             run.next();
         }
-        Integer c = count;
+
 
         return count;
 

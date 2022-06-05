@@ -41,42 +41,15 @@ public class Guardicore {
        return (goal % large <= small);
    }
 
-   public boolean wordBreak(String s, List<String> wordDict) {
-       StringBuilder sbuild = new StringBuilder(s);
-       int i= 0;
-        int total = 0;
-       for(String t: wordDict){
-           //System.out.println(t);
-           int len = i + t.length();
-           if(s.substring(i,len).equals(t)){
 
-               wordB.add(s.substring(i,len));
-               System.out.println(s.substring(i,len));
-               i+=t.length();
-           }
-           else{
-               return false;
-           }
-            total +=t.length();
-           System.out.println(i);
-       }
-
-       return i==total;
-   }
 
    public static void main(String[] args){
        Guardicore test = new Guardicore();
-      /* System.out.println("is? "+ test.isIsomorphic("egg","add"));
+      System.out.println("is? "+ test.isIsomorphic("egg","add"));
        System.out.println("is? "+ test.isIsomorphic("foo","bar"));
        System.out.println(test.canItFit(3,2,9));
        System.out.println(test.canItFit(3,2,10));
-       System.out.println(test.canItFit(3,1,8));*/
-       List<String> wordbreak = new ArrayList<>();
-       wordbreak.add("cats");
-       wordbreak.add("dog");
-       wordbreak.add("sand");
-       wordbreak.add("and");
-       wordbreak.add("cat");
-       test.wordBreak("catsandog",wordbreak);
+       System.out.println(test.canItFit(3,1,8));
+
    }
 }

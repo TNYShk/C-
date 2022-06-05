@@ -27,6 +27,7 @@ public class MultiProtocolServer {
         if(port < 1 || port > 65000)
             throw new IllegalArgumentException();
         connectHandler.addTCP(port);
+
     }
 
     public void addUDP(int port) throws IOException {
@@ -54,7 +55,7 @@ public class MultiProtocolServer {
     }
 
     private class connectionHandler{
-        //UDPCommunicator udpConnect;
+
 
         public void addTCP(int port) throws IOException {
             if(!portList.add(port))
@@ -92,13 +93,15 @@ public class MultiProtocolServer {
                 Iterator<SelectionKey> iter;
                 SelectionKey key;
                 while (isRun) {
-                    selector.select();
+                    selector.select(1000L);
+
 
                     iter = selector.selectedKeys().iterator();
 
                     while (iter.hasNext()) {
                         key = iter.next();
-
+                               /* if(key.isValid())???
+                                    ((ConnectionCommunicator)key.attachment()).handle(key);*/
                             if (key.isAcceptable()) {
                                 ((acceptConnectionTCP)key.attachment()).handle(key);
 
@@ -219,7 +222,7 @@ public class MultiProtocolServer {
 
         private class MessageHandler implements SerializeIt{
             private final Map<ServerProtocol,Protocol> serverProtocolMap;
-            private connectionHandler.ConnectionCommunicator connection;
+            //private connectionHandler.ConnectionCommunicator connection;
             public MessageHandler(){
                 serverProtocolMap = new HashMap<>();
                 serverProtocolMap.put(ServerProtocol.PINGPONG, new PingPong());
@@ -228,13 +231,13 @@ public class MultiProtocolServer {
             }
 
             public void handleMessage(ByteBuffer buffer, connectionHandler.ConnectionCommunicator connection) throws IOException, ClassNotFoundException {
-               this.connection = connection;
+               //this.connection = connection;
                 buffer.flip();
                 Object object = deserialize(buffer);
                 if(object.toString().equals("ServerMessage")){
                     ServerMessage serverMessage = (ServerMessage)object;
                     Protocol protocol = serverProtocolMap.get(serverMessage.getKey());
-                    protocol.action(serverMessage.getData());
+                    protocol.action(serverMessage.getData(),connection);
                 }else{
                     System.out.println("im here error");
                     ServerMessage errMsg = new ServerMessage(ServerProtocol.ERROR_SERVER_PROTOCOL, null);
@@ -260,13 +263,22 @@ public class MultiProtocolServer {
             }
 
             private abstract class Protocol {
-                public abstract void action(Message<?, ?> msg);
+                public abstract void action(Message<?, ?> msg, connectionHandler.ConnectionCommunicator connection);
+
+
             }
             private class Chat extends Protocol {
                 private HashSet<connectionHandler.ConnectionCommunicator> chatClient = new HashSet<>();
-
+                private HashMap<connectionHandler.ConnectionCommunicator,String> chatNames = new HashMap<>();
                 @Override
-                public void action(Message<?, ?> msg )  {
+                public void action(Message<?, ?> msg,connectionHandler.ConnectionCommunicator connection )  {
+                    try{
+                    if (!(msg instanceof ChatMessage)) {
+                        throw new ClassCastException();
+                    }
+                    }catch(ClassCastException e){
+                        System.err.print("not chat a message!");
+                    }
                     if(msg.toString().equals("ChatMessage")) {
 
                         ChatKeys key = (ChatKeys) msg.getKey();
@@ -274,25 +286,27 @@ public class MultiProtocolServer {
 
                         if (key.equals(ChatKeys.REGISTER)) {
                             chatClient.add(connection);
-                            craftMsg(ChatKeys.PUBLISH, "welcome! " + msgg);
+                            chatNames.put(connection,msgg);
+                            craftMsg(connection,ChatKeys.PUBLISH, "welcome! " + msgg);
                         } else if (key.equals(ChatKeys.UNREGISTER)) {
+                            craftMsg(connection,ChatKeys.PUBLISH, "good bye!");
                             chatClient.remove(connection);
-                            craftMsg(ChatKeys.PUBLISH, "good bye!");
+                            chatNames.remove(connection);
                         } else if (key.equals(ChatKeys.BROADCAST)) {
                             for (connectionHandler.ConnectionCommunicator c : chatClient)
-                                craftMsg(ChatKeys.PUBLISH,  msgg);
+                                craftMsg(connection,ChatKeys.PUBLISH,  chatNames.get(c)+": "+msgg);
                         }
                         else{
-                            craftMsg(ChatKeys.ERROR_CHAT_KEYS, "ERROR");
+                            craftMsg(connection,ChatKeys.ERROR_CHAT_KEYS, "ERROR");
                         }
                     }
                 }
 
-                private void craftMsg(ChatKeys key, String msg){
+                private void craftMsg(connectionHandler.ConnectionCommunicator connection,ChatKeys key, String msg){
                     ChatMessage servermessage = new ChatMessage(key, msg);
 
                     try{
-                        connection.send(serialize(servermessage));
+                       connection.send(serialize(servermessage));
                     }catch (IOException e){
                         e.printStackTrace();
                     }
@@ -301,7 +315,7 @@ public class MultiProtocolServer {
             private class PingPong extends Protocol {
 
                 @Override
-                public void action(Message<?, ?> msg)  {
+                public void action(Message<?, ?> msg, connectionHandler.ConnectionCommunicator connection)  {
                     if (!(msg instanceof PingPongMessage)) {
                         throw new ClassCastException();
                     }

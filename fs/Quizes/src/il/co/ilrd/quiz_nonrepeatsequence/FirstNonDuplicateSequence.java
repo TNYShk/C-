@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 public class FirstNonDuplicateSequence {
    static LinkedHashMap<Long,Integer> map = new LinkedHashMap<>();
    static List<Long> out = new ArrayList<>();
-   static long holder = 0;
+
 
    public void input(long N){
        map.merge(N,1,Integer::sum);
@@ -32,7 +32,6 @@ public class FirstNonDuplicateSequence {
            }
            if(!found){
                out.add(0l);
-              // holder = N;
            }
        }
        else if(out.get(out.size() - 1) != N && (out.get(out.size() - 1) != 0l)){
@@ -41,8 +40,6 @@ public class FirstNonDuplicateSequence {
        else{
            out.add(N);
        }
-
-
     }
 
     public void printOut(){

@@ -78,9 +78,7 @@ public class LengthOfLongestSubstring {
                 c = solution(s.substring(wow / 2, 3*(wow/4)));
                // System.out.println("c " + c);
             });
-            Thread t4 = new Thread(() -> {
-                System.out.println(solution(s.substring( 3*(wow/4), wow)));
-            });
+            Thread t4 = new Thread(() -> System.out.println(solution(s.substring( 3*(wow/4), wow))));
 
             t1.start();
             t2.start();

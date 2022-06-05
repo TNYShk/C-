@@ -1,8 +1,4 @@
-package quiz_threadsafequeue;
-
-import il.co.ilrd.quiz11_12_syncproblem.FizzBuzzThread;
-import il.co.ilrd.quiz11_12_syncproblem.NumberThread;
-
+package il.co.ilrd.quiz_threadsafequeue;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -18,7 +14,7 @@ public class ThreadSafeQueue<E> {
     private final int capacity;
 
     public ThreadSafeQueue(int cap){
-        if (cap<16){
+        if (cap < 16){
             cap = 16;
         }
         this.capacity = cap;
@@ -27,7 +23,7 @@ public class ThreadSafeQueue<E> {
         Enq = new ReentrantLock();
     }
     public void enqueue(E element){
-        if(dq.size()< capacity){
+        if(dq.size() < capacity){
             Enq.lock();
             dq.addFirst(element);
             counter.getAndIncrement();
