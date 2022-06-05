@@ -70,6 +70,7 @@ public class BinaryTree {
      public TreeNode sortedArrayToBST(int[] nums) {
         int left = 0;
         int right = nums.length -1;
+
          return makeBST(nums,left,right);
      }
 
@@ -85,3 +86,6 @@ public class BinaryTree {
     }
 
 }
+/*
+Input: preorder = [3,9,20,15,7], inorder = [9,3,15,20,7]
+ */

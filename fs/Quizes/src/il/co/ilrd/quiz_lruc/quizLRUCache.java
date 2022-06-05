@@ -2,21 +2,20 @@ package il.co.ilrd.quiz_lruc;
 
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
 public class quizLRUCache<K,V> {
     private final int capacity;
     private static final int MIN_CAP = 16;
-    private Deque<K> keyQ;
-    private HashMap<K,V> hashMap;
+
+    private LinkedHashMap<K,V> hashMap;
 
 
     public quizLRUCache(int capacity){
         if(capacity< MIN_CAP)
             capacity = MIN_CAP;
-
-        hashMap = new HashMap<>(capacity);
-        keyQ = new LinkedList<>();
+        hashMap = new LinkedHashMap<>(capacity);
         this.capacity = capacity;
     }
     public quizLRUCache(){
@@ -24,29 +23,32 @@ public class quizLRUCache<K,V> {
     }
 
     public void put(K key, V value){
-        if(keyQ.size() == capacity){
-            K some = keyQ.removeLast();
-            hashMap.remove(some);
+
+        if(hashMap.containsKey(key)){
+            hashMap.remove(key);
         }
-        else{
-            keyQ.remove(key);
-            hashMap.remove(key,value);
-        }
-        keyQ.push(key);
         hashMap.put(key,value);
+
+        if(hashMap.size() > capacity) {
+            K leastUsedKey = hashMap.keySet().iterator().next();
+            hashMap.remove(leastUsedKey);
+        }
     }
 
     public V get(K key){
-       V used = hashMap.get(key);
-       hashMap.remove(key,used);
-       keyQ.remove(key);
+        if(!hashMap.containsKey(key))
+            return null;
+        V val =  hashMap.get(key);
 
-      put(key,used);
-       return used;
+        hashMap.remove(key);
+        hashMap.put(key,val);
+
+        return val;
+
     }
 
     public void print(){
-        //System.out.println(hashMap.keySet());
+        System.out.println(hashMap.keySet());
         System.out.println(hashMap.values());
     }
 

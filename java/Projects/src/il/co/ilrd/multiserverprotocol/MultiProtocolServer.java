@@ -93,27 +93,28 @@ public class MultiProtocolServer {
                 Iterator<SelectionKey> iter;
                 SelectionKey key;
                 while (isRun) {
-                    selector.select(1000L);
-
+                    selector.select(10000L);
 
                     iter = selector.selectedKeys().iterator();
 
                     while (iter.hasNext()) {
                         key = iter.next();
-                               /* if(key.isValid())???
-                                    ((ConnectionCommunicator)key.attachment()).handle(key);*/
-                            if (key.isAcceptable()) {
+
+                        if(key.isValid())
+                            ((Connection)key.attachment()).handle(key);
+                          /* if (key.isAcceptable()) {
                                 ((acceptConnectionTCP)key.attachment()).handle(key);
 
                             } else if (key.isReadable()) {
                                 ((ConnectionCommunicator)key.attachment()).handle(key);
-                            }
+                            }*/
                         iter.remove();
                     }
                 }
-            }catch (IOException e){
-                throw new RuntimeException(e);
+            }catch (IOException ignored){
+
             }
+
         }
 
         private abstract class Connection{
