@@ -45,6 +45,7 @@ public class GenericList<E> implements Iterable<E> {
             }
         }
         return null;
+
        /*  Iterator<E> iter = iterator();
         Iterator<E> prevIter = iterator();
         while(iter.hasNext() && !iter.equals(data)){
