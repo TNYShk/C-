@@ -18,7 +18,6 @@ public class FractionToDecimal {
 
         long remainder = numerator % denominator;
 
-
         answer.append(numerator / denominator);
         remainder %= denominator;
 
