@@ -1,4 +1,6 @@
-package il.co.ilrd.quiz_nonrepeatsequence;
+
+
+package quiz_nonrepeatsequence;
 
 import java.util.*;
 
@@ -101,3 +103,4 @@ public class FirstNonDuplicateSequence {
 
     }
 }
+

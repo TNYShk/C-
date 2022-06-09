@@ -1,6 +1,7 @@
 package leetcode;
 
-import org.testng.Assert;
+import org.junit.Assert;
+
 
 import java.util.Arrays;
 import java.util.Collections;
