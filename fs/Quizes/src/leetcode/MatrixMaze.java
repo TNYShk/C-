@@ -14,12 +14,12 @@ public class MatrixMaze {
             {1,0,1,0},
             {0,0,0,0},
     };
-    static boolean[][]beenThere = new boolean[maze[0].length][maze.length];
+    //static boolean[][]beenThere = new boolean[maze[0].length][maze.length];
 
     public boolean exitMaze(Point enter, Point exit){
-        List<Point> finalPath = getPath(enter);
+        List<Point> finalPath = getPath(enter,exit);
 
-        //System.out.println(finalPath);
+        System.out.println(finalPath);
     //return true;
    return finalPath.contains(exit);
     }
@@ -37,40 +37,44 @@ public class MatrixMaze {
         }
     }
 
-    private void markLocation(Point current){
-        beenThere[current.row][current.col] = true;
+    private void markLocation(boolean[][]map,Point current){
+        map[current.row][current.col] = true;
     }
 
-    public List<Point> getPath(Point start){
-       List<Point> path = new LinkedList<>();
-        if(maze == null || maze.length == 0)
-            return null;
+    public List<Point> getPath(Point start, Point exit){
+        boolean[][]beenThere = new boolean[maze[0].length][maze.length];
+        List<Point> paths = new LinkedList<>();
 
 
-        if(getPath(start.row,start.col,path)){
-            return path;
+        if(getPath(start.row,start.col,paths,exit,beenThere)){
+            return paths;
         }
-        for(Point i: path){
+       /* for(Point i: paths){
             i.getPoint();
-        }
+        }*/
        // System.out.println("here");
-        return path;
+        return paths;
     }
 
-    private boolean getPath(int row,int col, List<Point> path){
+    private boolean getPath(int row,int col, List<Point> path, Point exit, boolean[][]beenThere){
+        if((exit.col == col) && (exit.row == row))
+            return true;
+
         if((col < 0) || (row < 0) || maze[row][col] == 1 || (col== maze.length) || (row== maze[0].length-1) || beenThere[row][col]){
             System.out.println("false");
             return false;
         }
         Point p = new Point(row,col);
         //path.add(p);
-        markLocation(p);
+        markLocation(beenThere,p);
 
-        if(getPath(row,col+1,path) || getPath(row+1,col,path)){
+        if(getPath(row,col+1,path,exit,beenThere) || getPath(row+1,col,path,exit,beenThere)){
             path.add(p);
+            System.out.println("mm");
             return true;
         }
-        if(getPath(row,col-1,path) || getPath(row-1,col,path)){
+        if(getPath(row,col-1,path,exit,beenThere) || getPath(row-1,col,path,exit,beenThere)){
+            System.out.println("mmmm");
             path.add(p);
             return true;
         }
