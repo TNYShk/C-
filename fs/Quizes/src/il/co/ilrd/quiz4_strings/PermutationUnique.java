@@ -1,7 +1,6 @@
-package quiz4_strings;
+package il.co.ilrd.quiz4_strings;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 public class PermutationUnique {
    private ArrayList<String> perms;
@@ -30,6 +29,7 @@ public class PermutationUnique {
             result.add(prefix);
             return;
         }
+        ArrayList<Set<String>> test = new ArrayList<Set<String>>();
         for(Character c: map.keySet()){
             int count =  map.get(c);
             if(count > 0){
