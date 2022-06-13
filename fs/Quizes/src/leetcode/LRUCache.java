@@ -1,7 +1,8 @@
 package leetcode;
 
+import org.junit.Assert;
 import org.junit.Test;
-import org.testng.Assert;
+
 
 import java.util.*;
 
