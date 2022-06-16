@@ -1,4 +1,4 @@
-package leetcode;
+package tcode;
 //Write an algorithm which computes the number of trailing zeros in n factorial. trailing zero is created with multiples of 10 (5*2)
 // its enough to count the 5,2 as pair leading to factorial >> 5! = 2,5 - 1 pair
 public class FactorialZero {

@@ -1,4 +1,4 @@
-package il.co.ilrd.quiz_genericsll;
+package quiz_genericsll;
 
 import java.util.Iterator;
 
@@ -171,6 +171,10 @@ public class GenericLinkedList<T> implements Iterable<T>{
 
         }
 
+    public static void main(String[] args){
+        GenericLinkedList<String> test = new GenericLinkedList<>();
+        test.pushFront("Tanya");
 
+    }
 
 }

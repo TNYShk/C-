@@ -1,6 +1,5 @@
-package leetcode;
+package tcode;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -12,7 +11,7 @@ public class LengthOfLongestSubstring {
     static int a;
     static int b;
     static int c;
-    public  int solution(String s){
+    public int solution(String s){
 
         if(isUniqueChar(s)){
             map.put(s,s.length());

@@ -1,4 +1,4 @@
-package leetcode;
+package tcode;
 
 public class TicTacToe {
     static int moves = 0;

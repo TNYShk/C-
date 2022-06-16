@@ -1,11 +1,9 @@
-package leetcode;
+package tcode;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 
 public class WordBreak {
@@ -92,7 +90,7 @@ public boolean wordBreak(String s, List<String> wordDict) {
         List<String> wordbreak = new ArrayList<>();
         wordbreak.add("leet");
         wordbreak.add("code");
-        System.out.println(test.wordBreaks("leetcode",wordbreak));
+        System.out.println(test.wordBreaks("tcode",wordbreak));
        // test.wordBreaks("leetcode",wordbreak);
         System.out.println(dict);
 

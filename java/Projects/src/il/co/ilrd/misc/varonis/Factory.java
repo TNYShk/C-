@@ -1,4 +1,4 @@
-package il.co.ilrd.misc;
+package il.co.ilrd.misc.varonis;
 
 import java.io.IOException;
 

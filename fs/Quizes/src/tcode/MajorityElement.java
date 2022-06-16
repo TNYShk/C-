@@ -1,4 +1,4 @@
-package leetcode;
+package tcode;
 
 import org.junit.Assert;
 

@@ -1,4 +1,4 @@
-package leetcode;
+package tcode;
 
 import java.util.*;
 
@@ -72,6 +72,7 @@ public class LivingPeople {
             bestMap.merge(live[i],current+1,Integer::sum);
 
         }
+        //bestMap.merge(death[0],-1,Integer::sum);
         for(int i = 1; i<people.length;++i){
             Integer current = bestMap.get(live[i-1]);
             //bestMap.put(bestMap.get(i),current-1);

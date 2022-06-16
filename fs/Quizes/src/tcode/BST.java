@@ -1,9 +1,8 @@
-package leetcode;
+package tcode;
 //given 2 array []preorder, []inorder, construct an according BST
 
-import il.co.ilrd.datastructures.BinaryTree;
 
-import java.util.Arrays;
+
 import java.util.HashMap;
 import java.util.Map;
 

@@ -1,7 +1,6 @@
-package leetcode;
+package tcode;
 
 import org.junit.Assert;
-import org.junit.Test;
 
 
 import java.util.*;

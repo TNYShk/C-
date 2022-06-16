@@ -1,4 +1,4 @@
-package leetcode;
+package tcode;
 //given an integer, print its string value in english -> 123 one hundred and twenty-three.
 public class EngInt {
     private String[]smalls = {"zero","one","two","three","four","five","six","seven","eight","nine","ten",
