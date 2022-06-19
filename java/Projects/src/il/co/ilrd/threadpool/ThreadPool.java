@@ -17,10 +17,10 @@ import java.util.concurrent.locks.ReentrantLock;
 public class ThreadPool implements Executor {
     //protected for testing purposes!
     protected WaitablePriorityQueueSem<Task<?>> wpq;
-    protected List<ThreadAction> deadpool;
+    protected List<ThreadAction> threadsList;
     private int numOfThreadz;
-    private static final int HIGH_AS_KITE = 100;
-    private static final int LOW_LOW_LOW = -5;
+    private static final int HIGHEST_PRIORITY = 100;
+    private static final int LOWEST_PRIORITY = -5;
     private final Semaphore stopLightSem;
 
    public ThreadPool(){
@@ -33,11 +33,11 @@ public class ThreadPool implements Executor {
         numOfThreadz = numberOfThreads;
         stopLightSem = new Semaphore(0);
         wpq = new WaitablePriorityQueueSem<>(numOfThreadz);
-        deadpool = new LinkedList<>();
+        threadsList = new LinkedList<>();
 
         for(int i = 0; i < numOfThreadz; ++i){
-            deadpool.add(new ThreadAction());
-            deadpool.get(i).start();
+            threadsList.add(new ThreadAction());
+            threadsList.get(i).start();
         }
 
     }
@@ -89,13 +89,13 @@ public class ThreadPool implements Executor {
         if (remainder >= 0) {
             while (0 <= --remainder) {
                 ThreadAction added = new ThreadAction();
-                deadpool.add(added);
+                threadsList.add(added);
                 added.start();
             }
         } else {
             while (0 > remainder++) {
                 try {
-                    wpq.enqueue(new Task<>(shutItDown, HIGH_AS_KITE));
+                    wpq.enqueue(new Task<>(shutItDown, HIGHEST_PRIORITY));
                 }catch(InterruptedException e){
                     System.err.println(e);
                 }
@@ -110,7 +110,7 @@ public class ThreadPool implements Executor {
             return null;
         };
         for(int i =0; i<numOfThreadz;++i) {
-            wpq.enqueue(new Task<>(pauseIt,HIGH_AS_KITE));
+            wpq.enqueue(new Task<>(pauseIt,HIGHEST_PRIORITY));
         }
     }
     public void resume() {
@@ -122,7 +122,7 @@ public class ThreadPool implements Executor {
 
         isShut = true;
         for(int i = 0; i < numOfThreadz; ++i) {
-            wpq.enqueue(new Task<>(shutItDown,LOW_LOW_LOW));
+            wpq.enqueue(new Task<>(shutItDown,LOWEST_PRIORITY));
         }
     }
     public void awaitTermination() throws InterruptedException {
@@ -130,10 +130,10 @@ public class ThreadPool implements Executor {
     }
     
     public void awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
-        for (ThreadAction t : deadpool) {
+        for (ThreadAction t : threadsList) {
             t.join(TimeUnit.MILLISECONDS.convert(timeout, unit)/numOfThreadz);
         }
-        deadpool.clear();
+        threadsList.clear();
     }
 
     private class Task<T> implements Comparable<Task<?>> {

@@ -14,12 +14,12 @@ public class PoolTest {
     @Test
     public void testSubmit1Arg() {
 
-        ThreadPool deadpool = new ThreadPool(3);
+        ThreadPool threadsList = new ThreadPool(3);
 
         Callable<Integer> task = () -> (1 + 2);
 
         try {
-            Future<Integer> result = deadpool.submit(task);
+            Future<Integer> result = threadsList.submit(task);
             System.out.println(result.get());
             assertEquals(3, result.get());
         } catch (InterruptedException | ExecutionException e) {
@@ -81,7 +81,7 @@ public class PoolTest {
 
         tp.awaitTermination(5,TimeUnit.SECONDS);
 
-        System.out.println("threadpool: "+ tp.deadpool.size() + " pqsize: " + tp.wpq.size());
+        System.out.println("threadpool: "+ tp.threadsList.size() + " pqsize: " + tp.wpq.size());
         try {
             Thread.sleep(5000);
             tp.submit(shutter, ThreadPool.Priority.HIGH);
@@ -89,7 +89,7 @@ public class PoolTest {
             e.printStackTrace();
         }
 
-        System.out.println("threadpool: "+ tp.deadpool.size() + " pqsize: " + tp.wpq.size());
+        System.out.println("threadpool: "+ tp.threadsList.size() + " pqsize: " + tp.wpq.size());
     }
 
     @Test
@@ -195,7 +195,7 @@ public class PoolTest {
     @Test
     void setNumberOfThreadsIncrease() throws InterruptedException {
         ThreadPool tp = new ThreadPool(1);
-        assertTrue(tp.deadpool.size() == 1);
+        assertTrue(tp.threadsList.size() == 1);
 
         for (int i = 0; i < 10; ++i) {
             tp.submit(() -> {
@@ -207,7 +207,7 @@ public class PoolTest {
         }
         Thread.sleep(3000);
         tp.setNumberOfThreads(2);
-        assertTrue(tp.deadpool.size() == 2);
+        assertTrue(tp.threadsList.size() == 2);
 
         tp.shutdown();
         tp.awaitTermination();
@@ -217,7 +217,7 @@ public class PoolTest {
     @Test
     void decreaseNumberOfThreadsTest() throws InterruptedException {
         ThreadPool tp = new ThreadPool(10);
-        assertTrue(tp.deadpool.size() == 10);
+        assertTrue(tp.threadsList.size() == 10);
 
         for (int i = 0; i < 20; ++i) {
             tp.submit(() -> {
@@ -233,13 +233,13 @@ public class PoolTest {
 
         tp.shutdown();
         tp.awaitTermination();
-        assertTrue(tp.deadpool.size() == 0);
+        assertTrue(tp.threadsList.size() == 0);
         assertTrue(tp.wpq.isEmpty());
     }
     @Test
     void decreaseEmptyCtorTest() throws InterruptedException {
         ThreadPool tp = new ThreadPool();
-        assertTrue(tp.deadpool.size() == 8);
+        assertTrue(tp.threadsList.size() == 8);
 
 
         for (int i = 0; i < 20; ++i) {
@@ -256,14 +256,14 @@ public class PoolTest {
 
         tp.shutdown();
         tp.awaitTermination();
-        assertTrue(tp.deadpool.size() == 0);
+        assertTrue(tp.threadsList.size() == 0);
         assertTrue(tp.wpq.isEmpty());
     }
 
     @Test
     void IllegualTest() throws InterruptedException {
         ThreadPool tp = new ThreadPool();
-        assertTrue(tp.deadpool.size() == 16);
+        assertTrue(tp.threadsList.size() == 16);
 
         for (int i = 0; i < 20; ++i) {
             tp.submit(() -> {
@@ -281,7 +281,7 @@ public class PoolTest {
 
         tp.shutdown();
         tp.awaitTermination();
-        assertTrue(tp.deadpool.size() == 0);
+        assertTrue(tp.threadsList.size() == 0);
         assertTrue(tp.wpq.isEmpty());
     }
 
@@ -301,7 +301,7 @@ public class PoolTest {
             e.printStackTrace();
         }
         System.out.println(java.time.LocalTime.now());
-        assertTrue((tp.deadpool.isEmpty()));
+        assertTrue((tp.threadsList.isEmpty()));
 
     }
 
