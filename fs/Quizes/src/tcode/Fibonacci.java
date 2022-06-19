@@ -35,7 +35,5 @@ public class Fibonacci {
         Fibonacci test = new Fibonacci();
         System.out.println(test.fib(27));
         printIt();
-
-
     }
 }
