@@ -1,6 +1,6 @@
 package tcode;
 
-import java.util.Stack;
+import java.util.*;
 
 public class Prep<T> {
     Node<T> head;
@@ -76,8 +76,31 @@ public class Prep<T> {
         runner.next = null;
     }
 
-    //FIFO to LIFP with two stacks
+    public static Node mergeKSortedLists(Node[] lists){
+        PriorityQueue<Node> pq = new PriorityQueue<>(Comparator.comparingInt(a -> (int) ((Node) a).value));
 
+        pq.addAll(Arrays.asList(lists).subList(0, lists.length));
+
+        Node start = null,end = null;
+
+        while(!pq.isEmpty()){
+            Node min = pq.poll();
+
+            if(start == null){
+                start = end = min;
+            }
+            else{
+                end.next = min;
+                end = min;
+            }
+            if(min.next != null)
+                pq.add(min.next);
+        }
+        return start;
+
+    }
+
+    //FIFO to LIFP with two stacks
     public int LIFOtoFIFO(){
         initStack();
         while(!inbox.isEmpty()){
@@ -104,6 +127,14 @@ public class Prep<T> {
         return reverse.toString().equals(number);
     }
 
+    public static void wordCompress(String s){
+        LinkedHashMap<Character,Integer> compressor = new LinkedHashMap<>();
+        for (int i=0;i<s.length();++i){
+            compressor.merge(s.charAt(i),1,Integer::sum);
+        }
+        System.out.println(compressor);
+    }
+
     public static void main(String[] args){
           System.out.println(findSubString("qwertyuiopa sdfghjklz xcvbnm", "opa"));
           Prep test = new Prep();
@@ -124,6 +155,29 @@ public class Prep<T> {
         System.out.println("is 2222?: " +isStringNumberPalindrome("2222"));
         System.out.println("is 12321?: " +isStringNumberPalindrome("12321"));
         System.out.println("is 112321?: " +isStringNumberPalindrome("112321"));
+        wordCompress("HARRY");
+        wordCompress("ccccOddEEE");
+
+        Node<Integer>[] lists = new Node[3];
+        lists[0] = new Node<>(1);
+        lists[0].next = new Node(5);
+        lists[0].next.next = new Node(7);
+
+        lists[1] = new Node<>(2);
+        lists[1].next = new Node(3);
+        lists[1].next.next = new Node(6);
+        lists[1].next.next.next = new Node(9);
+
+        lists[2] = new Node<>(4);
+        lists[2].next = new Node(8);
+        lists[2].next.next = new Node(10);
+
+        test.head = mergeKSortedLists(lists);
+        test.printlist();
+
+
+
+
 
     }
 
