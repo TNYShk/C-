@@ -76,8 +76,9 @@ public class Prep<T> {
         runner.next = null;
     }
 
-    public static Node mergeKSortedLists(Node[] lists){
-        PriorityQueue<Node> pq = new PriorityQueue<>(Comparator.comparingInt(a -> (int) ((Node) a).value));
+//using "min heap" via priorityQ
+    public static <T>Node<T> mergeKSortedLists(Node[] lists){
+        PriorityQueue<Node> pq = new PriorityQueue<>(Comparator.comparingInt(a -> (int) ( a).value));
 
         pq.addAll(Arrays.asList(lists).subList(0, lists.length));
 
@@ -97,7 +98,45 @@ public class Prep<T> {
                 pq.add(min.next);
         }
         return start;
+    }
 
+    //merge K lists via merge sort, merging 2 lists each time
+    public static <T> Node<T> sortedListsMerge(Node<T> a, Node<T>b){
+        if(a == null)
+            return b;
+        else if(b == null)
+            return a;
+
+        Node<Integer> result;
+        if((Integer)a.value <=  (Integer) b.value){
+            result = (Node<Integer>) a;
+            result.next = sortedListsMerge(a.next, b);
+        }
+        else{
+            result = (Node)b;
+            result.next = sortedListsMerge(a, b.next);
+        }
+        return (Node<T>) result;
+    }
+
+    public static <T> Node<T> mergeKLists(Node[] lists){
+        if (lists == null || lists.length == 0)
+            return null;
+
+        int last = lists.length -1;
+
+        while(last != 0){
+            int i = 0, j = last;
+            while(i < j){
+                lists[i] = sortedListsMerge(lists[i], lists[j]);
+
+               i++;
+               j--;
+                if(i >= j)
+                    last = j;
+            }
+        }
+    return lists[0];
     }
 
     //FIFO to LIFP with two stacks
@@ -172,7 +211,8 @@ public class Prep<T> {
         lists[2].next = new Node(8);
         lists[2].next.next = new Node(10);
 
-        test.head = mergeKSortedLists(lists);
+        //test.head = mergeKSortedLists(lists);
+        test.head = mergeKLists(lists);
         test.printlist();
 
 

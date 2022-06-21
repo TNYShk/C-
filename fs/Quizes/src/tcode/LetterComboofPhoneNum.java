@@ -3,6 +3,36 @@ package tcode;
 import java.util.*;
 
 public class LetterComboofPhoneNum {
+    static final String[] options = {" "," ","abc","def","ghi", "jkl","mno", "pqrs","tuv","wxyz"};
+
+  public List<String> letterCombo(String digits){
+        List<String> ans = new LinkedList<>();
+        if(digits == null || digits.isEmpty())
+            return ans;
+
+        StringBuilder builder = new StringBuilder();
+        backTrack(ans,digits,builder,0);
+        return ans;
+    }
+
+    private void backTrack(List<String> res, String digits, StringBuilder sb, int idx){
+      if(idx == digits.length()){
+          res.add(sb.toString());
+          return;
+      }
+
+      String letter = options[digits.charAt(idx) - '0'];
+      System.out.println(letter);
+      for(int i =0; i<letter.length(); ++i){
+          int sbLen = sb.length();
+          backTrack(res,digits,sb.append(letter.charAt(i)), idx+1);
+          sb.setLength(sbLen);
+      }
+    }
+
+
+
+
     static HashMap<Character,String> phonebook = new HashMap<>(10);
     private HashMap<Character,Integer> hashMap = new HashMap<>();
 
@@ -15,8 +45,7 @@ public class LetterComboofPhoneNum {
         }
         hashMap = buildFreqTable(options.toString());
         getPerms(hashMap, "", digits.length(),result);
-        List<String> answer = new ArrayList<>(result);
-        return answer;
+        return new ArrayList<>(result);
     }
 
     private HashMap<Character,Integer> buildFreqTable(String s){
@@ -74,6 +103,7 @@ public class LetterComboofPhoneNum {
     public static void main(String[] args){
            LetterComboofPhoneNum test = new LetterComboofPhoneNum();
            System.out.println(test.letterCombinations("23"));
+        System.out.println(test.letterCombo("23"));
         }
 
 }
