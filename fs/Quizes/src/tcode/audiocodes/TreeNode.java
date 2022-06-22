@@ -58,8 +58,8 @@ public class TreeNode<T> {
     }
 
     public List<TreeNode<T>> getChildren(){
-       children.sort(Comparator.comparingInt(a -> (a).id));
-        //children.sort(Comparator.comparingInt(a -> (a).parent.id)); //sort by parent id
+       //children.sort(Comparator.comparingInt(a -> (a).id));
+        children.sort(Comparator.comparingInt(a -> (a).parent.id)); //sort by parent id
         return children;
     }
 
@@ -70,13 +70,24 @@ public class TreeNode<T> {
     @Override
     public String toString() {
         String out = "";
-        out += "Node: " + this.getText().toString()  + " | Parent: " + (this.getParent() == null ? "None" : this.parent.id) +
+        out += "Node: "+this.id +" "+ this.getText().toString()  + " | Parent: " + (this.getParent() == null ? "None" : this.parent.id) +
                 " | Children: " + (this.getChildren().size() == 0 ? "None" : "");
         for(TreeNode<T> child : this.getChildren()) {
-            out += "\n\t" +"id: " +child.id+ " | data: " + child.getText().toString() +
+            out += "\n\t"+dashMaker(this.getDepth()) +"id: " +child.id+ " | data: " + child.getText().toString() +
                     " | Parent: " + (child.getParent() == null ? "None" : child.getParent().id);
         }
         return out;
+    }
+
+    private StringBuilder dashMaker(int depth){
+        StringBuilder dash = new StringBuilder();
+
+        while(--depth>0){
+            dash.append(" ");
+        }
+
+        return dash;
+
     }
     private static String readAll(Reader rd) throws IOException {
         StringBuilder sb = new StringBuilder();
@@ -92,8 +103,8 @@ public class TreeNode<T> {
         try {
             BufferedReader rd = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
             String jsonText = readAll(rd);
-            JSONObject json = new JSONObject(jsonText);
-            return json;
+
+            return new JSONObject(jsonText);
         } finally {
             is.close();
         }
@@ -140,7 +151,7 @@ public class TreeNode<T> {
 
     public static void main(String[] args) throws IOException {
         TreeNode<String> root = new TreeNode<>(0, "root");
-
+/*
         TreeNode<String> o5 = new TreeNode(122, "CODERS & PROFILES",root);
         TreeNode<String> o1 = new TreeNode(114, "Topology View",root);
         TreeNode<String> o2 = new TreeNode(115, "CORE ENTITIES",root);
@@ -151,9 +162,9 @@ public class TreeNode<T> {
         o6.setParent(o5);
         System.out.println("manual insertion of nodes example");
         //manual insertion of nodes:
-        System.out.println(o6);
+        System.out.println(root);*/
 
-        System.out.println("\n\tJSON manual parsing version!");
+        System.out.println("\n\tJSON library own parsing version!");
         JSONObject json = readJsonFromUrl("http://www.mocky.io/v2/5c3c7ad13100007400a1a401");
         JSONArray arr = json.getJSONArray("nodes");
         String[]nodes = new String[arr.length()];
@@ -161,8 +172,9 @@ public class TreeNode<T> {
             nodes[i] = arr.getJSONObject(i).toString();
         }
         root.workIt(nodes);
-
-
+        TreeNode<String> someChild = root.children.get(5);
+        System.out.println(someChild.id);
+        //System.out.println(someChild);
         //parsed JSON version
         System.out.println(root);
 

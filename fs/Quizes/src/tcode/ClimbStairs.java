@@ -5,7 +5,7 @@ public class ClimbStairs {
         int a = 1, b = 1;
         while(n-- > 0) {
             a = (b += a) - a;
-            System.out.println("way: "+ a +" b: "+ b);
+            System.out.println("a: "+ a +" b: "+ b);
         }
         return a;
     }
