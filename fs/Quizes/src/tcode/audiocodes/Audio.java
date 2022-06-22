@@ -1,23 +1,36 @@
-package tcode;
-
+package tcode.audiocodes;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 public class Audio {
+    private static Node root;
+    static Node[] list;
+    static LinkedHashMap<Node,List<Node>> map = new LinkedHashMap<>();
 
+    public Audio(){
+        list = new Node[7];
+        root = new Node();
 
+        list[0] = new Node();
+        list[1] = new Node(114,root,"Topology View");
+        list[2] = new Node(115,root,"CORE ENTITIES");
+        list[3] = new Node(116,list[2],"SRDs");
+        list[4] = new Node(117,list[2], "SIP Interfaces");
+        list[5] = new Node(122,root,"CODERS & PROFILES");
+        list[6] = new Node(124,list[5],"IP Profiles");
+    }
 
 public static void test() throws IOException {
     URL url = new URL("http://www.mocky.io/v2/5c3c7ad13100007400a1a401");
     HttpURLConnection http = (HttpURLConnection)url.openConnection();
     http.setRequestProperty("Accept", "application/json");
+http.connect();
+
 
     Map<String, List<String>> fieldMap = new HashMap<>();
-
     System.out.println(http.getResponseCode() + " " + http.getResponseMessage());
 
     System.out.println(http.getContent());
@@ -26,14 +39,31 @@ public static void test() throws IOException {
     System.out.println(fieldMap);
     http.disconnect();
 
-
-
-
 }
- private class Node{
+
+    public static void constructTree(){
+        LinkedHashSet<Node> parents = new LinkedHashSet<>();
+          for(int i =1;i< list.length;++i)
+              parents.add(list[i].parent);
+    for(Node n: parents)
+          System.out.print (n.id + " ,");
+
+        }
+ private static class Node{
         private int id;
         private Node parent;
         private String text;
+
+        private Node(){
+            id = 0;
+            parent = null;
+            text = "root";
+        }
+        public Node(int id, Node parent, String text){
+            this.id= id;
+            this.parent = parent;
+            this.text = text;
+        }
 
     }
 /*
@@ -82,7 +112,7 @@ public static void test() throws IOException {
             }
             ID_number /=10;
         }
-       return (result%10 == 0)? 0: 10- result%10;
+       return (result%10 == 0)? 0: 10 - result%10;
 
     }
     public int innerSum(int tempRes){
@@ -101,9 +131,19 @@ public static void test() throws IOException {
     public static void main(String[] args) throws IOException {
     Audio tttt = new Audio();
     System.out.println(tttt.ChecksumDigit(30413436));
+    /*Node[] list = new Node[6];
+    list[0] = tttt.root;
+    list[1] = new Node(114,root,"Topology View");
+    list[2] = new Node(115,root,"CORE ENTITIES");
+    list[3] = new Node(116,list[2],"SRDs");
+    list[4] = new Node(117,list[2], "SIP Interfaces");
+    list[5] = new Node(122,root,"CODERS & PROFILES");
+    list[6] = new Node(124,list[5],"IP Profiles");*/
+
+        constructTree();
 
 
-        test();
+        //test();
 
 
     }
