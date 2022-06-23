@@ -1,15 +1,15 @@
-package il.co.ilrd.dsexam;
+package tcode.wordle;
 
 import java.io.*;
+import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
-import java.net.*;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public class Dictionary {
+public class HttpUtility {
 
     /**
      * Represents an HTTP connection

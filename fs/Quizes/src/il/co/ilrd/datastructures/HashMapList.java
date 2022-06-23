@@ -1,0 +1,46 @@
+package il.co.ilrd.datastructures;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Set;
+
+public class HashMapList<T,E> {
+    private HashMap<T, ArrayList<E>> myMap = new HashMap<>();
+
+    public void put(T key, E item){
+        if(!myMap.containsKey(key)){
+            myMap.put(key, new ArrayList<>());
+        }
+        myMap.get(key).add(item);
+    }
+
+
+    public void put(T key, ArrayList<E> items){
+        myMap.put(key,items);
+    }
+    public ArrayList<E> get(T key){
+        return myMap.get(key);
+    }
+
+    public boolean containsKey(T key){
+        return myMap.containsKey(key);
+    }
+
+    public boolean containsKeyValue(T key, E value){
+        ArrayList<E> list = get(key);
+        if(list == null)
+            return false;
+        return list.contains(value);
+    }
+    public Set<T> keySet(){
+        return myMap.keySet();
+    }
+    @Override
+    public String toString(){
+        return myMap.toString();
+    }
+
+    public static void main(String[] args){
+        HashMapList<Integer,String> mapList = new HashMapList<>();
+    }
+}

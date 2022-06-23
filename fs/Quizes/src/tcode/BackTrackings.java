@@ -25,6 +25,28 @@ The solution set must not contain duplicate subsets. Return the solution in any 
         }
     }
 
+    //from the book, power set O(n 2^n)
+
+    public List<List<Integer>> getSubsets(List<Integer>set, int idx){
+        List<List<Integer>> allSubsets;
+        if(set.size() == idx){ //base case - an empty set
+            allSubsets = new ArrayList<>();
+            allSubsets.add(new ArrayList<>());
+        }else{
+            allSubsets = getSubsets(set,idx+1);
+            int item = set.get(idx);
+            List<List<Integer>> moresubsets = new ArrayList<>();
+            for(List<Integer> subset: allSubsets){
+                ArrayList<Integer> newsubset = new ArrayList<>();
+                newsubset.addAll(subset);
+                newsubset.add(item);
+                moresubsets.add(newsubset);
+            }
+            allSubsets.addAll(moresubsets);
+        }
+        return allSubsets;
+    }
+
     /*
     Given an integer array nums that may contain duplicates, return all possible subsets (the power set).
     The solution set must not contain duplicate subsets. Return the solution in any order.
@@ -84,5 +106,35 @@ public List<List<Integer>> permuteUnique(int[] nums) {
         }
     }
 
+    /*
+        given a sorted array (can have duplicates) find the magic number, where int array[magic] = magic. otherwise return -1
+     */
+    public int magicFast(int[] arr){
+        return magicFast(arr,0,arr.length-1);
+    }
+    private int magicFast(int[]arr,int start,int end){
+        if(end<start) return -1;
 
+        int midIdx = (start +end) /2;
+        int midVal = arr[midIdx];
+        if(midVal == midIdx)
+            return midIdx;
+
+        //search left side, up the smaller value idx
+        int leftIdx = Math.min(midIdx, midVal);
+        int left = magicFast(arr,start,leftIdx);
+        if(left>= 0) return left;
+
+        //search right
+        int rightIdx = Math.max(midIdx+1, midVal);
+        int right = magicFast(arr,rightIdx,end);
+        return right;
+    }
+
+
+    public static void main(String[] args){
+        int[]arr = {-40,-10,-5,3,3,4,7,7,9,12,13};
+        BackTrackings test = new BackTrackings();
+        System.out.println(test.magicFast(arr));
+    }
 }

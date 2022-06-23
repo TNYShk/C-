@@ -1,4 +1,4 @@
-package il.co.ilrd.dsexam;
+package tcode.wordle;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -11,7 +11,7 @@ import java.util.HashSet;
     only available words (in the dictionary) are printed.
     WORDLE here we go:)
  */
-public class Question10 {
+public class Wordle {
 
     private static char[] charArray;
     private static HashSet<String> dictionary = new HashSet<>();
@@ -43,7 +43,9 @@ public class Question10 {
 
     private static void Permutations(String prefix, String str) throws IOException {
         if(0 == str.length()){
-           if(findInDictionary(prefix)) /* local file*/
+           // if(findInDictionary(prefix)) /* local file*/
+            if(isInMiriamWebsterDict(prefix)) /* MiriamWebster thesaurus API*/
+                //if(findOnline(prefix)) /* free dictionary API*/
                     System.out.print(prefix + " ");
             return;
         }
@@ -82,7 +84,54 @@ public class Question10 {
     }
 
 
+    public static boolean findOnline(String w){
+   
+        boolean isWord;
+        String requestURL = "https://api.dictionaryapi.dev/api/v2/entries/en/";
+        requestURL = requestURL.concat(w);
+       // System.out.println(requestURL);
+        try {
+            HttpUtility.sendGetRequest(requestURL);
+            String result = HttpUtility.readSingleLineRespone();
+           /* String[] response = Dictionary.readMultipleLinesRespone();
+            for (String line : response) {
+                System.out.println(line);
+            }*/
+            //System.out.println(result);
+            isWord =  true;
+        } catch (IOException ex) {
+            isWord =  false;
 
+        }finally {
+            HttpUtility.disconnect();
+        }
+        return isWord;
+    }
+
+    public static boolean isInMiriamWebsterDict(String word) {
+
+        boolean isFound = false;
+        String requestURL = "https://dictionaryapi.com/api/v3/references/ithesaurus/json/";
+        String myAPI = "?key=e3b0322b-c7f8-401c-ac77-ca4c84aa62a5";
+        requestURL = requestURL.concat(word);
+        requestURL = requestURL.concat(myAPI);
+
+        try {
+            HttpUtility.sendGetRequest(requestURL);
+            String result = HttpUtility.readSingleLineRespone();
+            dictionary.add(result);
+            //String[] response = Dictionary.readMultipleLinesRespone();
+            System.out.println(result);
+            if (!result.isEmpty()){
+                isFound = true;
+            }
+        } catch (IOException e) {
+            return false;
+        }finally {
+            HttpUtility.disconnect();
+        }
+        return isFound;
+    }
 
         public static void main(String[] args) throws IOException {
         String str = "tunip";

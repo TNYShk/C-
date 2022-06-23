@@ -13,8 +13,8 @@ public class ArrayString {
                     if (num[lo] + num[hi] == sum) {
                         res.add(Arrays.asList(i,lo,hi));
                         //res.add(Arrays.asList(num[i], num[lo], num[hi]));
-                        while (lo < hi && num[lo] == num[lo+1]) lo++;
-                        while (lo < hi && num[hi] == num[hi-1]) hi--;
+                        while (lo < hi && num[lo] == num[lo + 1]) lo++;
+                        while (lo < hi && num[hi] == num[hi - 1]) hi--;
                         lo++; hi--;
                     } else if (num[lo] + num[hi] < sum) lo++;
                     else hi--;
@@ -119,6 +119,7 @@ public class ArrayString {
        //threeSumZero(num);
         //threeSumZero(c);
         threeSumZero(num);
+        System.out.println();
         System.out.println(threeSum(num));
         //threeSumZero(another);
         /*System.out.println(threeSum(num));

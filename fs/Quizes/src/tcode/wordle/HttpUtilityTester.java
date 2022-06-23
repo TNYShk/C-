@@ -1,8 +1,6 @@
-package il.co.ilrd.dsexam;
-import java.io.FileNotFoundException;
+package tcode.wordle;
+
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Scanner;
 
 public class HttpUtilityTester {
@@ -22,9 +20,9 @@ public class HttpUtilityTester {
         requestURL = requestURL.concat(anotherAPI); /* MW required API key*/
         System.out.println(requestURL);
         try {
-            Dictionary.sendGetRequest(requestURL);
+            HttpUtility.sendGetRequest(requestURL);
             //String result = Dictionary.readSingleLineRespone();
-          String[] response = Dictionary.readMultipleLinesRespone();
+          String[] response = HttpUtility.readMultipleLinesRespone();
             for (String line : response) {
                 System.out.println(line);
             }
@@ -32,7 +30,7 @@ public class HttpUtilityTester {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-        Dictionary.disconnect();
+        HttpUtility.disconnect();
 
 
         System.out.println("=====================================");
