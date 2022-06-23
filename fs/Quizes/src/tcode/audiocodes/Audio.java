@@ -1,6 +1,9 @@
 package tcode.audiocodes;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.*;
@@ -8,8 +11,8 @@ import java.util.*;
 public class Audio {
     private static Node root;
     static Node[] list;
-    static LinkedHashMap<Node,List<Node>> map = new LinkedHashMap<>();
 
+    static Map<Integer,String> parentMap = new LinkedHashMap<>();
     public Audio(){
         list = new Node[7];
         root = new Node();
@@ -23,32 +26,82 @@ public class Audio {
         list[6] = new Node(124,list[5],"IP Profiles");
     }
 
-public static void test() throws IOException {
+public static void hashMapJSON() throws IOException {
     URL url = new URL("http://www.mocky.io/v2/5c3c7ad13100007400a1a401");
+
     HttpURLConnection http = (HttpURLConnection)url.openConnection();
     http.setRequestProperty("Accept", "application/json");
-http.connect();
+    http.setUseCaches(false);
+    http.setDoOutput(false);
 
+    try( InputStream inputStream = http.getInputStream();
+         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
 
-    Map<String, List<String>> fieldMap = new HashMap<>();
-    System.out.println(http.getResponseCode() + " " + http.getResponseMessage());
+        List<String> response = new ArrayList<>();
 
-    System.out.println(http.getContent());
-    fieldMap = http.getHeaderFields();
+        String line = "";
+        while ((line = reader.readLine()) != null) {
+            response.add(line);
+        }
+        reader.close();
 
-    System.out.println(fieldMap);
+        for (int i = 3; i < response.size() - 13; i += 13) {
+            Integer id = Integer.parseInt(response.get(i).substring(18, 21));
+            parentMap.put(id, response.get(i + 1).substring(22));
+        }
+    }
     http.disconnect();
-
 }
+public List<Integer> getChildren(int parent) {
+    List<Integer> children = new LinkedList<>();
 
-    public static void constructTree(){
-        LinkedHashSet<Node> parents = new LinkedHashSet<>();
-          for(int i =1;i< list.length;++i)
-              parents.add(list[i].parent);
-    for(Node n: parents)
-          System.out.print (n.id + " ,");
+    for (Map.Entry<java.lang.Integer, java.lang.String> entry : parentMap.entrySet()) {
+        if (entry.getValue().contains(String.valueOf(parent)))
+                children.add(entry.getKey());
+    }
+    return children;
+}
+    public void printAll(){
+        System.out.print("root:    ");
+        System.out.println("\t children: "+getChildren(0));
+           for(Integer id: parentMap.keySet()){
+                   System.out.print("node: " +id);
+                   System.out.println("\t children: "+getChildren(id));
+
+
+           }
+    }
+    public void printOnlyFertile(){
+        System.out.print("root:    ");
+        System.out.println("\t children: "+getChildren(0));
+
+        for(Integer id: parentMap.keySet()){
+
+            if(!getChildren(id).isEmpty()){
+                System.out.println("node: " +id);
+                System.out.println("\t children: "+getChildren(id));
+            }
 
         }
+    }
+    public void printbyLevel() {
+       List<Integer> level = getChildren(0);
+       System.out.println(level);
+       for(Integer l: level){
+           if(!getChildren(l).isEmpty())
+            System.out.print("   "+getChildren(l));
+       }
+       System.out.println();
+       StringBuilder dash = new StringBuilder();
+       for(Integer id: parentMap.keySet())
+           if(!level.contains(id)){
+               if(!getChildren(id).isEmpty())
+                    System.out.print(dash+""+getChildren(id));
+           }else{ dash.append("     ");}
+    }
+
+
+
  private static class Node{
         private int id;
         private Node parent;
@@ -60,28 +113,13 @@ http.connect();
             text = "root";
         }
         public Node(int id, Node parent, String text){
-            this.id= id;
+            this.id = id;
             this.parent = parent;
             this.text = text;
         }
 
     }
-/*
-  root(id:0, parent:null,text);
 
-    children[]nodes
-            (id: ,parent: , text:...)
-        example:
-            (114,0,topologyviw)
-            (115,0, core entities)
-
-            (122,0, coders & profilers)
-            (119,115, srdx)
-
-          0
-    114   115  122
-          119  123 124
-*/
 
 
   //  Israeli ID numbers have a checksum digit.
@@ -129,21 +167,19 @@ http.connect();
 
 
     public static void main(String[] args) throws IOException {
-    Audio tttt = new Audio();
-    System.out.println(tttt.ChecksumDigit(30413436));
-    /*Node[] list = new Node[6];
-    list[0] = tttt.root;
-    list[1] = new Node(114,root,"Topology View");
-    list[2] = new Node(115,root,"CORE ENTITIES");
-    list[3] = new Node(116,list[2],"SRDs");
-    list[4] = new Node(117,list[2], "SIP Interfaces");
-    list[5] = new Node(122,root,"CODERS & PROFILES");
-    list[6] = new Node(124,list[5],"IP Profiles");*/
+        Audio test = new Audio();
+        System.out.println(test.ChecksumDigit(30413436));
 
-        constructTree();
+        hashMapJSON();
+      /* System.out.println("get specific node's children: ");
+        System.out.println("parent 115: "+test.getChildren(115));
+        System.out.println("\n\tprint only fertile nodes: ");*/
+        //test.printOnlyFertile();
+   /*     System.out.println("\n\tprint all: ");
+        test.printAll();*/
 
+        test.printbyLevel();
 
-        //test();
 
 
     }
