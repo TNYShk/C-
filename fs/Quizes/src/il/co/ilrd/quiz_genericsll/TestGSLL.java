@@ -11,7 +11,7 @@ public class TestGSLL {
 
    @Test
     public void testuno(){
-      GenericLinkedList<String> test = new GenericLinkedList<>();
+      quiz_genericsll.GenericLinkedList<String> test = new quiz_genericsll.GenericLinkedList<>();
       Assert.assertTrue(test.isEmpty());
       String hi = "Hi";
       test.pushFront(hi);
@@ -37,7 +37,7 @@ public class TestGSLL {
 
    @Test
     public void testDos(){
-       GenericLinkedList<Number> dos = new GenericLinkedList<>();
+       quiz_genericsll.GenericLinkedList<Number> dos = new quiz_genericsll.GenericLinkedList<>();
        dos.pushFront(1);
        dos.pushFront(21);
        dos.pushFront(321);
@@ -55,7 +55,7 @@ public class TestGSLL {
 
     @Test
     public void testTres(){
-        GenericLinkedList<Number> dos = new GenericLinkedList<>();
+        quiz_genericsll.GenericLinkedList<Number> dos = new quiz_genericsll.GenericLinkedList<>();
         dos.pushFront(1);
         dos.pushFront(21);
         dos.pushFront(321);

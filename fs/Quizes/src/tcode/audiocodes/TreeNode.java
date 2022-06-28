@@ -152,7 +152,7 @@ public class TreeNode<T> {
 
     public static void main(String[] args) throws IOException {
         TreeNode<String> root = new TreeNode<>(0, "root");
-/*
+
         TreeNode<String> o5 = new TreeNode(122, "CODERS & PROFILES",root);
         TreeNode<String> o1 = new TreeNode(114, "Topology View",root);
         TreeNode<String> o2 = new TreeNode(115, "CORE ENTITIES",root);
@@ -163,7 +163,7 @@ public class TreeNode<T> {
         o6.setParent(o5);
         System.out.println("manual insertion of nodes example");
         //manual insertion of nodes:
-        System.out.println(root);*/
+        System.out.println(root);
 
         System.out.println("\n\tJSON library own parsing version!");
         JSONObject json = readJsonFromUrl("http://www.mocky.io/v2/5c3c7ad13100007400a1a401");

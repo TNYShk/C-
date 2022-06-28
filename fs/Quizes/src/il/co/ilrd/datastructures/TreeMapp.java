@@ -1,4 +1,4 @@
-package datastructures;
+package il.co.ilrd.datastructures;
 
 import java.util.Set;
 import java.util.TreeMap;
@@ -6,6 +6,10 @@ import java.util.TreeMap;
 public class TreeMapp {
      TreeMap<Integer,String> intStrMap;
     TreeMap<String,String> strStrMap;
+
+
+
+
 
 
     public void makeIntStrTree(){
