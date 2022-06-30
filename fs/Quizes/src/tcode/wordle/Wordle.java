@@ -44,15 +44,14 @@ public class Wordle {
     private static void Permutations(String prefix, String str) throws IOException {
         if(0 == str.length()){
            // if(findInDictionary(prefix)) /* local file*/
-            //if(isInMiriamWebsterDict(prefix)) /* MiriamWebster thesaurus API*/
-                if(findOnline(prefix)) /* free dictionary API*/
+            if(isInMiriamWebsterDict(prefix)) /* MiriamWebster thesaurus API*/
+                //if(findOnline(prefix)) /* free dictionary API*/
                     System.out.print(prefix + " ");
             return;
         }
 
         int length = str.length();
         for (int i = 0; i < length; ++i) {
-
             Permutations(prefix + str.charAt(i), str.substring(0, i) + str.substring(i + 1, length));
         }
     }
@@ -135,7 +134,7 @@ public class Wordle {
     }
 
         public static void main(String[] args) throws IOException {
-        String str = "lab";
+        String str = "tunip";
         printPermutation(str);
 
         //String str1 = "fault";
