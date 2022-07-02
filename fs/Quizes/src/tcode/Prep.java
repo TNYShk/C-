@@ -171,8 +171,79 @@ public class Prep<T> {
         for (int i=0;i<s.length();++i){
             compressor.merge(s.charAt(i),1,Integer::sum);
         }
-        System.out.println(compressor);
+        System.out.println("compressed: "+compressor);
+        wordDecompress(compressor);
     }
+
+    public static void wordDecompress(LinkedHashMap<Character,Integer> map){
+        StringBuilder result = new StringBuilder();
+        for(Map.Entry<Character,Integer> entry: map.entrySet()){
+            int letterCount = entry.getValue();
+            while(letterCount-- > 0){
+                result.append(entry.getKey());
+            }
+        }
+        System.out.println("decompressed: "+ result);
+    }
+
+/*    find repetitive char in a char arr */
+    //lut
+    public static char findRepeatChar(String str){
+        char[]arr = str.toCharArray();
+        boolean[]unique = new boolean[128];
+        for(int i=0;i<arr.length;++i){
+            if(unique[arr[i]])
+                return arr[i];
+            unique[arr[i]] = true;
+        }
+        return ' ';
+    }
+    //bitwise
+    public static char findRepeatCharBit(String str) {
+        int checkAgainst = 0;
+        for (int i = 0; i < str.length(); ++i) {
+            int tmp = Character.getNumericValue(str.charAt(i) - 10);
+            if ((checkAgainst & (1 << tmp)) > 0) {
+                System.out.println("duplicate: " + str.charAt(i));
+                return str.charAt(i);
+            }
+            checkAgainst |= (1 << tmp);
+
+        }
+        return ' ';
+    }
+    //hash
+    public static char findRepeatCharsHash(String str){
+        Set<Character> unqMap = new HashSet<>();
+        for(int i = 0;i<str.length();++i){
+            if(unqMap.contains(str.charAt(i))){
+                return str.charAt(i);
+            }
+            unqMap.add(str.charAt(i));
+        }
+        return ' ';
+    }
+    public static int JosephusLastManStand(int soldiersNum){
+        int[]soldiers = new int[soldiersNum];
+        initCircle(soldiers);
+        int idx = 0;
+        int nextToDie = 0;
+        while(idx != soldiers[idx]){
+            nextToDie = soldiers[soldiers[idx]];
+            soldiers[soldiers[idx]] = 0;
+            soldiers[idx] = nextToDie;
+            idx = nextToDie;
+        }
+        System.out.println("last man standing is soldier num "+ (idx+1));
+        return idx;
+    }
+
+    public static void initCircle(int[]arr){
+        for(int i=0;i<arr.length;++i){
+            arr[i] = (i+1)%arr.length;
+        }
+    }
+
 
     public static void main(String[] args){
           System.out.println(findSubString("qwertyuiopa sdfghjklz xcvbnm", "opa"));
@@ -215,7 +286,14 @@ public class Prep<T> {
         test.head = mergeKLists(lists);
         test.printlist();
 
+        String str = "Tatyamma";
+        System.out.println(findRepeatChar(str));
+        System.out.println(findRepeatCharBit(str));
+        System.out.println(findRepeatCharsHash(str));
+        System.out.println(12<<1);
+        System.out.println(Integer.toBinaryString(1<<5));
 
+        System.out.println("idx of last man standing is: "+   JosephusLastManStand(6));
 
 
 

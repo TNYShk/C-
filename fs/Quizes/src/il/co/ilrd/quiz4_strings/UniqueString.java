@@ -19,9 +19,7 @@ public class UniqueString {
         int checkAgainst = 0;
         for (int i = 0; i < str.length(); ++i) {
             int tmp = Character.getNumericValue(str.charAt(i) - 10);
-            //int tmp = Character.toLowerCase(str.charAt(i)) - 'a';
-            //System.out.println(temp);
-            //System.out.println(tmp);
+
             if ((checkAgainst & (1 << tmp)) > 0) {
                 System.out.println("duplicate: " + str.charAt(i));
                 return false;
@@ -146,6 +144,40 @@ public class UniqueString {
         //return String.valueOf(compress);
         return compress.length() < str.length()? String.valueOf(compress) : str;
     }
+
+    public static String decompress(String str){
+        if(str.length() < 2)
+            return str;
+        char[] ans = new char[14];
+        for(int i=0,idx=0;i<str.length()-1; ++i){
+            char c = str.charAt(i);
+            int repeat = str.charAt(i + 1);
+            if(Character.isDigit(str.charAt(i + 1))) {
+                repeat -= 48;
+
+                while(repeat-- > 0){
+                    ans[idx] = c;
+                    ++idx;
+                    //System.out.println(idx);
+                }
+            }
+            //System.out.println(repeat);
+        }
+        System.out.println(ans);
+        return new String(ans);
+    }
+    public static int checkLength(String comp){
+        if(comp.length()<2)
+            return 1;
+        int result = 0;
+        for(int i = 0;i<comp.length();++i){
+            if(Character.isDigit(comp.charAt(i)))
+                result += (comp.charAt(i) - 48);
+
+        }
+        return comp.length() >result? comp.length(): result;
+        //return result;
+    }
     public static void main(String[] args) {
 
         String test = "tatyanna";
@@ -165,7 +197,10 @@ public class UniqueString {
         System.out.println(OneEditAway("sale","apple"));
 
         System.out.println(OneEditAway("sale","sales"));
-        System.out.println(compress("aaabcccccccaa"));
+        System.out.println(compress("aaabbcccccccaa"));
+        String comp = compress("aaabbcccccccaa");
+
+        System.out.println(decompress(comp));
         System.out.println(compress("tatyannnna"));
        /* int a = Character.getNumericValue('t');
         System.out.println(a);*/
