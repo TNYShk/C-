@@ -62,12 +62,14 @@ public class ImportCSV {
 
 
     public static void main(String[] args) throws IOException, ParseException {
+        System.out.println(Path.of("rent_data.csv").toAbsolutePath());
+
         ImportCSV test = new ImportCSV("/Users/tanyashkolnik/git/java/Projects/src/myproject/rent_data.csv");
         //ImportCSV test = new ImportCSV(Path.of("rent_data.csv").toAbsolutePath().toString());
         //readFromCSV(test.data,test.pathToFile);
         //printMeta(headers);
         //System.out.print("\n"+test.data);
-        System.out.println(Path.of("rent_data.csv").toAbsolutePath());
+
 
     }
 

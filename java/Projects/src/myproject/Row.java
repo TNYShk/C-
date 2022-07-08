@@ -4,8 +4,6 @@ import java.time.LocalDate;
 import java.time.Period;
 
 
-
-
 public class Row implements Comparable<Row> {
     private int capacity;
     private int price;

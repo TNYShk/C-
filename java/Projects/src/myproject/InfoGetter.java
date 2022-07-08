@@ -17,6 +17,7 @@ public class InfoGetter {
         YearMap testing = new YearMap();
         testing.InitializeIt();
         System.out.println("CSV Successfully loaded...\n");
+
         Scanner sc = new Scanner(System.in);
         System.out.println("\t\tWelcome!\n");
         boolean keepRunning = true;

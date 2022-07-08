@@ -138,18 +138,12 @@ public class YearMap {
         //System.out.println(ofYears);
         //System.out.println(testing.sumAllRevenue());
        // System.out.print("\n\n" + allData.data+"\n");
-
-      /*
-
-
-
-      */
-        testing.calculateRevenue(2014,9); //correct is 86700$ 144 offices reserved
+        //testing.calculateRevenue(2014,9); //correct is 86700$ 144 offices reserved
         //testing.calculateRevenue(2018,1); //correct 75500
        //testing.calculateRevenue(2015,7); //correct is 76250$
        //testing.calculateRevenue(2013,1); //correct 8100$
         //testing.calculateRevenue(2014,3);// correct 37214$ 63 offices reserved
-        testing.calculateRevenue(2000,1); // correct 0$
+        //testing.calculateRevenue(2000,1); // correct 0$
         //testing.calculateRevenue(2013,6);// correct 15150$
 
         //System.out.println("reserved offices: "+testing.sumYearCapacity(2018));
